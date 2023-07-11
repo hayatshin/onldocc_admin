@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "1046391219452",
+    "firebase_url": "https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "chungchunon-android-dd695",
+    "storage_bucket": "chungchunon-android-dd695.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046391219452:android:bdf78942dc43a4fa0de379",
+        "android_client_info": {
+          "package_name": "com.chugnchunon.chungchunon_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046391219452-2chv1q1ssuhl399lbouifpro9n861hrj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chugnchunon.chungchunon_android",
+            "certificate_hash": "e67622c8125b87e9d8282678953da4e73674f015"
+          }
+        },
+        {
+          "client_id": "1046391219452-t4lqir8bc49gjnh82797q5epkecl4kkb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chugnchunon.chungchunon_android",
+            "certificate_hash": "ef6ca63f1ac20a77ee670cf957b6a0e3fb3c4a83"
+          }
+        },
+        {
+          "client_id": "1046391219452-2qtgtrhdis67eql78r5cipb71muevvbm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfzOJ_O-XrreKdkYh9MF66Cck7urPZ4hA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046391219452-2qtgtrhdis67eql78r5cipb71muevvbm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1046391219452-1bj6mr60ac76dmjs74bhe4av0he11lnp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.onldoccAdmin.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046391219452:android:589ccf7c09966bcb0de379",
+        "android_client_info": {
+          "package_name": "com.example.onldocc_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046391219452-2qtgtrhdis67eql78r5cipb71muevvbm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfzOJ_O-XrreKdkYh9MF66Cck7urPZ4hA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046391219452-2qtgtrhdis67eql78r5cipb71muevvbm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1046391219452-1bj6mr60ac76dmjs74bhe4av0he11lnp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.onldoccAdmin.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
