@@ -114,13 +114,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     child: TextFormField(
                       onFieldSubmitted: (value) => _onSubmitTap(),
                       textAlignVertical: TextAlignVertical.center,
+                      style: const TextStyle(
+                        fontSize: Sizes.size14,
+                        color: Colors.black87,
+                      ),
                       decoration: InputDecoration(
                         hintText: "이메일",
                         hintStyle: TextStyle(
-                          fontSize: Sizes.size14,
-                          color: Colors.grey.shade500,
-                        ),
-                        labelStyle: TextStyle(
                           fontSize: Sizes.size14,
                           color: Colors.grey.shade500,
                         ),
@@ -183,14 +183,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     child: TextFormField(
                       onFieldSubmitted: (value) => _onSubmitTap(),
                       textAlignVertical: TextAlignVertical.center,
+                      style: const TextStyle(
+                        fontSize: Sizes.size14,
+                        color: Colors.black87,
+                      ),
                       obscureText: _isPasswordInvisible,
                       decoration: InputDecoration(
                         hintText: "비밀번호",
                         hintStyle: TextStyle(
-                          fontSize: Sizes.size14,
-                          color: Colors.grey.shade500,
-                        ),
-                        labelStyle: TextStyle(
                           fontSize: Sizes.size14,
                           color: Colors.grey.shade500,
                         ),

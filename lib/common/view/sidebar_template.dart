@@ -87,9 +87,16 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                       ),
                     ),
                     child: Container(
-                      color: const Color(0xFFF7FAFC),
                       width: size.width * 0.3,
                       height: size.height,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7FAFC),
+                        border: Border(
+                          right: BorderSide(
+                            color: Colors.grey.shade200,
+                          ),
+                        ),
+                      ),
                       child: Column(
                         children: [
                           Expanded(
@@ -101,7 +108,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     color: Colors.white,
                                     border: Border(
                                       bottom: BorderSide(
-                                        color: Colors.grey.shade300,
+                                        color: Colors.grey.shade200,
                                       ),
                                     ),
                                   ),
@@ -132,7 +139,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                               Gaps.v20,
                                               CustomDropdown(
                                                 onChanged: setContractType,
-                                                hintText: "지역 / 기관",
+                                                hintText: "지역 / 기관 선택",
                                                 hintStyle: const TextStyle(
                                                   fontSize: Sizes.size14,
                                                   fontWeight: FontWeight.w400,
@@ -414,12 +421,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                     ),
                   ),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(
-                        Sizes.size10,
-                      ),
-                      child: widget.child,
-                    ),
+                    child: widget.child,
                   ),
                 ],
               ),
