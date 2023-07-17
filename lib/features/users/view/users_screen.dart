@@ -22,6 +22,8 @@ class UsersScreen extends ConsumerStatefulWidget {
 }
 
 class _UsersScreenState extends ConsumerState<UsersScreen> {
+  List<UserModel?> _beforeFilterUserDataList = [];
+
   List<UserModel?> _userDataList = [];
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -43,9 +45,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   void resetInitialState() {
     setState(() {
-      _initialUserDataListState = true;
+      _userDataList = _beforeFilterUserDataList;
     });
-    getUserModelList(_userContractType, _userContractName);
   }
 
   void filterUserDataList(String? searchBy, String searchKeyword) {
@@ -56,6 +57,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         );
 
     setState(() {
+      _beforeFilterUserDataList = _userDataList;
       _updateUserDataListState = true;
       _userDataList = newUserDataList;
     });
@@ -124,7 +126,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         _userContractName != getUserContractName) {
       if (getUserContractType == "지역") {
         final userDataList =
-            await ref.read(userRepo).getRegionUserData(getUserContractName);
+            await ref.watch(userRepo).getRegionUserData(getUserContractName);
+
         setState(() {
           _userDataList = userDataList;
           _initialUserDataListState = false;
@@ -133,7 +136,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         });
       } else if (getUserContractType == "기관") {
         final userDataList =
-            await ref.read(userRepo).getCommunityUserData(getUserContractName);
+            await ref.watch(userRepo).getCommunityUserData(getUserContractName);
+
         setState(() {
           _userDataList = userDataList;
           _initialUserDataListState = false;
@@ -141,7 +145,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
           _userContractName = getUserContractName;
         });
       } else if (getUserContractType == "마스터" || getUserContractType == "전체") {
-        final userDataList = await ref.read(userRepo).getAllUserData();
+        final userDataList = await ref.watch(userRepo).getAllUserData();
+
         setState(() {
           _userDataList = userDataList;
           _initialUserDataListState = false;

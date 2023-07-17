@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class RankingRepository {
@@ -8,13 +9,14 @@ class RankingRepository {
     int dailyScore = 0;
     final dateString =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-    final query = await _db.collection("user_step_count").doc(userId).get();
+    final query =
+        await _db.collection("period_step_count").doc(dateString).get();
 
     if (query.exists) {
-      final dateExists = query.data()?.containsKey(dateString);
+      final userExists = query.data()?.containsKey(userId);
 
-      if (dateExists!) {
-        dynamic diaryStepString = query.get(dateString);
+      if (userExists!) {
+        dynamic diaryStepString = query.get(userId);
 
         final int dailyStepInt = diaryStepString as int;
 
@@ -32,13 +34,13 @@ class RankingRepository {
       DateTime startDate, DateTime endDate) async {
     List<DateTime> dateList = getBetweenDays(startDate, endDate);
     List<DocumentSnapshot<Map<String, dynamic>>> list = [];
-
     await Future.forEach(dateList, (DateTime date) async {
       final dateString = convertTimettampToString(date);
       final query =
           await _db.collection("period_step_count").doc(dateString).get();
       list.add(query);
     });
+
     return list;
   }
 
@@ -49,6 +51,7 @@ class RankingRepository {
         .where("timestamp", isGreaterThanOrEqualTo: startDate)
         .where("timestamp", isLessThanOrEqualTo: endDate)
         .get();
+
     return query.docs;
   }
 
@@ -59,12 +62,14 @@ class RankingRepository {
         .where("timestamp", isGreaterThanOrEqualTo: startDate)
         .where("timestamp", isLessThanOrEqualTo: endDate)
         .get();
+
     return query.docs;
   }
 
   Future<int> getUserStepScores(
       String userId, DateTime startDate, DateTime endDate) async {
     List<DateTime> betweenDates = getBetweenDays(startDate, endDate);
+
     int stepScores = 0;
 
     await Future.forEach(betweenDates, (DateTime date) async {
@@ -84,6 +89,7 @@ class RankingRepository {
         .where("timestamp", isLessThanOrEqualTo: endDate)
         .get();
     int docCount = query.docs.length;
+
     return docCount * 100;
   }
 
@@ -96,6 +102,9 @@ class RankingRepository {
         .where("timestamp", isLessThanOrEqualTo: endDate)
         .get();
     int docCount = query.docs.length;
+
     return docCount * 20;
   }
 }
+
+final rankingRepository = Provider((ref) => RankingRepository());

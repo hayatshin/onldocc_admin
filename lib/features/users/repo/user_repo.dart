@@ -67,8 +67,8 @@ class UserRepository {
 
   Future<List<UserModel?>> getRegionUserData(String fullRegion) async {
     final regionStrings = fullRegion.split(" ");
-    final region = regionStrings[0];
-    final smallRegion = regionStrings.skip(1).join(" ");
+    final region = regionStrings[0].trim();
+    final smallRegion = regionStrings.skip(1).join(" ").trim();
     final userSnapshots = await _db
         .collection("users")
         .where("region", isEqualTo: region)

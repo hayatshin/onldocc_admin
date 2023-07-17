@@ -38,6 +38,12 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
   }
 
   @override
+  void dispose() {
+    _searchUserController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: searchHeight + Sizes.size40,

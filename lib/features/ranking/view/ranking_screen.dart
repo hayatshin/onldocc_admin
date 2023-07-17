@@ -7,7 +7,8 @@ import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_period.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
+import 'package:onldocc_admin/features/ranking/view_models/month_ranking_vm.dart';
+import 'package:onldocc_admin/features/ranking/view_models/week_ranking_vm.dart';
 import 'package:universal_html/html.dart';
 
 import '../../users/models/user_model.dart';
@@ -25,13 +26,15 @@ class RankingScreen extends ConsumerStatefulWidget {
 
 class _RankingScreenState extends ConsumerState<RankingScreen> {
   List<UserModel?> _userDataList = [];
+  List<UserModel?> _beforeFilterUserDataList = [];
+
   final List<String> _userListHeader = [
     "#",
     "이름",
     "나이",
     "성별",
     "핸드폰 번호",
-    "종합",
+    "종합 점수",
     "걸음수",
     "일기",
     "댓글"
@@ -40,12 +43,21 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   late String _userContractName;
   bool _initialUserDataListState = true;
   bool _updateUserDataListState = false;
+  final String _sortOrderStandard = "종합 점수";
+  String _sortOrderPeriod = "이번주";
+  bool loadingFinished = false;
+  final List<UserModel?> _weekData = [];
+  final List<UserModel?> _monthData = [];
 
-  void resetInitialState() {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void resetInitialState() async {
     setState(() {
-      _initialUserDataListState = true;
+      _userDataList = _beforeFilterUserDataList;
     });
-    getUserModelList(_userContractType, _userContractName);
   }
 
   void filterUserDataList(String? searchBy, String searchKeyword) {
@@ -56,6 +68,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         );
 
     setState(() {
+      _beforeFilterUserDataList = _userDataList;
       _updateUserDataListState = true;
       _userDataList = newUserDataList;
     });
@@ -63,6 +76,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   List<dynamic> exportToList(UserModel userModel) {
     return [
+      userModel.index,
       userModel.name,
       userModel.age,
       userModel.fullBirthday,
@@ -142,45 +156,97 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   Future<void> getScoreList(List<UserModel?> userDataList,
       String getUserContractType, String getUserContractName) async {
-    DateTime now = DateTime.now();
-    DateTime firstDateOfMonth = DateTime(now.year, now.month, 1);
-    firstDateOfMonth = DateTime(firstDateOfMonth.year, firstDateOfMonth.month,
-        firstDateOfMonth.day, 0, 0);
+    final weekList = await ref
+        .read(weekRankingProvider.notifier)
+        .updateUserScore(userDataList, _sortOrderStandard);
 
-    DateTime firstDateOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    firstDateOfWeek = DateTime(
-        firstDateOfWeek.year, firstDateOfWeek.month, firstDateOfWeek.day, 0, 0);
-    List<UserModel?> list = [];
-
-    await Future.forEach(
-      userDataList,
-      (UserModel? user) async {
-        final scoreUserModel = await ref
-            .read(rankingProvider.notifier)
-            .calculateUserScore(user, firstDateOfWeek, now);
-        list.add(scoreUserModel);
-      },
-    );
-
-    orderingList(list, getUserContractType, getUserContractName);
-
-    // for (UserModel? user in userDataList) {
-    //   final userModel = await ref
-    //       .read(rankingProvider.notifier)
-    //       .calculateUserScore(user, firstDateOfWeek, now);
-    //   list.add(userModel);
-    // }
-  }
-
-  void orderingList(List<UserModel?> userDataList, String getUserContractType,
-      String getUserContractName) {
-    userDataList.sort((a, b) => b!.totalScore!.compareTo(a!.totalScore!));
     setState(() {
       _initialUserDataListState = false;
       _userContractType = getUserContractType;
       _userContractName = getUserContractName;
-      _userDataList = userDataList;
+      _userDataList = weekList;
+      loadingFinished = true;
     });
+  }
+
+  void updateOrderStandard(String value) {
+    List<UserModel?> copiedUserDataList = [..._userDataList];
+    switch (value) {
+      case "종합 점수":
+        copiedUserDataList
+            .sort((a, b) => b!.totalScore!.compareTo(a!.totalScore!));
+        final indexList = ref.read(userProvider.notifier).indexUserModel(
+              value,
+              copiedUserDataList,
+            );
+        setState(() {
+          _userDataList = indexList;
+        });
+        break;
+      case "걸음수":
+        copiedUserDataList
+            .sort((a, b) => b!.stepScore!.compareTo(a!.stepScore!));
+        final indexList = ref.read(userProvider.notifier).indexUserModel(
+              value,
+              copiedUserDataList,
+            );
+        setState(() {
+          _userDataList = indexList;
+        });
+        break;
+      case "일기":
+        copiedUserDataList
+            .sort((a, b) => b!.diaryScore!.compareTo(a!.diaryScore!));
+        final indexList = ref.read(userProvider.notifier).indexUserModel(
+              value,
+              copiedUserDataList,
+            );
+        setState(() {
+          _userDataList = indexList;
+        });
+        break;
+      case "댓글":
+        copiedUserDataList
+            .sort((a, b) => b!.commentScore!.compareTo(a!.commentScore!));
+        final indexList = ref.read(userProvider.notifier).indexUserModel(
+              value,
+              copiedUserDataList,
+            );
+        setState(() {
+          _userDataList = indexList;
+        });
+        break;
+    }
+  }
+
+  void updateOrderPeriod(String value) async {
+    setState(() {
+      _sortOrderPeriod = value;
+      loadingFinished = false;
+    });
+    switch (value) {
+      case "이번달":
+        List<UserModel?> monthList = await ref
+            .read(monthRankingProvider.notifier)
+            .updateUserScore(_userDataList, _sortOrderStandard);
+        setState(() {
+          _userDataList = monthList;
+          loadingFinished = true;
+        });
+        break;
+      case "이번주":
+        setState(() {
+          _sortOrderPeriod = "이번주";
+        });
+        List<UserModel?> weekList = await ref
+            .read(weekRankingProvider.notifier)
+            .updateUserScore(_userDataList, _sortOrderStandard);
+        setState(() {
+          _userDataList = weekList;
+          loadingFinished = true;
+        });
+        break;
+    }
   }
 
   @override
@@ -189,131 +255,154 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           data: (data) {
             final getUserContractType = data.contractType;
             final getUserContractName = data.contractName;
-            getUserModelList(getUserContractType, getUserContractName);
-            return Column(
-              children: [
+            return FutureBuilder(
+              future:
+                  getUserModelList(getUserContractType, getUserContractName),
+              builder: (context, snapshot) => Column(children: [
                 SearchPeriod(
                   filterUserList: filterUserDataList,
                   resetInitialList: resetInitialState,
                   constractType: getUserContractType,
                   contractName: getUserContractName,
                   generateCsv: generateUserCsv,
+                  updateOrderStandard: updateOrderStandard,
+                  updateOrderPeriod: updateOrderPeriod,
                 ),
-                SearchBelow(
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(
-                        label: Text("#"),
-                      ),
-                      DataColumn(
-                        label: Text("이름"),
-                      ),
-                      DataColumn(
-                        label: Text("나이"),
-                      ),
-                      DataColumn(
-                        label: Text("성별"),
-                      ),
-                      DataColumn(
-                        label: Text("핸드폰 번호"),
-                      ),
-                      DataColumn(
-                        label: Text("종합"),
-                      ),
-                      DataColumn(
-                        label: Text("걸음수"),
-                      ),
-                      DataColumn(
-                        label: Text("일기"),
-                      ),
-                      DataColumn(
-                        label: Text("댓글"),
-                      ),
-                    ],
-                    rows: [
-                      for (var i = 0; i < _userDataList.length; i++)
-                        DataRow(
-                          cells: [
-                            DataCell(
-                              Text(
-                                i.toString(),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
+                loadingFinished
+                    ? SearchBelow(
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(
+                              label: Text("#"),
+                            ),
+                            DataColumn(
+                              label: Text("이름"),
+                            ),
+                            DataColumn(
+                              label: Text("나이"),
+                            ),
+                            DataColumn(
+                              label: Text("성별"),
+                            ),
+                            DataColumn(
+                              label: Text("핸드폰 번호"),
+                            ),
+                            DataColumn(
+                              label: Text(
+                                "종합 점수",
                               ),
                             ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.name.length > 10
-                                    ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                                    : _userDataList[i]!.name,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
+                            DataColumn(
+                              label: Text("걸음수"),
                             ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.age,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
+                            DataColumn(
+                              label: Text("일기"),
                             ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.gender,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.phone,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.totalScore.toString(),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.stepScore.toString(),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.diaryScore.toString(),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.commentScore.toString(),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
+                            DataColumn(
+                              label: Text("댓글"),
                             ),
                           ],
+                          rows: [
+                            for (var i = 0; i < _userDataList.length; i++)
+                              DataRow(
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      _userDataList[i]!.index.toString(),
+                                      style: const TextStyle(
+                                        fontSize: Sizes.size13,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      _userDataList[i]!.name.length > 10
+                                          ? "${_userDataList[i]!.name.substring(0, 10)}.."
+                                          : _userDataList[i]!.name,
+                                      style: const TextStyle(
+                                        fontSize: Sizes.size13,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      _userDataList[i]!.age,
+                                      style: const TextStyle(
+                                        fontSize: Sizes.size13,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      _userDataList[i]!.gender,
+                                      style: const TextStyle(
+                                        fontSize: Sizes.size13,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      _userDataList[i]!.phone,
+                                      style: const TextStyle(
+                                        fontSize: Sizes.size13,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        _userDataList[i]!.totalScore.toString(),
+                                        textAlign: TextAlign.end,
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        _userDataList[i]!.stepScore.toString(),
+                                        textAlign: TextAlign.end,
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        _userDataList[i]!.diaryScore.toString(),
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        _userDataList[i]!
+                                            .commentScore
+                                            .toString(),
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                )
-              ],
+                      )
+                    : const LoadingPage(),
+              ]),
             );
           },
           error: (error, stackTrace) => const ErrorScreen(),
@@ -321,5 +410,22 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
             backgroundColor: Theme.of(context).primaryColor,
           ),
         );
+  }
+}
+
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Center(
+        child: CircularProgressIndicator.adaptive(
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      ),
+    );
   }
 }

@@ -71,6 +71,9 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   @override
   void dispose() {
     menuNotifier.removeListener(setMenu);
+    contractTypeController.dispose();
+    contractNameController.dispose();
+
     super.dispose();
   }
 

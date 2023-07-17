@@ -1,4 +1,5 @@
 class UserModel {
+  final int? index;
   final String userId;
   final String name;
   final String age;
@@ -14,6 +15,7 @@ class UserModel {
   final int? commentScore;
 
   UserModel({
+    required this.index,
     required this.userId,
     required this.name,
     required this.age,
@@ -30,7 +32,8 @@ class UserModel {
   });
 
   UserModel.empty()
-      : userId = "",
+      : index = 0,
+        userId = "",
         name = "",
         age = "",
         fullBirthday = "",
@@ -63,7 +66,8 @@ class UserModel {
   }
 
   UserModel.fromJson(Map<String, dynamic> json)
-      : userId = json["userId"],
+      : index = json["index"],
+        userId = json["userId"],
         name = json["name"],
         age = json["age"] ?? "정보 없음",
         fullBirthday = json["fullBirthday"] ?? "정보 없음",
@@ -78,6 +82,7 @@ class UserModel {
         commentScore = json["commentScore"] ?? 0;
 
   UserModel copyWith({
+    final int? index,
     final String? userId,
     final String? name,
     final String? age,
@@ -93,6 +98,7 @@ class UserModel {
     final int? commentScore,
   }) {
     return UserModel(
+      index: index ?? this.index,
       userId: userId ?? this.userId,
       name: name ?? this.name,
       age: age ?? this.age,

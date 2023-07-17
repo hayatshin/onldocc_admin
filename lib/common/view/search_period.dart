@@ -1,6 +1,5 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -11,6 +10,8 @@ class SearchPeriod extends ConsumerStatefulWidget {
   final String constractType;
   final String contractName;
   final void Function() generateCsv;
+  final void Function(String) updateOrderStandard;
+  final void Function(String) updateOrderPeriod;
   const SearchPeriod({
     super.key,
     required this.filterUserList,
@@ -18,6 +19,8 @@ class SearchPeriod extends ConsumerStatefulWidget {
     required this.constractType,
     required this.contractName,
     required this.generateCsv,
+    required this.updateOrderStandard,
+    required this.updateOrderPeriod,
   });
 
   @override
@@ -27,11 +30,11 @@ class SearchPeriod extends ConsumerStatefulWidget {
 class _SearchPeriodState extends ConsumerState<SearchPeriod> {
   final TextEditingController _searchUserController = TextEditingController();
   final TextEditingController _sortbyController = TextEditingController();
+  final TextEditingController _sortPeriodControllder = TextEditingController();
 
   final double searchHeight = 35;
   String? _setSearchBy = "name";
   bool _setCsvHover = false;
-  DateRange? _selectedDateRange;
 
   void submitSearch() {
     if (_searchUserController.text.isEmpty) {
@@ -39,6 +42,14 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
     } else {
       widget.filterUserList(_setSearchBy, _searchUserController.text);
     }
+  }
+
+  @override
+  void dispose() {
+    _searchUserController.dispose();
+    _sortbyController.dispose();
+    _sortPeriodControllder.dispose();
+    super.dispose();
   }
 
   @override
@@ -75,7 +86,7 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                         borderRadius: BorderRadius.circular(
                           Sizes.size4,
                         ),
-                        onChanged: (value) {},
+                        onChanged: (value) => widget.updateOrderStandard(value),
                         hintText: "정렬 기준 선택",
                         hintStyle: TextStyle(
                           color: Colors.grey.shade800,
@@ -91,7 +102,7 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                           fontSize: Sizes.size14,
                           fontWeight: FontWeight.w500,
                         ),
-                        items: const ["종합", "걸음수", "일기", "댓글"],
+                        items: const ["종합 점수", "걸음수", "일기", "댓글"],
                         controller: _sortbyController,
                       ),
                     ),
@@ -106,7 +117,7 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                         borderRadius: BorderRadius.circular(
                           Sizes.size4,
                         ),
-                        onChanged: (value) {},
+                        onChanged: (value) => widget.updateOrderPeriod(value),
                         hintText: "기간 선택",
                         hintStyle: TextStyle(
                           color: Colors.grey.shade800,
@@ -122,8 +133,8 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                           fontSize: Sizes.size14,
                           fontWeight: FontWeight.w500,
                         ),
-                        items: const ["이번달", "이번주"],
-                        controller: _sortbyController,
+                        items: const ["이번주", "이번달"],
+                        controller: _sortPeriodControllder,
                       ),
                     ),
                   ],
@@ -339,6 +350,35 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                       ),
                     ],
                   ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "점수 계산 방법",
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: Sizes.size12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Text(
+                      "걸음수: 1000보당 10점 (최대 10,000 걸음)",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: Sizes.size11,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const Text(
+                      "일기: 1회 100점 / 댓글 1회 20점",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: Sizes.size11,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),

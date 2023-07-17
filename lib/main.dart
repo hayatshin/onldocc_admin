@@ -23,13 +23,13 @@ void main() async {
   }
 
   runApp(
-    ProviderScope(
-      overrides: [
-        contractConfigProvider.overrideWith(
-          () => ContractConfigViewModel(),
-        )
-      ],
-      child: const OnldoccAdmin(),
+    const ProviderScope(
+      // overrides: [
+      //   contractConfigProvider.overrideWith(
+      //     () => ContractConfigViewModel(),
+      //   )
+      // ],
+      child: OnldoccAdmin(),
     ),
   );
   FlutterError.demangleStackTrace = (StackTrace stack) {
