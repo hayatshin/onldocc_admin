@@ -144,7 +144,12 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
       String getUserContractType, String getUserContractName) async {
     DateTime now = DateTime.now();
     DateTime firstDateOfMonth = DateTime(now.year, now.month, 1);
+    firstDateOfMonth = DateTime(firstDateOfMonth.year, firstDateOfMonth.month,
+        firstDateOfMonth.day, 0, 0);
+
     DateTime firstDateOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    firstDateOfWeek = DateTime(
+        firstDateOfWeek.year, firstDateOfWeek.month, firstDateOfWeek.day, 0, 0);
     List<UserModel?> list = [];
 
     await Future.forEach(

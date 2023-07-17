@@ -66,7 +66,7 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                 Row(
                   children: [
                     SizedBox(
-                      width: 150,
+                      width: 200,
                       height: searchHeight,
                       child: CustomDropdown(
                         borderSide: BorderSide(
@@ -97,79 +97,33 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                     ),
                     Gaps.h14,
                     SizedBox(
-                      width: 290,
+                      width: 150,
                       height: searchHeight,
-                      child: DateRangeField(
-                        decoration: InputDecoration(
-                          prefixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: Sizes.size16,
-                                color: Colors.grey.shade400,
-                              )
-                            ],
-                          ),
-                          hintText: "기간을 선택해주세요.",
-                          hintStyle: TextStyle(
-                            fontSize: Sizes.size13,
-                            color: Colors.grey.shade400,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade50,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              Sizes.size3,
-                            ),
-                          ),
-                          errorStyle: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              Sizes.size3,
-                            ),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              Sizes.size3,
-                            ),
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade300,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              Sizes.size3,
-                            ),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: Sizes.size20,
-                          ),
+                      child: CustomDropdown(
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
                         ),
-                        pickerBuilder: (context, onDateRangeChanged) =>
-                            DateRangePickerWidget(
-                          doubleMonth: true,
-                          height: 350,
-                          initialDateRange: _selectedDateRange,
-                          onDateRangeChanged: onDateRangeChanged,
+                        borderRadius: BorderRadius.circular(
+                          Sizes.size4,
                         ),
-                        onDateRangeSelected: (value) {
-                          setState(() {
-                            print(value);
-                            _selectedDateRange = value;
-                          });
-                        },
-                        selectedDateRange: _selectedDateRange,
+                        onChanged: (value) {},
+                        hintText: "기간 선택",
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        listItemStyle: const TextStyle(
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        selectedStyle: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        items: const ["이번달", "이번주"],
+                        controller: _sortbyController,
                       ),
                     ),
                   ],

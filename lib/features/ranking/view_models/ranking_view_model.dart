@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
+import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/ranking/repo/ranking_repo.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 
@@ -10,13 +12,15 @@ class RankingViewModel extends AsyncNotifier<void> {
   late List<DocumentSnapshot<Map<String, dynamic>>> _stepAllDataList;
   late List<QueryDocumentSnapshot<Map<String, dynamic>>> _diaryAllDataList;
   late List<QueryDocumentSnapshot<Map<String, dynamic>>> _commentAllDataList;
-  // late List<Map<String, dynamic>> _userStepDataList;
   late List<QueryDocumentSnapshot<Map<String, dynamic>>> _userDiaryDataList;
   late List<QueryDocumentSnapshot<Map<String, dynamic>>> _userCommentDataList;
 
   @override
   FutureOr<void> build() async {
+    const AsyncValue.loading();
     _rankingRepository = RankingRepository();
+
+    // state = AsyncValue.guard(() => calculateUserScore(user, startDate, endDate))
   }
 
   Future<List<UserModel?>> updateUserScore(
@@ -42,9 +46,9 @@ class RankingViewModel extends AsyncNotifier<void> {
     // DateTime firstDateOfWeek = now.subtract(Duration(days: now.weekday - 1));
 
     final List<Object> results = await Future.wait([
-      _rankingRepository.getDateStepScores(startDate, endDate),
-      _rankingRepository.getDateDiaryScore(startDate, endDate),
-      _rankingRepository.getDateCommentScore(startDate, endDate),
+      _rankingRepository.getDateStepQuery(startDate, endDate),
+      _rankingRepository.getDateDiaryQuery(startDate, endDate),
+      _rankingRepository.getDateCommentQuery(startDate, endDate),
     ]);
     _stepAllDataList =
         results[0] as List<DocumentSnapshot<Map<String, dynamic>>>;

@@ -28,20 +28,21 @@ class RankingRepository {
     return dailyScore;
   }
 
-  Future<List<DocumentSnapshot<Map<String, dynamic>>>> getDateStepScores(
+  Future<List<DocumentSnapshot<Map<String, dynamic>>>> getDateStepQuery(
       DateTime startDate, DateTime endDate) async {
     List<DateTime> dateList = getBetweenDays(startDate, endDate);
     List<DocumentSnapshot<Map<String, dynamic>>> list = [];
-    for (DateTime date in dateList) {
+
+    await Future.forEach(dateList, (DateTime date) async {
       final dateString = convertTimettampToString(date);
       final query =
           await _db.collection("period_step_count").doc(dateString).get();
       list.add(query);
-    }
+    });
     return list;
   }
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getDateDiaryScore(
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getDateDiaryQuery(
       DateTime startDate, DateTime endDate) async {
     final query = await _db
         .collection("diary")
@@ -51,7 +52,7 @@ class RankingRepository {
     return query.docs;
   }
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getDateCommentScore(
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getDateCommentQuery(
       DateTime startDate, DateTime endDate) async {
     final query = await _db
         .collectionGroup("comments")
