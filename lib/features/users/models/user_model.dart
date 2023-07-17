@@ -7,6 +7,11 @@ class UserModel {
   final String phone;
   final String fullRegion;
   final String registerDate;
+  final String lastVisit;
+  final int? totalScore;
+  final int? stepScore;
+  final int? diaryScore;
+  final int? commentScore;
 
   UserModel({
     required this.userId,
@@ -17,6 +22,11 @@ class UserModel {
     required this.phone,
     required this.fullRegion,
     required this.registerDate,
+    required this.lastVisit,
+    required this.totalScore,
+    required this.stepScore,
+    required this.diaryScore,
+    required this.commentScore,
   });
 
   UserModel.empty()
@@ -27,7 +37,12 @@ class UserModel {
         gender = "",
         phone = "",
         fullRegion = "",
-        registerDate = "";
+        registerDate = "",
+        lastVisit = "",
+        totalScore = 0,
+        stepScore = 0,
+        diaryScore = 0,
+        commentScore = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -39,6 +54,11 @@ class UserModel {
       "phone": phone,
       "fullRegion": fullRegion,
       "registerDate": registerDate,
+      "lastVisit": lastVisit,
+      "totalScore": totalScore,
+      "stepScore": stepScore,
+      "diaryScore": diaryScore,
+      "commentScore": commentScore,
     };
   }
 
@@ -50,5 +70,42 @@ class UserModel {
         gender = json["gender"] ?? "정보 없음",
         phone = json["phone"] ?? "정보 없음",
         fullRegion = json["fullRegion"] ?? "정보 없음",
-        registerDate = json["registerDate"] ?? "정보 없음";
+        registerDate = json["registerDate"] ?? "정보 없음",
+        lastVisit = json["lastVisit"] ?? "정보 없음",
+        totalScore = json["totalScore"] ?? 0,
+        stepScore = json["stepScore"] ?? 0,
+        diaryScore = json["diaryScore"] ?? 0,
+        commentScore = json["commentScore"] ?? 0;
+
+  UserModel copyWith({
+    final String? userId,
+    final String? name,
+    final String? age,
+    final String? fullBirthday,
+    final String? gender,
+    final String? phone,
+    final String? fullRegion,
+    final String? registerDate,
+    final String? lastVisit,
+    final int? totalScore,
+    final int? stepScore,
+    final int? diaryScore,
+    final int? commentScore,
+  }) {
+    return UserModel(
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      age: age ?? this.age,
+      fullBirthday: fullBirthday ?? this.fullBirthday,
+      gender: gender ?? this.gender,
+      phone: phone ?? this.phone,
+      fullRegion: fullRegion ?? this.fullRegion,
+      registerDate: registerDate ?? this.registerDate,
+      lastVisit: lastVisit ?? this.lastVisit,
+      totalScore: totalScore ?? this.totalScore,
+      stepScore: stepScore ?? this.stepScore,
+      diaryScore: diaryScore ?? this.diaryScore,
+      commentScore: commentScore ?? this.commentScore,
+    );
+  }
 }

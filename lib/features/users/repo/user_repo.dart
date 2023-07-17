@@ -25,6 +25,11 @@ class UserRepository {
     final String userRegisterDate = dbTimestamp != null
         ? DateFormat('yyyy.MM.dd').format(dbTimestamp.toDate())
         : "정보 없음";
+    final Timestamp? dbLastVisit =
+        user.data().containsKey("lastVisit") ? user.get("lastVisit") : null;
+    final String lastVisit = dbLastVisit != null
+        ? DateFormat('yyyy.MM.dd').format(dbLastVisit.toDate())
+        : "정보 없음";
     final userRegion =
         user.data().containsKey("region") ? user.get("region") : "정보";
     final userSmallRegion =
@@ -40,6 +45,11 @@ class UserRepository {
       "phone": user.get("phone"),
       "fullRegion": userFullRegion,
       "registerDate": userRegisterDate,
+      "lastVisit": lastVisit,
+      "totalScore": 0,
+      "stepScore": 0,
+      "diaryScore": 0,
+      "commentScore": 0,
     };
     UserModel convertUserModel = UserModel.fromJson(userModel);
     return convertUserModel;
@@ -48,7 +58,11 @@ class UserRepository {
   Future<List<UserModel?>> getAllUserData() async {
     final userSnapshots =
         await _db.collection("users").orderBy("smallRegion").get();
-    return userSnapshots.docs.map((doc) => dbToUserModel(doc)).toList();
+    return userSnapshots.docs
+        .map((doc) => dbToUserModel(doc))
+        .toList()
+        .where((element) => element.name != "탈퇴자")
+        .toList();
   }
 
   Future<List<UserModel?>> getRegionUserData(String fullRegion) async {
@@ -61,7 +75,11 @@ class UserRepository {
         .where("smallRegion", isEqualTo: smallRegion)
         .get();
 
-    return userSnapshots.docs.map((doc) => dbToUserModel(doc)).toList();
+    return userSnapshots.docs
+        .map((doc) => dbToUserModel(doc))
+        .toList()
+        .where((element) => element.name != "탈퇴자")
+        .toList();
   }
 
   Future<List<UserModel?>> getCommunityUserData(String community) async {
@@ -70,7 +88,11 @@ class UserRepository {
         .where("community", arrayContains: community)
         .get();
 
-    return userSnapshots.docs.map((doc) => dbToUserModel(doc)).toList();
+    return userSnapshots.docs
+        .map((doc) => dbToUserModel(doc))
+        .toList()
+        .where((element) => element.name != "탈퇴자")
+        .toList();
   }
 
   Future<void> deleteUser(String userId) async {

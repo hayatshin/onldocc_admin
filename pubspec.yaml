@@ -49,6 +49,11 @@ dependencies:
   intl: ^0.18.1
   flutter_dotenv: ^5.1.0
   csv: ^5.0.2
+  flutter_date_range_picker: ^0.0.14
+  url_launcher: ^6.0.0
+  universal_html: ^2.2.2
+  dartz: ^0.10.0
+
 
 dev_dependencies:
   flutter_test:

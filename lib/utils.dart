@@ -30,3 +30,21 @@ String userAgeCalculation(String birthYear, String birthDay) {
   returnAge = isDatePassed(birthDay) ? initialAge : initialAge - 1;
   return returnAge.toString();
 }
+
+List<DateTime> getBetweenDays(DateTime startDate, DateTime endDate) {
+  List<DateTime> dates = [];
+  DateTime currentDate = startDate;
+
+  while (
+      currentDate.isBefore(endDate) || currentDate.isAtSameMomentAs(endDate)) {
+    dates.add(currentDate);
+    currentDate = currentDate.add(const Duration(days: 1));
+  }
+  return dates;
+}
+
+String convertTimettampToString(DateTime date) {
+  final dateString =
+      "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  return dateString;
+}

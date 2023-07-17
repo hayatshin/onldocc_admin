@@ -1,15 +1,16 @@
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
-import 'package:onldocc_admin/common/view_models/contract_config_vm.dart';
-import 'package:onldocc_admin/constants/gaps.dart';
+import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/common/view/search_csv.dart';
+import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:universal_html/html.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
   static const routeURL = "/users";
@@ -21,34 +22,131 @@ class UsersScreen extends ConsumerStatefulWidget {
 }
 
 class _UsersScreenState extends ConsumerState<UsersScreen> {
-  final double searchHeight = 35;
   List<UserModel?> _userDataList = [];
-  final TextEditingController _searchUserController = TextEditingController();
-  String? searchBy = "name";
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
-  bool _csvHover = false;
+  final List<String> _userListHeader = [
+    "이름",
+    "나이",
+    "출생일",
+    "성별",
+    "핸드폰 번호",
+    "거주 지역",
+    "가입일",
+    "마지막 방문일"
+  ];
+  late String _userContractType;
+  late String _userContractName;
+  bool _initialUserDataListState = true;
+  bool _updateUserDataListState = false; // getUserModelList xxxx
+
+  void resetInitialState() {
+    setState(() {
+      _initialUserDataListState = true;
+    });
+    getUserModelList(_userContractType, _userContractName);
+  }
+
+  void filterUserDataList(String? searchBy, String searchKeyword) {
+    final newUserDataList = ref.read(userProvider.notifier).filterTableRows(
+          _userDataList,
+          searchBy!,
+          searchKeyword,
+        );
+
+    setState(() {
+      _updateUserDataListState = true;
+      _userDataList = newUserDataList;
+    });
+  }
+
+  List<dynamic> exportToList(UserModel userModel) {
+    return [
+      userModel.name,
+      userModel.age,
+      userModel.fullBirthday,
+      userModel.gender,
+      userModel.phone,
+      userModel.fullRegion,
+      userModel.registerDate
+    ];
+  }
+
+  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
+    List<List<dynamic>> list = [];
+
+    list.add(_userListHeader);
+
+    for (var item in userDataList) {
+      final itemList = exportToList(item!);
+      list.add(itemList);
+    }
+    return list;
+  }
+
+  void generateUserCsv() {
+    final csvData = exportToFullList(_userDataList);
+    String csvContent = '';
+    for (var row in csvData) {
+      for (var i = 0; i < row.length; i++) {
+        if (row[i].contains(',')) {
+          csvContent += '"${row[i]}"';
+        } else {
+          csvContent += row[i];
+        }
+
+        if (i != row.length - 1) {
+          csvContent += ',';
+        }
+      }
+      csvContent += '\n';
+    }
+    final currentDate = DateTime.now();
+    final formatDate =
+        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
+
+    final String fileName = "오늘도청춘 회원관리 $formatDate.csv";
+
+    final encodedUri = Uri.dataFromString(
+      csvContent,
+      encoding: Encoding.getByName("utf-8"),
+    ).toString();
+    final anchor = AnchorElement(href: encodedUri)
+      ..setAttribute('download', fileName)
+      ..click();
+  }
 
   Future<void> getUserModelList(
-      String userContractType, String userContractName) async {
-    if (_searchUserController.text.isEmpty) {
-      if (userContractType == "지역") {
+      String getUserContractType, String getUserContractName) async {
+    if (_initialUserDataListState ||
+        _userContractType != getUserContractType ||
+        _userContractName != getUserContractName) {
+      if (getUserContractType == "지역") {
         final userDataList =
-            await ref.watch(userRepo).getRegionUserData(userContractName);
+            await ref.read(userRepo).getRegionUserData(getUserContractName);
         setState(() {
           _userDataList = userDataList;
+          _initialUserDataListState = false;
+          _userContractType = getUserContractType;
+          _userContractName = getUserContractName;
         });
-      } else if (userContractType == "기관") {
+      } else if (getUserContractType == "기관") {
         final userDataList =
-            await ref.watch(userRepo).getCommunityUserData(userContractName);
+            await ref.read(userRepo).getCommunityUserData(getUserContractName);
         setState(() {
           _userDataList = userDataList;
+          _initialUserDataListState = false;
+          _userContractType = getUserContractType;
+          _userContractName = getUserContractName;
         });
-      } else if (userContractType == "마스터") {
-        final userDataList = await ref.watch(userRepo).getAllUserData();
+      } else if (getUserContractType == "마스터" || getUserContractType == "전체") {
+        final userDataList = await ref.read(userRepo).getAllUserData();
         setState(() {
           _userDataList = userDataList;
+          _initialUserDataListState = false;
+          _userContractType = getUserContractType;
+          _userContractName = getUserContractName;
         });
       }
     }
@@ -133,82 +231,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         ),
       ),
     );
-
     Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
-  }
-
-  Future<void> searchUserModelList() async {
-    final newUserDataList = ref.read(userProvider.notifier).filterTableRows(
-          _userDataList,
-          searchBy!,
-          _searchUserController.text,
-        );
-    setState(() {
-      _userDataList = newUserDataList;
-    });
-  }
-
-  List<dynamic> exportToList(UserModel userModel) {
-    return [
-      userModel.name,
-      userModel.age,
-      userModel.fullBirthday,
-      userModel.gender,
-      userModel.phone,
-      userModel.fullRegion,
-      userModel.registerDate
-    ];
-  }
-
-  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
-    List<List<dynamic>> list = [];
-
-    for (var item in userDataList) {
-      final itemList = exportToList(item!);
-      list.add(itemList);
-    }
-    list[0] = [
-      "이름",
-      "나이",
-      "출생일",
-      "성별",
-      "핸드폰 번호",
-      "거주 지역",
-      "가입일",
-    ];
-    return list;
-  }
-
-  void generateCsv() {
-    final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i];
-        }
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
-
-    final String fileName = "오늘도청춘 회원관리 $formatDate.csv";
-
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName("utf-8"),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
   }
 
   @override
@@ -221,382 +244,209 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   Widget build(BuildContext context) {
     return ref.watch(contractConfigProvider).when(
           data: (data) {
-            final userContractType = data.contractType;
-            final userContractName = data.contractName;
+            final getUserContractType = data.contractType;
+            final getUserContractName = data.contractName;
+            getUserModelList(getUserContractType, getUserContractName);
+
             return Overlay(
               initialEntries: [
                 OverlayEntry(
                   builder: (context) => Scaffold(
-                    body: FutureBuilder(
-                      future:
-                          getUserModelList(userContractType, userContractName),
-                      builder: (context, snapshot) {
-                        return Column(
-                          children: [
-                            Container(
-                              height: searchHeight + Sizes.size40,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: Colors.grey.shade200,
+                    body: Column(
+                      children: [
+                        SearchCsv(
+                          filterUserList: filterUserDataList,
+                          resetInitialList: resetInitialState,
+                          constractType: getUserContractType,
+                          contractName: getUserContractName,
+                          generateCsv: generateUserCsv,
+                        ),
+                        SearchBelow(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columns: const [
+                                DataColumn(
+                                  label: Text(
+                                    "#",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: Sizes.size10,
-                                  horizontal: Sizes.size32,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            height: searchHeight,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey.shade300,
-                                                width: 1.0,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                Sizes.size4,
-                                              ),
-                                            ),
-                                            child: DropdownButtonHideUnderline(
-                                              child: DropdownButton(
-                                                value: searchBy,
-                                                focusColor: Colors.white,
-                                                dropdownColor: Colors.white,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: Sizes.size10,
-                                                ),
-                                                items: const [
-                                                  DropdownMenuItem(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .centerStart,
-                                                    value: "name",
-                                                    child: Text(
-                                                      "이름",
-                                                      style: TextStyle(
-                                                        fontSize: Sizes.size13,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  DropdownMenuItem(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .centerStart,
-                                                    value: "phone",
-                                                    child: Text(
-                                                      "핸드폰 번호",
-                                                      style: TextStyle(
-                                                        fontSize: Sizes.size13,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    searchBy = value;
-                                                  });
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                          Gaps.h20,
-                                          SizedBox(
-                                            width: 250,
-                                            height: searchHeight,
-                                            child: TextFormField(
-                                              onFieldSubmitted: (value) =>
-                                                  searchUserModelList(),
-                                              controller: _searchUserController,
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              style: const TextStyle(
-                                                fontSize: Sizes.size14,
-                                                color: Colors.black87,
-                                              ),
-                                              decoration: InputDecoration(
-                                                prefixIcon: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.search_outlined,
-                                                      size: Sizes.size16,
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                    )
-                                                  ],
-                                                ),
-                                                hintText: searchBy == "name"
-                                                    ? "회원 이름을 검색해주세요."
-                                                    : "핸드폰 번호를 검색해주세요.",
-                                                hintStyle: TextStyle(
-                                                  fontSize: Sizes.size13,
-                                                  color: Colors.grey.shade400,
-                                                  fontWeight: FontWeight.w300,
-                                                ),
-                                                filled: true,
-                                                fillColor: Colors.grey.shade50,
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    Sizes.size3,
-                                                  ),
-                                                ),
-                                                errorStyle: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                errorBorder: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    Sizes.size3,
-                                                  ),
-                                                  borderSide: BorderSide(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                ),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    Sizes.size3,
-                                                  ),
-                                                  borderSide: BorderSide(
-                                                    color: Colors.grey.shade300,
-                                                  ),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    Sizes.size3,
-                                                  ),
-                                                  borderSide: BorderSide(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                ),
-                                                contentPadding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: Sizes.size20,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Gaps.h20,
-                                          GestureDetector(
-                                            onTap: searchUserModelList,
-                                            child: AnimatedContainer(
-                                              duration: const Duration(
-                                                  milliseconds: 2),
-                                              child: Container(
-                                                width: 70,
-                                                height: searchHeight,
-                                                decoration: BoxDecoration(
-                                                  color: _searchUserController
-                                                          .text.isEmpty
-                                                      ? Colors.grey.shade300
-                                                      : Theme.of(context)
-                                                          .primaryColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    Sizes.size3,
-                                                  ),
-                                                ),
-                                                child: Center(
-                                                  child: Text(
-                                                    "검색",
-                                                    style: TextStyle(
-                                                      color:
-                                                          _searchUserController
-                                                                  .text.isEmpty
-                                                              ? Colors.black87
-                                                              : Colors.white,
-                                                      fontSize: Sizes.size13,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                DataColumn(
+                                  label: Text(
+                                    "이름",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
                                     ),
-                                    Expanded(
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: MouseRegion(
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "나이",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "출생일",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "성별",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "핸드폰 번호",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "거주 지역",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "가입일",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "마지막 방문일",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "삭제",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              rows: [
+                                for (var i = 0; i < _userDataList.length; i++)
+                                  DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          (i + 1).toString(),
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.name.length > 10
+                                              ? "${_userDataList[i]!.name.substring(0, 10)}.."
+                                              : _userDataList[i]!.name,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.age,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.fullBirthday,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.gender,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.phone,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.fullRegion,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.registerDate,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.lastVisit,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        MouseRegion(
                                           cursor: SystemMouseCursors.click,
-                                          onHover: (event) {
-                                            setState(() {
-                                              _csvHover = true;
-                                            });
-                                          },
-                                          onExit: (event) {
-                                            setState(() {
-                                              _csvHover = false;
-                                            });
-                                          },
                                           child: GestureDetector(
-                                            onTap: generateCsv,
-                                            child: Container(
-                                              width: 150,
-                                              height: searchHeight,
-                                              decoration: BoxDecoration(
-                                                color: _csvHover
-                                                    ? Colors.grey.shade200
-                                                    : Colors.white,
-                                                border: Border.all(
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size10,
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  "CSV 다운로드",
-                                                  style: TextStyle(
-                                                    color: Colors.grey.shade800,
-                                                    fontSize: Sizes.size14,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
+                                            onTap: () => showDeleteOverlay(
+                                                context,
+                                                _userDataList[i]!.userId,
+                                                _userDataList[i]!.name),
+                                            child: const Icon(
+                                              Icons.delete,
+                                              size: Sizes.size16,
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) => Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade50,
+                                      )
+                                    ],
                                   ),
-                                  child: SingleChildScrollView(
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: Sizes.size32,
-                                        ),
-                                        child: ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            minWidth: constraints.maxWidth,
-                                          ),
-                                          child: DataTable(
-                                            columns: const [
-                                              DataColumn(
-                                                label: Text("이름"),
-                                              ),
-                                              DataColumn(
-                                                label: Text("나이"),
-                                              ),
-                                              DataColumn(
-                                                label: Text("출생일"),
-                                              ),
-                                              DataColumn(
-                                                label: Text("성별"),
-                                              ),
-                                              DataColumn(
-                                                label: Text("핸드폰 번호"),
-                                              ),
-                                              DataColumn(
-                                                label: Text("거주 지역"),
-                                              ),
-                                              DataColumn(
-                                                label: Text("가입일"),
-                                              ),
-                                              DataColumn(
-                                                label: Text("삭제"),
-                                              ),
-                                            ],
-                                            rows: [
-                                              for (var userML in _userDataList)
-                                                if (userML!.name != "탈퇴자")
-                                                  DataRow(
-                                                    cells: [
-                                                      DataCell(
-                                                        Text(userML.name),
-                                                      ),
-                                                      DataCell(
-                                                        Text(userML.age),
-                                                      ),
-                                                      DataCell(
-                                                        Text(userML
-                                                            .fullBirthday),
-                                                      ),
-                                                      DataCell(
-                                                        Text(userML.gender),
-                                                      ),
-                                                      DataCell(
-                                                        Text(userML.phone),
-                                                      ),
-                                                      DataCell(
-                                                        Text(userML.fullRegion),
-                                                      ),
-                                                      DataCell(
-                                                        Text(userML
-                                                            .registerDate),
-                                                      ),
-                                                      DataCell(
-                                                        MouseRegion(
-                                                          cursor:
-                                                              SystemMouseCursors
-                                                                  .click,
-                                                          child:
-                                                              GestureDetector(
-                                                            onTap: () =>
-                                                                showDeleteOverlay(
-                                                                    context,
-                                                                    userML
-                                                                        .userId,
-                                                                    userML
-                                                                        .name),
-                                                            child: const Icon(
-                                                              Icons.delete,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              ],
                             ),
-                          ],
-                        );
-                      },
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 )

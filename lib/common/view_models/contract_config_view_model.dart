@@ -11,8 +11,9 @@ class ContractConfigViewModel extends AsyncNotifier<ContractConfigModel> {
   @override
   FutureOr<ContractConfigModel> build() async {
     _authRepository = ref.read(authRepo);
-    final adminData =
-        await _authRepository.getAdminProfile(_authRepository.user!.uid);
+
+    final userId = _authRepository.user!.uid;
+    final adminData = await _authRepository.getAdminProfile(userId);
     final adminProfile = AdminProfileModel.fromJson(adminData!);
     if (!adminProfile.master) {
       return ContractConfigModel(
@@ -25,22 +26,14 @@ class ContractConfigViewModel extends AsyncNotifier<ContractConfigModel> {
     );
   }
 
-  void setContractType(String value) {
-    final previousCommunityName = state.value!.contractName;
-    final contractConfig = AsyncValue.data(
-      ContractConfigModel(
-          contractType: value, contractName: previousCommunityName),
-    );
-    state = contractConfig;
+  Future<void> setContractType(String value) async {
+    state = const AsyncValue.loading();
+    state = AsyncValue.data(state.value!.copyWith(contractType: value));
   }
 
-  void setContractName(String value) {
-    final previousCommunityType = state.value!.contractType;
-    final contractConfig = AsyncValue.data(
-      ContractConfigModel(
-          contractType: previousCommunityType, contractName: value),
-    );
-    state = contractConfig;
+  Future<void> setContractName(String value) async {
+    state = const AsyncValue.loading();
+    state = AsyncValue.data(state.value!.copyWith(contractName: value));
   }
 }
 
