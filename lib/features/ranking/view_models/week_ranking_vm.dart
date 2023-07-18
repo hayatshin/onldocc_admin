@@ -12,7 +12,6 @@ class WeekRankingViewModel extends AsyncNotifier<List<UserModel?>> {
   late RankingRepository _rankingRepository;
   DateTime now = DateTime.now();
   late DateTime firstDateOfWeek;
-  final List<UserModel?> _weekUserList = [];
 
   @override
   FutureOr<List<UserModel?>> build() async {
@@ -33,19 +32,22 @@ class WeekRankingViewModel extends AsyncNotifier<List<UserModel?>> {
               final userDataList = await ref
                   .watch(userRepo)
                   .getRegionUserData(getUserContractName);
-              final weekUserList = await updateUserScore(userDataList, "종합 점수");
-              state = AsyncValue.data(weekUserList);
+              final monthUserList =
+                  await updateUserScore(userDataList, "종합 점수");
+              state = AsyncValue.data(monthUserList);
             } else if (getUserContractType == "기관") {
               final userDataList = await ref
                   .watch(userRepo)
                   .getCommunityUserData(getUserContractName);
-              final weekUserList = await updateUserScore(userDataList, "종합 점수");
-              state = AsyncValue.data(weekUserList);
+              final monthUserList =
+                  await updateUserScore(userDataList, "종합 점수");
+              state = AsyncValue.data(monthUserList);
             } else if (getUserContractType == "마스터" ||
                 getUserContractType == "전체") {
               final userDataList = await ref.watch(userRepo).getAllUserData();
-              final weekUserList = await updateUserScore(userDataList, "종합 점수");
-              state = AsyncValue.data(weekUserList);
+              final monthUserList =
+                  await updateUserScore(userDataList, "종합 점수");
+              state = AsyncValue.data(monthUserList);
             }
           },
           error: (error, stackTrace) => print(error),
@@ -53,7 +55,6 @@ class WeekRankingViewModel extends AsyncNotifier<List<UserModel?>> {
         );
 
     state = const AsyncValue.data([]);
-
     return [];
   }
 
@@ -78,6 +79,7 @@ class WeekRankingViewModel extends AsyncNotifier<List<UserModel?>> {
       state = AsyncValue.data(indexList);
       return indexList;
     } else {
+      state = AsyncValue.data(state.value!);
       return state.value!;
     }
   }
@@ -87,9 +89,9 @@ class WeekRankingViewModel extends AsyncNotifier<List<UserModel?>> {
     List<int> results;
 
     List<Future<int>> futures = [
-      _rankingRepository.getUserStepScores(userId, firstDateOfWeek, now),
-      _rankingRepository.getUserDiaryScores(userId, firstDateOfWeek, now),
-      _rankingRepository.getUserCommentScores(userId, firstDateOfWeek, now),
+      _rankingRepository.getUserDateStepScores(userId, firstDateOfWeek, now),
+      _rankingRepository.getUserDateDiaryScores(userId, firstDateOfWeek, now),
+      _rankingRepository.getUserDateCommentScores(userId, firstDateOfWeek, now),
     ];
     results = await Future.wait(futures);
 

@@ -12,6 +12,7 @@ class MonthRankingViewModel extends AsyncNotifier<List<UserModel?>> {
   late RankingRepository _rankingRepository;
   DateTime now = DateTime.now();
   late DateTime firstDateOfMonth;
+  late List<UserModel?> monthUserList;
 
   @override
   FutureOr<List<UserModel?>> build() async {
@@ -78,6 +79,7 @@ class MonthRankingViewModel extends AsyncNotifier<List<UserModel?>> {
       state = AsyncValue.data(indexList);
       return indexList;
     } else {
+      state = AsyncValue.data(state.value!);
       return state.value!;
     }
   }
@@ -87,9 +89,10 @@ class MonthRankingViewModel extends AsyncNotifier<List<UserModel?>> {
     List<int> results;
 
     List<Future<int>> futures = [
-      _rankingRepository.getUserStepScores(userId, firstDateOfMonth, now),
-      _rankingRepository.getUserDiaryScores(userId, firstDateOfMonth, now),
-      _rankingRepository.getUserCommentScores(userId, firstDateOfMonth, now),
+      _rankingRepository.getUserDateStepScores(userId, firstDateOfMonth, now),
+      _rankingRepository.getUserDateDiaryScores(userId, firstDateOfMonth, now),
+      _rankingRepository.getUserDateCommentScores(
+          userId, firstDateOfMonth, now),
     ];
     results = await Future.wait(futures);
 

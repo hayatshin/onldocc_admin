@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
+import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/ranking/models/ranking_step_extra.dart';
 import 'package:onldocc_admin/features/ranking/view_models/month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/week_ranking_vm.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
@@ -14,16 +16,18 @@ import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:universal_html/html.dart';
 
-class UsersScreen extends ConsumerStatefulWidget {
-  static const routeURL = "/users";
-  static const routeName = "users";
-  const UsersScreen({super.key});
+class RankingUsersScreen extends ConsumerStatefulWidget {
+  static const stepRouteURL = "step";
+  static const stepRouteName = "stepRanking";
+  static const diaryRouteURL = "diary";
+  static const diaryRouteName = "diaryRanking";
+  const RankingUsersScreen({super.key});
 
   @override
-  ConsumerState<UsersScreen> createState() => _UsersScreenState();
+  ConsumerState<RankingUsersScreen> createState() => _RankingUsersScreenState();
 }
 
-class _UsersScreenState extends ConsumerState<UsersScreen> {
+class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   List<UserModel?> _beforeFilterUserDataList = [];
 
   List<UserModel?> _userDataList = [];
@@ -166,92 +170,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     }
   }
 
-  void removeDeleteOverlay() {
-    overlayEntry?.remove();
-    overlayEntry = null;
-  }
-
-  void showDeleteOverlay(
-      BuildContext context, String userId, String userName) async {
-    removeDeleteOverlay();
-
-    assert(overlayEntry == null);
-
-    overlayEntry = OverlayEntry(
-      builder: (context) => Positioned.fill(
-        child: Material(
-          color: Colors.black54,
-          child: Center(
-            child: AlertDialog(
-              title: Text(
-                userName,
-                style: const TextStyle(
-                  fontSize: Sizes.size20,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              backgroundColor: Colors.white,
-              content: const Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "정말로 삭제하시겠습니까?",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                    ),
-                  ),
-                  Text(
-                    "삭제하면 다시 되돌릴 수 없습니다.",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: removeDeleteOverlay,
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
-                  ),
-                  child: Text(
-                    "취소",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      color: Colors.grey.shade800,
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await ref.read(userRepo).deleteUser(userId);
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
-                  ),
-                  child: const Text(
-                    "삭제",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
-  }
-
-  @override
-  void dispose() {
-    removeDeleteOverlay();
-    super.dispose();
+  void goDetailPage({int? index, String? userId, String? userName}) {
+    Map<String, String?> extraJson = {
+      "userId": userId,
+      "userName": userName,
+    };
+    context.go("/ranking/step/$index",
+        extra: RankingStepExtra.fromJson(extraJson));
   }
 
   @override
@@ -268,19 +193,18 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   builder: (context) => Scaffold(
                     body: Column(
                       children: [
-                        SearchCsv(
+                        Search(
                           filterUserList: filterUserDataList,
                           resetInitialList: resetInitialState,
                           constractType: getUserContractType,
                           contractName: getUserContractName,
-                          generateCsv: generateUserCsv,
                         ),
                         SearchBelow(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: DataTable(
-                              columns: const [
-                                DataColumn(
+                              columns: [
+                                const DataColumn(
                                   label: Text(
                                     "#",
                                     style: TextStyle(
@@ -288,7 +212,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "이름",
                                     style: TextStyle(
@@ -296,7 +220,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "나이",
                                     style: TextStyle(
@@ -304,7 +228,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "출생일",
                                     style: TextStyle(
@@ -312,7 +236,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "성별",
                                     style: TextStyle(
@@ -320,7 +244,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "핸드폰 번호",
                                     style: TextStyle(
@@ -328,7 +252,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "거주 지역",
                                     style: TextStyle(
@@ -336,7 +260,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "가입일",
                                     style: TextStyle(
@@ -344,7 +268,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     ),
                                   ),
                                 ),
-                                DataColumn(
+                                const DataColumn(
                                   label: Text(
                                     "마지막 방문일",
                                     style: TextStyle(
@@ -354,9 +278,10 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 ),
                                 DataColumn(
                                   label: Text(
-                                    "삭제",
+                                    "선택",
                                     style: TextStyle(
                                       fontSize: Sizes.size12,
+                                      color: Theme.of(context).primaryColor,
                                     ),
                                   ),
                                 ),
@@ -443,13 +368,26 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                         MouseRegion(
                                           cursor: SystemMouseCursors.click,
                                           child: GestureDetector(
-                                            onTap: () => showDeleteOverlay(
-                                                context,
-                                                _userDataList[i]!.userId,
-                                                _userDataList[i]!.name),
-                                            child: const Icon(
-                                              Icons.delete,
-                                              size: Sizes.size16,
+                                            onTap: () => goDetailPage(
+                                              index: i + 1,
+                                              userId: _userDataList[i]!.userId,
+                                              userName: _userDataList[i]!.name,
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: Sizes.size10,
+                                              ),
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.grey.shade200,
+                                                child: Icon(
+                                                  Icons.chevron_right,
+                                                  size: Sizes.size16,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),

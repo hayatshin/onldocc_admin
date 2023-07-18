@@ -1,0 +1,18 @@
+import 'package:flutter/material.dart';
+
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Center(
+        child: CircularProgressIndicator.adaptive(
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      ),
+    );
+  }
+}

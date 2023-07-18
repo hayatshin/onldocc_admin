@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/view/search_period.dart';
+import 'package:onldocc_admin/common/view/search_period_order.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/view_models/month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/week_ranking_vm.dart';
 import 'package:universal_html/html.dart';
 
+import '../../../common/view/loading_screen.dart';
 import '../../users/models/user_model.dart';
 import '../../users/repo/user_repo.dart';
 import '../../users/view_models/user_view_model.dart';
@@ -259,7 +260,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
               future:
                   getUserModelList(getUserContractType, getUserContractName),
               builder: (context, snapshot) => Column(children: [
-                SearchPeriod(
+                SearchPeriodOrder(
                   filterUserList: filterUserDataList,
                   resetInitialList: resetInitialState,
                   constractType: getUserContractType,
@@ -401,7 +402,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           ],
                         ),
                       )
-                    : const LoadingPage(),
+                    : const LoadingScreen(),
               ]),
             );
           },
@@ -410,22 +411,5 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
             backgroundColor: Theme.of(context).primaryColor,
           ),
         );
-  }
-}
-
-class LoadingPage extends StatelessWidget {
-  const LoadingPage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: CircularProgressIndicator.adaptive(
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-      ),
-    );
   }
 }

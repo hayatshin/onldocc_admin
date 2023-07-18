@@ -53,6 +53,7 @@ dependencies:
   url_launcher: ^6.0.0
   universal_html: ^2.2.2
   dartz: ^0.10.0
+  syncfusion_flutter_charts: ^22.1.38
 
 
 dev_dependencies:

@@ -29,7 +29,7 @@ class UserRepository {
         user.data().containsKey("lastVisit") ? user.get("lastVisit") : null;
     final String lastVisit = dbLastVisit != null
         ? DateFormat('yyyy.MM.dd').format(dbLastVisit.toDate())
-        : "정보 없음";
+        : "";
     final userRegion =
         user.data().containsKey("region") ? user.get("region") : "정보";
     final userSmallRegion =

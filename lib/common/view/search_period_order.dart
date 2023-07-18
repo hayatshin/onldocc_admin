@@ -4,28 +4,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 
-class SearchPeriod extends ConsumerStatefulWidget {
+class SearchPeriodOrder extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
   final String constractType;
   final String contractName;
   final void Function() generateCsv;
+  final void Function(String) updateOrderStandard;
   final void Function(String) updateOrderPeriod;
-  const SearchPeriod({
+  const SearchPeriodOrder({
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
     required this.constractType,
     required this.contractName,
     required this.generateCsv,
+    required this.updateOrderStandard,
     required this.updateOrderPeriod,
   });
 
   @override
-  ConsumerState<SearchPeriod> createState() => _SearchPeriodState();
+  ConsumerState<SearchPeriodOrder> createState() => _SearchPeriodOrderState();
 }
 
-class _SearchPeriodState extends ConsumerState<SearchPeriod> {
+class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
   final TextEditingController _searchUserController = TextEditingController();
   final TextEditingController _sortbyController = TextEditingController();
   final TextEditingController _sortPeriodControllder = TextEditingController();
@@ -72,35 +74,70 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  width: 150,
-                  height: searchHeight,
-                  child: CustomDropdown(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      height: searchHeight,
+                      child: CustomDropdown(
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          Sizes.size4,
+                        ),
+                        onChanged: (value) => widget.updateOrderStandard(value),
+                        hintText: "정렬 기준 선택",
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        listItemStyle: const TextStyle(
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        selectedStyle: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        items: const ["종합 점수", "걸음수", "일기", "댓글"],
+                        controller: _sortbyController,
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size4,
+                    Gaps.h14,
+                    SizedBox(
+                      width: 150,
+                      height: searchHeight,
+                      child: CustomDropdown(
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          Sizes.size4,
+                        ),
+                        onChanged: (value) => widget.updateOrderPeriod(value),
+                        hintText: "기간 선택",
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        listItemStyle: const TextStyle(
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        selectedStyle: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: Sizes.size14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        items: const ["이번주", "이번달"],
+                        controller: _sortPeriodControllder,
+                      ),
                     ),
-                    onChanged: (value) => widget.updateOrderPeriod(value),
-                    hintText: "기간 선택",
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade800,
-                      fontSize: Sizes.size14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    listItemStyle: const TextStyle(
-                      fontSize: Sizes.size14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    selectedStyle: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: Sizes.size14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    items: const ["이번주", "이번달", "전체"],
-                    controller: _sortPeriodControllder,
-                  ),
+                  ],
                 ),
                 Align(
                   alignment: Alignment.centerRight,
@@ -316,6 +353,35 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                       ),
                     ],
                   ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "점수 계산 방법",
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: Sizes.size12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Text(
+                      "걸음수: 1000보당 10점 (최대 10,000 걸음)",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: Sizes.size11,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const Text(
+                      "일기: 1회 100점 / 댓글 1회 20점",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: Sizes.size11,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),

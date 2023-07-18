@@ -3,30 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 
-class SearchCsv extends ConsumerStatefulWidget {
+class Search extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
   final String constractType;
   final String contractName;
-  final void Function() generateCsv;
-  const SearchCsv({
+  const Search({
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
     required this.constractType,
     required this.contractName,
-    required this.generateCsv,
   });
 
   @override
-  ConsumerState<SearchCsv> createState() => _SearchCsvState();
+  ConsumerState<Search> createState() => _SearchState();
 }
 
-class _SearchCsvState extends ConsumerState<SearchCsv> {
+class _SearchState extends ConsumerState<Search> {
   final TextEditingController _searchUserController = TextEditingController();
   final double searchHeight = 35;
   String? _setSearchBy = "name";
-  bool _setCsvHover = false;
+  final bool _setCsvHover = false;
 
   void submitSearch() {
     print(_searchUserController.text.isEmpty);
@@ -221,48 +219,6 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                onHover: (event) {
-                  setState(() {
-                    _setCsvHover = true;
-                  });
-                },
-                onExit: (event) {
-                  setState(() {
-                    _setCsvHover = false;
-                  });
-                },
-                child: GestureDetector(
-                  onTap: widget.generateCsv,
-                  child: Container(
-                    width: 150,
-                    height: searchHeight,
-                    decoration: BoxDecoration(
-                      color: _setCsvHover ? Colors.grey.shade200 : Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade800,
-                      ),
-                      borderRadius: BorderRadius.circular(
-                        Sizes.size10,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "CSV 다운로드",
-                        style: TextStyle(
-                          color: Colors.grey.shade800,
-                          fontSize: Sizes.size14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
           ],
         ),
       ),
