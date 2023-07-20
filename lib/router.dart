@@ -6,8 +6,8 @@ import 'package:onldocc_admin/features/event/view/event_detail_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
-import 'package:onldocc_admin/features/mood/view/mood_screen.dart';
-import 'package:onldocc_admin/features/ranking/models/ranking_step_extra.dart';
+import 'package:onldocc_admin/features/ca/view/ca_screen.dart';
+import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_diary_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_step_screen.dart';
@@ -39,9 +39,11 @@ final routerProvider = Provider(
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
               case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}/:index":
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
-              case "${RankingScreen.routeURL}/${RankingDiaryScreen.routeURL}":
+              case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}":
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
-              case MoodScreen.routeURL:
+              case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}/:index":
+                return SidebarTemplate(selectedMenuURL: 3, child: child);
+              case CaScreen.routeURL:
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
               case EventScreen.routeURL:
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
@@ -65,6 +67,7 @@ final routerProvider = Provider(
                 child: const UsersScreen(),
               ),
             ),
+            // ranking
             GoRoute(
               name: RankingScreen.routeName,
               path: RankingScreen.routeURL,
@@ -73,43 +76,64 @@ final routerProvider = Provider(
                 child: const RankingScreen(),
               ),
               routes: [
+                // ranking/step
                 GoRoute(
-                    name: RankingUsersScreen.stepRouteName,
-                    path: RankingUsersScreen.stepRouteURL,
+                  name: RankingUsersScreen.stepRouteName,
+                  path: RankingUsersScreen.stepRouteURL,
+                  pageBuilder: (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    child: const RankingUsersScreen(
+                      rankingType: "step",
+                    ),
+                  ),
+                  routes: [
+                    // ranking/step/:index
+                    GoRoute(
+                      path: ":index",
+                      pageBuilder: (context, state) => MaterialPage(
+                        key: state.pageKey,
+                        child: RankingStepScreen(
+                          index: state.pathParameters["index"],
+                          userId: (state.extra as RankingExtra).userId,
+                          userName: (state.extra as RankingExtra).userName,
+                          rankingType: "걸음수",
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                // ranking/diary
+                GoRoute(
+                    name: RankingUsersScreen.diaryRouteName,
+                    path: RankingUsersScreen.diaryRouteURL,
                     pageBuilder: (context, state) => NoTransitionPage(
                           key: state.pageKey,
-                          child: const RankingUsersScreen(),
+                          child: const RankingUsersScreen(
+                            rankingType: "diary",
+                          ),
                         ),
                     routes: [
                       GoRoute(
                         path: ":index",
                         pageBuilder: (context, state) => MaterialPage(
                           key: state.pageKey,
-                          child: RankingStepScreen(
+                          child: RankingDiaryScreen(
                             index: state.pathParameters["index"],
-                            userId: (state.extra as RankingStepExtra).userId,
-                            userName:
-                                (state.extra as RankingStepExtra).userName,
+                            userId: (state.extra as RankingExtra).userId,
+                            userName: (state.extra as RankingExtra).userName,
+                            rankingType: "일기",
                           ),
                         ),
                       )
                     ]),
-                GoRoute(
-                  name: RankingDiaryScreen.routeName,
-                  path: RankingDiaryScreen.routeURL,
-                  pageBuilder: (context, state) => NoTransitionPage(
-                    key: state.pageKey,
-                    child: const RankingDiaryScreen(),
-                  ),
-                ),
               ],
             ),
             GoRoute(
-              name: MoodScreen.routeName,
-              path: MoodScreen.routeURL,
+              name: CaScreen.routeName,
+              path: CaScreen.routeURL,
               pageBuilder: (context, state) => NoTransitionPage(
                 key: state.pageKey,
-                child: const MoodScreen(),
+                child: const CaScreen(),
               ),
             ),
             GoRoute(

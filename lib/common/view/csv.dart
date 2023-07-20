@@ -1,32 +1,30 @@
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 
-class CsvPeriod extends ConsumerStatefulWidget {
+class Csv extends ConsumerStatefulWidget {
   final void Function() generateCsv;
   final String rankingType;
   final String userName;
-  final void Function(String) updateOrderPeriod;
 
-  const CsvPeriod({
+  const Csv({
     super.key,
     required this.generateCsv,
     required this.rankingType,
     required this.userName,
-    required this.updateOrderPeriod,
   });
 
   @override
-  ConsumerState<CsvPeriod> createState() => _CsvPeriodState();
+  ConsumerState<Csv> createState() => _CsvState();
 }
 
-class _CsvPeriodState extends ConsumerState<CsvPeriod> {
+class _CsvState extends ConsumerState<Csv> {
   final double searchHeight = 35;
   bool _setCsvHover = false;
   bool _setBackHover = false;
+
   final TextEditingController _sortPeriodControllder = TextEditingController();
 
   @override
@@ -97,37 +95,6 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
             ),
             Row(
               children: [
-                SizedBox(
-                  width: 150,
-                  height: searchHeight,
-                  child: CustomDropdown(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size4,
-                    ),
-                    onChanged: (value) => widget.updateOrderPeriod(value),
-                    hintText: "기간 선택",
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade800,
-                      fontSize: Sizes.size14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    listItemStyle: const TextStyle(
-                      fontSize: Sizes.size14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    selectedStyle: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: Sizes.size14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    items: const ["이번주", "이번달"],
-                    controller: _sortPeriodControllder,
-                  ),
-                ),
-                Gaps.h40,
                 Align(
                   alignment: Alignment.centerRight,
                   child: MouseRegion(

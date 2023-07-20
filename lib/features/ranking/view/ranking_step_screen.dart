@@ -15,12 +15,14 @@ class RankingStepScreen extends ConsumerStatefulWidget {
   final String? index;
   final String? userId;
   final String? userName;
+  final String? rankingType;
 
   const RankingStepScreen({
     super.key,
     required this.index,
     required this.userId,
     required this.userName,
+    required this.rankingType,
   });
 
   @override
@@ -28,9 +30,16 @@ class RankingStepScreen extends ConsumerStatefulWidget {
 }
 
 class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
-  final List<String> _listHeader = ["날짜", "걸음수"];
+  final List<String> _listHeader = ["날짜", "일기", "마음", "비밀"];
   List<StepModel> _stepDataList = [];
   bool loadingFinished = false;
+  String _periodType = "이번달";
+
+  void updateOrderPeriod(String periodType) {
+    setState(() {
+      _periodType = periodType;
+    });
+  }
 
   List<dynamic> exportToList(StepModel stepModel) {
     return [
@@ -73,7 +82,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
     final formatDate =
         "${currentDate.year}-${currentDate.month}-${currentDate.day}";
 
-    final String fileName = "오늘도청춘 걸음수 ${widget.userName} $formatDate.csv";
+    final String fileName = "오늘도청춘 회원별 걸음수 ${widget.userName} $formatDate.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,
@@ -84,19 +93,19 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
       ..click();
   }
 
-  Future<void> getUserStepData(String periodType) async {
-    if (periodType == "이번달") {
+  Future<void> getUserStepData() async {
+    if (_periodType == "이번달") {
       final stepDataList = await ref
           .read(stepProvider.notifier)
-          .getUserDateStepData(widget.userId!, periodType);
+          .getUserDateStepData(widget.userId!, _periodType);
       setState(() {
         _stepDataList = stepDataList;
         loadingFinished = true;
       });
-    } else if (periodType == "이번주") {
+    } else if (_periodType == "이번주") {
       final stepDataList = await ref
           .read(stepProvider.notifier)
-          .getUserDateStepData(widget.userId!, periodType);
+          .getUserDateStepData(widget.userId!, _periodType);
       setState(() {
         _stepDataList = stepDataList;
         loadingFinished = true;
@@ -105,109 +114,106 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    getUserStepData("이번달");
-  }
-
-  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Column(children: [
-      CsvPeriod(
-        generateCsv: generateUserCsv,
-        rankingType: "걸음수",
-        userName: widget.userName!,
-        updateOrderPeriod: getUserStepData,
-      ),
-      loadingFinished
-          ? SearchBelow(
-              child: Column(
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: Sizes.size60,
+    return FutureBuilder(
+      future: getUserStepData(),
+      builder: (context, snapshot) => Column(children: [
+        CsvPeriod(
+          generateCsv: generateUserCsv,
+          rankingType: widget.rankingType!,
+          userName: widget.userName!,
+          updateOrderPeriod: updateOrderPeriod,
+        ),
+        loadingFinished
+            ? SearchBelow(
+                child: Column(
+                  children: [
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Sizes.size60,
+                        ),
+                        child: SizedBox(
+                          width: size.width - 600,
+                          height: 300,
+                          child: SfCartesianChart(
+                            // Initialize category axis
+                            primaryXAxis: CategoryAxis(),
+                            series: <LineSeries<StepModel, String>>[
+                              LineSeries(
+                                  // Bind data source
+                                  dataSource: _stepDataList,
+                                  xValueMapper: (StepModel step, _) =>
+                                      step.date,
+                                  yValueMapper: (StepModel step, _) =>
+                                      step.dailyStep)
+                            ],
+                          ),
+                        ),
                       ),
+                    ),
+                    Center(
                       child: SizedBox(
                         width: size.width - 600,
-                        height: 300,
-                        child: SfCartesianChart(
-                          // Initialize category axis
-                          primaryXAxis: CategoryAxis(),
-                          series: <LineSeries<StepModel, String>>[
-                            LineSeries(
-                                // Bind data source
-                                dataSource: _stepDataList,
-                                xValueMapper: (StepModel sales, _) =>
-                                    sales.date,
-                                yValueMapper: (StepModel sales, _) =>
-                                    sales.dailyStep)
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  "날짜",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  "걸음수",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                          rows: [
+                            for (var i = 0; i < _stepDataList.length; i++)
+                              DataRow(
+                                cells: [
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        _stepDataList[i].date,
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        _stepDataList[i].dailyStep.toString(),
+                                        textAlign: TextAlign.end,
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                  Center(
-                    child: SizedBox(
-                      width: size.width - 600,
-                      child: DataTable(
-                        columns: const [
-                          DataColumn(
-                            label: Expanded(
-                              child: Text(
-                                "날짜",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Expanded(
-                              child: Text(
-                                "걸음수",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                        rows: [
-                          for (var i = 0; i < _stepDataList.length; i++)
-                            DataRow(
-                              cells: [
-                                DataCell(
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _stepDataList[i].date,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _stepDataList[i].dailyStep.toString(),
-                                      textAlign: TextAlign.end,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : const LoadingScreen()
-    ]);
+                  ],
+                ),
+              )
+            : const LoadingScreen()
+      ]),
+    );
   }
 }

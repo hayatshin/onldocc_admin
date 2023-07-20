@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:onldocc_admin/constants/sizes.dart';
 
 void showSnackBar(BuildContext context, String error) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -47,4 +48,23 @@ String convertTimettampToString(DateTime date) {
   final dateString =
       "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   return dateString;
+}
+
+double calculateMaxContentHeight(String description, double diaryWidth) {
+  double maxHeight = 0;
+  final textPainter = TextPainter(
+    text: TextSpan(
+      text: description,
+      style: const TextStyle(
+        fontSize: Sizes.size13,
+      ),
+    ),
+    maxLines: null,
+    textDirection: TextDirection.ltr,
+  )..layout(maxWidth: diaryWidth);
+  double height = textPainter.height;
+  if (height > maxHeight) {
+    maxHeight = height;
+  }
+  return maxHeight;
 }

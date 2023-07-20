@@ -44,7 +44,6 @@ class StepViewModel extends AsyncNotifier<List<StepModel>> {
       String userId, String periodType) async {
     List<StepModel> stepList = [];
     late List<Map<String, dynamic>> userRef;
-    print(periodType);
 
     if (periodType == "이번주") {
       userRef = await _stepRepository.getUserCertinDateStepData(

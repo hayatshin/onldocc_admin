@@ -362,15 +362,15 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     ),
                                     leading: Icon(
                                       _selectedMenu == 4
-                                          ? Icons.face
-                                          : Icons.face_outlined,
+                                          ? Icons.psychology
+                                          : Icons.psychology_outlined,
                                       size: Sizes.size20,
                                       color: _selectedMenu == 4
                                           ? Colors.black
                                           : unselectedColor,
                                     ),
                                     title: Text(
-                                      "감정 관리",
+                                      "인지 관리",
                                       style: TextStyle(
                                         fontSize: Sizes.size16,
                                         fontWeight: FontWeight.w500,
