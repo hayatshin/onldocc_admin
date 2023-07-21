@@ -9,22 +9,23 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/diary_view_model.dart';
+import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:universal_html/html.dart';
 
 class RankingDiaryScreen extends ConsumerStatefulWidget {
-  final String? index;
+  // final String? index;
   final String? userId;
-  final String? userName;
+  // final String? userName;
   final String? rankingType;
 
   const RankingDiaryScreen({
     super.key,
-    required this.index,
+    // required this.index,
     required this.userId,
-    required this.userName,
+    // required this.userName,
     required this.rankingType,
   });
 
@@ -33,20 +34,20 @@ class RankingDiaryScreen extends ConsumerStatefulWidget {
 }
 
 class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
-  final List<String> _listHeader = ["#" "날짜", "일기", "감정", "비밀"];
-  final List<DiaryModel> _diaryDataList = [];
+  final List<String> _listHeader = ["#", "날짜", "일기", "감정", "비밀"];
+  List<DiaryModel> _diaryDataList = [];
   bool loadingFinished = false;
   String _periodType = "이번달";
-  List<int> diaryIndexShowState = [];
   Map<int, bool> expandMap = {};
   bool expandclick = false;
   bool expandUpdate = false;
   late List<MoodData> moodDistribution;
+  String _userName = "";
 
   List<dynamic> exportToList(DiaryModel diaryModel, int index) {
     return [
-      index,
-      diaryModel.timestamp,
+      (index + 1).toString(),
+      convertTimettampToString(diaryModel.timestamp),
       diaryModel.secret ? "비밀 글" : diaryModel.todayDiary,
       diaryModel.todayMood.description,
       diaryModel.secret ? "O" : "",
@@ -62,6 +63,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
   List<List<dynamic>> exportToFullList(List<DiaryModel?> diaryModelList) {
     List<List<dynamic>> list = [];
+    print("exportToFullList");
 
     list.add(_listHeader);
 
@@ -74,15 +76,16 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList(_diaryDataList);
+
     String csvContent = '';
     for (var row in csvData) {
       for (var i = 0; i < row.length; i++) {
-        if (row[i].contains(',')) {
+        if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
           csvContent += row[i];
         }
-        csvContent += row[i].toString();
+        // csvContent += row[i].toString();
 
         if (i != row.length - 1) {
           csvContent += ',';
@@ -94,7 +97,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
     final formatDate =
         "${currentDate.year}-${currentDate.month}-${currentDate.day}";
 
-    final String fileName = "오늘도청춘 회원별 일기 ${widget.userName} $formatDate.csv";
+    final String fileName = "오늘도청춘 회원별 일기 $_userName $formatDate.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,
@@ -105,26 +108,13 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
       ..click();
   }
 
-  // final List<StepModel> chartData = [
-  //   StepModel(date: 'David', dailyStep: 25),
-  //   StepModel(date: 'Steve', dailyStep: 38),
-  //   StepModel(date: 'Jack', dailyStep: 34),
-  //   StepModel(date: 'Others', dailyStep: 52)
-  // ];
-
-  // List<Meeting> _getDataSource() {
-  //   final List<Meeting> meetings = <Meeting>[];
-  //   final DateTime today = DateTime.now();
-  //   final DateTime startTime =
-  //       DateTime(today.year, today.month, today.day, 9, 0, 0);
-  //   final DateTime endTime = startTime.add(const Duration(hours: 2));
-  //   meetings.add(Meeting(
-  //       'Conference', startTime, endTime, const Color(0xFF0F8644), false));
-  //   return meetings;
-  // }
-
   Future<List<DiaryModel>> getUserDiaryData() async {
-    await Future.delayed(const Duration(seconds: 1));
+    // await Future.delayed(const Duration(seconds: 1));
+
+    final userProfile =
+        await ref.read(userProvider.notifier).getUserModel(widget.userId!);
+    _userName = userProfile!.name;
+
     List<DiaryModel> diaryDataList = await ref
         .read(diaryProvider.notifier)
         .getUserDateDiaryData(widget.userId!, _periodType);
@@ -192,10 +182,11 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
       MoodData(mood: "기타", count: extraCounts, color: Colors.grey.shade200),
     ];
 
+    _diaryDataList = diaryDataList;
+
     return diaryDataList;
 
     // setState(() {
-    //   _diaryDataList = diaryDataList;
     //   // loadingFinished = true;
     // });
   }
@@ -223,8 +214,6 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
     return longestLineCount;
   }
 
-  void userMoodCounts(List<DiaryModel> diaryModelList) {}
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -247,7 +236,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
               CsvPeriod(
                 generateCsv: generateUserCsv,
                 rankingType: widget.rankingType!,
-                userName: widget.userName!,
+                userName: _userName,
                 updateOrderPeriod: updateOrderPeriod,
               ),
               SearchBelow(

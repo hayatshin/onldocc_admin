@@ -8,7 +8,6 @@ import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/ranking/view_models/month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/week_ranking_vm.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
@@ -21,6 +20,8 @@ class RankingUsersScreen extends ConsumerStatefulWidget {
   static const stepRouteName = "stepRanking";
   static const diaryRouteURL = "diary";
   static const diaryRouteName = "diaryRanking";
+  static const caRouteURL = "ca";
+  static const caRouteName = "caRanking";
   final String? rankingType;
   const RankingUsersScreen({
     super.key,
@@ -180,11 +181,11 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
       "userName": userName,
     };
     if (widget.rankingType == "step") {
-      context.go("/ranking/step/$index",
-          extra: RankingExtra.fromJson(extraJson));
+      context.go("/ranking/step/$userId");
     } else if (widget.rankingType == "diary") {
-      context.go("/ranking/diary/$index",
-          extra: RankingExtra.fromJson(extraJson));
+      context.go("/ranking/diary/$userId");
+    } else if (widget.rankingType == "ca") {
+      context.go("/ca/$userId");
     }
   }
 

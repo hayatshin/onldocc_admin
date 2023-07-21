@@ -7,7 +7,6 @@ import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
 import 'package:onldocc_admin/features/ca/view/ca_screen.dart';
-import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_diary_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_step_screen.dart';
@@ -37,13 +36,15 @@ final routerProvider = Provider(
                 return SidebarTemplate(selectedMenuURL: 1, child: child);
               case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}":
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
-              case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}/:index":
+              case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}/:userId":
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
               case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}":
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
-              case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}/:index":
+              case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}/:userId":
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
               case CaScreen.routeURL:
+                return SidebarTemplate(selectedMenuURL: 4, child: child);
+              case "${CaScreen.routeURL}/:userId":
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
               case EventScreen.routeURL:
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
@@ -89,13 +90,13 @@ final routerProvider = Provider(
                   routes: [
                     // ranking/step/:index
                     GoRoute(
-                      path: ":index",
+                      path: ":userId",
                       pageBuilder: (context, state) => MaterialPage(
                         key: state.pageKey,
                         child: RankingStepScreen(
-                          index: state.pathParameters["index"],
-                          userId: (state.extra as RankingExtra).userId,
-                          userName: (state.extra as RankingExtra).userName,
+                          // index: state.pathParameters["index"],
+                          userId: state.pathParameters["userId"],
+                          // userName: (state.extra as RankingExtra).userName,
                           rankingType: "걸음수",
                         ),
                       ),
@@ -104,38 +105,54 @@ final routerProvider = Provider(
                 ),
                 // ranking/diary
                 GoRoute(
-                    name: RankingUsersScreen.diaryRouteName,
-                    path: RankingUsersScreen.diaryRouteURL,
-                    pageBuilder: (context, state) => NoTransitionPage(
-                          key: state.pageKey,
-                          child: const RankingUsersScreen(
-                            rankingType: "diary",
-                          ),
+                  name: RankingUsersScreen.diaryRouteName,
+                  path: RankingUsersScreen.diaryRouteURL,
+                  pageBuilder: (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    child: const RankingUsersScreen(
+                      rankingType: "diary",
+                    ),
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: ":userId",
+                      pageBuilder: (context, state) => MaterialPage(
+                        key: state.pageKey,
+                        child: RankingDiaryScreen(
+                          // index: state.pathParameters["index"],
+                          userId: state.pathParameters["userId"],
+                          // userName: (state.extra as RankingExtra).userName,
+                          rankingType: "일기",
                         ),
-                    routes: [
-                      GoRoute(
-                        path: ":index",
-                        pageBuilder: (context, state) => MaterialPage(
-                          key: state.pageKey,
-                          child: RankingDiaryScreen(
-                            index: state.pathParameters["index"],
-                            userId: (state.extra as RankingExtra).userId,
-                            userName: (state.extra as RankingExtra).userName,
-                            rankingType: "일기",
-                          ),
-                        ),
-                      )
-                    ]),
+                      ),
+                    )
+                  ],
+                ),
               ],
             ),
             GoRoute(
-              name: CaScreen.routeName,
-              path: CaScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const CaScreen(),
-              ),
-            ),
+                name: CaScreen.routeName,
+                path: CaScreen.routeURL,
+                pageBuilder: (context, state) => NoTransitionPage(
+                      key: state.pageKey,
+                      child: const RankingUsersScreen(
+                        rankingType: "ca",
+                      ),
+                    ),
+                routes: [
+                  GoRoute(
+                    path: ":userId",
+                    pageBuilder: (context, state) => MaterialPage(
+                      key: state.pageKey,
+                      child: CaScreen(
+                        // index: state.pathParameters["index"],
+                        userId: state.pathParameters["userId"],
+                        // userName: (state.extra as RankingExtra).userName,
+                        rankingType: "인지",
+                      ),
+                    ),
+                  )
+                ]),
             GoRoute(
               name: EventScreen.routeName,
               path: EventScreen.routeURL,

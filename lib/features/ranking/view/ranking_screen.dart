@@ -49,6 +49,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   bool loadingFinished = false;
   final List<UserModel?> _weekData = [];
   final List<UserModel?> _monthData = [];
+  int _currentSortColumn = 0;
+  bool _isSortAsc = true;
 
   @override
   void initState() {
@@ -176,45 +178,45 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
       case "종합 점수":
         copiedUserDataList
             .sort((a, b) => b!.totalScore!.compareTo(a!.totalScore!));
-        final indexList = ref.read(userProvider.notifier).indexUserModel(
-              value,
-              copiedUserDataList,
-            );
+        // final indexList = ref.read(userProvider.notifier).indexUserModel(
+        //       value,
+        //       copiedUserDataList,
+        //     );
         setState(() {
-          _userDataList = indexList;
+          _userDataList = copiedUserDataList;
         });
         break;
       case "걸음수":
         copiedUserDataList
             .sort((a, b) => b!.stepScore!.compareTo(a!.stepScore!));
-        final indexList = ref.read(userProvider.notifier).indexUserModel(
-              value,
-              copiedUserDataList,
-            );
+        // final indexList = ref.read(userProvider.notifier).indexUserModel(
+        //       value,
+        //       copiedUserDataList,
+        //     );
         setState(() {
-          _userDataList = indexList;
+          _userDataList = copiedUserDataList;
         });
         break;
       case "일기":
         copiedUserDataList
             .sort((a, b) => b!.diaryScore!.compareTo(a!.diaryScore!));
-        final indexList = ref.read(userProvider.notifier).indexUserModel(
-              value,
-              copiedUserDataList,
-            );
+        // final indexList = ref.read(userProvider.notifier).indexUserModel(
+        //       value,
+        //       copiedUserDataList,
+        //     );
         setState(() {
-          _userDataList = indexList;
+          _userDataList = copiedUserDataList;
         });
         break;
       case "댓글":
         copiedUserDataList
             .sort((a, b) => b!.commentScore!.compareTo(a!.commentScore!));
-        final indexList = ref.read(userProvider.notifier).indexUserModel(
-              value,
-              copiedUserDataList,
-            );
+        // final indexList = ref.read(userProvider.notifier).indexUserModel(
+        //       value,
+        //       copiedUserDataList,
+        //     );
         setState(() {
-          _userDataList = indexList;
+          _userDataList = copiedUserDataList;
         });
         break;
     }
@@ -272,35 +274,91 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                 loadingFinished
                     ? SearchBelow(
                         child: DataTable(
-                          columns: const [
-                            DataColumn(
+                          sortColumnIndex: _currentSortColumn,
+                          sortAscending: _isSortAsc,
+                          columns: [
+                            const DataColumn(
                               label: Text("#"),
                             ),
-                            DataColumn(
+                            const DataColumn(
                               label: Text("이름"),
                             ),
-                            DataColumn(
+                            const DataColumn(
                               label: Text("나이"),
                             ),
-                            DataColumn(
+                            const DataColumn(
                               label: Text("성별"),
                             ),
-                            DataColumn(
+                            const DataColumn(
                               label: Text("핸드폰 번호"),
                             ),
                             DataColumn(
-                              label: Text(
+                              label: const Text(
                                 "종합 점수",
                               ),
+                              onSort: (columnIndex, ascending) {
+                                setState(() {
+                                  _currentSortColumn = columnIndex;
+                                  if (_isSortAsc) {
+                                    _userDataList.sort((a, b) => b!.totalScore!
+                                        .compareTo(a!.totalScore!));
+                                  } else {
+                                    _userDataList.sort((a, b) => a!.totalScore!
+                                        .compareTo(b!.totalScore!));
+                                  }
+                                  _isSortAsc = !_isSortAsc;
+                                });
+                              },
                             ),
                             DataColumn(
-                              label: Text("걸음수"),
+                              label: const Text("걸음수"),
+                              onSort: (columnIndex, ascending) {
+                                setState(() {
+                                  _currentSortColumn = columnIndex;
+                                  if (_isSortAsc) {
+                                    _userDataList.sort((a, b) =>
+                                        b!.stepScore!.compareTo(a!.stepScore!));
+                                  } else {
+                                    _userDataList.sort((a, b) =>
+                                        a!.stepScore!.compareTo(b!.stepScore!));
+                                  }
+                                  _isSortAsc = !_isSortAsc;
+                                });
+                              },
                             ),
                             DataColumn(
-                              label: Text("일기"),
+                              label: const Text("일기"),
+                              onSort: (columnIndex, ascending) {
+                                setState(() {
+                                  _currentSortColumn = columnIndex;
+                                  if (_isSortAsc) {
+                                    _userDataList.sort((a, b) => b!.diaryScore!
+                                        .compareTo(a!.diaryScore!));
+                                  } else {
+                                    _userDataList.sort((a, b) => a!.diaryScore!
+                                        .compareTo(b!.diaryScore!));
+                                  }
+                                  _isSortAsc = !_isSortAsc;
+                                });
+                              },
                             ),
                             DataColumn(
-                              label: Text("댓글"),
+                              label: const Text("댓글"),
+                              onSort: (columnIndex, ascending) {
+                                setState(() {
+                                  _currentSortColumn = columnIndex;
+                                  if (_isSortAsc) {
+                                    _userDataList.sort((a, b) => b!
+                                        .commentScore!
+                                        .compareTo(a!.commentScore!));
+                                  } else {
+                                    _userDataList.sort((a, b) => a!
+                                        .commentScore!
+                                        .compareTo(b!.commentScore!));
+                                  }
+                                  _isSortAsc = !_isSortAsc;
+                                });
+                              },
                             ),
                           ],
                           rows: [

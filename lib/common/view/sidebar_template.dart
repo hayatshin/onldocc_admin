@@ -370,7 +370,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                           : unselectedColor,
                                     ),
                                     title: Text(
-                                      "인지 관리",
+                                      "회원별 인지 관리",
                                       style: TextStyle(
                                         fontSize: Sizes.size16,
                                         fontWeight: FontWeight.w500,

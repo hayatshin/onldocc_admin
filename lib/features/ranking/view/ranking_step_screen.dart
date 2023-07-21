@@ -11,17 +11,19 @@ import 'package:onldocc_admin/features/ranking/view_models/step_view_model.dart'
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:universal_html/html.dart';
 
+import '../../users/view_models/user_view_model.dart';
+
 class RankingStepScreen extends ConsumerStatefulWidget {
-  final String? index;
+  // final String? index;
   final String? userId;
-  final String? userName;
+  // final String? userName;
   final String? rankingType;
 
   const RankingStepScreen({
     super.key,
-    required this.index,
+    // required this.index,
     required this.userId,
-    required this.userName,
+    // required this.userName,
     required this.rankingType,
   });
 
@@ -34,6 +36,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   List<StepModel> _stepDataList = [];
   bool loadingFinished = false;
   String _periodType = "이번달";
+  String _userName = "";
 
   void updateOrderPeriod(String periodType) {
     setState(() {
@@ -65,12 +68,12 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
     String csvContent = '';
     for (var row in csvData) {
       for (var i = 0; i < row.length; i++) {
-        // if (row[i].contains(',')) {
-        //   csvContent += '"${row[i]}"';
-        // } else {
-        //   csvContent += row[i];
-        // }
-        csvContent += row[i].toString();
+        if (row[i].toString().contains(',')) {
+          csvContent += '"${row[i]}"';
+        } else {
+          csvContent += row[i];
+        }
+        // csvContent += row[i].toString();
 
         if (i != row.length - 1) {
           csvContent += ',';
@@ -82,7 +85,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
     final formatDate =
         "${currentDate.year}-${currentDate.month}-${currentDate.day}";
 
-    final String fileName = "오늘도청춘 회원별 걸음수 ${widget.userName} $formatDate.csv";
+    final String fileName = "오늘도청춘 회원별 걸음수 $_userName $formatDate.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,
@@ -94,6 +97,10 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   }
 
   Future<void> getUserStepData() async {
+    final userProfile =
+        await ref.read(userProvider.notifier).getUserModel(widget.userId!);
+    _userName = userProfile!.name;
+
     if (_periodType == "이번달") {
       final stepDataList = await ref
           .read(stepProvider.notifier)
@@ -123,7 +130,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
         CsvPeriod(
           generateCsv: generateUserCsv,
           rankingType: widget.rankingType!,
-          userName: widget.userName!,
+          userName: _userName,
           updateOrderPeriod: updateOrderPeriod,
         ),
         loadingFinished
