@@ -50,6 +50,12 @@ String convertTimettampToString(DateTime date) {
   return dateString;
 }
 
+String convertTimettampToStringDot(DateTime date) {
+  final dateString =
+      "${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
+  return dateString;
+}
+
 double calculateMaxContentHeight(String description, double diaryWidth) {
   double maxHeight = 0;
   final textPainter = TextPainter(

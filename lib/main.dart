@@ -48,7 +48,7 @@ class OnldoccAdmin extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: '오늘도청춘 관리자페이지',
       theme: ThemeData(
-        fontFamily: "Spoqa",
+        fontFamily: "NanumSquare",
         primaryColor: const Color(0xFFFF2D78),
         canvasColor: Colors.blueGrey.shade500,
         useMaterial3: true,

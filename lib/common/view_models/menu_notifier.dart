@@ -4,6 +4,7 @@ import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/ca/view/ca_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
+import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 
 class MenuNotifier extends ChangeNotifier {
@@ -20,6 +21,7 @@ class MenuNotifier extends ChangeNotifier {
     if (menu == 3) context.goNamed(RankingUsersScreen.diaryRouteName);
     if (menu == 4) context.goNamed(CaScreen.routeName);
     if (menu == 5) context.goNamed(EventScreen.routeName);
+    if (menu == 6) context.goNamed(TvScreen.routeName);
 
     notifyListeners();
   }

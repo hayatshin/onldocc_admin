@@ -21,7 +21,7 @@ class AdminProfileModel {
         smallRegion = "",
         regionImage = "",
         master = false,
-        contractType = "region";
+        contractType = "";
 
   AdminProfileModel.fromJson(Map<String, dynamic> json)
       : userId = json["userId"],

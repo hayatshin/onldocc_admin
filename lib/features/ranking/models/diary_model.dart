@@ -118,4 +118,12 @@ class TodayMood {
       : description = json["description"],
         image = json["image"],
         position = json["position"];
+
+  Map<String, dynamic> toJson() {
+    return {
+      "description": description,
+      "image": image,
+      "position": position,
+    };
+  }
 }

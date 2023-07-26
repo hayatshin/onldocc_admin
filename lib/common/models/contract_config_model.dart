@@ -9,7 +9,7 @@ class ContractConfigModel {
 
   const ContractConfigModel.empty()
       : contractType = "",
-        contractName = ";";
+        contractName = "";
 
   ContractConfigModel copyWith({
     String? contractType,

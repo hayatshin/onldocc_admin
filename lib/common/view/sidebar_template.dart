@@ -206,13 +206,12 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   Gaps.v20,
                                   ListTile(
                                     contentPadding: const EdgeInsets.symmetric(
-                                      vertical: Sizes.size4,
                                       horizontal: Sizes.size24,
                                     ),
                                     leading: Icon(
                                       _selectedMenu == 0
-                                          ? Icons.emoji_people
-                                          : Icons.emoji_people_outlined,
+                                          ? Icons.emoji_people_rounded
+                                          : Icons.accessibility_new_rounded,
                                       size: Sizes.size20,
                                       color: _selectedMenu == 0
                                           ? Colors.black
@@ -221,8 +220,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     title: Text(
                                       "회원 관리",
                                       style: TextStyle(
-                                        fontSize: Sizes.size16,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: Sizes.size15,
+                                        fontWeight: FontWeight.w600,
                                         color: _selectedMenu == 0
                                             ? Theme.of(context).primaryColor
                                             : unselectedColor,
@@ -235,7 +234,6 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     initiallyExpanded: true,
                                     iconColor: unselectedColor,
                                     tilePadding: const EdgeInsets.symmetric(
-                                      vertical: Sizes.size4,
                                       horizontal: Sizes.size24,
                                     ),
                                     childrenPadding: const EdgeInsets.only(
@@ -251,8 +249,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     title: Text(
                                       "점수 관리",
                                       style: TextStyle(
-                                        fontSize: Sizes.size16,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: Sizes.size15,
+                                        fontWeight: FontWeight.w600,
                                         color: unselectedColor,
                                       ),
                                     ),
@@ -273,7 +271,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                                 child: Text(
                                                   "전체 점수",
                                                   style: TextStyle(
-                                                    fontSize: 15.0,
+                                                    fontSize: Sizes.size14,
                                                     fontWeight:
                                                         _selectedMenu == 1
                                                             ? FontWeight.w500
@@ -305,7 +303,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                                 child: Text(
                                                   "회원별 걸음수",
                                                   style: TextStyle(
-                                                    fontSize: 15.0,
+                                                    fontSize: Sizes.size14,
                                                     fontWeight:
                                                         _selectedMenu == 2
                                                             ? FontWeight.w500
@@ -337,7 +335,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                                 child: Text(
                                                   "회원별 일기",
                                                   style: TextStyle(
-                                                    fontSize: 15.0,
+                                                    fontSize: Sizes.size14,
                                                     fontWeight:
                                                         _selectedMenu == 3
                                                             ? FontWeight.w500
@@ -357,12 +355,11 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   ),
                                   ListTile(
                                     contentPadding: const EdgeInsets.symmetric(
-                                      vertical: Sizes.size4,
                                       horizontal: Sizes.size24,
                                     ),
                                     leading: Icon(
                                       _selectedMenu == 4
-                                          ? Icons.psychology
+                                          ? Icons.psychology_rounded
                                           : Icons.psychology_outlined,
                                       size: Sizes.size20,
                                       color: _selectedMenu == 4
@@ -372,8 +369,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     title: Text(
                                       "회원별 인지 관리",
                                       style: TextStyle(
-                                        fontSize: Sizes.size16,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: Sizes.size15,
+                                        fontWeight: FontWeight.w600,
                                         color: _selectedMenu == 4
                                             ? Theme.of(context).primaryColor
                                             : unselectedColor,
@@ -384,13 +381,12 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   ),
                                   ListTile(
                                     contentPadding: const EdgeInsets.symmetric(
-                                      vertical: Sizes.size4,
                                       horizontal: Sizes.size24,
                                     ),
                                     leading: Icon(
                                       _selectedMenu == 5
-                                          ? Icons.event_available
-                                          : Icons.event,
+                                          ? Icons.event_available_rounded
+                                          : Icons.calendar_today_rounded,
                                       size: Sizes.size20,
                                       color: _selectedMenu == 5
                                           ? Colors.black
@@ -399,8 +395,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     title: Text(
                                       "행사 관리",
                                       style: TextStyle(
-                                        fontSize: Sizes.size16,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: Sizes.size15,
+                                        fontWeight: FontWeight.w600,
                                         color: _selectedMenu == 5
                                             ? Theme.of(context).primaryColor
                                             : unselectedColor,
@@ -408,6 +404,32 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                     ),
                                     onTap: () => menuNotifier.setSelectedMenu(
                                         5, context),
+                                  ),
+                                  ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.size24,
+                                    ),
+                                    leading: Icon(
+                                      _selectedMenu == 6
+                                          ? Icons.ondemand_video_rounded
+                                          : Icons.tv_rounded,
+                                      size: Sizes.size20,
+                                      color: _selectedMenu == 6
+                                          ? Colors.black
+                                          : unselectedColor,
+                                    ),
+                                    title: Text(
+                                      "청춘테레비 관리",
+                                      style: TextStyle(
+                                        fontSize: Sizes.size15,
+                                        fontWeight: FontWeight.w600,
+                                        color: _selectedMenu == 6
+                                            ? Theme.of(context).primaryColor
+                                            : unselectedColor,
+                                      ),
+                                    ),
+                                    onTap: () => menuNotifier.setSelectedMenu(
+                                        6, context),
                                   ),
                                 ],
                               ),

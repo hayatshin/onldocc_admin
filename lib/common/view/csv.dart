@@ -84,13 +84,22 @@ class _CsvState extends ConsumerState<Csv> {
                   ),
                 ),
                 Gaps.h40,
-                Text(
-                  "${widget.userName} 님의 ${widget.rankingType} 데이터",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
+                if (widget.rankingType != "event")
+                  Text(
+                    "${widget.userName} 님의 ${widget.rankingType} 데이터",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
+                if (widget.rankingType == "event")
+                  Text(
+                    widget.userName,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
               ],
             ),
             Row(

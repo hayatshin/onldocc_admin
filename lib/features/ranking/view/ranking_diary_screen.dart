@@ -41,7 +41,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   Map<int, bool> expandMap = {};
   bool expandclick = false;
   bool expandUpdate = false;
-  late List<MoodData> moodDistribution;
+  late List<MoodData> _moodDistribution;
   String _userName = "";
 
   List<dynamic> exportToList(DiaryModel diaryModel, int index) {
@@ -162,7 +162,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
             sadCounts +
             angryCounts);
 
-    moodDistribution = [
+    List<MoodData>? moodDistribution = [
       MoodData(mood: "기뻐요", count: joyCounts, color: const Color(0xFFFF2D78)),
       MoodData(mood: "설레요", count: throbCounts, color: const Color(0xFFF68E50)),
       MoodData(
@@ -182,7 +182,11 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
       MoodData(mood: "기타", count: extraCounts, color: Colors.grey.shade200),
     ];
 
-    _diaryDataList = diaryDataList;
+    setState(() {
+      expandclick = true;
+      _diaryDataList = diaryDataList;
+      _moodDistribution = moodDistribution;
+    });
 
     return diaryDataList;
 
@@ -230,7 +234,6 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
           return const ErrorScreen();
         } else if (snapshot.hasData) {
           List<DiaryModel> diaryModelList = snapshot.data!;
-
           return Column(
             children: [
               CsvPeriod(
@@ -255,44 +258,55 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                               view: CalendarView.month,
                               dataSource:
                                   DiaryDataSource(diaryModelList, context),
-                              todayHighlightColor: Colors.grey.shade400,
+                              todayHighlightColor: Colors.grey.shade500,
                               // view: CalendarView.week,
                               // firstDayOfWeek: 1, // monday
                             ),
                           ),
-                          SizedBox(
-                            width: chartWidth,
-                            child: SfCircularChart(
-                              legend: const Legend(
-                                isVisible: true,
-                                toggleSeriesVisibility: true,
-                              ),
-                              title: ChartTitle(
-                                text: "감정 추이",
-                                textStyle: const TextStyle(),
-                              ),
-                              series: <PieSeries<MoodData, String>>[
-                                PieSeries<MoodData, String>(
-                                  dataSource: moodDistribution,
-                                  xValueMapper: (MoodData mood, _) => mood.mood,
-                                  yValueMapper: (MoodData mood, _) =>
-                                      mood.count,
-                                  dataLabelMapper: (MoodData mood, _) =>
-                                      "${mood.mood}: ${mood.count}",
-                                  pointColorMapper: (MoodData mood, _) =>
-                                      mood.color,
-                                  dataLabelSettings: const DataLabelSettings(
-                                    isVisible: true,
-                                    showZeroValue: false,
-                                    // labelPosition:
-                                    //     ChartDataLabelPosition.outside,
-                                    // useSeriesColor: true,
-                                  ),
-                                  explode: true,
+                          if (diaryModelList.isNotEmpty)
+                            SizedBox(
+                              width: chartWidth,
+                              child: SfCircularChart(
+                                legend: const Legend(
+                                  isVisible: true,
+                                  toggleSeriesVisibility: true,
                                 ),
-                              ],
+                                title: ChartTitle(
+                                  text: "감정 추이",
+                                  textStyle: const TextStyle(),
+                                ),
+                                series: <PieSeries<MoodData, String>>[
+                                  PieSeries<MoodData, String>(
+                                    dataSource: _moodDistribution,
+                                    xValueMapper: (MoodData mood, _) =>
+                                        mood.mood,
+                                    yValueMapper: (MoodData mood, _) =>
+                                        mood.count,
+                                    dataLabelMapper: (MoodData mood, _) =>
+                                        "${mood.mood}: ${mood.count}",
+                                    pointColorMapper: (MoodData mood, _) =>
+                                        mood.color,
+                                    dataLabelSettings: const DataLabelSettings(
+                                      isVisible: true,
+                                      showZeroValue: false,
+                                      // labelPosition:
+                                      //     ChartDataLabelPosition.outside,
+                                      // useSeriesColor: true,
+                                    ),
+                                    explode: true,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                          if (diaryModelList.isEmpty)
+                            SizedBox(
+                              width: chartWidth,
+                              child: const Center(
+                                child: Text(
+                                  "일기 데이터가 없습니다.",
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -303,190 +317,267 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                     ),
                     Gaps.v36,
                     Center(
-                      child: SizedBox(
+                      child: Container(
                         width: size.width - 400,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(
+                            Sizes.size10,
+                          ),
+                        ),
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            final totalWidth = constraints.maxWidth - 360;
-                            final dateWidth = totalWidth * 0.1;
-                            final diaryWidth = totalWidth * 0.7;
-                            final moodWidth = totalWidth * 0.1;
-                            final secretWidth = totalWidth * 0.1;
-                            final longestLineCount =
-                                getLongestLineCount(snapshot.data!);
-                            final oneLineHeight = calculateMaxContentHeight(
-                                "안녕하세요", diaryWidth - Sizes.size20);
-                            final maxHeight =
-                                oneLineHeight * longestLineCount + Sizes.size32;
-                            return DataTable(
-                              dataRowHeight: expandUpdate ? maxHeight : 48,
-                              columns: [
-                                DataColumn(
-                                  label: SizedBox(
-                                    width: dateWidth,
-                                    child: const Text(
-                                      "#",
-                                      textAlign: TextAlign.start,
-                                    ),
+                            return Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: Sizes.size16,
                                   ),
-                                ),
-                                DataColumn(
-                                  label: SizedBox(
-                                    width: dateWidth,
-                                    child: const Text(
-                                      "날짜",
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: SizedBox(
-                                    width: diaryWidth,
-                                    child: const Text(
-                                      "일기",
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: SizedBox(
-                                    width: moodWidth,
-                                    child: const Text(
-                                      "감정",
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: SizedBox(
-                                    width: secretWidth,
-                                    child: const Text(
-                                      "비밀",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              rows: List.generate(
-                                diaryModelList.length,
-                                (index) {
-                                  final rowData = diaryModelList[index];
-                                  final descriptionTrim = diaryModelList[index]
-                                      .todayDiary
-                                      .trim()
-                                      .replaceAll('\n', ' ');
-
-                                  final isExpanded =
-                                      expandMap.containsKey(index) &&
-                                          expandMap[index] == true;
-                                  final description = expandUpdate
-                                      ? rowData.todayDiary
-                                      : rowData.todayDiary.length > 51
-                                          ? "${descriptionTrim.substring(0, 51)}..."
-                                          : descriptionTrim;
-
-                                  return DataRow(
-                                    cells: [
-                                      DataCell(
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            (index + 1).toString(),
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size13,
-                                            ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          "#",
+                                          style: TextStyle(
+                                            // color: Colors.white,
+                                            fontSize: Sizes.size13,
+                                            fontWeight: FontWeight.w500,
                                           ),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
-                                      DataCell(
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            convertTimettampToString(
-                                              rowData.timestamp,
-                                            ),
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size13,
-                                            ),
+                                      Expanded(
+                                        flex: 3,
+                                        child: Text(
+                                          "날짜",
+                                          style: TextStyle(
+                                            // color: Colors.white,
+                                            fontSize: Sizes.size13,
+                                            fontWeight: FontWeight.w500,
                                           ),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
-                                      DataCell(
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: rowData.secret
-                                                ? Text(
-                                                    "비밀 글",
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colors.grey.shade300,
-                                                    ),
-                                                  )
-                                                : expandUpdate
-                                                    ? Text(
-                                                        rowData.todayDiary
-                                                            .trim(),
-                                                        textAlign:
-                                                            TextAlign.start,
-                                                        style: const TextStyle(
-                                                          fontSize:
-                                                              Sizes.size13,
-                                                        ),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      )
-                                                    : Text(
-                                                        description,
-                                                        textAlign:
-                                                            TextAlign.start,
-                                                        style: const TextStyle(
-                                                          fontSize:
-                                                              Sizes.size13,
-                                                        ),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      )),
-                                        onTap: () {
-                                          setState(() {
-                                            expandclick = true;
-                                            expandUpdate = !expandUpdate;
-                                            if (isExpanded) {
-                                              expandMap.remove(index);
-                                            } else {
-                                              expandMap[index] = true;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      DataCell(
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            rowData.todayMood.description!,
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size13,
-                                            ),
+                                      Expanded(
+                                        flex: 8,
+                                        child: Text(
+                                          "일기",
+                                          style: TextStyle(
+                                            // color: Colors.white,
+                                            fontSize: Sizes.size13,
+                                            fontWeight: FontWeight.w500,
                                           ),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
-                                      DataCell(
-                                        Align(
-                                          alignment: Alignment.center,
-                                          child: rowData.secret
-                                              ? const Icon(Icons.check)
-                                              : null,
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          "감정",
+                                          style: TextStyle(
+                                            // color: Colors.white,
+                                            fontSize: Sizes.size13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          "비밀",
+                                          style: TextStyle(
+                                            // color: Colors.white,
+                                            fontSize: Sizes.size13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          "",
+                                          style: TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ],
-                                  );
-                                },
-                              ),
+                                  ),
+                                ),
+                                if (diaryModelList.isNotEmpty)
+                                  Divider(
+                                    color: Colors.grey.shade200,
+                                  ),
+                                if (diaryModelList.isNotEmpty) Gaps.v10,
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: diaryModelList.length,
+                                  itemBuilder: (context, index) {
+                                    return ExpansionPanelList(
+                                      elevation: 0,
+                                      expandIconColor: Colors.grey.shade500,
+                                      expansionCallback:
+                                          (panelIndex, isExpanded) {
+                                        setState(() {
+                                          expandclick = true;
+                                          expandMap[index] = !isExpanded;
+                                        });
+                                      },
+                                      children: [
+                                        ExpansionPanel(
+                                          canTapOnHeader: diaryModelList[index]
+                                                      .todayDiary
+                                                      .length >
+                                                  40
+                                              ? true
+                                              : false,
+                                          isExpanded: expandMap[index] ?? false,
+                                          backgroundColor: Colors.white,
+                                          headerBuilder: (context, isExpanded) {
+                                            return Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Text(
+                                                    (index + 1).toString(),
+                                                    style: const TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Text(
+                                                    convertTimettampToString(
+                                                      diaryModelList[index]
+                                                          .timestamp,
+                                                    ),
+                                                    style: const TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 8,
+                                                  child: Text(
+                                                    diaryModelList[index]
+                                                                .todayDiary
+                                                                .length >
+                                                            40
+                                                        ? "${diaryModelList[index].todayDiary.substring(0, 41)}..."
+                                                        : diaryModelList[index]
+                                                            .todayDiary,
+                                                    style: const TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    diaryModelList[index]
+                                                        .todayMood
+                                                        .description!,
+                                                    style: const TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Center(
+                                                    child: Icon(
+                                                      diaryModelList[index]
+                                                              .secret
+                                                          ? Icons.check
+                                                          : null,
+                                                      size: Sizes.size13,
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          },
+                                          body: ListTile(
+                                            title: Row(
+                                              children: [
+                                                const Expanded(
+                                                  flex: 1,
+                                                  child: Text(
+                                                    "",
+                                                    style: TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const Expanded(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    "",
+                                                    style: TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 6,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                      bottom: Sizes.size10,
+                                                    ),
+                                                    child: Text(
+                                                      diaryModelList[index]
+                                                          .todayDiary,
+                                                      style: const TextStyle(
+                                                        fontSize: Sizes.size13,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const Expanded(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    "",
+                                                    style: TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const Expanded(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    "",
+                                                    style: TextStyle(
+                                                      fontSize: Sizes.size13,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                if (diaryModelList.isNotEmpty) Gaps.v10,
+                              ],
                             );
                           },
                         ),
                       ),
                     ),
+                    Gaps.v36,
                   ],
                 ),
               )

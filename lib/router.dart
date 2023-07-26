@@ -11,6 +11,7 @@ import 'package:onldocc_admin/features/ranking/view/ranking_diary_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_step_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
+import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 
 final routerProvider = Provider(
@@ -48,6 +49,10 @@ final routerProvider = Provider(
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
               case EventScreen.routeURL:
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
+              case "${EventScreen.routeURL}/:eventId":
+                return SidebarTemplate(selectedMenuURL: 5, child: child);
+              case TvScreen.routeURL:
+                return SidebarTemplate(selectedMenuURL: 6, child: child);
             }
             return child;
           },
@@ -163,13 +168,22 @@ final routerProvider = Provider(
               routes: [
                 GoRoute(
                   path: ":eventId",
-                  pageBuilder: (context, state) => NoTransitionPage(
+                  pageBuilder: (context, state) => MaterialPage(
                     key: state.pageKey,
                     child: EventDetailScreen(
-                        eventId: state.pathParameters['eventId']),
+                      eventId: state.pathParameters['eventId'],
+                    ),
                   ),
                 ),
               ],
+            ),
+            GoRoute(
+              name: TvScreen.routeName,
+              path: TvScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const TvScreen(),
+              ),
             ),
           ],
         )
