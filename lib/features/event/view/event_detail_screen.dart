@@ -111,7 +111,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     }
     final currentDate = DateTime.now();
     final formatDate =
-        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
+        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
     String fileName = "오늘도청춘 행사 $eventTitle.csv";
 

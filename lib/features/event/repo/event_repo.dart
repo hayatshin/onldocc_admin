@@ -87,7 +87,7 @@ class EventRepository {
   }
 
   Future<List<String>> uploadFeedImage(List<Uint8List> fileList) async {
-    String fileName = DateTime.now().millisecond.toString();
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
     List<String> imageArray = [];
     for (Uint8List file in fileList) {
       final fileRef = _storage.ref().child("feedNotifications/$fileName");

@@ -100,7 +100,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           "community": contractName,
           "communityLogo": image,
           "description": _eventDescription,
-          "documentId": DateTime.now().millisecond.toString(),
+          "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
           "startPeriod": convertTimettampToStringDot(_eventStartDate!),
           "endPeriod": convertTimettampToStringDot(_eventEndDate!),
           "goalScore": int.parse(_eventGoalScore),
@@ -108,7 +108,6 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           "prizeWinners": int.parse(_eventPrizeWinners),
           "state": "진행",
           "title": _eventTitle,
-          "fullRegion": contractName,
           "contractType": "region",
           "autoProgress": true,
         };
@@ -121,7 +120,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           "community": contractName,
           "communityLogo": image,
           "description": _eventDescription,
-          "documentId": DateTime.now().millisecond.toString(),
+          "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
           "startPeriod": convertTimettampToStringDot(_eventStartDate!),
           "endPeriod": convertTimettampToStringDot(_eventEndDate!),
           "goalScore": int.parse(_eventGoalScore),
@@ -137,11 +136,11 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         String? image =
             "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/missions%2F%E1%84%8B%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8F%E1%85%A9%E1%86%AB_%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5_%E1%84%91%E1%85%B5%E1%86%BC%E1%84%8F%E1%85%B32.png?alt=media&token=0ffe5480-4d88-42c0-be29-f7d366bb62d5";
         eventJson = {
-          "allUser": false,
+          "allUser": true,
           "community": contractName,
           "communityLogo": image,
           "description": _eventDescription,
-          "documentId": DateTime.now().millisecond.toString(),
+          "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
           "startPeriod": convertTimettampToStringDot(_eventStartDate!),
           "endPeriod": convertTimettampToStringDot(_eventEndDate!),
           "goalScore": int.parse(_eventGoalScore),
@@ -149,7 +148,6 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           "prizeWinners": int.parse(_eventPrizeWinners),
           "state": "진행",
           "title": _eventTitle,
-          "fullRegion": contractName,
           "contractType": "region",
           "autoProgress": true,
         };
@@ -955,7 +953,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     Gaps.h20,
                                     if (_eventStartDate != null)
                                       Text(
-                                        "${_eventStartDate?.year}.${_eventStartDate?.month}.${_eventStartDate?.day}",
+                                        "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
                                         style: TextStyle(
                                           color: Colors.grey.shade800,
                                           fontSize: Sizes.size12,
@@ -1001,7 +999,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     Gaps.h20,
                                     if (_eventEndDate != null)
                                       Text(
-                                        "${_eventEndDate?.year}.${_eventEndDate?.month}.${_eventEndDate?.day}",
+                                        "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
                                         style: TextStyle(
                                           color: Colors.grey.shade800,
                                           fontSize: Sizes.size12,

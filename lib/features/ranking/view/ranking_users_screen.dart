@@ -124,7 +124,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
     }
     final currentDate = DateTime.now();
     final formatDate =
-        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
+        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
     final String fileName = "오늘도청춘 회원관리 $formatDate.csv";
 
@@ -210,200 +210,208 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                           contractName: getUserContractName,
                         ),
                         SearchBelow(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: DataTable(
-                              columns: [
-                                const DataColumn(
-                                  label: Text(
-                                    "#",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "이름",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "나이",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "출생일",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "성별",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "핸드폰 번호",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "거주 지역",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "가입일",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                const DataColumn(
-                                  label: Text(
-                                    "마지막 방문일",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Text(
-                                    "선택",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size12,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              rows: [
-                                for (var i = 0; i < _userDataList.length; i++)
-                                  DataRow(
-                                    cells: [
-                                      DataCell(
-                                        Text(
-                                          (i + 1).toString(),
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                          child: IntrinsicWidth(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                DataTable(
+                                  columns: [
+                                    const DataColumn(
+                                      label: Text(
+                                        "#",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.name.length > 10
-                                              ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                                              : _userDataList[i]!.name,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                                    ),
+                                    const DataColumn(
+                                      label: Text(
+                                        "이름",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.age,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                                    ),
+                                    const DataColumn(
+                                      label: Text(
+                                        "나이",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.fullBirthday,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                                    ),
+                                    const DataColumn(
+                                      label: Text(
+                                        "출생일",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.gender,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                                    ),
+                                    const DataColumn(
+                                      label: Text(
+                                        "성별",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.phone,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                                    ),
+                                    const DataColumn(
+                                      label: Text(
+                                        "핸드폰 번호",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.fullRegion,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                                    ),
+                                    const DataColumn(
+                                      label: Text(
+                                        "거주 지역",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.registerDate,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
+                                    ),
+                                    // const DataColumn(
+                                    //   label: Text(
+                                    //     "가입일",
+                                    //     style: TextStyle(
+                                    //       fontSize: Sizes.size13,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // const DataColumn(
+                                    //   label: Text(
+                                    //     "마지막 방문일",
+                                    //     style: TextStyle(
+                                    //       fontSize: Sizes.size13,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    DataColumn(
+                                      label: Text(
+                                        "선택",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
+                                          color: Theme.of(context).primaryColor,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          _userDataList[i]!.lastVisit,
-                                          style: const TextStyle(
-                                            fontSize: Sizes.size12,
-                                          ),
-                                        ),
-                                      ),
-                                      DataCell(
-                                        MouseRegion(
-                                          cursor: SystemMouseCursors.click,
-                                          child: GestureDetector(
-                                            onTap: () => goDetailPage(
-                                              index: i + 1,
-                                              userId: _userDataList[i]!.userId,
-                                              userName: _userDataList[i]!.name,
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                vertical: Sizes.size10,
+                                    ),
+                                  ],
+                                  rows: [
+                                    for (var i = 0;
+                                        i < _userDataList.length;
+                                        i++)
+                                      DataRow(
+                                        cells: [
+                                          DataCell(
+                                            Text(
+                                              (i + 1).toString(),
+                                              style: const TextStyle(
+                                                fontSize: Sizes.size13,
                                               ),
-                                              child: CircleAvatar(
-                                                backgroundColor:
-                                                    Colors.grey.shade200,
-                                                child: Icon(
-                                                  Icons.chevron_right,
-                                                  size: Sizes.size16,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              _userDataList[i]!.name.length > 10
+                                                  ? "${_userDataList[i]!.name.substring(0, 10)}.."
+                                                  : _userDataList[i]!.name,
+                                              style: const TextStyle(
+                                                fontSize: Sizes.size13,
+                                              ),
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              _userDataList[i]!.age,
+                                              style: const TextStyle(
+                                                fontSize: Sizes.size13,
+                                              ),
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              _userDataList[i]!.fullBirthday,
+                                              style: const TextStyle(
+                                                fontSize: Sizes.size13,
+                                              ),
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              _userDataList[i]!.gender,
+                                              style: const TextStyle(
+                                                fontSize: Sizes.size13,
+                                              ),
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              _userDataList[i]!.phone,
+                                              style: const TextStyle(
+                                                fontSize: Sizes.size13,
+                                              ),
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              _userDataList[i]!.fullRegion,
+                                              style: const TextStyle(
+                                                fontSize: Sizes.size13,
+                                              ),
+                                            ),
+                                          ),
+                                          // DataCell(
+                                          //   Text(
+                                          //     _userDataList[i]!.registerDate,
+                                          //     style: const TextStyle(
+                                          //       fontSize: Sizes.size12,
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          // DataCell(
+                                          //   Text(
+                                          //     _userDataList[i]!.lastVisit,
+                                          //     style: const TextStyle(
+                                          //       fontSize: Sizes.size12,
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          DataCell(
+                                            MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: GestureDetector(
+                                                onTap: () => goDetailPage(
+                                                  index: i + 1,
+                                                  userId:
+                                                      _userDataList[i]!.userId,
+                                                  userName:
+                                                      _userDataList[i]!.name,
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: Sizes.size10,
+                                                  ),
+                                                  child: CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.grey.shade200,
+                                                    child: Icon(
+                                                      Icons.chevron_right,
+                                                      size: Sizes.size16,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                          )
+                                        ],
+                                      ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),

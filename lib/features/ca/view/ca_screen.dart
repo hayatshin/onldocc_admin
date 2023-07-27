@@ -92,7 +92,7 @@ class _CaScreenState extends ConsumerState<CaScreen> {
     }
     final currentDate = DateTime.now();
     final formatDate =
-        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
+        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
     final String fileName = "오늘도청춘 회원별 인지 관리 $_userName $formatDate.csv";
 
