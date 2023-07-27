@@ -45,6 +45,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
         _formKey.currentState!.save();
 
         await ref.read(tvProvider.notifier).saveTvwithJson(_title, _link);
+        await ref.read(tvProvider.notifier).getCertainTvList();
         context.pop();
       }
     }
@@ -65,7 +66,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
       BuildContext context, String documentId, String tvTitle) async {
     removeDeleteOverlay();
 
-    assert(overlayEntry == null);
+    // assert(overlayEntry == null);
 
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned.fill(
@@ -340,12 +341,12 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                         validator: (value) {
                                           if (value != null && value.isEmpty) {
                                             return "영상 링크를 적어주세요.";
-                                          } else if (!value
+                                          } else if (!(value
                                                   .toString()
                                                   .contains("youtu.be/") ||
-                                              !value
+                                              value
                                                   .toString()
-                                                  .contains("youtube.com")) {
+                                                  .contains("youtube.com"))) {
                                             return "유투브 영상을 올려주세요.";
                                           }
                                           return null;

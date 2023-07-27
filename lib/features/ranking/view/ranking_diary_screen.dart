@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
+import 'package:onldocc_admin/common/view/loading_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -18,14 +19,14 @@ import 'package:universal_html/html.dart';
 class RankingDiaryScreen extends ConsumerStatefulWidget {
   // final String? index;
   final String? userId;
-  // final String? userName;
+  final String? userName;
   final String? rankingType;
 
   const RankingDiaryScreen({
     super.key,
     // required this.index,
     required this.userId,
-    // required this.userName,
+    required this.userName,
     required this.rankingType,
   });
 
@@ -37,12 +38,13 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   final List<String> _listHeader = ["#", "날짜", "일기", "감정", "비밀"];
   List<DiaryModel> _diaryDataList = [];
   bool loadingFinished = false;
-  String _periodType = "이번달";
+  String _periodType = "이번주";
   Map<int, bool> expandMap = {};
   bool expandclick = false;
   bool expandUpdate = false;
   late List<MoodData> _moodDistribution;
-  String _userName = "";
+  String? _userName = "";
+  final TextEditingController sortPeriodControllder = TextEditingController();
 
   List<dynamic> exportToList(DiaryModel diaryModel, int index) {
     return [
@@ -63,7 +65,6 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
   List<List<dynamic>> exportToFullList(List<DiaryModel?> diaryModelList) {
     List<List<dynamic>> list = [];
-    print("exportToFullList");
 
     list.add(_listHeader);
 
@@ -110,6 +111,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
   Future<List<DiaryModel>> getUserDiaryData() async {
     // await Future.delayed(const Duration(seconds: 1));
+    print("getUserDiaryData");
 
     final userProfile =
         await ref.read(userProvider.notifier).getUserModel(widget.userId!);
@@ -219,6 +221,14 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.userName != null) {
+      _userName = widget.userName;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final chartWidth = size.width / 2 - 300;
@@ -231,6 +241,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
             backgroundColor: Theme.of(context).primaryColor,
           );
         } else if (snapshot.hasError) {
+          print(snapshot.error);
           return const ErrorScreen();
         } else if (snapshot.hasData) {
           List<DiaryModel> diaryModelList = snapshot.data!;
@@ -239,8 +250,9 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
               CsvPeriod(
                 generateCsv: generateUserCsv,
                 rankingType: widget.rankingType!,
-                userName: _userName,
+                userName: _userName!,
                 updateOrderPeriod: updateOrderPeriod,
+                sortPeriodControllder: sortPeriodControllder,
               ),
               SearchBelow(
                 child: Column(
@@ -273,7 +285,9 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                 ),
                                 title: ChartTitle(
                                   text: "감정 추이",
-                                  textStyle: const TextStyle(),
+                                  textStyle: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                                 series: <PieSeries<MoodData, String>>[
                                   PieSeries<MoodData, String>(
@@ -584,7 +598,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
             ],
           );
         } else {
-          return const Text("?");
+          return const LoadingScreen();
         }
       },
     );

@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:onldocc_admin/utils.dart';
+
 class UserModel {
   final int? index;
   final String userId;
@@ -8,7 +11,7 @@ class UserModel {
   final String phone;
   final String fullRegion;
   final String registerDate;
-  final String lastVisit;
+  final String? lastVisit;
   final int? totalScore;
   final int? stepScore;
   final int? diaryScore;
@@ -75,7 +78,10 @@ class UserModel {
         phone = json["phone"] ?? "정보 없음",
         fullRegion = json["fullRegion"] ?? "정보 없음",
         registerDate = json["registerDate"] ?? "정보 없음",
-        lastVisit = json["lastVisit"] ?? "정보 없음",
+        lastVisit = json["lastVisit"] is Timestamp
+            ? convertTimettampToString(
+                (json["lastVisit"] as Timestamp).toDate())
+            : json["lastVisit"],
         totalScore = json["totalScore"] ?? 0,
         stepScore = json["stepScore"] ?? 0,
         diaryScore = json["diaryScore"] ?? 0,

@@ -39,9 +39,9 @@ class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
     } else if (periodType == "이번달") {
       diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(
           userId, firstDateOfMonth, now);
-
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
+
         DiaryModel diaryModel = DiaryModel.fromJson(diaryJson);
         diaryList.add(diaryModel);
       }

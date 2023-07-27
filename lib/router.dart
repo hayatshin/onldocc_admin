@@ -14,6 +14,8 @@ import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 
+import 'features/ranking/models/ranking_extra.dart';
+
 final routerProvider = Provider(
   (ref) {
     return GoRouter(
@@ -101,7 +103,9 @@ final routerProvider = Provider(
                         child: RankingStepScreen(
                           // index: state.pathParameters["index"],
                           userId: state.pathParameters["userId"],
-                          // userName: (state.extra as RankingExtra).userName,
+                          userName: state.extra != null
+                              ? (state.extra as RankingExtra).userName
+                              : "",
                           rankingType: "걸음수",
                         ),
                       ),
@@ -126,7 +130,9 @@ final routerProvider = Provider(
                         child: RankingDiaryScreen(
                           // index: state.pathParameters["index"],
                           userId: state.pathParameters["userId"],
-                          // userName: (state.extra as RankingExtra).userName,
+                          userName: state.extra != null
+                              ? (state.extra as RankingExtra).userName
+                              : "",
                           rankingType: "일기",
                         ),
                       ),
@@ -152,7 +158,9 @@ final routerProvider = Provider(
                       child: CaScreen(
                         // index: state.pathParameters["index"],
                         userId: state.pathParameters["userId"],
-                        // userName: (state.extra as RankingExtra).userName,
+                        userName: state.extra != null
+                            ? (state.extra as RankingExtra).userName
+                            : "",
                         rankingType: "인지",
                       ),
                     ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
@@ -6,6 +7,7 @@ import 'package:onldocc_admin/utils.dart';
 
 class UserRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   UserModel dbToUserModel(QueryDocumentSnapshot<Map<String, dynamic>> user) {
     final userBirthYear =
@@ -34,9 +36,11 @@ class UserRepository {
         : "정보 없음";
     final Timestamp? dbLastVisit =
         user.data().containsKey("lastVisit") ? user.get("lastVisit") : null;
+
     final String lastVisit = dbLastVisit != null
         ? DateFormat('yyyy.MM.dd').format(dbLastVisit.toDate())
         : "";
+
     final userRegion =
         user.data().containsKey("region") ? user.get("region") : "정보";
     final userSmallRegion =
@@ -159,7 +163,18 @@ class UserRepository {
   }
 
   Future<void> deleteUser(String userId) async {
-    await _db.collection("users").doc(userId).delete();
+    User? user = FirebaseAuth.instance.currentUser;
+
+    try {
+      if (user != null) {
+        await user.delete();
+        await _db.collection("users").doc(userId).delete();
+      } else {
+        print("no user signed in.");
+      }
+    } catch (e) {
+      print('error in deleting fireauth -> $e');
+    }
   }
 
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {

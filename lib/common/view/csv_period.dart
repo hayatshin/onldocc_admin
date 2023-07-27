@@ -10,6 +10,7 @@ class CsvPeriod extends ConsumerStatefulWidget {
   final String rankingType;
   final String userName;
   final void Function(String) updateOrderPeriod;
+  final TextEditingController sortPeriodControllder;
 
   const CsvPeriod({
     super.key,
@@ -17,6 +18,7 @@ class CsvPeriod extends ConsumerStatefulWidget {
     required this.rankingType,
     required this.userName,
     required this.updateOrderPeriod,
+    required this.sortPeriodControllder,
   });
 
   @override
@@ -31,7 +33,7 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
 
   @override
   void dispose() {
-    _sortPeriodControllder.dispose();
+    // widget.sortPeriodControllder.dispose();
     super.dispose();
   }
 
@@ -124,7 +126,7 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                       fontWeight: FontWeight.w500,
                     ),
                     items: const ["이번주", "이번달"],
-                    controller: _sortPeriodControllder,
+                    controller: widget.sortPeriodControllder,
                   ),
                 ),
                 Gaps.h40,

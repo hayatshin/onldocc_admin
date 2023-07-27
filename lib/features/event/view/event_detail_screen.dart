@@ -215,7 +215,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                             ),
                                             children: [
                                               TextSpan(
-                                                text: eventData.community,
+                                                text: eventData.contractName,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: Sizes.size15,
@@ -229,7 +229,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                         CircleAvatar(
                                           radius: 15,
                                           backgroundImage: NetworkImage(
-                                            eventData.communityLogo!,
+                                            eventData.contractLogo!,
                                           ),
                                         ),
                                       ],

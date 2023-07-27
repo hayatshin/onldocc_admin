@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/common/view/loading_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/features/ca/models/ca_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/ca_view_model.dart';
@@ -19,14 +20,14 @@ class CaScreen extends ConsumerStatefulWidget {
   static const routeName = "ca";
   // final String? index;
   final String? userId;
-  // final String? userName;
+  final String? userName;
   final String? rankingType;
 
   const CaScreen({
     super.key,
     // required this.index,
     required this.userId,
-    // required this.userName,
+    required this.userName,
     required this.rankingType,
   });
 
@@ -38,9 +39,10 @@ class _CaScreenState extends ConsumerState<CaScreen> {
   final List<String> _listHeader = ["#", "날짜", "인지 결과", "문제", "정답", "제출 답"];
   List<CaModel> _caDataList = [];
   // bool loadingFinished = false;
-  String _periodType = "이번달";
-  String _userName = "";
+  String _periodType = "이번주";
+  String? _userName = "";
   late List<QuestionResultData> qrDistribution;
+  final TextEditingController sortPeriodControllder = TextEditingController();
 
   List<dynamic> exportToList(CaModel caModel, int index) {
     return [
@@ -133,6 +135,14 @@ class _CaScreenState extends ConsumerState<CaScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.userName != null) {
+      _userName = widget.userName;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final chartWidth = size.width / 2 - 300;
@@ -153,8 +163,9 @@ class _CaScreenState extends ConsumerState<CaScreen> {
               CsvPeriod(
                 generateCsv: generateUserCsv,
                 rankingType: widget.rankingType!,
-                userName: _userName,
+                userName: _userName!,
                 updateOrderPeriod: updateOrderPeriod,
+                sortPeriodControllder: sortPeriodControllder,
               ),
               SearchBelow(
                 child: Column(
@@ -164,37 +175,47 @@ class _CaScreenState extends ConsumerState<CaScreen> {
                         Sizes.size36,
                       ),
                       child: SizedBox(
-                        child: SfCircularChart(
-                          legend: const Legend(
-                            isVisible: true,
-                            toggleSeriesVisibility: true,
-                          ),
-                          title: ChartTitle(
-                            text: "인지 능력 추이",
-                            textStyle: const TextStyle(),
-                          ),
-                          series: <PieSeries<QuestionResultData, String>>[
-                            PieSeries<QuestionResultData, String>(
-                              dataSource: qrDistribution,
-                              xValueMapper: (QuestionResultData qr, _) =>
-                                  qr.result,
-                              yValueMapper: (QuestionResultData qr, _) =>
-                                  qr.count,
-                              dataLabelMapper: (QuestionResultData qr, _) =>
-                                  "${qr.result}: ${qr.count}",
-                              pointColorMapper: (QuestionResultData qr, _) =>
-                                  qr.color,
-                              dataLabelSettings: const DataLabelSettings(
-                                isVisible: true,
-                                showZeroValue: false,
-                                // labelPosition:
-                                //     ChartDataLabelPosition.outside,
-                                // useSeriesColor: true,
+                        child: caModelList.isNotEmpty
+                            ? SfCircularChart(
+                                legend: const Legend(
+                                  isVisible: true,
+                                  toggleSeriesVisibility: true,
+                                ),
+                                title: ChartTitle(
+                                  text: "인지 능력 추이",
+                                  textStyle: const TextStyle(),
+                                ),
+                                series: <PieSeries<QuestionResultData, String>>[
+                                  PieSeries<QuestionResultData, String>(
+                                    dataSource: qrDistribution,
+                                    xValueMapper: (QuestionResultData qr, _) =>
+                                        qr.result,
+                                    yValueMapper: (QuestionResultData qr, _) =>
+                                        qr.count,
+                                    dataLabelMapper:
+                                        (QuestionResultData qr, _) =>
+                                            "${qr.result}: ${qr.count}",
+                                    pointColorMapper:
+                                        (QuestionResultData qr, _) => qr.color,
+                                    dataLabelSettings: const DataLabelSettings(
+                                      isVisible: true,
+                                      showZeroValue: false,
+                                      // labelPosition:
+                                      //     ChartDataLabelPosition.outside,
+                                      // useSeriesColor: true,
+                                    ),
+                                    explode: true,
+                                  ),
+                                ],
+                              )
+                            : const SizedBox(
+                                height: 200,
+                                child: Center(
+                                  child: Text(
+                                    "인지 데이터가 없습니다.",
+                                  ),
+                                ),
                               ),
-                              explode: true,
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                     Divider(
@@ -369,7 +390,7 @@ class _CaScreenState extends ConsumerState<CaScreen> {
             ],
           );
         } else {
-          return const Text("?");
+          return const LoadingScreen();
         }
       },
     );

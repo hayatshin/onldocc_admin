@@ -97,8 +97,6 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         String? image = await ref.read(eventRepo).getRegionImage(contractName);
         eventJson = {
           "allUser": false,
-          "community": contractName,
-          "communityLogo": image,
           "description": _eventDescription,
           "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
           "startPeriod": convertTimettampToStringDot(_eventStartDate!),
@@ -109,7 +107,9 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           "state": "진행",
           "title": _eventTitle,
           "contractType": "region",
-          "autoProgress": true,
+          "contractName": contractName,
+          "contractLogo": image,
+          "autoProgress": false,
         };
       } else if (contractType == "기관") {
         String? image =
@@ -117,8 +117,6 @@ class _EventScreenState extends ConsumerState<EventScreen> {
 
         eventJson = {
           "allUser": false,
-          "community": contractName,
-          "communityLogo": image,
           "description": _eventDescription,
           "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
           "startPeriod": convertTimettampToStringDot(_eventStartDate!),
@@ -129,7 +127,9 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           "state": "진행",
           "title": _eventTitle,
           "contractType": "community",
-          "autoProgress": true,
+          "contractName": contractName,
+          "contractLogo": image,
+          "autoProgress": false,
         };
       } else {
         // 마스터
@@ -137,8 +137,6 @@ class _EventScreenState extends ConsumerState<EventScreen> {
             "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/missions%2F%E1%84%8B%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8F%E1%85%A9%E1%86%AB_%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5_%E1%84%91%E1%85%B5%E1%86%BC%E1%84%8F%E1%85%B32.png?alt=media&token=0ffe5480-4d88-42c0-be29-f7d366bb62d5";
         eventJson = {
           "allUser": true,
-          "community": contractName,
-          "communityLogo": image,
           "description": _eventDescription,
           "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
           "startPeriod": convertTimettampToStringDot(_eventStartDate!),
@@ -148,8 +146,10 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           "prizeWinners": int.parse(_eventPrizeWinners),
           "state": "진행",
           "title": _eventTitle,
-          "contractType": "region",
-          "autoProgress": true,
+          "contractType": "master",
+          "contractName": contractName,
+          "contractLogo": image,
+          "autoProgress": false,
         };
       }
 
@@ -1251,7 +1251,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       BuildContext context, String eventId, String eventName) async {
     removeDeleteOverlay();
 
-    assert(overlayEntry == null);
+    // assert(overlayEntry == null);
 
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned.fill(
@@ -1369,42 +1369,45 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onHover: (event) {
-                            setState(() {
-                              _feedHover = true;
-                            });
-                          },
-                          onExit: (event) {
-                            setState(() {
-                              _feedHover = false;
-                            });
-                          },
-                          child: GestureDetector(
-                            onTap: () => feedUploadTap(
-                                context, size.width - 270, size.height),
-                            child: Container(
-                              width: 150,
-                              height: searchHeight,
-                              decoration: BoxDecoration(
-                                color: _feedHover
-                                    ? Colors.grey.shade200
-                                    : Colors.white,
-                                border: Border.all(
-                                  color: Colors.grey.shade800,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size10,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "피드 공지 올리기",
-                                  style: TextStyle(
+                        Visibility(
+                          visible: size.width > 700,
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            onHover: (event) {
+                              setState(() {
+                                _feedHover = true;
+                              });
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                _feedHover = false;
+                              });
+                            },
+                            child: GestureDetector(
+                              onTap: () => feedUploadTap(
+                                  context, size.width - 270, size.height),
+                              child: Container(
+                                width: 150,
+                                height: searchHeight,
+                                decoration: BoxDecoration(
+                                  color: _feedHover
+                                      ? Colors.grey.shade200
+                                      : Colors.white,
+                                  border: Border.all(
                                     color: Colors.grey.shade800,
-                                    fontSize: Sizes.size14,
-                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    Sizes.size10,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "피드 공지 올리기",
+                                    style: TextStyle(
+                                      color: Colors.grey.shade800,
+                                      fontSize: Sizes.size14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1412,42 +1415,45 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                           ),
                         ),
                         Gaps.h20,
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onHover: (event) {
-                            setState(() {
-                              _addEventHover = true;
-                            });
-                          },
-                          onExit: (event) {
-                            setState(() {
-                              _addEventHover = false;
-                            });
-                          },
-                          child: GestureDetector(
-                            onTap: () => addEventTap(
-                                context, size.width - 270, size.height),
-                            child: Container(
-                              width: 150,
-                              height: searchHeight,
-                              decoration: BoxDecoration(
-                                color: _addEventHover
-                                    ? Colors.grey.shade200
-                                    : Colors.white,
-                                border: Border.all(
-                                  color: Colors.grey.shade800,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size10,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "행사 추가하기",
-                                  style: TextStyle(
+                        Visibility(
+                          visible: size.width > 550,
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            onHover: (event) {
+                              setState(() {
+                                _addEventHover = true;
+                              });
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                _addEventHover = false;
+                              });
+                            },
+                            child: GestureDetector(
+                              onTap: () => addEventTap(
+                                  context, size.width - 270, size.height),
+                              child: Container(
+                                width: 150,
+                                height: searchHeight,
+                                decoration: BoxDecoration(
+                                  color: _addEventHover
+                                      ? Colors.grey.shade200
+                                      : Colors.white,
+                                  border: Border.all(
                                     color: Colors.grey.shade800,
-                                    fontSize: Sizes.size14,
-                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    Sizes.size10,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "행사 추가하기",
+                                    style: TextStyle(
+                                      color: Colors.grey.shade800,
+                                      fontSize: Sizes.size14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1686,7 +1692,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                           child: Align(
                                             alignment: Alignment.center,
                                             child: Text(
-                                              eventList[index].community!,
+                                              eventList[index].contractName!,
                                               softWrap: true,
                                               overflow: TextOverflow.ellipsis,
                                               style: const TextStyle(

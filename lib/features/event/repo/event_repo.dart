@@ -18,7 +18,7 @@ class EventRepository {
       String fullRegion) async {
     final regionQueries = await _db
         .collection("mission")
-        .where("fullRegion", isEqualTo: fullRegion)
+        .where("contractName", isEqualTo: fullRegion)
         .get();
 
     final allUserQueries =
@@ -44,7 +44,7 @@ class EventRepository {
       String community) async {
     final communityQueries = await _db
         .collection("mission")
-        .where("community", isEqualTo: community)
+        .where("contractName", isEqualTo: community)
         .get();
 
     final allUserQueries =

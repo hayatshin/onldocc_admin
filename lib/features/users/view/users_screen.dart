@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
+import 'package:onldocc_admin/common/view/loading_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
@@ -101,7 +102,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     String csvContent = '';
     for (var row in csvData) {
       for (var i = 0; i < row.length; i++) {
-        if (row[i].contains(',')) {
+        if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
           csvContent += row[i];
@@ -228,6 +229,10 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     await ref.read(userRepo).deleteUser(userId);
+                    setState(() {
+                      _initialUserDataListState = true;
+                    });
+                    removeDeleteOverlay();
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
@@ -263,7 +268,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
           data: (data) {
             final getUserContractType = data.contractType;
             final getUserContractName = data.contractName;
-            print("$getUserContractType / $getUserContractName");
 
             return FutureBuilder(
               future: _initialUserDataListState
@@ -271,9 +275,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   : null,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  print(snapshot.error);
                 } else if (snapshot.hasData) {
-                  final userModel = snapshot.data!;
                   return Overlay(
                     initialEntries: [
                       OverlayEntry(
@@ -448,7 +450,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                             ),
                                             DataCell(
                                               Text(
-                                                _userDataList[i]!.lastVisit,
+                                                _userDataList[i]!.lastVisit!,
                                                 style: const TextStyle(
                                                   fontSize: Sizes.size12,
                                                 ),
@@ -485,14 +487,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     ],
                   );
                 }
-                return const Text("?");
+                return const LoadingScreen();
               },
             );
           },
           error: (error, stackTrace) => const ErrorScreen(),
-          loading: () => CircularProgressIndicator.adaptive(
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
+          loading: () => const LoadingScreen(),
         );
   }
 }

@@ -3,15 +3,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
+import 'package:onldocc_admin/common/view/loading_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_period_order.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/view_models/month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/week_ranking_vm.dart';
+import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
-import '../../../common/view/loading_screen.dart';
 import '../../users/models/user_model.dart';
 import '../../users/repo/user_repo.dart';
 import '../../users/view_models/user_view_model.dart';
@@ -254,6 +255,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final tableWidth = size.width - 270 - 64;
     return ref.watch(contractConfigProvider).when(
           data: (data) {
             final getUserContractType = data.contractType;
@@ -273,201 +276,268 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                 ),
                 loadingFinished
                     ? SearchBelow(
-                        child: DataTable(
-                          sortColumnIndex: _currentSortColumn,
-                          sortAscending: _isSortAsc,
-                          columns: [
-                            const DataColumn(
-                              label: Text("#"),
-                            ),
-                            const DataColumn(
-                              label: Text("이름"),
-                            ),
-                            const DataColumn(
-                              label: Text("나이"),
-                            ),
-                            const DataColumn(
-                              label: Text("성별"),
-                            ),
-                            const DataColumn(
-                              label: Text("핸드폰 번호"),
-                            ),
-                            DataColumn(
-                              label: const Text(
-                                "종합 점수",
-                              ),
-                              onSort: (columnIndex, ascending) {
-                                setState(() {
-                                  _currentSortColumn = columnIndex;
-                                  if (_isSortAsc) {
-                                    _userDataList.sort((a, b) => b!.totalScore!
-                                        .compareTo(a!.totalScore!));
-                                  } else {
-                                    _userDataList.sort((a, b) => a!.totalScore!
-                                        .compareTo(b!.totalScore!));
-                                  }
-                                  _isSortAsc = !_isSortAsc;
-                                });
-                              },
-                            ),
-                            DataColumn(
-                              label: const Text("걸음수"),
-                              onSort: (columnIndex, ascending) {
-                                setState(() {
-                                  _currentSortColumn = columnIndex;
-                                  if (_isSortAsc) {
-                                    _userDataList.sort((a, b) =>
-                                        b!.stepScore!.compareTo(a!.stepScore!));
-                                  } else {
-                                    _userDataList.sort((a, b) =>
-                                        a!.stepScore!.compareTo(b!.stepScore!));
-                                  }
-                                  _isSortAsc = !_isSortAsc;
-                                });
-                              },
-                            ),
-                            DataColumn(
-                              label: const Text("일기"),
-                              onSort: (columnIndex, ascending) {
-                                setState(() {
-                                  _currentSortColumn = columnIndex;
-                                  if (_isSortAsc) {
-                                    _userDataList.sort((a, b) => b!.diaryScore!
-                                        .compareTo(a!.diaryScore!));
-                                  } else {
-                                    _userDataList.sort((a, b) => a!.diaryScore!
-                                        .compareTo(b!.diaryScore!));
-                                  }
-                                  _isSortAsc = !_isSortAsc;
-                                });
-                              },
-                            ),
-                            DataColumn(
-                              label: const Text("댓글"),
-                              onSort: (columnIndex, ascending) {
-                                setState(() {
-                                  _currentSortColumn = columnIndex;
-                                  if (_isSortAsc) {
-                                    _userDataList.sort((a, b) => b!
-                                        .commentScore!
-                                        .compareTo(a!.commentScore!));
-                                  } else {
-                                    _userDataList.sort((a, b) => a!
-                                        .commentScore!
-                                        .compareTo(b!.commentScore!));
-                                  }
-                                  _isSortAsc = !_isSortAsc;
-                                });
-                              },
-                            ),
-                          ],
-                          rows: [
-                            for (var i = 0; i < _userDataList.length; i++)
-                              DataRow(
-                                cells: [
-                                  DataCell(
-                                    Text(
-                                      _userDataList[i]!.index.toString(),
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: tableWidth,
+                            child: DataTable(
+                              sortColumnIndex: _currentSortColumn,
+                              sortAscending: _isSortAsc,
+                              columns: [
+                                const DataColumn(
+                                  label: Text(
+                                    "#",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _userDataList[i]!.name.length > 10
-                                          ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                                          : _userDataList[i]!.name,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                const DataColumn(
+                                  label: Text(
+                                    "이름",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _userDataList[i]!.age,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                const DataColumn(
+                                  label: Text(
+                                    "나이",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _userDataList[i]!.gender,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                const DataColumn(
+                                  label: Text(
+                                    "성별",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _userDataList[i]!.phone,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                const DataColumn(
+                                  label: Text(
+                                    "핸드폰 번호",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        _userDataList[i]!.totalScore.toString(),
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
+                                ),
+                                DataColumn(
+                                  label: const Text(
+                                    "종합 점수",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
+                                    ),
+                                  ),
+                                  onSort: (columnIndex, ascending) {
+                                    setState(() {
+                                      _currentSortColumn = columnIndex;
+                                      if (_isSortAsc) {
+                                        _userDataList.sort((a, b) => b!
+                                            .totalScore!
+                                            .compareTo(a!.totalScore!));
+                                      } else {
+                                        _userDataList.sort((a, b) => a!
+                                            .totalScore!
+                                            .compareTo(b!.totalScore!));
+                                      }
+                                      _isSortAsc = !_isSortAsc;
+                                    });
+                                  },
+                                ),
+                                DataColumn(
+                                  label: const Text(
+                                    "걸음수",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
+                                    ),
+                                  ),
+                                  onSort: (columnIndex, ascending) {
+                                    setState(() {
+                                      _currentSortColumn = columnIndex;
+                                      if (_isSortAsc) {
+                                        _userDataList.sort((a, b) => b!
+                                            .stepScore!
+                                            .compareTo(a!.stepScore!));
+                                      } else {
+                                        _userDataList.sort((a, b) => a!
+                                            .stepScore!
+                                            .compareTo(b!.stepScore!));
+                                      }
+                                      _isSortAsc = !_isSortAsc;
+                                    });
+                                  },
+                                ),
+                                DataColumn(
+                                  label: const Text(
+                                    "일기",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
+                                    ),
+                                  ),
+                                  onSort: (columnIndex, ascending) {
+                                    setState(() {
+                                      _currentSortColumn = columnIndex;
+                                      if (_isSortAsc) {
+                                        _userDataList.sort((a, b) => b!
+                                            .diaryScore!
+                                            .compareTo(a!.diaryScore!));
+                                      } else {
+                                        _userDataList.sort((a, b) => a!
+                                            .diaryScore!
+                                            .compareTo(b!.diaryScore!));
+                                      }
+                                      _isSortAsc = !_isSortAsc;
+                                    });
+                                  },
+                                ),
+                                DataColumn(
+                                  label: const Text(
+                                    "댓글",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size13,
+                                    ),
+                                  ),
+                                  onSort: (columnIndex, ascending) {
+                                    setState(() {
+                                      _currentSortColumn = columnIndex;
+                                      if (_isSortAsc) {
+                                        _userDataList.sort((a, b) => b!
+                                            .commentScore!
+                                            .compareTo(a!.commentScore!));
+                                      } else {
+                                        _userDataList.sort((a, b) => a!
+                                            .commentScore!
+                                            .compareTo(b!.commentScore!));
+                                      }
+                                      _isSortAsc = !_isSortAsc;
+                                    });
+                                  },
+                                ),
+                              ],
+                              rows: [
+                                for (var i = 0; i < _userDataList.length; i++)
+                                  DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.index.toString(),
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        _userDataList[i]!.stepScore.toString(),
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.name.length > 10
+                                              ? "${_userDataList[i]!.name.substring(0, 10)}.."
+                                              : _userDataList[i]!.name,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        _userDataList[i]!.diaryScore.toString(),
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.age,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        _userDataList[i]!
-                                            .commentScore
-                                            .toString(),
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.gender,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.phone,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            numberDecimalCommans(
+                                                _userDataList[i]!.totalScore!),
+                                            textAlign: TextAlign.end,
+                                            style: const TextStyle(
+                                              fontSize: Sizes.size13,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            numberDecimalCommans(
+                                                _userDataList[i]!.stepScore!),
+                                            textAlign: TextAlign.end,
+                                            style: const TextStyle(
+                                              fontSize: Sizes.size13,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            numberDecimalCommans(
+                                                _userDataList[i]!.diaryScore!),
+                                            style: const TextStyle(
+                                              fontSize: Sizes.size13,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            numberDecimalCommans(
+                                                _userDataList[i]!
+                                                    .commentScore!),
+                                            style: const TextStyle(
+                                              fontSize: Sizes.size13,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                          ],
+                              ],
+                            ),
+                          ),
                         ),
                       )
-                    : const LoadingScreen(),
+                    : Expanded(
+                        child: Center(
+                          child: CircularProgressIndicator.adaptive(
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
               ]),
             );
           },
-          error: (error, stackTrace) => const ErrorScreen(),
-          loading: () => CircularProgressIndicator.adaptive(
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
+          error: (error, stackTrace) {
+            print(error);
+
+            print(error);
+            return const ErrorScreen();
+          },
+          loading: () => const LoadingScreen(),
         );
   }
 }

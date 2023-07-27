@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:intl/intl.dart';
 
 void showSnackBar(BuildContext context, String error) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -66,11 +67,16 @@ double calculateMaxContentHeight(String description, double diaryWidth) {
       ),
     ),
     maxLines: null,
-    textDirection: TextDirection.ltr,
+    // textDirection: TextDirection.ltr,
   )..layout(maxWidth: diaryWidth);
   double height = textPainter.height;
   if (height > maxHeight) {
     maxHeight = height;
   }
   return maxHeight;
+}
+
+String numberDecimalCommans(int number) {
+  String formattedNumber = NumberFormat('#,##0').format(number);
+  return formattedNumber;
 }

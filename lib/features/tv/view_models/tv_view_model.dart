@@ -54,7 +54,13 @@ class TvViewModel extends AsyncNotifier<List<TvModel>> {
 
     ContractConfigModel contractConfigModel =
         ref.watch(contractConfigProvider).value!;
-    String contractType = contractConfigModel.contractType;
+    String contractType = contractConfigModel.contractType == "지역"
+        ? "region"
+        : contractConfigModel.contractType == "기관"
+            ? "community"
+            : contractConfigModel.contractType == "마스터"
+                ? "master"
+                : "region";
     String contractName = contractConfigModel.contractName;
     String documentId = "";
     String thumbnail = "";

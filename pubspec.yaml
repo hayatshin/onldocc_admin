@@ -89,6 +89,7 @@ flutter:
     - assets/images/main_phone.png
     - assets/images/image_icon.png
     - assets/images/text_icon.png
+    - assets/images/woman_icon.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

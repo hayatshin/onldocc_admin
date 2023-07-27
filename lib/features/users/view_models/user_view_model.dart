@@ -33,6 +33,7 @@ class UserViewModel extends AsyncNotifier<UserModel> {
     Map<String, dynamic>? userJson =
         await ref.read(userRepo).getUserProfile(userId);
     final userModel = UserModel.fromJson(userJson!);
+
     return userModel;
   }
 
