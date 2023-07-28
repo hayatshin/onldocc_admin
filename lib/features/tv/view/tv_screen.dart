@@ -148,6 +148,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return Container(
+                width: totalWidth,
                 height: totalHeight * 0.6,
                 decoration: const BoxDecoration(
                   color: Colors.white,

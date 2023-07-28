@@ -318,6 +318,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           builder: (context, setState) {
             return Container(
               height: totalHeight * 0.8,
+              width: totalWidth,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -591,6 +592,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return Container(
+            width: totalWidth,
             height: totalHeight * 0.8,
             decoration: const BoxDecoration(
               color: Colors.white,
