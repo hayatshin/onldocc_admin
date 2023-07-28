@@ -313,6 +313,9 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        minWidth: totalWidth,
+      ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
@@ -589,6 +592,9 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      constraints: BoxConstraints(
+        minWidth: totalWidth,
+      ),
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return Container(

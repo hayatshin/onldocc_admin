@@ -144,6 +144,9 @@ class _TvScreenState extends ConsumerState<TvScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        minWidth: totalWidth,
+      ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
