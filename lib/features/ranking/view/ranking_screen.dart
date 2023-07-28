@@ -8,6 +8,7 @@ import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_period_order.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/ranking/view_models/last_month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/week_ranking_vm.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -48,8 +49,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   final String _sortOrderStandard = "종합 점수";
   String _sortOrderPeriod = "이번주";
   bool loadingFinished = false;
-  final List<UserModel?> _weekData = [];
-  final List<UserModel?> _monthData = [];
   int _currentSortColumn = 0;
   bool _isSortAsc = true;
 
@@ -247,6 +246,18 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
             .updateUserScore(_userDataList, _sortOrderStandard);
         setState(() {
           _userDataList = weekList;
+          loadingFinished = true;
+        });
+        break;
+      case "지난달":
+        setState(() {
+          _sortOrderPeriod = "지난달";
+        });
+        List<UserModel?> lastMonthList = await ref
+            .read(lastMonthRankingProvider.notifier)
+            .updateUserScore(_userDataList, _sortOrderStandard);
+        setState(() {
+          _userDataList = lastMonthList;
           loadingFinished = true;
         });
         break;

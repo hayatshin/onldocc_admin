@@ -111,7 +111,6 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
   Future<List<DiaryModel>> getUserDiaryData() async {
     // await Future.delayed(const Duration(seconds: 1));
-    print("getUserDiaryData");
 
     final userProfile =
         await ref.read(userProvider.notifier).getUserModel(widget.userId!);

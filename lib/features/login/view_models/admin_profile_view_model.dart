@@ -74,6 +74,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
       } else if (state.error.toString().contains(passwordFirebaseError)) {
         showSnackBar(context, passwordErrorMessage);
       } else {
+        print("로그인 에러 -> ${state.error.toString()}");
         showSnackBar(context, defaultErrorMessage);
       }
     }

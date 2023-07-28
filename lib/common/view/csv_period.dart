@@ -125,7 +125,7 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                       fontSize: Sizes.size14,
                       fontWeight: FontWeight.w500,
                     ),
-                    items: const ["이번주", "이번달"],
+                    items: const ["이번주", "이번달", "지난달"],
                     controller: widget.sortPeriodControllder,
                   ),
                 ),

@@ -69,6 +69,12 @@ class ContractConfigViewModel extends AsyncNotifier<ContractConfigModel> {
           contractName: adminProfile.region,
         );
       }
+    } else {
+      // 마스터
+      contractConfigModel = ContractConfigModel(
+        contractType: adminProfile.contractType,
+        contractName: adminProfile.region,
+      );
     }
 
     state = AsyncValue.data(contractConfigModel);

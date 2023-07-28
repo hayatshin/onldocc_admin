@@ -60,10 +60,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   void _onSubmitTap() {
     if (_formKey.currentState != null) {
       if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.save();
-        ref
-            .read(adminProfileProvider.notifier)
-            .login(formData["email"]!, formData["password"]!, context);
+        try {
+          _formKey.currentState!.save();
+          ref
+              .read(adminProfileProvider.notifier)
+              .login(formData["email"]!, formData["password"]!, context);
+        } catch (e) {
+          print("e -> $e");
+        }
       }
     }
   }

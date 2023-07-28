@@ -8,6 +8,9 @@ class StepViewModel extends AsyncNotifier<List<StepModel>> {
   DateTime now = DateTime.now();
   late DateTime firstDateOfWeek;
   late DateTime firstDateOfMonth;
+  late DateTime lastMonth;
+  late DateTime firstDateOfLastMonth;
+  late DateTime lastDateOfLastMonth;
   late StepRepository _stepRepository;
 
   @override
@@ -19,6 +22,12 @@ class StepViewModel extends AsyncNotifier<List<StepModel>> {
     firstDateOfMonth = DateTime(now.year, now.month, 1);
     firstDateOfMonth = DateTime(firstDateOfMonth.year, firstDateOfMonth.month,
         firstDateOfMonth.day, 0, 0);
+    lastMonth = DateTime(now.year, now.month - 1, now.day);
+    firstDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month, 1);
+    lastDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month + 1, 0);
+
+    print("firstDateOfLastMonth -> $firstDateOfLastMonth");
+    print("lastDateOfLastMonth -> $lastDateOfLastMonth");
     return [];
   }
 
@@ -51,6 +60,9 @@ class StepViewModel extends AsyncNotifier<List<StepModel>> {
     } else if (periodType == "이번달") {
       userRef = await _stepRepository.getUserCertinDateStepData(
           userId, firstDateOfMonth, now);
+    } else if (periodType == "지난달") {
+      userRef = await _stepRepository.getUserCertinDateStepData(
+          userId, firstDateOfLastMonth, lastDateOfLastMonth);
     }
 
     for (var stepJson in userRef) {

@@ -183,7 +183,9 @@ class _CaScreenState extends ConsumerState<CaScreen> {
                                 ),
                                 title: ChartTitle(
                                   text: "인지 능력 추이",
-                                  textStyle: const TextStyle(),
+                                  textStyle: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                                 series: <PieSeries<QuestionResultData, String>>[
                                   PieSeries<QuestionResultData, String>(

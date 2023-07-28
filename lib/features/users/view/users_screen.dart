@@ -8,6 +8,7 @@ import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/ranking/view_models/last_month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/month_ranking_vm.dart';
 import 'package:onldocc_admin/features/ranking/view_models/week_ranking_vm.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
@@ -51,6 +52,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     super.initState();
     ref.read(weekRankingProvider);
     ref.read(monthRankingProvider);
+    ref.read(lastMonthRankingProvider);
   }
 
   void resetInitialState() {

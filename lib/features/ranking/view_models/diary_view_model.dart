@@ -9,6 +9,10 @@ class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
   DateTime now = DateTime.now();
   late DateTime firstDateOfWeek;
   late DateTime firstDateOfMonth;
+  late DateTime lastMonth;
+  late DateTime firstDateOfLastMonth;
+  late DateTime lastDateOfLastMonth;
+
   late DiaryRepository _diaryRepository;
 
   @override
@@ -20,6 +24,9 @@ class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
     firstDateOfMonth = DateTime(now.year, now.month, 1);
     firstDateOfMonth = DateTime(firstDateOfMonth.year, firstDateOfMonth.month,
         firstDateOfMonth.day, 0, 0);
+    lastMonth = DateTime(now.year, now.month - 1, now.day);
+    firstDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month, 1);
+    lastDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month + 1, 0);
     return [];
   }
 
@@ -39,6 +46,15 @@ class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
     } else if (periodType == "이번달") {
       diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(
           userId, firstDateOfMonth, now);
+      for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
+        Map<String, dynamic> diaryJson = diaryDoc.data()!;
+
+        DiaryModel diaryModel = DiaryModel.fromJson(diaryJson);
+        diaryList.add(diaryModel);
+      }
+    } else if (periodType == "지난달") {
+      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(
+          userId, firstDateOfLastMonth, lastDateOfLastMonth);
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
 

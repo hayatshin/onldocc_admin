@@ -103,23 +103,39 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
         await ref.read(userProvider.notifier).getUserModel(widget.userId!);
     _userName = userProfile!.name;
 
-    if (_periodType == "이번달") {
-      final stepDataList = await ref
-          .read(stepProvider.notifier)
-          .getUserDateStepData(widget.userId!, _periodType);
-      setState(() {
-        _stepDataList = stepDataList;
-        loadingFinished = true;
-      });
-    } else if (_periodType == "이번주") {
-      final stepDataList = await ref
-          .read(stepProvider.notifier)
-          .getUserDateStepData(widget.userId!, _periodType);
-      setState(() {
-        _stepDataList = stepDataList;
-        loadingFinished = true;
-      });
-    }
+    final stepDataList = await ref
+        .read(stepProvider.notifier)
+        .getUserDateStepData(widget.userId!, _periodType);
+    setState(() {
+      _stepDataList = stepDataList;
+      loadingFinished = true;
+    });
+
+    // if (_periodType == "이번달") {
+    //   final stepDataList = await ref
+    //       .read(stepProvider.notifier)
+    //       .getUserDateStepData(widget.userId!, _periodType);
+    //   setState(() {
+    //     _stepDataList = stepDataList;
+    //     loadingFinished = true;
+    //   });
+    // } else if (_periodType == "이번주") {
+    //   final stepDataList = await ref
+    //       .read(stepProvider.notifier)
+    //       .getUserDateStepData(widget.userId!, _periodType);
+    //   setState(() {
+    //     _stepDataList = stepDataList;
+    //     loadingFinished = true;
+    //   });
+    // } else if (_periodType == "지난달") {
+    //   final stepDataList = await ref
+    //       .read(stepProvider.notifier)
+    //       .getUserDateStepData(widget.userId!, _periodType);
+    //   setState(() {
+    //     _stepDataList = stepDataList;
+    //     loadingFinished = true;
+    //   });
+    // }
   }
 
   @override

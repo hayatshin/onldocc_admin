@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
 import 'package:onldocc_admin/features/tv/repo/tv_repo.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
+import 'package:onldocc_admin/utils.dart';
 
 import '../../../common/view/search_below.dart';
 import '../../../constants/gaps.dart';
@@ -47,6 +48,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
         await ref.read(tvProvider.notifier).saveTvwithJson(_title, _link);
         await ref.read(tvProvider.notifier).getCertainTvList();
         context.pop();
+        showSnackBar(context, "영상이 추가되었습니다.");
       }
     }
   }

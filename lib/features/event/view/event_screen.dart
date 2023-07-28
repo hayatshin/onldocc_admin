@@ -159,6 +159,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           .getEventModels(contractType, contractName);
 
       context.pop();
+      showSnackBar(context, "행사가 추가되었습니다.");
     }
   }
 
@@ -208,6 +209,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     await ref.read(eventRepo).addNotification(userId, diaryId, diaryModel);
 
     context.pop();
+    showSnackBar(context, "피드 공지가 올라갔습니다.");
   }
 
   Future<void> pickImageFromGallery(
