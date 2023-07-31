@@ -83,7 +83,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       userModel.gender,
       userModel.phone,
       userModel.fullRegion,
-      userModel.registerDate
+      userModel.registerDate,
+      userModel.lastVisit,
     ];
   }
 
