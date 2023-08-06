@@ -477,22 +477,39 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
-                                                Expanded(
-                                                  flex: 8,
-                                                  child: Text(
-                                                    diaryModelList[index]
-                                                                .todayDiary
-                                                                .length >
-                                                            40
-                                                        ? "${diaryModelList[index].todayDiary.substring(0, 41)}..."
-                                                        : diaryModelList[index]
-                                                            .todayDiary,
-                                                    style: const TextStyle(
-                                                      fontSize: Sizes.size13,
-                                                    ),
-                                                    textAlign: TextAlign.left,
-                                                  ),
-                                                ),
+                                                diaryModelList[index].secret
+                                                    ? Expanded(
+                                                        flex: 8,
+                                                        child: Text(
+                                                          "비밀 글",
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade400,
+                                                            fontSize:
+                                                                Sizes.size13,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : Expanded(
+                                                        flex: 8,
+                                                        child: Text(
+                                                          diaryModelList[index]
+                                                                      .todayDiary
+                                                                      .length >
+                                                                  40
+                                                              ? "${diaryModelList[index].todayDiary.substring(0, 41)}..."
+                                                              : diaryModelList[
+                                                                      index]
+                                                                  .todayDiary,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize:
+                                                                Sizes.size13,
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                        ),
+                                                      ),
                                                 Expanded(
                                                   flex: 2,
                                                   child: Text(
