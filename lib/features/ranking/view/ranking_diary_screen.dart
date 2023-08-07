@@ -443,13 +443,17 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                       },
                                       children: [
                                         ExpansionPanel(
-                                          canTapOnHeader: diaryModelList[index]
-                                                      .todayDiary
-                                                      .length >
-                                                  40
-                                              ? true
-                                              : false,
-                                          isExpanded: expandMap[index] ?? false,
+                                          canTapOnHeader:
+                                              !diaryModelList[index].secret &&
+                                                      diaryModelList[index]
+                                                              .todayDiary
+                                                              .length >
+                                                          40
+                                                  ? true
+                                                  : false,
+                                          isExpanded:
+                                              !diaryModelList[index].secret &&
+                                                  (expandMap[index] ?? false),
                                           backgroundColor: Colors.white,
                                           headerBuilder: (context, isExpanded) {
                                             return Row(
@@ -558,22 +562,31 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                Expanded(
-                                                  flex: 6,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                      bottom: Sizes.size10,
-                                                    ),
-                                                    child: Text(
-                                                      diaryModelList[index]
-                                                          .todayDiary,
-                                                      style: const TextStyle(
-                                                        fontSize: Sizes.size13,
+                                                diaryModelList[index].secret
+                                                    ? Expanded(
+                                                        flex: 6,
+                                                        child: Container())
+                                                    : Expanded(
+                                                        flex: 6,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                            bottom:
+                                                                Sizes.size10,
+                                                          ),
+                                                          child: Text(
+                                                            diaryModelList[
+                                                                    index]
+                                                                .todayDiary,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize:
+                                                                  Sizes.size13,
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                ),
                                                 const Expanded(
                                                   flex: 2,
                                                   child: Text(
