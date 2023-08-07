@@ -124,7 +124,7 @@ class UserRepository {
 
   Future<List<UserModel?>> getAllUserData() async {
     final userSnapshots =
-        await _db.collection("users").orderBy("smallRegion").get();
+        await _db.collection("users").orderBy("timestamp").get();
     return userSnapshots.docs
         .map((doc) => dbToUserModel(doc))
         .toList()
@@ -140,6 +140,7 @@ class UserRepository {
         .collection("users")
         .where("region", isEqualTo: region)
         .where("smallRegion", isEqualTo: smallRegion)
+        .orderBy("timestamp")
         .get();
 
     return userSnapshots.docs
@@ -153,6 +154,7 @@ class UserRepository {
     final userSnapshots = await _db
         .collection("users")
         .where("community", arrayContains: community)
+        .orderBy("timestamp")
         .get();
 
     return userSnapshots.docs
