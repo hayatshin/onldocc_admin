@@ -7,7 +7,6 @@ import 'package:onldocc_admin/features/event/models/event_user_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/ranking/repo/ranking_repo.dart';
-import 'package:onldocc_admin/features/ranking/view_models/event_ranking_vm.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -67,64 +66,6 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
     Map<String, dynamic>? eventMap = eventDoc.data();
     EventModel eventModel = EventModel.fromJson(eventMap!);
     return eventModel;
-  }
-
-  Future<EventUserModel?> calculatePoint(
-      QueryDocumentSnapshot<Map<String, dynamic>> doc,
-      int goalScore,
-      String startDateString,
-      String endDateString) async {
-    String userId = doc.get("userId");
-
-    Timestamp participatingTimestamp = doc.get("timestamp");
-
-    DateTime participateDate = participatingTimestamp.toDate();
-
-    UserModel? userModel = await ref.read(userRepo).getUserModel(userId);
-    if (userModel != null) {
-      EventUserModel? eventUserModel =
-          EventUserModel.fromJson(userModel.toJson());
-
-      final timestampEventUserModel = eventUserModel.copyWith(
-        participateDate: participateDate,
-      );
-
-      DateTime startDate = startDateString.contains(".")
-          ? dateStringToDateTimeDot(startDateString)
-          : (doc["timestamp"] as Timestamp).toDate();
-      DateTime endDate = endDateString.contains(".")
-          ? dateStringToDateTimeDot(endDateString)
-          : DateTime.now();
-
-      EventUserModel? scoreEventUserModel = await ref
-          .read(eventRankingProvider.notifier)
-          .calculateUserScore(
-              timestampEventUserModel, startDate, endDate, goalScore);
-
-      return scoreEventUserModel;
-    }
-    return null;
-
-    // participantsModelList.add(scoreEventUserModel!);
-  }
-
-  Future<List<EventUserModel>> getCertainEventParticipants(String eventId,
-      int goalScore, String startDateString, String endDateString) async {
-    List<EventUserModel> participantsModelList = [];
-
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> participantsDocs =
-        await _eventRepository.getEventParticipants(eventId);
-
-    await Future.forEach(participantsDocs,
-        (QueryDocumentSnapshot<Map<String, dynamic>> doc) async {
-      EventUserModel? scoreEventUserModel =
-          await calculatePoint(doc, goalScore, startDateString, endDateString);
-      if (scoreEventUserModel != null) {
-        participantsModelList.add(scoreEventUserModel);
-      }
-    });
-
-    return participantsModelList;
   }
 
   // re-code
