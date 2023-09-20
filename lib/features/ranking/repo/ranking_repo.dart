@@ -29,6 +29,28 @@ class RankingRepository {
     return dailyScore;
   }
 
+  // all
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getAllStepQuery() async {
+    final query = await _db.collection("period_step_count").get();
+
+    return query.docs;
+  }
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getAllDiaryQuery() async {
+    final query = await _db.collection("diary").get();
+
+    return query.docs;
+  }
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getAllCommentQuery() async {
+    final query = await _db.collectionGroup("comments").get();
+
+    return query.docs;
+  }
+
   // date
   Future<List<DocumentSnapshot<Map<String, dynamic>>>> getDateStepQuery(
       DateTime startDate, DateTime endDate) async {

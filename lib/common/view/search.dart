@@ -6,14 +6,10 @@ import 'package:onldocc_admin/constants/sizes.dart';
 class Search extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
-  final String constractType;
-  final String contractName;
   const Search({
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
-    required this.constractType,
-    required this.contractName,
   });
 
   @override

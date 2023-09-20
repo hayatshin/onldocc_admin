@@ -3,50 +3,18 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/ranking/models/step_model.dart';
 import 'package:onldocc_admin/features/ranking/repo/step_repo.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class StepViewModel extends AsyncNotifier<List<StepModel>> {
   DateTime now = DateTime.now();
-  late DateTime firstDateOfWeek;
-  late DateTime firstDateOfMonth;
-  late DateTime lastMonth;
-  late DateTime firstDateOfLastMonth;
-  late DateTime lastDateOfLastMonth;
   late StepRepository _stepRepository;
+  WeekMonthDay weekMonthDay = getWeekMonthDay();
 
   @override
   FutureOr<List<StepModel>> build() {
     _stepRepository = StepRepository();
-    firstDateOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    firstDateOfWeek = DateTime(
-        firstDateOfWeek.year, firstDateOfWeek.month, firstDateOfWeek.day, 0, 0);
-    firstDateOfMonth = DateTime(now.year, now.month, 1);
-    firstDateOfMonth = DateTime(firstDateOfMonth.year, firstDateOfMonth.month,
-        firstDateOfMonth.day, 0, 0);
-    lastMonth = DateTime(now.year, now.month - 1, now.day);
-    firstDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month, 1);
-    lastDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month + 1, 0);
 
-    print("firstDateOfLastMonth -> $firstDateOfLastMonth");
-    print("lastDateOfLastMonth -> $lastDateOfLastMonth");
     return [];
-  }
-
-  Future<List<StepModel>> getUserAllStepData(String userId) async {
-    List<StepModel> stepList = [];
-    final userRef = await _stepRepository.getUserAllDateStepData(userId);
-    final userDoc = userRef.data();
-
-    userDoc?.forEach(
-      (date, dailyStep) {
-        final dailyStepInt = int.parse(dailyStep);
-        final stepJson = {
-          date: dailyStepInt,
-        };
-        StepModel? stepModel = StepModel.fromJson(stepJson);
-        stepList.add(stepModel);
-      },
-    );
-    return stepList;
   }
 
   Future<List<StepModel>> getUserDateStepData(
@@ -55,14 +23,14 @@ class StepViewModel extends AsyncNotifier<List<StepModel>> {
     late List<Map<String, dynamic>> userRef;
 
     if (periodType == "이번주") {
-      userRef = await _stepRepository.getUserCertinDateStepData(
-          userId, firstDateOfWeek, now);
+      userRef = await _stepRepository.getUserCertinDateStepData(userId,
+          weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
     } else if (periodType == "이번달") {
-      userRef = await _stepRepository.getUserCertinDateStepData(
-          userId, firstDateOfMonth, now);
+      userRef = await _stepRepository.getUserCertinDateStepData(userId,
+          weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
     } else if (periodType == "지난달") {
-      userRef = await _stepRepository.getUserCertinDateStepData(
-          userId, firstDateOfLastMonth, lastDateOfLastMonth);
+      userRef = await _stepRepository.getUserCertinDateStepData(userId,
+          weekMonthDay.lastMonth.startDate, weekMonthDay.lastMonth.endDate);
     }
 
     for (var stepJson in userRef) {

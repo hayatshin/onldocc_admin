@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
@@ -25,7 +26,7 @@ class EventDetailScreen extends ConsumerStatefulWidget {
 class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     with SingleTickerProviderStateMixin {
   final searchHeight = 35;
-  List<EventUserModel> _participantsList = [];
+  final List<EventUserModel> _participantsList = [];
   final List<String> _listHeader = [
     "#",
     "이름",
@@ -418,13 +419,17 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                       FutureBuilder(
                         future: ref
                             .read(eventProvider.notifier)
-                            .getCertainEventParticipants(eventData.documentId!,
-                                eventData.goalScore!, eventData.endPeriod!),
+                            .updateEventParticipantsList(
+                              eventData.startPeriod!,
+                              eventData.endPeriod!,
+                              eventData.documentId!,
+                              eventData.goalScore!,
+                            ),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
+                            return Text(snapshot.error.toString());
                           } else if (snapshot.hasData) {
                             List<EventUserModel> participants = snapshot.data!;
-                            _participantsList = participants;
                             return DataTable(
                               columns: const [
                                 DataColumn(
@@ -514,7 +519,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].name!,
+                                          participants[i].name ?? "",
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -522,7 +527,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].age!,
+                                          participants[i].age ?? "",
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -530,7 +535,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].gender!,
+                                          participants[i].gender ?? "",
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -538,7 +543,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].phone!,
+                                          participants[i].phone ?? "",
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -546,7 +551,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].fullRegion!,
+                                          participants[i].fullRegion ?? "",
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -554,8 +559,12 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          convertTimettampToString(
-                                              participants[i].participateDate!),
+                                          participants[i].participateDate !=
+                                                  null
+                                              ? convertTimettampToString(
+                                                  participants[i]
+                                                      .participateDate!)
+                                              : "",
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -585,8 +594,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                             );
                           }
                           return Center(
-                            child: CircularProgressIndicator.adaptive(
-                              backgroundColor: Theme.of(context).primaryColor,
+                            child: LoadingAnimationWidget.inkDrop(
+                              color: Colors.grey.shade600,
+                              size: Sizes.size20,
                             ),
                           );
                         },

@@ -80,3 +80,54 @@ String numberDecimalCommans(int number) {
   String formattedNumber = NumberFormat('#,##0').format(number);
   return formattedNumber;
 }
+
+class StartEndDate {
+  final DateTime startDate;
+  final DateTime endDate;
+
+  StartEndDate({
+    required this.startDate,
+    required this.endDate,
+  });
+}
+
+class WeekMonthDay {
+  final StartEndDate thisWeek;
+  final StartEndDate lastMonth;
+  final StartEndDate thisMonth;
+
+  WeekMonthDay({
+    required this.thisWeek,
+    required this.lastMonth,
+    required this.thisMonth,
+  });
+}
+
+WeekMonthDay getWeekMonthDay() {
+  DateTime currentDate = DateTime.now();
+  int currentWeekDay = currentDate.weekday;
+  DateTime startOfThisWeek = currentDate
+      .subtract(Duration(days: currentWeekDay - 1))
+      .toLocal()
+      .add(const Duration(hours: 0, minutes: 0, seconds: 0));
+  StartEndDate thisWeek =
+      StartEndDate(startDate: startOfThisWeek, endDate: DateTime.now());
+
+  DateTime startDateOfLastMonth =
+      DateTime(currentDate.year, currentDate.month - 1, 1, 0, 0, 0);
+  DateTime endDateOfLastMonth =
+      DateTime(currentDate.year, currentDate.month, 0, 23, 59, 59);
+  StartEndDate lastMonth = StartEndDate(
+      startDate: startDateOfLastMonth, endDate: endDateOfLastMonth);
+
+  DateTime startDateOfThisMonth =
+      DateTime(currentDate.year, currentDate.month, 1, 0, 0, 0);
+  StartEndDate thisMonth =
+      StartEndDate(startDate: startDateOfThisMonth, endDate: DateTime.now());
+  return WeekMonthDay(
+      thisWeek: thisWeek, lastMonth: lastMonth, thisMonth: thisMonth);
+}
+
+DateTime dateStringToDateTimeDot(String dateString) {
+  return DateTime.parse(dateString.replaceAll('.', '-'));
+}

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
@@ -35,19 +34,11 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
   Future<AdminProfileModel> getAdminProfile() async {
     late AdminProfileModel adminProfileModel;
 
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      if (_authRepository.isLoggedIn) {
-        Map<String, dynamic>? adminProfile =
-            await _authRepository.getAdminProfile(_authRepository.user!.uid);
-        if (adminProfile != null) {
-          adminProfileModel = AdminProfileModel.fromJson(adminProfile);
-        }
-      } else {
-        adminProfileModel = AdminProfileModel.empty();
-      }
-      return adminProfileModel;
-    });
+    Map<String, dynamic>? adminProfile =
+        await _authRepository.getAdminProfile(_authRepository.user!.uid);
+    if (adminProfile != null) {
+      adminProfileModel = AdminProfileModel.fromJson(adminProfile);
+    }
     return adminProfileModel;
   }
 
@@ -59,9 +50,6 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
         await _authRepository.signIn(email, password);
         AdminProfileModel adminProfileModel = await getAdminProfile();
 
-        await ref
-            .read(contractConfigProvider.notifier)
-            .updateContractConfigModel(adminProfileModel);
         return adminProfileModel;
       },
     );

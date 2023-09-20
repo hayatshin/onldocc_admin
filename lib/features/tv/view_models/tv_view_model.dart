@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/models/contract_config_model.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/repo/tv_repo.dart';
 
@@ -19,11 +19,11 @@ class TvViewModel extends AsyncNotifier<List<TvModel>> {
   Future<List<TvModel>> getCertainTvList() async {
     state = const AsyncValue.loading();
 
-    ContractConfigModel contractConfigModel =
-        ref.watch(contractConfigProvider).value!;
+    AdminProfileModel data =
+        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
 
     // String contractType = contractConfigModel.contractType;
-    String contractName = contractConfigModel.contractName;
+    String contractName = data.contractName;
 
     List<TvModel> tvList = [];
     List<QueryDocumentSnapshot<Map<String, dynamic>>> tvs =
@@ -52,16 +52,16 @@ class TvViewModel extends AsyncNotifier<List<TvModel>> {
   Future<void> saveTvwithJson(String title, String link) async {
     Map<String, dynamic> tvJson = {};
 
-    ContractConfigModel contractConfigModel =
-        ref.watch(contractConfigProvider).value!;
-    String contractType = contractConfigModel.contractType == "지역"
+    AdminProfileModel data =
+        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
+    String contractType = data.contractType == "지역"
         ? "region"
-        : contractConfigModel.contractType == "기관"
+        : data.contractType == "기관"
             ? "community"
-            : contractConfigModel.contractType == "마스터"
+            : data.contractType == "마스터"
                 ? "master"
                 : "region";
-    String contractName = contractConfigModel.contractName;
+    String contractName = data.contractName;
     String documentId = "";
     String thumbnail = "";
 

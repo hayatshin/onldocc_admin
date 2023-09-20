@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/common/models/contract_notifier.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 
@@ -97,6 +100,46 @@ class UserViewModel extends AsyncNotifier<UserModel> {
       }
     }
     return list;
+  }
+
+  Future<List<UserModel?>> getContractUserList() async {
+    List<UserModel?> userDataList = [];
+    List<UserModel?> allUserList = await ref.read(userRepo).getAllUserData();
+
+    AdminProfileModel adminProfileModel =
+        await ref.read(adminProfileProvider.notifier).getAdminProfile();
+
+    if (adminProfileModel.contractType == "마스터") {
+      if (contractNotifier.contractConfigModel.contractType != "지역" &&
+          contractNotifier.contractConfigModel.contractType != "기관") {
+        return allUserList.where((element) => element!.name != "탈퇴자").toList();
+      } else {
+        for (UserModel? user in allUserList) {
+          if (contractNotifier.contractConfigModel.contractType == "지역" &&
+              contractNotifier.contractConfigModel.contractName ==
+                  user!.fullRegion) {
+            userDataList.add(user);
+          } else if (contractNotifier.contractConfigModel.contractType ==
+                  "기관" &&
+              contractNotifier.contractConfigModel.contractName ==
+                  user!.community) {
+            userDataList.add(user);
+          }
+        }
+      }
+    } else {
+      for (UserModel? user in allUserList) {
+        if (adminProfileModel.contractType == "지역" &&
+            adminProfileModel.contractName == user!.fullRegion) {
+          userDataList.add(user);
+        } else if (adminProfileModel.contractType == "기관" &&
+            adminProfileModel.contractName == user!.community) {
+          userDataList.add(user);
+        }
+      }
+    }
+
+    return userDataList;
   }
 }
 

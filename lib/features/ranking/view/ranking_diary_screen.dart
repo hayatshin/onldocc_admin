@@ -2,15 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
-import 'package:onldocc_admin/common/view/error_screen.dart';
-import 'package:onldocc_admin/common/view/loading_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/diary_view_model.dart';
-import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -38,13 +36,19 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   final List<String> _listHeader = ["#", "날짜", "일기", "감정", "비밀"];
   List<DiaryModel> _diaryDataList = [];
   bool loadingFinished = false;
-  String _periodType = "이번주";
+  String _periodType = "이번달";
   Map<int, bool> expandMap = {};
   bool expandclick = false;
   bool expandUpdate = false;
   late List<MoodData> _moodDistribution;
-  String? _userName = "";
+  final String _userName = "";
   final TextEditingController sortPeriodControllder = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDiaryData();
+  }
 
   List<dynamic> exportToList(DiaryModel diaryModel, int index) {
     return [
@@ -58,9 +62,10 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
   void updateOrderPeriod(String periodType) {
     setState(() {
-      expandclick = false;
       _periodType = periodType;
+      loadingFinished = false;
     });
+    getUserDiaryData();
   }
 
   List<List<dynamic>> exportToFullList(List<DiaryModel?> diaryModelList) {
@@ -110,46 +115,62 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   }
 
   Future<List<DiaryModel>> getUserDiaryData() async {
-    // await Future.delayed(const Duration(seconds: 1));
-
-    final userProfile =
-        await ref.read(userProvider.notifier).getUserModel(widget.userId!);
-    _userName = userProfile!.name;
-
     List<DiaryModel> diaryDataList = await ref
         .read(diaryProvider.notifier)
         .getUserDateDiaryData(widget.userId!, _periodType);
 
+    print("diaryDataList -> $diaryDataList");
+
     int totalMoods = diaryDataList.length;
     int joyCounts = diaryDataList
-        .where((element) => element.todayMood.description == "기뻐요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 0
+            : element.todayMood.description == "기뻐요")
         .length;
     int throbCounts = diaryDataList
-        .where((element) => element.todayMood.description == "설레요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 1
+            : element.todayMood.description == "설레요")
         .length;
     int thanksfulCounts = diaryDataList
-        .where((element) => element.todayMood.description == "감사해요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 2
+            : element.todayMood.description == "감사해요")
         .length;
     int shalomCounts = diaryDataList
-        .where((element) => element.todayMood.description == "평온해요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 3
+            : element.todayMood.description == "평온해요")
         .length;
     int sosoCounts = diaryDataList
-        .where((element) => element.todayMood.description == "그냥 그래요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 4
+            : element.todayMood.description == "그냥 그래요")
         .length;
     int lonelyCounts = diaryDataList
-        .where((element) => element.todayMood.description == "외로워요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 5
+            : element.todayMood.description == "외로워요")
         .length;
     int anxiousCounts = diaryDataList
-        .where((element) => element.todayMood.description == "불안해요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 6
+            : element.todayMood.description == "불안해요")
         .length;
     int gloomyCounts = diaryDataList
-        .where((element) => element.todayMood.description == "우울해요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 7
+            : element.todayMood.description == "우울해요")
         .length;
     int sadCounts = diaryDataList
-        .where((element) => element.todayMood.description == "슬퍼요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 8
+            : element.todayMood.description == "슬퍼요")
         .length;
     int angryCounts = diaryDataList
-        .where((element) => element.todayMood.description == "화나요")
+        .where((element) => element.todayMood is String
+            ? element.todayMood == 9
+            : element.todayMood.description == "화나요")
         .length;
     int extraCounts = totalMoods -
         (joyCounts +
@@ -187,13 +208,10 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
       expandclick = true;
       _diaryDataList = diaryDataList;
       _moodDistribution = moodDistribution;
+      loadingFinished = true;
     });
 
     return diaryDataList;
-
-    // setState(() {
-    //   // loadingFinished = true;
-    // });
   }
 
   int linesCountString(String description) {
@@ -220,40 +238,21 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.userName != null) {
-      _userName = widget.userName;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final chartWidth = size.width / 2 - 300;
 
-    return FutureBuilder<List<DiaryModel>>(
-      future: expandclick ? null : getUserDiaryData(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator.adaptive(
-            backgroundColor: Theme.of(context).primaryColor,
-          );
-        } else if (snapshot.hasError) {
-          print(snapshot.error);
-          return const ErrorScreen();
-        } else if (snapshot.hasData) {
-          List<DiaryModel> diaryModelList = snapshot.data!;
-          return Column(
-            children: [
-              CsvPeriod(
-                generateCsv: generateUserCsv,
-                rankingType: widget.rankingType!,
-                userName: _userName!,
-                updateOrderPeriod: updateOrderPeriod,
-                sortPeriodControllder: sortPeriodControllder,
-              ),
-              SearchBelow(
+    return Column(
+      children: [
+        CsvPeriod(
+          generateCsv: generateUserCsv,
+          rankingType: widget.rankingType!,
+          userName: widget.userName ?? "",
+          updateOrderPeriod: updateOrderPeriod,
+          sortPeriodControllder: sortPeriodControllder,
+        ),
+        loadingFinished
+            ? SearchBelow(
                 child: Column(
                   children: [
                     Padding(
@@ -268,13 +267,13 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                             child: SfCalendar(
                               view: CalendarView.month,
                               dataSource:
-                                  DiaryDataSource(diaryModelList, context),
+                                  DiaryDataSource(_diaryDataList, context),
                               todayHighlightColor: Colors.grey.shade500,
                               // view: CalendarView.week,
                               // firstDayOfWeek: 1, // monday
                             ),
                           ),
-                          if (diaryModelList.isNotEmpty)
+                          if (_diaryDataList.isNotEmpty)
                             SizedBox(
                               width: chartWidth,
                               child: SfCircularChart(
@@ -311,7 +310,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                 ],
                               ),
                             ),
-                          if (diaryModelList.isEmpty)
+                          if (_diaryDataList.isEmpty)
                             SizedBox(
                               width: chartWidth,
                               child: const Center(
@@ -422,14 +421,14 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     ],
                                   ),
                                 ),
-                                if (diaryModelList.isNotEmpty)
+                                if (_diaryDataList.isNotEmpty)
                                   Divider(
                                     color: Colors.grey.shade200,
                                   ),
-                                if (diaryModelList.isNotEmpty) Gaps.v10,
+                                if (_diaryDataList.isNotEmpty) Gaps.v10,
                                 ListView.builder(
                                   shrinkWrap: true,
-                                  itemCount: diaryModelList.length,
+                                  itemCount: _diaryDataList.length,
                                   itemBuilder: (context, index) {
                                     return ExpansionPanelList(
                                       elevation: 0,
@@ -444,15 +443,15 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                       children: [
                                         ExpansionPanel(
                                           canTapOnHeader:
-                                              !diaryModelList[index].secret &&
-                                                      diaryModelList[index]
+                                              !_diaryDataList[index].secret &&
+                                                      _diaryDataList[index]
                                                               .todayDiary
                                                               .length >
                                                           40
                                                   ? true
                                                   : false,
                                           isExpanded:
-                                              !diaryModelList[index].secret &&
+                                              !_diaryDataList[index].secret &&
                                                   (expandMap[index] ?? false),
                                           backgroundColor: Colors.white,
                                           headerBuilder: (context, isExpanded) {
@@ -472,7 +471,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                   flex: 3,
                                                   child: Text(
                                                     convertTimettampToString(
-                                                      diaryModelList[index]
+                                                      _diaryDataList[index]
                                                           .timestamp,
                                                     ),
                                                     style: const TextStyle(
@@ -481,7 +480,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
-                                                diaryModelList[index].secret
+                                                _diaryDataList[index].secret
                                                     ? Expanded(
                                                         flex: 8,
                                                         child: Text(
@@ -497,12 +496,12 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                     : Expanded(
                                                         flex: 8,
                                                         child: Text(
-                                                          diaryModelList[index]
+                                                          _diaryDataList[index]
                                                                       .todayDiary
                                                                       .length >
                                                                   40
-                                                              ? "${diaryModelList[index].todayDiary.substring(0, 41)}..."
-                                                              : diaryModelList[
+                                                              ? "${_diaryDataList[index].todayDiary.substring(0, 41)}..."
+                                                              : _diaryDataList[
                                                                       index]
                                                                   .todayDiary,
                                                           style:
@@ -517,7 +516,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                 Expanded(
                                                   flex: 2,
                                                   child: Text(
-                                                    diaryModelList[index]
+                                                    _diaryDataList[index]
                                                         .todayMood
                                                         .description!,
                                                     style: const TextStyle(
@@ -530,7 +529,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                   flex: 2,
                                                   child: Center(
                                                     child: Icon(
-                                                      diaryModelList[index]
+                                                      _diaryDataList[index]
                                                               .secret
                                                           ? Icons.check
                                                           : null,
@@ -562,7 +561,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                diaryModelList[index].secret
+                                                _diaryDataList[index].secret
                                                     ? Expanded(
                                                         flex: 6,
                                                         child: Container())
@@ -576,7 +575,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                                 Sizes.size10,
                                                           ),
                                                           child: Text(
-                                                            diaryModelList[
+                                                            _diaryDataList[
                                                                     index]
                                                                 .todayDiary,
                                                             style:
@@ -613,7 +612,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     );
                                   },
                                 ),
-                                if (diaryModelList.isNotEmpty) Gaps.v10,
+                                if (_diaryDataList.isNotEmpty) Gaps.v10,
                               ],
                             );
                           },
@@ -624,12 +623,15 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                   ],
                 ),
               )
-            ],
-          );
-        } else {
-          return const LoadingScreen();
-        }
-      },
+            : Expanded(
+                child: Center(
+                  child: LoadingAnimationWidget.inkDrop(
+                    color: Colors.grey.shade600,
+                    size: Sizes.size32,
+                  ),
+                ),
+              )
+      ],
     );
   }
 }

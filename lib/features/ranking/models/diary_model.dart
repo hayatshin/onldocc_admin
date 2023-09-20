@@ -7,7 +7,7 @@ class DiaryModel {
   final DateTime timestamp;
   final bool secret;
   final List<dynamic> images;
-  final TodayMood todayMood;
+  final dynamic todayMood;
   final int numLikes;
   final int numComments;
   final String todayDiary;
@@ -34,7 +34,7 @@ class DiaryModel {
         timestamp = DateTime.now(),
         secret = false,
         images = [],
-        todayMood = TodayMood.empty(),
+        todayMood = 0,
         numLikes = 0,
         numComments = 0,
         todayDiary = "",
@@ -63,7 +63,9 @@ class DiaryModel {
         timestamp = (json["timestamp"] as Timestamp).toDate(),
         secret = json["secret"] ?? false,
         images = json["images"] ?? [],
-        todayMood = TodayMood.fromJson(json["todayMood"]),
+        todayMood = json["todayMood"] is String
+            ? json["todayMood"]
+            : TodayMood.fromJson(json["todayMood"]),
         numLikes = json["numLikes"] ?? 0,
         numComments = json["numComments"] ?? 0,
         todayDiary = json["todayDiary"] ?? "",
@@ -76,7 +78,7 @@ class DiaryModel {
     final DateTime? timestamp,
     final bool? secret,
     final List<dynamic>? images,
-    final TodayMood? todayMood,
+    final dynamic todayMood,
     final int? numLikes,
     final int? numComments,
     final String? todayDiary,

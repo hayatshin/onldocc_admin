@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -34,15 +35,22 @@ class RankingStepScreen extends ConsumerStatefulWidget {
 class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   final List<String> _listHeader = ["날짜", "일기", "마음", "비밀"];
   List<StepModel> _stepDataList = [];
-  bool loadingFinished = false;
-  String _periodType = "이번주";
+  String _periodType = "이번달";
   String? _userName = "";
+  bool loadingFinished = false;
   final TextEditingController sortPeriodControllder = TextEditingController();
 
-  void updateOrderPeriod(String periodType) {
+  Future<void> updateOrderPeriod(String periodType) async {
     setState(() {
-      loadingFinished = false;
       _periodType = periodType;
+      loadingFinished = false;
+    });
+    final stepDataList = await ref
+        .read(stepProvider.notifier)
+        .getUserDateStepData(widget.userId!, _periodType);
+    setState(() {
+      loadingFinished = true;
+      _stepDataList = stepDataList;
     });
   }
 
@@ -107,158 +115,127 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
         .read(stepProvider.notifier)
         .getUserDateStepData(widget.userId!, _periodType);
     setState(() {
-      _stepDataList = stepDataList;
       loadingFinished = true;
+      _stepDataList = stepDataList;
     });
-
-    // if (_periodType == "이번달") {
-    //   final stepDataList = await ref
-    //       .read(stepProvider.notifier)
-    //       .getUserDateStepData(widget.userId!, _periodType);
-    //   setState(() {
-    //     _stepDataList = stepDataList;
-    //     loadingFinished = true;
-    //   });
-    // } else if (_periodType == "이번주") {
-    //   final stepDataList = await ref
-    //       .read(stepProvider.notifier)
-    //       .getUserDateStepData(widget.userId!, _periodType);
-    //   setState(() {
-    //     _stepDataList = stepDataList;
-    //     loadingFinished = true;
-    //   });
-    // } else if (_periodType == "지난달") {
-    //   final stepDataList = await ref
-    //       .read(stepProvider.notifier)
-    //       .getUserDateStepData(widget.userId!, _periodType);
-    //   setState(() {
-    //     _stepDataList = stepDataList;
-    //     loadingFinished = true;
-    //   });
-    // }
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.userName != null) {
-      _userName = widget.userName;
-    }
+    getUserStepData();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return FutureBuilder(
-      future: !loadingFinished ? getUserStepData() : null,
-      builder: (context, snapshot) {
-        return Column(
-          children: [
-            CsvPeriod(
-              generateCsv: generateUserCsv,
-              rankingType: widget.rankingType!,
-              userName: _userName!,
-              updateOrderPeriod: updateOrderPeriod,
-              sortPeriodControllder: sortPeriodControllder,
-            ),
-            loadingFinished
-                ? SearchBelow(
-                    child: Column(
-                      children: [
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: Sizes.size60,
-                            ),
-                            child: SizedBox(
-                              width: size.width - 600,
-                              height: 300,
-                              child: SfCartesianChart(
-                                // Initialize category axis
-                                primaryXAxis: CategoryAxis(),
-                                series: <LineSeries<StepModel, String>>[
-                                  LineSeries(
-                                      // Bind data source
-                                      dataSource: _stepDataList,
-                                      xValueMapper: (StepModel step, _) =>
-                                          step.date,
-                                      yValueMapper: (StepModel step, _) =>
-                                          step.dailyStep)
-                                ],
-                              ),
-                            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        CsvPeriod(
+          generateCsv: generateUserCsv,
+          rankingType: widget.rankingType!,
+          userName: widget.userName ?? "",
+          updateOrderPeriod: updateOrderPeriod,
+          sortPeriodControllder: sortPeriodControllder,
+        ),
+        loadingFinished
+            ? SearchBelow(
+                child: Column(
+                  children: [
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Sizes.size60,
+                        ),
+                        child: SizedBox(
+                          width: size.width - 600,
+                          height: 300,
+                          child: SfCartesianChart(
+                            // Initialize category axis
+                            primaryXAxis: CategoryAxis(),
+                            series: <LineSeries<StepModel, String>>[
+                              LineSeries(
+                                  // Bind data source
+                                  dataSource: _stepDataList,
+                                  xValueMapper: (StepModel step, _) =>
+                                      step.date,
+                                  yValueMapper: (StepModel step, _) =>
+                                      step.dailyStep)
+                            ],
                           ),
                         ),
-                        Center(
-                          child: SizedBox(
-                            width: size.width - 600,
-                            child: DataTable(
-                              columns: const [
-                                DataColumn(
-                                  label: Expanded(
-                                    child: Text(
-                                      "날짜",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Expanded(
-                                    child: Text(
-                                      "걸음수",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              rows: [
-                                for (var i = 0; i < _stepDataList.length; i++)
-                                  DataRow(
-                                    cells: [
-                                      DataCell(
-                                        Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            _stepDataList[i].date,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size13,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      DataCell(
-                                        Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            numberDecimalCommans(
-                                                _stepDataList[i].dailyStep!),
-                                            textAlign: TextAlign.end,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size13,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator.adaptive(
-                        backgroundColor: Theme.of(context).primaryColor,
                       ),
                     ),
-                  )
-          ],
-        );
-      },
+                    Center(
+                      child: SizedBox(
+                        width: size.width - 600,
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  "날짜",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  "걸음수",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                          rows: [
+                            for (var i = 0; i < _stepDataList.length; i++)
+                              DataRow(
+                                cells: [
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        _stepDataList[i].date,
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        numberDecimalCommans(
+                                            _stepDataList[i].dailyStep!),
+                                        textAlign: TextAlign.end,
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Expanded(
+                child: Center(
+                  child: LoadingAnimationWidget.inkDrop(
+                    color: Colors.grey.shade600,
+                    size: Sizes.size32,
+                  ),
+                ),
+              )
+      ],
     );
   }
 }

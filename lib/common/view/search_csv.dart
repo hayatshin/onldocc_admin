@@ -6,15 +6,11 @@ import 'package:onldocc_admin/constants/sizes.dart';
 class SearchCsv extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
-  final String constractType;
-  final String contractName;
   final void Function() generateCsv;
   const SearchCsv({
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
-    required this.constractType,
-    required this.contractName,
     required this.generateCsv,
   });
 

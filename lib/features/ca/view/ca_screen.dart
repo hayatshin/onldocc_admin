@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view/loading_screen.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/features/ca/models/ca_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/ca_view_model.dart';
@@ -10,10 +10,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:universal_html/html.dart';
 
 import '../../../common/view/csv_period.dart';
-import '../../../common/view/error_screen.dart';
 import '../../../constants/sizes.dart';
 import '../../../utils.dart';
-import '../../users/view_models/user_view_model.dart';
 
 class CaScreen extends ConsumerStatefulWidget {
   static const routeURL = "/ca";
@@ -38,9 +36,9 @@ class CaScreen extends ConsumerStatefulWidget {
 class _CaScreenState extends ConsumerState<CaScreen> {
   final List<String> _listHeader = ["#", "날짜", "인지 결과", "문제", "정답", "제출 답"];
   List<CaModel> _caDataList = [];
-  // bool loadingFinished = false;
-  String _periodType = "이번주";
-  String? _userName = "";
+  bool loadingFinished = false;
+  String _periodType = "이번달";
+  final String _userName = "";
   late List<QuestionResultData> qrDistribution;
   final TextEditingController sortPeriodControllder = TextEditingController();
 
@@ -58,7 +56,9 @@ class _CaScreenState extends ConsumerState<CaScreen> {
   void updateOrderPeriod(String periodType) {
     setState(() {
       _periodType = periodType;
+      loadingFinished = false;
     });
+    getUserCaData();
   }
 
   List<List<dynamic>> exportToFullList(List<CaModel?> caModelList) {
@@ -108,12 +108,6 @@ class _CaScreenState extends ConsumerState<CaScreen> {
   }
 
   Future<List<CaModel>> getUserCaData() async {
-    // await Future.delayed(const Duration(seconds: 1));
-
-    final userProfile =
-        await ref.read(userProvider.notifier).getUserModel(widget.userId!);
-    _userName = userProfile!.name;
-
     List<CaModel> caDataList = await ref
         .read(caProvider.notifier)
         .getUserDateCaData(widget.userId!, _periodType);
@@ -130,16 +124,17 @@ class _CaScreenState extends ConsumerState<CaScreen> {
           result: "틀림", count: wrongCounts, color: Colors.grey.shade500),
     ];
 
-    _caDataList = caDataList;
+    setState(() {
+      loadingFinished = true;
+      _caDataList = caDataList;
+    });
     return caDataList;
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.userName != null) {
-      _userName = widget.userName;
-    }
+    getUserCaData();
   }
 
   @override
@@ -147,27 +142,17 @@ class _CaScreenState extends ConsumerState<CaScreen> {
     final size = MediaQuery.of(context).size;
     final chartWidth = size.width / 2 - 300;
 
-    return FutureBuilder<List<CaModel>>(
-      future: getUserCaData(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator.adaptive(
-            backgroundColor: Theme.of(context).primaryColor,
-          );
-        } else if (snapshot.hasError) {
-          return const ErrorScreen();
-        } else if (snapshot.hasData) {
-          List<CaModel> caModelList = snapshot.data!;
-          return Column(
-            children: [
-              CsvPeriod(
-                generateCsv: generateUserCsv,
-                rankingType: widget.rankingType!,
-                userName: _userName!,
-                updateOrderPeriod: updateOrderPeriod,
-                sortPeriodControllder: sortPeriodControllder,
-              ),
-              SearchBelow(
+    return Column(
+      children: [
+        CsvPeriod(
+          generateCsv: generateUserCsv,
+          rankingType: widget.rankingType!,
+          userName: widget.userName ?? "",
+          updateOrderPeriod: updateOrderPeriod,
+          sortPeriodControllder: sortPeriodControllder,
+        ),
+        loadingFinished
+            ? SearchBelow(
                 child: Column(
                   children: [
                     Padding(
@@ -175,7 +160,7 @@ class _CaScreenState extends ConsumerState<CaScreen> {
                         Sizes.size36,
                       ),
                       child: SizedBox(
-                        child: caModelList.isNotEmpty
+                        child: _caDataList.isNotEmpty
                             ? SfCircularChart(
                                 legend: const Legend(
                                   isVisible: true,
@@ -298,9 +283,9 @@ class _CaScreenState extends ConsumerState<CaScreen> {
                                 ),
                               ],
                               rows: List.generate(
-                                caModelList.length,
+                                _caDataList.length,
                                 (index) {
-                                  final rowData = caModelList[index];
+                                  final rowData = _caDataList[index];
 
                                   return DataRow(
                                     cells: [
@@ -388,13 +373,16 @@ class _CaScreenState extends ConsumerState<CaScreen> {
                     ),
                   ],
                 ),
+              )
+            : Expanded(
+                child: Center(
+                  child: LoadingAnimationWidget.inkDrop(
+                    color: Colors.grey.shade600,
+                    size: Sizes.size32,
+                  ),
+                ),
               ),
-            ],
-          );
-        } else {
-          return const LoadingScreen();
-        }
-      },
+      ],
     );
   }
 }

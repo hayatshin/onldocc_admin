@@ -20,7 +20,7 @@ class AuthenticationRepository {
 
   Future<Map<String, dynamic>?> getAdminProfile(String uid) async {
     final doc = await _db.collection("admin").doc(uid).get();
-    return doc.data()!;
+    return doc.data();
   }
 }
 

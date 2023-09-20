@@ -59,6 +59,7 @@ dependencies:
   image_picker_for_web: ^2.2.0
   file_picker: ^5.3.1
   flutter_date_pickers: ^0.4.2
+  loading_animation_widget: ^1.2.0+4
 
 
 

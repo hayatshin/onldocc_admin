@@ -123,13 +123,14 @@ class UserRepository {
   }
 
   Future<List<UserModel?>> getAllUserData() async {
-    final userSnapshots =
-        await _db.collection("users").orderBy("timestamp").get();
-    return userSnapshots.docs
-        .map((doc) => dbToUserModel(doc))
-        .toList()
-        .where((element) => element.name != "탈퇴자")
-        .toList();
+    try {
+      final userSnapshots =
+          await _db.collection("users").orderBy("timestamp").get();
+      List<UserModel?> dbAllUserList =
+          userSnapshots.docs.map((doc) => dbToUserModel(doc)).toList();
+      return dbAllUserList;
+    } catch (error) {}
+    return [];
   }
 
   Future<List<UserModel?>> getRegionUserData(String fullRegion) async {

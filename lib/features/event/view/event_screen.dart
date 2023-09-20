@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:onldocc_admin/common/models/contract_config_model.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
 import '../../../constants/gaps.dart';
@@ -68,8 +68,8 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   OverlayEntry? overlayEntry;
 
   Future<void> deleteEventFirebase(String documentId) async {
-    ContractConfigModel data = ref.watch(contractConfigProvider).value!;
-
+    AdminProfileModel data =
+        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
     final contractType = data.contractType;
     final contractName = data.contractName;
     late Map<String, dynamic> eventJson;
@@ -87,8 +87,8 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         .uploadEventImage(_eventImageBytes!, _eventTitle);
 
     if (eventImgURL != null) {
-      ContractConfigModel data = ref.watch(contractConfigProvider).value!;
-
+      AdminProfileModel data =
+          await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
       final contractType = data.contractType;
       final contractName = data.contractName;
       late Map<String, dynamic> eventJson;
@@ -164,7 +164,8 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   }
 
   Future<void> addFeedFirebase() async {
-    ContractConfigModel data = ref.read(contractConfigProvider).value!;
+    AdminProfileModel data =
+        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
     final contractType = data.contractType;
     final contractName = data.contractName;
 

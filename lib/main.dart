@@ -23,11 +23,6 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      // overrides: [
-      //   contractConfigProvider.overrideWith(
-      //     () => ContractConfigViewModel(),
-      //   )
-      // ],
       child: OnldoccAdmin(),
     ),
   );

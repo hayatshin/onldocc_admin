@@ -4,22 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/ca/models/ca_model.dart';
 import 'package:onldocc_admin/features/ca/repo/ca_repo.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class CaViewModel extends AsyncNotifier<List<CaModel>> {
   DateTime now = DateTime.now();
-  late DateTime firstDateOfWeek;
-  late DateTime firstDateOfMonth;
+  WeekMonthDay weekMonthDay = getWeekMonthDay();
   late CaRepository _caRepository;
 
   @override
   FutureOr<List<CaModel>> build() {
     _caRepository = CaRepository();
-    firstDateOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    firstDateOfWeek = DateTime(
-        firstDateOfWeek.year, firstDateOfWeek.month, firstDateOfWeek.day, 0, 0);
-    firstDateOfMonth = DateTime(now.year, now.month, 1);
-    firstDateOfMonth = DateTime(firstDateOfMonth.year, firstDateOfMonth.month,
-        firstDateOfMonth.day, 0, 0);
     return [];
   }
 
@@ -28,25 +22,27 @@ class CaViewModel extends AsyncNotifier<List<CaModel>> {
     List<CaModel> caList = [];
     late List<QueryDocumentSnapshot<Map<String, dynamic>>> caDocs;
 
-    if (periodType == "이번주") {
-      caDocs = await _caRepository.getUserCertainDateCaData(
-          userId, firstDateOfWeek, now);
-      for (DocumentSnapshot<Map<String, dynamic>> caDoc in caDocs) {
-        Map<String, dynamic> caJson = caDoc.data()!;
-        CaModel caModel = CaModel.fromJson(caJson);
-        caList.add(caModel);
-      }
-    } else if (periodType == "이번달") {
-      caDocs = await _caRepository.getUserCertainDateCaData(
-          userId, firstDateOfMonth, now);
+    switch (periodType) {
+      case "이번주":
+        caDocs = await _caRepository.getUserCertainDateCaData(userId,
+            weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
+        break;
+      case "이번달":
+        caDocs = await _caRepository.getUserCertainDateCaData(userId,
+            weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
 
-      for (DocumentSnapshot<Map<String, dynamic>> caDoc in caDocs) {
-        Map<String, dynamic> caJson = caDoc.data()!;
+        break;
+      case "지난달":
+        caDocs = await _caRepository.getUserCertainDateCaData(userId,
+            weekMonthDay.lastMonth.startDate, weekMonthDay.lastMonth.endDate);
 
-        CaModel caModel = CaModel.fromJson(caJson);
+        break;
+    }
 
-        caList.add(caModel);
-      }
+    for (DocumentSnapshot<Map<String, dynamic>> caDoc in caDocs) {
+      Map<String, dynamic> caJson = caDoc.data()!;
+      CaModel caModel = CaModel.fromJson(caJson);
+      caList.add(caModel);
     }
 
     return caList;

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:onldocc_admin/common/models/contract_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -25,6 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   late Animation<double> _fadeAnimtaion;
   bool emailTap = false;
   bool passwordTap = false;
+  final ContractNotifier _contractNotifier = ContractNotifier();
 
   Map<String, String> formData = {};
 
@@ -57,14 +60,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     });
   }
 
-  void _onSubmitTap() {
+  Future<void> _onSubmitTap() async {
     if (_formKey.currentState != null) {
       if (_formKey.currentState!.validate()) {
         try {
           _formKey.currentState!.save();
-          ref
+          AdminProfileModel adminProfile = await ref
               .read(adminProfileProvider.notifier)
               .login(formData["email"]!, formData["password"]!, context);
+          _contractNotifier.changeContractModel(
+              contractType: adminProfile.contractType,
+              contractName: adminProfile.contractName);
         } catch (e) {
           print("e -> $e");
         }

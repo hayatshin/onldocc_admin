@@ -4,48 +4,37 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
 import 'package:onldocc_admin/features/ranking/repo/diary_repo.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
   DateTime now = DateTime.now();
-  late DateTime firstDateOfWeek;
-  late DateTime firstDateOfMonth;
-  late DateTime lastMonth;
-  late DateTime firstDateOfLastMonth;
-  late DateTime lastDateOfLastMonth;
-
   late DiaryRepository _diaryRepository;
+  WeekMonthDay weekMonthDay = getWeekMonthDay();
 
   @override
   FutureOr<List<DiaryModel>> build() {
     _diaryRepository = DiaryRepository();
-    firstDateOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    firstDateOfWeek = DateTime(
-        firstDateOfWeek.year, firstDateOfWeek.month, firstDateOfWeek.day, 0, 0);
-    firstDateOfMonth = DateTime(now.year, now.month, 1);
-    firstDateOfMonth = DateTime(firstDateOfMonth.year, firstDateOfMonth.month,
-        firstDateOfMonth.day, 0, 0);
-    lastMonth = DateTime(now.year, now.month - 1, now.day);
-    firstDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month, 1);
-    lastDateOfLastMonth = DateTime(lastMonth.year, lastMonth.month + 1, 0);
     return [];
   }
 
   Future<List<DiaryModel>> getUserDateDiaryData(
       String userId, String periodType) async {
+    print("getUserDateDiaryData");
+
     List<DiaryModel> diaryList = [];
     late List<QueryDocumentSnapshot<Map<String, dynamic>>> diaryDocs;
 
     if (periodType == "이번주") {
-      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(
-          userId, firstDateOfWeek, now);
+      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(userId,
+          weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
         DiaryModel diaryModel = DiaryModel.fromJson(diaryJson);
         diaryList.add(diaryModel);
       }
     } else if (periodType == "이번달") {
-      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(
-          userId, firstDateOfMonth, now);
+      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(userId,
+          weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
 
@@ -53,8 +42,8 @@ class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
         diaryList.add(diaryModel);
       }
     } else if (periodType == "지난달") {
-      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(
-          userId, firstDateOfLastMonth, lastDateOfLastMonth);
+      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(userId,
+          weekMonthDay.lastMonth.startDate, weekMonthDay.lastMonth.endDate);
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
 

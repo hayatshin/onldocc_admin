@@ -7,8 +7,6 @@ import 'package:onldocc_admin/constants/sizes.dart';
 class SearchPeriodOrder extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
-  final String constractType;
-  final String contractName;
   final void Function() generateCsv;
   final void Function(String) updateOrderStandard;
   final void Function(String) updateOrderPeriod;
@@ -16,8 +14,6 @@ class SearchPeriodOrder extends ConsumerStatefulWidget {
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
-    required this.constractType,
-    required this.contractName,
     required this.generateCsv,
     required this.updateOrderStandard,
     required this.updateOrderPeriod,
