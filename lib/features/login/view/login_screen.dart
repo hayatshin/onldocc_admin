@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onldocc_admin/common/models/contract_notifier.dart';
@@ -20,15 +21,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isPasswordInvisible = true;
-  final double? formWidth = 380;
+  final double? formWidth = 400;
   bool _buttonDisabled = true;
-  late AnimationController _animationController;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimtaion;
   bool emailTap = false;
   bool passwordTap = false;
   final ContractNotifier _contractNotifier = ContractNotifier();
-  final PageController _pageController = PageController();
 
   Map<String, String> formData = {};
   bool forwardAnimation = true;
@@ -36,59 +33,52 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(_animationController);
-    _animationController.forward();
+    // _animationController = AnimationController(
+    //   vsync: this,
+    //   duration: const Duration(seconds: 3),
+    // );
+    // _slideAnimation = Tween<Offset>(
+    //   begin: const Offset(0, 1),
+    //   end: Offset.zero,
+    // ).animate(_animationController);
+    // _animationController.forward();
 
-    _fadeAnimtaion =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-    _animateSlider();
+    // _fadeAnimtaion =
+    //     Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    // _animateSlider();
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    _pageController.dispose();
-    super.dispose();
-  }
+  // Future<void> _animateSlider() async {
+  //   Future.delayed(const Duration(seconds: 2)).then((_) {
+  //     int nextPage = 0;
+  //     if (forwardAnimation) {
+  //       nextPage = _pageController.page!.round() + 1;
+  //     } else {
+  //       nextPage = _pageController.page!.round() - 1;
+  //     }
 
-  Future<void> _animateSlider() async {
-    Future.delayed(const Duration(seconds: 2)).then((_) {
-      int nextPage = 0;
-      if (forwardAnimation) {
-        nextPage = _pageController.page!.round() + 1;
-      } else {
-        nextPage = _pageController.page!.round() - 1;
-      }
-
-      if (nextPage == 4) {
-        nextPage = nextPage - 1;
-        setState(() {
-          forwardAnimation = false;
-        });
-      }
-      if (nextPage == 0) {
-        setState(() {
-          forwardAnimation = true;
-        });
-      }
-      _pageController
-          .animateToPage(
-            nextPage,
-            duration: const Duration(
-              seconds: 1,
-            ),
-            curve: Curves.linear,
-          )
-          .then((value) => _animateSlider());
-    });
-  }
+  //     if (nextPage == 4) {
+  //       nextPage = nextPage - 1;
+  //       setState(() {
+  //         forwardAnimation = false;
+  //       });
+  //     }
+  //     if (nextPage == 0) {
+  //       setState(() {
+  //         forwardAnimation = true;
+  //       });
+  //     }
+  //     _pageController
+  //         .animateToPage(
+  //           nextPage,
+  //           duration: const Duration(
+  //             seconds: 1,
+  //           ),
+  //           curve: Curves.linear,
+  //         )
+  //         .then((value) => _animateSlider());
+  //   });
+  // }
 
   void _onPasswordVisibleTap() {
     setState(() {
@@ -130,10 +120,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       body: Row(
         children: [
           SizedBox(
-            width: size.width * 0.6,
+            width: size.width * 0.5,
             child: Padding(
-              padding: const EdgeInsets.all(
-                Sizes.size96,
+              padding: const EdgeInsets.symmetric(
+                vertical: Sizes.size96,
+                horizontal: 130,
               ),
               child: Form(
                 key: _formKey,
@@ -144,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     Text(
                       "오늘도청춘 관리자페이지",
                       style: TextStyle(
-                        fontSize: Sizes.size24,
+                        fontSize: Sizes.size32,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -153,8 +144,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     const Text(
                       "회원 관리, 활동 관리, 행사 관리를 한번에!\n오늘도 시니어분들의 건강을 위해 한걸음 더 나아갑니다.",
                       style: TextStyle(
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.w300,
+                        fontSize: Sizes.size20,
+                        fontWeight: FontWeight.w200,
+                        height: 1.7,
                       ),
                     ),
                     Gaps.v80,
@@ -359,15 +351,50 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               ),
             ),
           ),
-          Flexible(
-            child: PageView.builder(
-              controller: _pageController,
-              itemBuilder: (context, index) {
-                return Image.asset(
-                  "assets/app_intro/${index + 1}.png",
-                  fit: BoxFit.contain,
-                );
-              },
+          Container(
+            width: size.width * 0.5,
+            height: size.height,
+            decoration: BoxDecoration(
+              color: const Color(0xff081B35).withOpacity(0.9),
+              borderRadius: BorderRadius.circular(
+                Sizes.size5,
+              ),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned(
+                  top: size.height * 0.1,
+                  left: size.width * 0.15,
+                  child: Image.asset(
+                    "assets/app_screen/today_diary.png",
+                    width: size.width * 0.15,
+                  ),
+                ).animate().fadeIn(
+                      begin: 0,
+                      duration: const Duration(
+                        seconds: 1,
+                      ),
+                    ),
+                Positioned(
+                  top: size.height * 0.3,
+                  left: size.width * 0.2,
+                  child: Image.asset(
+                    "assets/app_screen/ai_chat.png",
+                    width: size.width * 0.15,
+                  ),
+                )
+                    .animate(
+                        delay: const Duration(
+                      milliseconds: 500,
+                    ))
+                    .fadeIn(
+                      begin: 0,
+                      duration: const Duration(
+                        seconds: 1,
+                      ),
+                    )
+              ],
             ),
           ),
           // Expanded(

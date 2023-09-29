@@ -106,12 +106,14 @@ class WeekMonthDay {
 WeekMonthDay getWeekMonthDay() {
   DateTime currentDate = DateTime.now();
   int currentWeekDay = currentDate.weekday;
-  DateTime startOfThisWeek = currentDate
-      .subtract(Duration(days: currentWeekDay - 1))
-      .toLocal()
-      .add(const Duration(hours: 0, minutes: 0, seconds: 0));
+
+  DateTime startOfThisWeek1 =
+      currentDate.subtract(Duration(days: currentWeekDay - 1));
+  DateTime startOfThisWeek2 = DateTime(startOfThisWeek1.year,
+      startOfThisWeek1.month, startOfThisWeek1.day, 0, 0, 0);
+
   StartEndDate thisWeek =
-      StartEndDate(startDate: startOfThisWeek, endDate: DateTime.now());
+      StartEndDate(startDate: startOfThisWeek2, endDate: DateTime.now());
 
   DateTime startDateOfLastMonth =
       DateTime(currentDate.year, currentDate.month - 1, 1, 0, 0, 0);
