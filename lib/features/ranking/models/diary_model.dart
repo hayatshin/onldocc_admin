@@ -57,19 +57,23 @@ class DiaryModel {
   }
 
   DiaryModel.fromJson(Map<String, dynamic> json)
-      : userId = json["userId"] ?? "",
-        diaryId = json["diaryId"] ?? "",
-        monthDate = json["monthDate"] ?? "",
-        timestamp = (json["timestamp"] as Timestamp).toDate(),
-        secret = json["secret"] ?? false,
-        images = json["images"] ?? [],
-        todayMood = json["todayMood"] is String
-            ? json["todayMood"]
-            : TodayMood.fromJson(json["todayMood"]),
-        numLikes = json["numLikes"] ?? 0,
-        numComments = json["numComments"] ?? 0,
-        todayDiary = json["todayDiary"] ?? "",
-        blockedBy = json["blockedBy"] ?? [];
+      : userId = json.containsKey("userId") ? json["userId"] : "",
+        diaryId = json.containsKey('diaryId') ? json["diaryId"] : "",
+        monthDate = json.containsKey("monthDate") ? json["monthDate"] : "",
+        timestamp = json.containsKey("timestamp")
+            ? (json["timestamp"] as Timestamp).toDate()
+            : DateTime.now(),
+        secret = json.containsKey("secret") ? json["secret"] : false,
+        images = json.containsKey("images") ? json["images"] : [],
+        todayMood = json.containsKey("todayMood")
+            ? json["todayMood"] is int
+                ? json["todayMood"]
+                : TodayMood.fromJson(json["todayMood"])
+            : 0,
+        numLikes = json.containsKey("numLikes") ? json["numLikes"] : 0,
+        numComments = json.containsKey("numComments") ? json["numComments"] : 0,
+        todayDiary = json.containsKey("todayDiary") ? json["todayDiary"] : "",
+        blockedBy = json.containsKey("blockedBy") ? json["blockedBy"] : [];
 
   DiaryModel copyWith({
     final String? userId,

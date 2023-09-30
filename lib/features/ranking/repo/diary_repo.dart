@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DiaryRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -15,3 +16,5 @@ class DiaryRepository {
     return query.docs;
   }
 }
+
+final diaryRepo = Provider((ref) => DiaryRepository());

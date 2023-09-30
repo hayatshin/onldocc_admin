@@ -1,13 +1,16 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:onldocc_admin/common/models/mood_model.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
+import 'package:onldocc_admin/features/ranking/repo/diary_repo.dart';
 import 'package:onldocc_admin/features/ranking/view_models/diary_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -114,63 +117,61 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
       ..click();
   }
 
-  Future<List<DiaryModel>> getUserDiaryData() async {
+  Future<void> getUserDiaryData() async {
     List<DiaryModel> diaryDataList = await ref
         .read(diaryProvider.notifier)
         .getUserDateDiaryData(widget.userId!, _periodType);
 
-    print("diaryDataList -> $diaryDataList");
-
     int totalMoods = diaryDataList.length;
     int joyCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 0
-            : element.todayMood.description == "기뻐요")
+            : (element.todayMood as Map)["description"] == "기뻐요")
         .length;
     int throbCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 1
-            : element.todayMood.description == "설레요")
+            : (element.todayMood as Map)["description"] == "설레요")
         .length;
     int thanksfulCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 2
-            : element.todayMood.description == "감사해요")
+            : (element.todayMood as Map)["description"] == "감사해요")
         .length;
     int shalomCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 3
-            : element.todayMood.description == "평온해요")
+            : (element.todayMood as Map)["description"] == "평온해요")
         .length;
     int sosoCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 4
-            : element.todayMood.description == "그냥 그래요")
+            : (element.todayMood as Map)["description"] == "그냥 그래요")
         .length;
     int lonelyCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 5
-            : element.todayMood.description == "외로워요")
+            : (element.todayMood as Map)["description"] == "외로워요")
         .length;
     int anxiousCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 6
-            : element.todayMood.description == "불안해요")
+            : (element.todayMood as Map)["description"] == "불안해요")
         .length;
     int gloomyCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 7
-            : element.todayMood.description == "우울해요")
+            : (element.todayMood as Map)["description"] == "우울해요")
         .length;
     int sadCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 8
-            : element.todayMood.description == "슬퍼요")
+            : (element.todayMood as Map)["description"] == "슬퍼요")
         .length;
     int angryCounts = diaryDataList
-        .where((element) => element.todayMood is String
+        .where((element) => element.todayMood is int
             ? element.todayMood == 9
-            : element.todayMood.description == "화나요")
+            : (element.todayMood as Map)["description"] == "화나요")
         .length;
     int extraCounts = totalMoods -
         (joyCounts +
@@ -210,8 +211,6 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
       _moodDistribution = moodDistribution;
       loadingFinished = true;
     });
-
-    return diaryDataList;
   }
 
   int linesCountString(String description) {
@@ -517,8 +516,19 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                   flex: 2,
                                                   child: Text(
                                                     _diaryDataList[index]
-                                                        .todayMood
-                                                        .description!,
+                                                            .todayMood is int
+                                                        ? moodeList
+                                                            .firstWhere((element) =>
+                                                                element
+                                                                    .position ==
+                                                                _diaryDataList[
+                                                                        index]
+                                                                    .todayMood)
+                                                            .description
+                                                        : (_diaryDataList[index]
+                                                                    .todayMood
+                                                                as Map)[
+                                                            "description"],
                                                     style: const TextStyle(
                                                       fontSize: Sizes.size13,
                                                     ),

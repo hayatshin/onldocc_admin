@@ -126,6 +126,7 @@ WeekMonthDay getWeekMonthDay() {
       DateTime(currentDate.year, currentDate.month, 1, 0, 0, 0);
   StartEndDate thisMonth =
       StartEndDate(startDate: startDateOfThisMonth, endDate: DateTime.now());
+
   return WeekMonthDay(
       thisWeek: thisWeek, lastMonth: lastMonth, thisMonth: thisMonth);
 }

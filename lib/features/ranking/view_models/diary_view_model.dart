@@ -8,24 +8,22 @@ import 'package:onldocc_admin/utils.dart';
 
 class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
   DateTime now = DateTime.now();
-  late DiaryRepository _diaryRepository;
+  late DiaryRepository _diaryRepo;
   WeekMonthDay weekMonthDay = getWeekMonthDay();
 
   @override
   FutureOr<List<DiaryModel>> build() {
-    _diaryRepository = DiaryRepository();
+    _diaryRepo = ref.read(diaryRepo);
     return [];
   }
 
   Future<List<DiaryModel>> getUserDateDiaryData(
       String userId, String periodType) async {
-    print("getUserDateDiaryData");
-
     List<DiaryModel> diaryList = [];
     late List<QueryDocumentSnapshot<Map<String, dynamic>>> diaryDocs;
 
     if (periodType == "이번주") {
-      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(userId,
+      diaryDocs = await _diaryRepo.getUserCertainDateDiaryData(userId,
           weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
@@ -33,7 +31,7 @@ class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
         diaryList.add(diaryModel);
       }
     } else if (periodType == "이번달") {
-      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(userId,
+      diaryDocs = await _diaryRepo.getUserCertainDateDiaryData(userId,
           weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
@@ -42,7 +40,7 @@ class DiaryViewModel extends AsyncNotifier<List<DiaryModel>> {
         diaryList.add(diaryModel);
       }
     } else if (periodType == "지난달") {
-      diaryDocs = await _diaryRepository.getUserCertainDateDiaryData(userId,
+      diaryDocs = await _diaryRepo.getUserCertainDateDiaryData(userId,
           weekMonthDay.lastMonth.startDate, weekMonthDay.lastMonth.endDate);
       for (DocumentSnapshot<Map<String, dynamic>> diaryDoc in diaryDocs) {
         Map<String, dynamic> diaryJson = diaryDoc.data()!;
