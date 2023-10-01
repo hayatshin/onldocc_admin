@@ -436,7 +436,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                           (panelIndex, isExpanded) {
                                         setState(() {
                                           expandclick = true;
-                                          expandMap[index] = !isExpanded;
+                                          expandMap[index] = isExpanded;
                                         });
                                       },
                                       children: [
