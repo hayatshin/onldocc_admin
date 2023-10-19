@@ -95,7 +95,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
     final formatDate =
         "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
-    final String fileName = "오늘도청춘 회원별 걸음수 $_userName $formatDate.csv";
+    final String fileName = "인지케어 회원별 걸음수 $_userName $formatDate.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,

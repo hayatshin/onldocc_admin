@@ -120,7 +120,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     final formatDate =
         "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
-    final String fileName = "오늘도청춘 회원관리 $formatDate.csv";
+    final String fileName = "인지케어 회원관리 $formatDate.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,

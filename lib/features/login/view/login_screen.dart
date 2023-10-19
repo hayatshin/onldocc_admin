@@ -133,7 +133,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "오늘도청춘 관리자페이지",
+                      "인지케어 관리자페이지",
                       style: TextStyle(
                         fontSize: Sizes.size32,
                         fontWeight: FontWeight.w600,

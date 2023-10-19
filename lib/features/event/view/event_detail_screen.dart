@@ -114,7 +114,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     final formatDate =
         "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
-    String fileName = "오늘도청춘 행사 $eventTitle.csv";
+    String fileName = "인지케어 행사 $eventTitle.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,

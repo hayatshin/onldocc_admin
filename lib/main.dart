@@ -44,7 +44,7 @@ class OnldoccAdmin extends ConsumerWidget {
     return MaterialApp.router(
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
-      title: '오늘도청춘 관리자페이지',
+      title: '인지케어 관리자페이지',
       theme: ThemeData(
         fontFamily: "NanumSquare",
         primaryColor: const Color(0xFFFF2D78),

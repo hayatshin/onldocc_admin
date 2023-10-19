@@ -18,7 +18,7 @@ class ErrorScreen extends StatelessWidget {
           ),
           Gaps.v40,
           const Text(
-            "문제가 발생했습니다.\n오늘도청춘팀에 문의해주세요.",
+            "문제가 발생했습니다.\n인지케어팀에 문의해주세요.",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: Sizes.size16,
@@ -35,7 +35,7 @@ class ErrorScreen extends StatelessWidget {
               ),
               Gaps.h10,
               Text(
-                "help@onldocc.com",
+                "help@hayat.kr",
                 style: TextStyle(
                   color: Colors.grey.shade600,
                   fontWeight: FontWeight.w600,
