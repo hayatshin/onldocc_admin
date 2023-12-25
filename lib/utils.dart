@@ -45,10 +45,15 @@ List<DateTime> getBetweenDays(DateTime startDate, DateTime endDate) {
   return dates;
 }
 
-String convertTimettampToString(DateTime date) {
+String convertTimettampToStringDate(DateTime date) {
   final dateString =
       "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   return dateString;
+}
+
+String convertTimettampToStringDateTime(DateTime date) {
+  String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(date);
+  return formattedDateTime;
 }
 
 String convertTimettampToStringDot(DateTime date) {

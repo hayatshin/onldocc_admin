@@ -9,6 +9,8 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 
+const unselectedColor = Colors.black54;
+
 class SidebarTemplate extends ConsumerStatefulWidget {
   final int selectedMenuURL;
   final Widget child;
@@ -24,18 +26,10 @@ class SidebarTemplate extends ConsumerStatefulWidget {
 }
 
 class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
-  final unselectedColor = Colors.black54;
-  int _selectedMenu = 0;
   final contractTypeController = TextEditingController();
   final contractNameController = TextEditingController();
 
   List<String> _contractItems = [""];
-
-  void setMenu() {
-    setState(() {
-      _selectedMenu = menuNotifier.selectedMenu;
-    });
-  }
 
   void setContractType(String value) async {
     contractNameController.text = "";
@@ -63,15 +57,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _selectedMenu = widget.selectedMenuURL;
-    menuNotifier.addListener(setMenu);
-  }
-
-  @override
   void dispose() {
-    menuNotifier.removeListener(setMenu);
     contractTypeController.dispose();
     contractNameController.dispose();
 
@@ -205,230 +191,52 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   ),
                                 ),
                                 Gaps.v20,
-                                ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: Sizes.size24,
-                                  ),
-                                  leading: Icon(
-                                    _selectedMenu == 0
-                                        ? Icons.emoji_people_rounded
-                                        : Icons.accessibility_new_rounded,
-                                    size: Sizes.size20,
-                                    color: _selectedMenu == 0
-                                        ? Colors.black
-                                        : unselectedColor,
-                                  ),
-                                  title: Text(
-                                    "회원 관리",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size15,
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedMenu == 0
-                                          ? Theme.of(context).primaryColor
-                                          : unselectedColor,
-                                    ),
-                                  ),
-                                  onTap: () =>
+                                SingleSidebarTile(
+                                  selected: menuNotifier.selectedMenu == 0,
+                                  selectedIcon: Icons.emoji_people_rounded,
+                                  unselectedIcon:
+                                      Icons.accessibility_new_rounded,
+                                  title: "회원 관리",
+                                  action: () =>
                                       menuNotifier.setSelectedMenu(0, context),
                                 ),
-                                ExpansionTile(
-                                  initiallyExpanded: true,
-                                  iconColor: unselectedColor,
-                                  tilePadding: const EdgeInsets.symmetric(
-                                    horizontal: Sizes.size24,
-                                  ),
-                                  childrenPadding: const EdgeInsets.only(
-                                    left: Sizes.size64,
-                                    top: Sizes.size5,
-                                    bottom: Sizes.size5,
-                                  ),
-                                  leading: Icon(
-                                    Icons.auto_graph,
-                                    size: Sizes.size20,
-                                    color: unselectedColor,
-                                  ),
-                                  title: Text(
-                                    "점수 관리",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size15,
-                                      fontWeight: FontWeight.w600,
-                                      color: unselectedColor,
-                                    ),
-                                  ),
+                                const ParentSidebarTile(
+                                  icon: Icons.auto_graph,
+                                  title: "점수 관리",
                                   children: [
-                                    MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () => menuNotifier
-                                            .setSelectedMenu(1, context),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                bottom: Sizes.size10,
-                                              ),
-                                              child: Text(
-                                                "전체 점수",
-                                                style: TextStyle(
-                                                  fontSize: Sizes.size14,
-                                                  fontWeight: _selectedMenu == 1
-                                                      ? FontWeight.w500
-                                                      : FontWeight.w400,
-                                                  color: _selectedMenu == 1
-                                                      ? Theme.of(context)
-                                                          .primaryColor
-                                                      : unselectedColor,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () => menuNotifier
-                                            .setSelectedMenu(2, context),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                bottom: Sizes.size10,
-                                              ),
-                                              child: Text(
-                                                "회원별 걸음수",
-                                                style: TextStyle(
-                                                  fontSize: Sizes.size14,
-                                                  fontWeight: _selectedMenu == 2
-                                                      ? FontWeight.w500
-                                                      : FontWeight.w400,
-                                                  color: _selectedMenu == 2
-                                                      ? Theme.of(context)
-                                                          .primaryColor
-                                                      : unselectedColor,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () => menuNotifier
-                                            .setSelectedMenu(3, context),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                bottom: Sizes.size10,
-                                              ),
-                                              child: Text(
-                                                "회원별 일기",
-                                                style: TextStyle(
-                                                  fontSize: Sizes.size14,
-                                                  fontWeight: _selectedMenu == 3
-                                                      ? FontWeight.w500
-                                                      : FontWeight.w400,
-                                                  color: _selectedMenu == 3
-                                                      ? Theme.of(context)
-                                                          .primaryColor
-                                                      : unselectedColor,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                    "전체 점수",
+                                    "회원별 걸음수",
+                                    "회원별 일기",
                                   ],
+                                  standardIndex: 1,
                                 ),
-                                ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: Sizes.size24,
-                                  ),
-                                  leading: Icon(
-                                    _selectedMenu == 4
-                                        ? Icons.psychology_rounded
-                                        : Icons.psychology_outlined,
-                                    size: Sizes.size20,
-                                    color: _selectedMenu == 4
-                                        ? Colors.black
-                                        : unselectedColor,
-                                  ),
-                                  title: Text(
-                                    "회원별 인지 관리",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size15,
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedMenu == 4
-                                          ? Theme.of(context).primaryColor
-                                          : unselectedColor,
-                                    ),
-                                  ),
-                                  onTap: () =>
-                                      menuNotifier.setSelectedMenu(4, context),
+                                const ParentSidebarTile(
+                                  icon: Icons.psychology_rounded,
+                                  title: "회원별 인지 관리",
+                                  children: [
+                                    "문제 풀기",
+                                    "온라인 치매 검사",
+                                    "노인 우울척도 검사"
+                                  ],
+                                  standardIndex: 4,
                                 ),
-                                ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: Sizes.size24,
-                                  ),
-                                  leading: Icon(
-                                    _selectedMenu == 5
-                                        ? Icons.event_available_rounded
-                                        : Icons.calendar_today_rounded,
-                                    size: Sizes.size20,
-                                    color: _selectedMenu == 5
-                                        ? Colors.black
-                                        : unselectedColor,
-                                  ),
-                                  title: Text(
-                                    "행사 관리",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size15,
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedMenu == 5
-                                          ? Theme.of(context).primaryColor
-                                          : unselectedColor,
-                                    ),
-                                  ),
-                                  onTap: () =>
-                                      menuNotifier.setSelectedMenu(5, context),
+                                SingleSidebarTile(
+                                  selected: menuNotifier.selectedMenu == 7,
+                                  selectedIcon: Icons.event_available_rounded,
+                                  unselectedIcon: Icons.calendar_today_rounded,
+                                  title: "행사 관리",
+                                  action: () =>
+                                      menuNotifier.setSelectedMenu(7, context),
                                 ),
-                                ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: Sizes.size24,
-                                  ),
-                                  leading: Icon(
-                                    _selectedMenu == 6
-                                        ? Icons.ondemand_video_rounded
-                                        : Icons.tv_rounded,
-                                    size: Sizes.size20,
-                                    color: _selectedMenu == 6
-                                        ? Colors.black
-                                        : unselectedColor,
-                                  ),
-                                  title: Text(
-                                    "청춘테레비 관리",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size15,
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedMenu == 6
-                                          ? Theme.of(context).primaryColor
-                                          : unselectedColor,
-                                    ),
-                                  ),
-                                  onTap: () =>
-                                      menuNotifier.setSelectedMenu(6, context),
+                                SingleSidebarTile(
+                                  selected: menuNotifier.selectedMenu == 8,
+                                  selectedIcon: Icons.ondemand_video_rounded,
+                                  unselectedIcon: Icons.tv_rounded,
+                                  title: "재밌는 테레비 관리",
+                                  action: () =>
+                                      menuNotifier.setSelectedMenu(8, context),
                                 ),
+                                Gaps.v40,
                               ],
                             ),
                           ),
@@ -446,7 +254,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                         .read(adminProfileProvider.notifier)
                                         .logOut(context);
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     "로그아웃",
                                     style: TextStyle(
                                       fontSize: Sizes.size14,
@@ -474,6 +282,163 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
         }
         return Container();
       },
+    );
+  }
+}
+
+class SingleSidebarTile extends StatelessWidget {
+  final bool selected;
+  final IconData selectedIcon;
+  final IconData unselectedIcon;
+  final String title;
+  final void Function() action;
+  const SingleSidebarTile({
+    super.key,
+    required this.selected,
+    required this.selectedIcon,
+    required this.unselectedIcon,
+    required this.title,
+    required this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: Sizes.size24,
+      ),
+      leading: Icon(
+        selected ? selectedIcon : unselectedIcon,
+        size: Sizes.size20,
+        color: selected ? Colors.black : unselectedColor,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: Sizes.size15,
+          fontWeight: FontWeight.w600,
+          color: selected ? Theme.of(context).primaryColor : unselectedColor,
+        ),
+      ),
+      onTap: action,
+    );
+  }
+}
+
+class ParentSidebarTile extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final List<String> children;
+  final int standardIndex;
+
+  const ParentSidebarTile({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.children,
+    required this.standardIndex,
+  });
+
+  @override
+  State<ParentSidebarTile> createState() => _ParentSidebarTileState();
+}
+
+class _ParentSidebarTileState extends State<ParentSidebarTile> {
+  int _selectedMenu = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    menuNotifier.addListener(() {
+      setState(() {
+        _selectedMenu = menuNotifier.selectedMenu;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    menuNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      initiallyExpanded: true,
+      iconColor: unselectedColor,
+      tilePadding: const EdgeInsets.symmetric(
+        horizontal: Sizes.size24,
+      ),
+      childrenPadding: const EdgeInsets.only(
+        left: Sizes.size64,
+        top: Sizes.size5,
+        bottom: Sizes.size5,
+      ),
+      leading: Icon(
+        widget.icon,
+        size: Sizes.size20,
+        color: unselectedColor,
+      ),
+      title: Text(
+        widget.title,
+        style: const TextStyle(
+          fontSize: Sizes.size15,
+          fontWeight: FontWeight.w600,
+          color: unselectedColor,
+        ),
+      ),
+      children: [
+        for (int i = 0; i < widget.children.length; i++)
+          ChildSidebarTile(
+            selected: _selectedMenu == i + widget.standardIndex,
+            title: widget.children[i],
+            action: () =>
+                menuNotifier.setSelectedMenu(i + widget.standardIndex, context),
+          ),
+      ],
+    );
+  }
+}
+
+class ChildSidebarTile extends StatelessWidget {
+  final bool selected;
+  final String title;
+  final void Function() action;
+  const ChildSidebarTile({
+    super.key,
+    required this.selected,
+    required this.title,
+    required this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: action,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                bottom: Sizes.size10,
+              ),
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: Sizes.size14,
+                  fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+                  color: selected
+                      ? Theme.of(context).primaryColor
+                      : unselectedColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

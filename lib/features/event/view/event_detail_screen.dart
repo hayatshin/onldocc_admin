@@ -73,7 +73,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
       eventUserModel.gender,
       eventUserModel.phone,
       eventUserModel.fullRegion,
-      convertTimettampToString(eventUserModel.participateDate!),
+      convertTimettampToStringDate(eventUserModel.participateDate!),
       eventUserModel.userPoint.toString(),
       eventUserModel.goalOrNot! ? "달성" : "미달성",
     ];
@@ -561,7 +561,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                         Text(
                                           participants[i].participateDate !=
                                                   null
-                                              ? convertTimettampToString(
+                                              ? convertTimettampToStringDate(
                                                   participants[i]
                                                       .participateDate!)
                                               : "",

@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/router.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
-import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
   try {

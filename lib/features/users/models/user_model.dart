@@ -103,7 +103,7 @@ class UserModel {
             json.containsKey("registerDate") ? json["registerDate"] : "정보 없음",
         lastVisit = json.containsKey("lastVisit")
             ? json["lastVisit"] is Timestamp
-                ? convertTimettampToString(
+                ? convertTimettampToStringDate(
                     (json["lastVisit"] as Timestamp).toDate())
                 : json["lastVisit"]
             : "",

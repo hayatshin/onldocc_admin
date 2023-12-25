@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/sidebar_template.dart';
+import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
+import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
+import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart';
+import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
@@ -49,12 +53,20 @@ final routerProvider = Provider(
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
               case "${CaScreen.routeURL}/:userId":
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
-              case EventScreen.routeURL:
+              case AlzheimerTestScreen.routeURL:
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
-              case "${EventScreen.routeURL}/:eventId":
+              case "${AlzheimerTestScreen.routeURL}/:testId":
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
-              case TvScreen.routeURL:
+              case DepressionTestScreen.routeURL:
                 return SidebarTemplate(selectedMenuURL: 6, child: child);
+              case "${DepressionTestScreen.routeURL}/:testId":
+                return SidebarTemplate(selectedMenuURL: 6, child: child);
+              case EventScreen.routeURL:
+                return SidebarTemplate(selectedMenuURL: 7, child: child);
+              case "${EventScreen.routeURL}/:eventId":
+                return SidebarTemplate(selectedMenuURL: 7, child: child);
+              case TvScreen.routeURL:
+                return SidebarTemplate(selectedMenuURL: 8, child: child);
             }
             return child;
           },
@@ -142,30 +154,69 @@ final routerProvider = Provider(
               ],
             ),
             GoRoute(
-                name: CaScreen.routeName,
-                path: CaScreen.routeURL,
-                pageBuilder: (context, state) => NoTransitionPage(
-                      key: state.pageKey,
-                      child: const RankingUsersScreen(
-                        rankingType: "ca",
-                      ),
+              name: CaScreen.routeName,
+              path: CaScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const RankingUsersScreen(
+                  rankingType: "ca",
+                ),
+              ),
+              routes: [
+                GoRoute(
+                  path: ":userId",
+                  pageBuilder: (context, state) => MaterialPage(
+                    key: state.pageKey,
+                    child: CaScreen(
+                      // index: state.pathParameters["index"],
+                      userId: state.pathParameters["userId"],
+                      userName: state.extra != null
+                          ? (state.extra as RankingExtra).userName
+                          : "",
+                      rankingType: "인지",
                     ),
-                routes: [
-                  GoRoute(
-                    path: ":userId",
-                    pageBuilder: (context, state) => MaterialPage(
-                      key: state.pageKey,
-                      child: CaScreen(
-                        // index: state.pathParameters["index"],
-                        userId: state.pathParameters["userId"],
-                        userName: state.extra != null
-                            ? (state.extra as RankingExtra).userName
-                            : "",
-                        rankingType: "인지",
-                      ),
+                  ),
+                )
+              ],
+            ),
+            GoRoute(
+              name: AlzheimerTestScreen.routeName,
+              path: AlzheimerTestScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const AlzheimerTestScreen(),
+              ),
+              routes: [
+                GoRoute(
+                  path: ":testId",
+                  pageBuilder: (context, state) => MaterialPage(
+                    key: state.pageKey,
+                    child: CognitionTestDetailScreen(
+                      model: state.extra as CognitionTestModel,
                     ),
-                  )
-                ]),
+                  ),
+                )
+              ],
+            ),
+            GoRoute(
+              name: DepressionTestScreen.routeName,
+              path: DepressionTestScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const DepressionTestScreen(),
+              ),
+              routes: [
+                GoRoute(
+                  path: ":testId",
+                  pageBuilder: (context, state) => MaterialPage(
+                    key: state.pageKey,
+                    child: CognitionTestDetailScreen(
+                      model: state.extra as CognitionTestModel,
+                    ),
+                  ),
+                )
+              ],
+            ),
             GoRoute(
               name: EventScreen.routeName,
               path: EventScreen.routeURL,

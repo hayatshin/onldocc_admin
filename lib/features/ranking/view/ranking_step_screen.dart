@@ -33,7 +33,7 @@ class RankingStepScreen extends ConsumerStatefulWidget {
 }
 
 class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
-  final List<String> _listHeader = ["날짜", "일기", "마음", "비밀"];
+  final List<String> _listHeader = ["날짜", "걸음수"];
   List<StepModel> _stepDataList = [];
   String _periodType = "이번달";
   String? _userName = "";
@@ -57,7 +57,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   List<dynamic> exportToList(StepModel stepModel) {
     return [
       stepModel.date,
-      stepModel.dailyStep,
+      stepModel.dailyStep.toString(),
     ];
   }
 

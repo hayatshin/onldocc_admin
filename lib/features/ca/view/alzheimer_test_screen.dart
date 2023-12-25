@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,117 +7,70 @@ import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/contract_notifier.dart';
 import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
-import 'package:onldocc_admin/features/users/models/user_model.dart';
-import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
-import 'package:universal_html/html.dart';
+import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
+import 'package:onldocc_admin/features/ca/view_models/cognition_test_view_model.dart';
+import 'package:onldocc_admin/utils.dart';
 
-class RankingUsersScreen extends ConsumerStatefulWidget {
-  static const stepRouteURL = "step";
-  static const stepRouteName = "stepRanking";
-  static const diaryRouteURL = "diary";
-  static const diaryRouteName = "diaryRanking";
-  static const caRouteURL = "ca";
-  static const caRouteName = "caRanking";
-  final String? rankingType;
-  const RankingUsersScreen({
-    super.key,
-    required this.rankingType,
-  });
+class AlzheimerTestScreen extends ConsumerStatefulWidget {
+  static const routeURL = "/alzheimer";
+  static const routeName = "alzheimer";
+
+  const AlzheimerTestScreen({super.key});
 
   @override
-  ConsumerState<RankingUsersScreen> createState() => _RankingUsersScreenState();
+  ConsumerState<AlzheimerTestScreen> createState() =>
+      _AlzheimerTestScreenState();
 }
 
-class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
-  List<UserModel?> _beforeFilterUserDataList = [];
-  bool loadingFinished = false;
-
-  List<UserModel?> _userDataList = [];
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final List<String> _userListHeader = [
-    "이름",
-    "나이",
-    "출생일",
-    "성별",
-    "핸드폰 번호",
-    "거주 지역",
-    "가입일",
-    "마지막 방문일"
-  ];
+class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
+  bool loadingFinihsed = false;
   final List<String> _tableHeader = [
-    "#",
+    "시행 날짜",
+    "분류",
+    "점수",
     "이름",
-    "나이",
-    "출생일",
     "성별",
+    "나이",
     "핸드폰 번호",
-    "거주 지역",
-    "선택"
+    "자세히 보기",
   ];
-  @override
-  void initState() {
-    super.initState();
-    getUserModelList();
-    contractNotifier.addListener(() async {
-      setState(() {
-        loadingFinished = false;
-      });
-      await getUserModelList();
-    });
-  }
+  List<CognitionTestModel> _beforeFilterTestDataList = [];
+  List<CognitionTestModel> _testList = [];
 
-  void resetInitialState() {
-    setState(() {
-      _userDataList = _beforeFilterUserDataList;
-    });
-  }
-
-  void filterUserDataList(String? searchBy, String searchKeyword) {
-    final newUserDataList = ref.read(userProvider.notifier).filterTableRows(
-          _userDataList,
-          searchBy!,
-          searchKeyword,
-        );
-
-    setState(() {
-      _beforeFilterUserDataList = _userDataList;
-      _userDataList = newUserDataList;
-    });
-  }
-
-  List<dynamic> exportToList(UserModel userModel) {
+  List<dynamic> exportToList(CognitionTestModel testModel) {
     return [
-      userModel.name,
-      userModel.age,
-      userModel.fullBirthday,
-      userModel.gender,
-      userModel.phone,
-      userModel.fullRegion,
-      userModel.registerDate
+      testModel.timestamp,
+      testModel.result,
+      testModel.totalPoint,
+      testModel.userName,
+      testModel.userGender,
+      testModel.userAge,
+      testModel.userPhone,
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
+  List<List<dynamic>> exportToFullList() {
     List<List<dynamic>> list = [];
 
-    list.add(_userListHeader);
+    final csvHeader = _tableHeader.sublist(0, _tableHeader.length);
+    list.add(csvHeader);
 
-    for (var item in userDataList) {
-      final itemList = exportToList(item!);
+    for (var item in _testList) {
+      final itemList = exportToList(item);
       list.add(itemList);
     }
     return list;
   }
 
   void generateUserCsv() {
-    final csvData = exportToFullList(_userDataList);
+    final csvData = exportToFullList();
     String csvContent = '';
     for (var row in csvData) {
       for (var i = 0; i < row.length; i++) {
-        if (row[i].contains(',')) {
+        if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
           csvContent += row[i];
@@ -129,10 +83,9 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
       csvContent += '\n';
     }
     final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+    final formatDate = convertTimettampToStringDate(currentDate);
 
-    final String fileName = "인지케어 회원관리 $formatDate.csv";
+    final String fileName = "온라인 치매 검사 $formatDate.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,
@@ -143,33 +96,44 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
       ..click();
   }
 
-  void goDetailPage({int? index, String? userId, String? userName}) {
-    Map<String, String?> extraJson = {
-      "userId": userId,
-      "userName": userName,
-    };
-    if (widget.rankingType == "step") {
-      context.go("/ranking/step/$userId",
-          extra: RankingExtra.fromJson(extraJson));
-    } else if (widget.rankingType == "diary") {
-      context.go("/ranking/diary/$userId",
-          extra: RankingExtra.fromJson(extraJson));
-    } else if (widget.rankingType == "ca") {
-      context.go("/ca/$userId", extra: RankingExtra.fromJson(extraJson));
-    }
+  void resetInitialState() {
+    setState(() {
+      _testList = _beforeFilterTestDataList;
+    });
   }
 
-  Future<List<UserModel?>> getUserModelList() async {
-    List<UserModel?> userDataList =
-        await ref.read(userProvider.notifier).getContractUserList();
-    if (mounted) {
-      setState(() {
-        loadingFinished = true;
-        _userDataList = userDataList;
-      });
-    }
+  void filterUserDataList(String? searchBy, String searchKeyword) {
+    final newTableList = ref
+        .read(cognitionTestProvider.notifier)
+        .filterTableRows(
+          _testList,
+          searchBy!,
+          searchKeyword,
+        )
+        .where((element) => element != null)
+        .cast<CognitionTestModel>()
+        .toList();
 
-    return userDataList;
+    setState(() {
+      _beforeFilterTestDataList = _testList;
+      _testList = newTableList;
+    });
+  }
+
+  Future<void> _initializeTableList() async {
+    final testList = await ref
+        .read(cognitionTestProvider.notifier)
+        .getAdminAlzheimerTestData();
+    setState(() {
+      loadingFinihsed = true;
+      _testList = testList;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeTableList();
   }
 
   @override
@@ -179,12 +143,13 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
     return AnimatedBuilder(
       animation: contractNotifier,
       builder: (context, child) {
-        return loadingFinished
+        return loadingFinihsed
             ? Column(
                 children: [
-                  Search(
+                  SearchCsv(
                     filterUserList: filterUserDataList,
                     resetInitialList: resetInitialState,
+                    generateCsv: generateUserCsv,
                   ),
                   SearchBelow(
                     child: SingleChildScrollView(
@@ -199,7 +164,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   header,
                                   style: TextStyle(
                                     fontSize: Sizes.size13,
-                                    color: header == "선택"
+                                    color: header == "자세히 보기"
                                         ? Theme.of(context).primaryColor
                                         : Colors.black,
                                   ),
@@ -207,12 +172,12 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                               ),
                           ],
                           rows: [
-                            for (var i = 0; i < _userDataList.length; i++)
+                            for (int i = 0; i < _testList.length; i++)
                               DataRow(
                                 cells: [
                                   DataCell(
                                     Text(
-                                      (i + 1).toString(),
+                                      _testList[i].timestamp,
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -220,9 +185,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.name.length > 10
-                                          ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                                          : _userDataList[i]!.name,
+                                      _testList[i].result,
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -230,7 +193,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.age,
+                                      _testList[i].totalPoint.toString(),
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -238,7 +201,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.fullBirthday,
+                                      _testList[i].userName!,
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -246,7 +209,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.gender,
+                                      _testList[i].userGender!,
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -254,7 +217,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.phone,
+                                      _testList[i].userAge!,
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -262,7 +225,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.fullRegion,
+                                      _testList[i].userPhone!,
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -272,11 +235,12 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                     MouseRegion(
                                       cursor: SystemMouseCursors.click,
                                       child: GestureDetector(
-                                        onTap: () => goDetailPage(
-                                          index: i + 1,
-                                          userId: _userDataList[i]!.userId,
-                                          userName: _userDataList[i]!.name,
-                                        ),
+                                        onTap: () {
+                                          context.go(
+                                            "/alzheimer/${_testList[i].testId}",
+                                            extra: _testList[i],
+                                          );
+                                        },
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                             vertical: Sizes.size10,
@@ -296,12 +260,12 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                     ),
                                   )
                                 ],
-                              ),
+                              )
                           ],
                         ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               )
             : loadingWidget();

@@ -128,8 +128,11 @@ class UserRepository {
           await _db.collection("users").orderBy("timestamp").get();
       List<UserModel?> dbAllUserList =
           userSnapshots.docs.map((doc) => dbToUserModel(doc)).toList();
+
       return dbAllUserList;
-    } catch (error) {}
+    } catch (error) {
+      print(error);
+    }
     return [];
   }
 

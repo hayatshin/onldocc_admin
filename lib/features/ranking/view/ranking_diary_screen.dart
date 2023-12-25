@@ -56,7 +56,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   List<dynamic> exportToList(DiaryModel diaryModel, int index) {
     return [
       (index + 1).toString(),
-      convertTimettampToString(diaryModel.timestamp),
+      convertTimettampToStringDate(diaryModel.timestamp),
       diaryModel.secret ? "비밀 글" : diaryModel.todayDiary,
       diaryModel.todayMood.description,
       diaryModel.secret ? "O" : "",
@@ -469,7 +469,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                 Expanded(
                                                   flex: 3,
                                                   child: Text(
-                                                    convertTimettampToString(
+                                                    convertTimettampToStringDate(
                                                       _diaryDataList[index]
                                                           .timestamp,
                                                     ),

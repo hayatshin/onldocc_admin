@@ -7,7 +7,7 @@ class RankingRepository {
 
   Future<int> calculateStepScore(String userId, DateTime date) async {
     int dailyScore = 0;
-    final dateString = convertTimettampToString(date);
+    final dateString = convertTimettampToStringDate(date);
     final query =
         await _db.collection("period_step_count").doc(dateString).get();
 
@@ -57,7 +57,7 @@ class RankingRepository {
     List<DateTime> dateList = getBetweenDays(startDate, endDate);
     List<DocumentSnapshot<Map<String, dynamic>>> list = [];
     await Future.forEach(dateList, (DateTime date) async {
-      final dateString = convertTimettampToString(date);
+      final dateString = convertTimettampToStringDate(date);
       final query =
           await _db.collection("period_step_count").doc(dateString).get();
       list.add(query);

@@ -45,7 +45,7 @@ class _CaScreenState extends ConsumerState<CaScreen> {
   List<dynamic> exportToList(CaModel caModel, int index) {
     return [
       (index + 1).toString(),
-      convertTimettampToString(caModel.timestamp),
+      convertTimettampToStringDate(caModel.timestamp),
       caModel.recognitionResult ? "O" : "X",
       caModel.recognitionQuestion,
       caModel.realAnswer,
@@ -304,7 +304,7 @@ class _CaScreenState extends ConsumerState<CaScreen> {
                                         Align(
                                           alignment: Alignment.center,
                                           child: Text(
-                                            convertTimettampToString(
+                                            convertTimettampToStringDate(
                                               rowData.timestamp,
                                             ),
                                             style: const TextStyle(

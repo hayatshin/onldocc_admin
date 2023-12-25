@@ -7,7 +7,7 @@ class StepRepository {
 
   Future<int> calculateStepScore(String userId, DateTime date) async {
     int dailyScore = 0;
-    final dateString = convertTimettampToString(date);
+    final dateString = convertTimettampToStringDate(date);
     final query =
         await _db.collection("period_step_count").doc(dateString).get();
 
@@ -41,7 +41,7 @@ class StepRepository {
     List<Map<String, dynamic>> stepList = [];
 
     await Future.forEach(dateList, (DateTime date) async {
-      final dateString = convertTimettampToString(date);
+      final dateString = convertTimettampToStringDate(date);
       final query =
           await _db.collection("period_step_count").doc(dateString).get();
       final userExists = query.data()?.containsKey(userId);

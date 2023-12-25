@@ -80,7 +80,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
     List<DateTime> dateList = getBetweenDays(startDate, endDate);
 
     for (DateTime date in dateList) {
-      final dateString = convertTimettampToString(date);
+      final dateString = convertTimettampToStringDate(date);
       for (DocumentSnapshot<Map<String, dynamic>> document in stepDocs) {
         if (document.exists &&
             document.id == dateString &&
