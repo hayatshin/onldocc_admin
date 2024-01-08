@@ -35,7 +35,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
   void _initializeTestInfo() {
     testDate = "시행 날짜: ${widget.model.timestamp}";
     totalPoint =
-        "총점: ${widget.model.totalPoint}점 / ${alzheimer_questionnaire_strings.length}점";
+        "총점: ${widget.model.totalPoint}점 / ${widget.model.testType == "alzheimer_test" ? alzheimer_questionnaire_strings.length : depression_questionnaire_strings.length}점";
     result = "분류: ${widget.model.result}";
 
     name = "이름: ${widget.model.userName}";
