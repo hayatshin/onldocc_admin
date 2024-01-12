@@ -49,7 +49,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1046391219452',
     projectId: 'chungchunon-android-dd695',
     authDomain: 'chungchunon-android-dd695.firebaseapp.com',
-    databaseURL: 'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chungchunon-android-dd695.appspot.com',
     measurementId: 'G-P1LXY0F50Y',
   );
@@ -59,7 +60,8 @@ class DefaultFirebaseOptions {
     appId: '1:1046391219452:android:589ccf7c09966bcb0de379',
     messagingSenderId: '1046391219452',
     projectId: 'chungchunon-android-dd695',
-    databaseURL: 'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chungchunon-android-dd695.appspot.com',
   );
 
@@ -68,10 +70,13 @@ class DefaultFirebaseOptions {
     appId: '1:1046391219452:ios:008741b73a40b43e0de379',
     messagingSenderId: '1046391219452',
     projectId: 'chungchunon-android-dd695',
-    databaseURL: 'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chungchunon-android-dd695.appspot.com',
-    androidClientId: '1046391219452-2chv1q1ssuhl399lbouifpro9n861hrj.apps.googleusercontent.com',
-    iosClientId: '1046391219452-jhbg29keh7kl7dbhkp7smk05jf3u98b5.apps.googleusercontent.com',
+    androidClientId:
+        '1046391219452-2chv1q1ssuhl399lbouifpro9n861hrj.apps.googleusercontent.com',
+    iosClientId:
+        '1046391219452-jhbg29keh7kl7dbhkp7smk05jf3u98b5.apps.googleusercontent.com',
     iosBundleId: 'com.example.onldoccAdmin',
   );
 
@@ -80,10 +85,13 @@ class DefaultFirebaseOptions {
     appId: '1:1046391219452:ios:eaa4ebbb5160bff10de379',
     messagingSenderId: '1046391219452',
     projectId: 'chungchunon-android-dd695',
-    databaseURL: 'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chungchunon-android-dd695-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chungchunon-android-dd695.appspot.com',
-    androidClientId: '1046391219452-2chv1q1ssuhl399lbouifpro9n861hrj.apps.googleusercontent.com',
-    iosClientId: '1046391219452-1bj6mr60ac76dmjs74bhe4av0he11lnp.apps.googleusercontent.com',
+    androidClientId:
+        '1046391219452-2chv1q1ssuhl399lbouifpro9n861hrj.apps.googleusercontent.com',
+    iosClientId:
+        '1046391219452-1bj6mr60ac76dmjs74bhe4av0he11lnp.apps.googleusercontent.com',
     iosBundleId: 'com.example.onldoccAdmin.RunnerTests',
   );
 }

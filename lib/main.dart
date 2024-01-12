@@ -19,7 +19,7 @@ void main() async {
       ],
     );
   } catch (e) {
-    print("filed to initialize: $e");
+    print("failed to initialize: $e");
   }
 
   runApp(
@@ -27,7 +27,6 @@ void main() async {
       child: OnldoccAdmin(),
     ),
   );
-
   FlutterError.demangleStackTrace = (StackTrace stack) {
     if (stack is stack_trace.Trace) return stack.vmTrace;
     if (stack is stack_trace.Chain) return stack.toTrace().vmTrace;

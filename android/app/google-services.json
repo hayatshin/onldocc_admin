@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "1046391219452-hq509lkutj1qe53ub8tjqphc1973mhce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chugnchunon.chungchunon_android",
+            "certificate_hash": "ac7ec3214e82e0828bfd11f4bb5111749f4dad4f"
+          }
+        },
+        {
+          "client_id": "1046391219452-nlsa0mr4gjcb1l955pa52npf3k2abh3p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chugnchunon.chungchunon_android",
+            "certificate_hash": "0c116efde8a46739b53fd2551fbd6473b09db8ce"
+          }
+        },
+        {
           "client_id": "1046391219452-t4lqir8bc49gjnh82797q5epkecl4kkb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -66,6 +82,50 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "1046391219452-2qtgtrhdis67eql78r5cipb71muevvbm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfzOJ_O-XrreKdkYh9MF66Cck7urPZ4hA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046391219452-2qtgtrhdis67eql78r5cipb71muevvbm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1046391219452-1bj6mr60ac76dmjs74bhe4av0he11lnp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.onldoccAdmin.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046391219452:android:c336dcba521861740de379",
+        "android_client_info": {
+          "package_name": "com.example.onldocc_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046391219452-oon396l10pkihmpkcc9b9iffk1tgkcfo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.onldocc_flutter",
+            "certificate_hash": "0c116efde8a46739b53fd2551fbd6473b09db8ce"
+          }
+        },
         {
           "client_id": "1046391219452-2qtgtrhdis67eql78r5cipb71muevvbm.apps.googleusercontent.com",
           "client_type": 3
