@@ -1,15 +1,19 @@
 import 'dart:convert';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/models/contract_notifier.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
@@ -25,7 +29,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   List<UserModel?> _beforeFilterUserDataList = [];
 
   bool loadingFinished = false;
-  final ContractNotifier _contractNotifier = ContractNotifier();
 
   List<UserModel?> _userDataList = [];
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -42,17 +45,31 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     "마지막 방문일"
   ];
 
+  final tableFontSize = 11.5;
+
+  bool createdAtSort = false;
+  bool lastVisitSort = false;
+
   @override
   void initState() {
     super.initState();
 
     getUserModelList();
-    contractNotifier.addListener(() async {
+
+    selectContractRegion.addListener(() async {
       setState(() {
         loadingFinished = false;
       });
+
       await getUserModelList();
     });
+
+    // contractNotifier.addListener(() async {
+    //   setState(() {
+    //     loadingFinished = false;
+    //   });
+    //   await getUserModelList();
+    // });
   }
 
   void resetInitialState() {
@@ -77,12 +94,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   List<dynamic> exportToList(UserModel userModel) {
     return [
       userModel.name,
-      userModel.age,
-      userModel.fullBirthday,
+      userModel.userAge,
+      userModel.birthYear,
       userModel.gender,
       userModel.phone,
       userModel.fullRegion,
-      userModel.registerDate,
+      userModel.createdAt,
       userModel.lastVisit,
     ];
   }
@@ -133,7 +150,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   Future<List<UserModel?>> getUserModelList() async {
     List<UserModel?> userDataList =
-        await ref.read(userProvider.notifier).getContractUserList();
+        await ref.read(userProvider.notifier).initializeUserList();
+
     if (mounted) {
       setState(() {
         loadingFinished = true;
@@ -237,9 +255,10 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: contractNotifier,
-      builder: (context, child) {
+    final size = MediaQuery.of(context).size;
+    return ValueListenableBuilder(
+      valueListenable: selectContractRegion,
+      builder: (context, value, child) {
         return loadingFinished
             ? Overlay(
                 initialEntries: [
@@ -253,189 +272,254 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                             generateCsv: generateUserCsv,
                           ),
                           SearchBelow(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: DataTable(
-                                columns: const [
-                                  DataColumn(
-                                    label: Text(
-                                      "#",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
+                            size: size,
+                            child: DataTable2(
+                              columns: [
+                                DataColumn2(
+                                  fixedWidth: 50,
+                                  label: Text(
+                                    "#",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "이름",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
+                                ),
+                                DataColumn2(
+                                  label: Text(
+                                    "이름",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "나이",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 80,
+                                  label: Text(
+                                    "나이",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "출생일",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 100,
+                                  label: Text(
+                                    "출생일",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "성별",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 100,
+                                  label: Text(
+                                    "성별",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "핸드폰 번호",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 160,
+                                  label: Text(
+                                    "핸드폰 번호",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "거주 지역",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 180,
+                                  label: Text(
+                                    "거주 지역",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "가입일",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 150,
+                                  onSort: (columnIndex, sortAscending) {
+                                    if (columnIndex == 7) {
+                                      setState(() {
+                                        createdAtSort = !createdAtSort;
+                                        if (createdAtSort) {
+                                          _userDataList.sort((a, b) => b!
+                                              .createdAt
+                                              .compareTo(a!.createdAt));
+                                        } else {
+                                          _userDataList.sort((a, b) => a!
+                                              .createdAt
+                                              .compareTo(b!.createdAt));
+                                        }
+                                      });
+                                    }
+                                  },
+                                  label: Row(
+                                    children: [
+                                      Text(
+                                        "가입일",
+                                        style: TextStyle(
+                                          fontSize: tableFontSize,
+                                        ),
                                       ),
+                                      Gaps.h6,
+                                      Icon(
+                                        createdAtSort
+                                            ? Icons.expand_less_rounded
+                                            : Icons.expand_more_rounded,
+                                        size: 14,
+                                        color: Colors.grey.shade600,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 160,
+                                  onSort: (columnIndex, sortAsending) {
+                                    if (columnIndex == 8) {
+                                      setState(() {
+                                        lastVisitSort = !lastVisitSort;
+                                        if (lastVisitSort) {
+                                          _userDataList.sort((a, b) => b!
+                                              .lastVisit!
+                                              .compareTo(a!.lastVisit!));
+                                        } else {
+                                          _userDataList.sort((a, b) => a!
+                                              .lastVisit!
+                                              .compareTo(b!.lastVisit!));
+                                        }
+                                      });
+                                    }
+                                  },
+                                  label: Row(
+                                    children: [
+                                      Text(
+                                        "마지막 방문일",
+                                        style: TextStyle(
+                                          fontSize: tableFontSize,
+                                        ),
+                                      ),
+                                      Gaps.h6,
+                                      Icon(
+                                        lastVisitSort
+                                            ? Icons.expand_less_rounded
+                                            : Icons.expand_more_rounded,
+                                        size: 14,
+                                        color: Colors.grey.shade600,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 50,
+                                  label: Text(
+                                    "삭제",
+                                    style: TextStyle(
+                                      fontSize: tableFontSize,
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "마지막 방문일",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
+                                ),
+                              ],
+                              rows: [
+                                for (var i = 0; i < _userDataList.length; i++)
+                                  DataRow2(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          (i + 1).toString(),
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      "삭제",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.name.length > 10
+                                              ? "${_userDataList[i]!.name.substring(0, 10)}.."
+                                              : _userDataList[i]!.name,
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ],
-                                rows: [
-                                  for (var i = 0; i < _userDataList.length; i++)
-                                    DataRow(
-                                      cells: [
-                                        DataCell(
-                                          Text(
-                                            (i + 1).toString(),
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.userAge.toString(),
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.birthYear,
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.gender,
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.phone,
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.fullRegion,
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          secondsToStringLine(
+                                              _userDataList[i]!.createdAt),
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          secondsToStringLine(
+                                              _userDataList[i]!.lastVisit!),
+                                          style: TextStyle(
+                                            fontSize: tableFontSize,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => showDeleteOverlay(
+                                              context,
+                                              _userDataList[i]!.userId,
+                                              _userDataList[i]!.name,
+                                            ),
+                                            child: const Icon(
+                                              Icons.delete,
+                                              size: Sizes.size16,
                                             ),
                                           ),
                                         ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.name.length > 10
-                                                ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                                                : _userDataList[i]!.name,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.age,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.fullBirthday,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.gender,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.phone,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.fullRegion,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.registerDate,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _userDataList[i]!.lastVisit!,
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          MouseRegion(
-                                            cursor: SystemMouseCursors.click,
-                                            child: GestureDetector(
-                                              onTap: () => showDeleteOverlay(
-                                                context,
-                                                _userDataList[i]!.userId,
-                                                _userDataList[i]!.name,
-                                              ),
-                                              child: const Icon(
-                                                Icons.delete,
-                                                size: Sizes.size16,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                ],
-                              ),
+                                      )
+                                    ],
+                                  ),
+                              ],
                             ),
                           )
                         ],

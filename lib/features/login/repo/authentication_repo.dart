@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class AuthenticationRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final _supabase = Supabase.instance.client;
 
   bool get isLoggedIn => user != null;
   User? get user => _firebaseAuth.currentUser;
@@ -19,8 +19,12 @@ class AuthenticationRepository {
   }
 
   Future<Map<String, dynamic>?> getAdminProfile(String uid) async {
-    final doc = await _db.collection("admin").doc(uid).get();
-    return doc.data();
+    final doc = await _supabase
+        .from("admins")
+        .select('*, subdistricts(*), contract_regions(*)')
+        .eq('adminId', uid)
+        .single();
+    return doc;
   }
 }
 

@@ -86,12 +86,12 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     return [
       userModel.index,
       userModel.name,
-      userModel.age,
-      userModel.fullBirthday,
+      userModel.userAge,
+      userModel.birthYear,
       userModel.gender,
       userModel.phone,
       userModel.fullRegion,
-      userModel.registerDate
+      userModel.createdAt
     ];
   }
 
@@ -296,6 +296,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                   updateOrderPeriod: updateOrderPeriod,
                 ),
                 SearchBelow(
+                  size: size,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
@@ -409,7 +410,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 ),
                                 DataCell(
                                   Text(
-                                    _userDataList[i]!.age,
+                                    _userDataList[i]!.userAge.toString(),
                                     style: const TextStyle(
                                       fontSize: Sizes.size13,
                                     ),

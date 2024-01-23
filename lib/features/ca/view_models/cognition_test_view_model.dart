@@ -30,17 +30,17 @@ class CognitionViewModel extends AsyncNotifier<void> {
     List<CognitionTestModel> resultList = [];
 
     for (var test in alzheimerTestList) {
-      for (final user in userListNonNull) {
-        if (user.userId == test.userId) {
-          final userInfo = test.copyWith(
-            userName: user.name,
-            userGender: user.gender,
-            userAge: user.age,
-            userPhone: user.phone,
-          );
-          resultList.add(userInfo);
-        }
-      }
+      // for (final user in userListNonNull) {
+      //   if (user.userId == test.userId) {
+      //     final userInfo = test.copyWith(
+      //       userName: user.name,
+      //       userGender: user.gender,
+      //       userAge: user.userAge,
+      //       userPhone: user.phone,
+      //     );
+      //     resultList.add(userInfo);
+      //   }
+      // }
     }
     return resultList;
   }
@@ -60,15 +60,15 @@ class CognitionViewModel extends AsyncNotifier<void> {
     List<CognitionTestModel> resultList = [];
     for (var test in depressionTestList) {
       for (final user in userListNonNull) {
-        if (user.userId == test.userId) {
-          final userInfo = test.copyWith(
-            userName: user.name,
-            userGender: user.gender,
-            userAge: user.age,
-            userPhone: user.phone,
-          );
-          resultList.add(userInfo);
-        }
+        // if (user.userId == test.userId) {
+        //   final userInfo = test.copyWith(
+        //     userName: user.name,
+        //     userGender: user.gender,
+        //     userAge: user.userAge,
+        //     userPhone: user.phone,
+        //   );
+        //   resultList.add(userInfo);
+        // }
       }
     }
     return resultList;

@@ -8,8 +8,10 @@ import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 
 class UserViewModel extends AsyncNotifier<UserModel> {
+  late UserRepository _userRepo;
   @override
   FutureOr<UserModel> build() {
+    _userRepo = UserRepository();
     return UserModel.empty();
   }
 
@@ -104,42 +106,53 @@ class UserViewModel extends AsyncNotifier<UserModel> {
 
   Future<List<UserModel?>> getContractUserList() async {
     List<UserModel?> userDataList = [];
-    List<UserModel?> allUserList = await ref.read(userRepo).getAllUserData();
+    // List<UserModel?> allUserList = await ref.read(userRepo).getAllUserData();
+    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
 
-    AdminProfileModel adminProfileModel =
-        await ref.read(adminProfileProvider.notifier).getAdminProfile();
-
-    if (adminProfileModel.contractType == "마스터") {
-      if (contractNotifier.contractConfigModel.contractType != "지역" &&
-          contractNotifier.contractConfigModel.contractType != "기관") {
-        return allUserList.where((element) => element!.name != "탈퇴자").toList();
-      } else {
-        for (UserModel? user in allUserList) {
-          if (contractNotifier.contractConfigModel.contractType == "지역" &&
-              contractNotifier.contractConfigModel.contractName ==
-                  user!.fullRegion) {
-            userDataList.add(user);
-          } else if (contractNotifier.contractConfigModel.contractType ==
-                  "기관" &&
-              contractNotifier.contractConfigModel.contractName ==
-                  user!.community) {
-            userDataList.add(user);
-          }
-        }
-      }
-    } else {
-      for (UserModel? user in allUserList) {
-        if (adminProfileModel.contractType == "지역" &&
-            adminProfileModel.contractName == user!.fullRegion) {
-          userDataList.add(user);
-        } else if (adminProfileModel.contractType == "기관" &&
-            adminProfileModel.contractName == user!.community) {
-          userDataList.add(user);
-        }
-      }
-    }
+    // if (adminProfileModel.contractType == "마스터") {
+    //   if (contractNotifier.contractConfigModel.contractType != "지역" &&
+    //       contractNotifier.contractConfigModel.contractType != "기관") {
+    //     return allUserList.where((element) => element!.name != "탈퇴자").toList();
+    //   } else {
+    //     for (UserModel? user in allUserList) {
+    //       if (contractNotifier.contractConfigModel.contractType == "지역" &&
+    //           contractNotifier.contractConfigModel.contractName ==
+    //               user!.fullRegion) {
+    //         userDataList.add(user);
+    //       } else if (contractNotifier.contractConfigModel.contractType ==
+    //               "기관" &&
+    //           contractNotifier.contractConfigModel.contractName ==
+    //               user!.community) {
+    //         userDataList.add(user);
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   for (UserModel? user in allUserList) {
+    //     if (adminProfileModel.contractType == "지역" &&
+    //         adminProfileModel.contractName == user!.fullRegion) {
+    //       userDataList.add(user);
+    //     } else if (adminProfileModel.contractType == "기관" &&
+    //         adminProfileModel.contractName == user!.community) {
+    //       userDataList.add(user);
+    //     }
+    //   }
+    // }
 
     return userDataList;
+  }
+
+  Future<List<UserModel?>> initializeUserList() async {
+    AdminProfileModel? adminProfile = ref.read(adminProfileProvider).value;
+    final selectMaster = selectContractRegion.value.name == '마스터';
+    final selectSubdistrictId = selectContractRegion.value.name == "마스터"
+        ? adminProfile!.subdistrictId
+        : selectContractRegion.value.subdistrictId;
+
+    final userlist =
+        await _userRepo.initializeUserList(selectMaster, selectSubdistrictId);
+    final modelList = userlist.map((e) => UserModel.fromJson(e)).toList();
+    return modelList.where((e) => e.name != "탈퇴자").toList();
   }
 }
 

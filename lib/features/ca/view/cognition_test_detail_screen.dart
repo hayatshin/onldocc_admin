@@ -121,6 +121,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
           userName: widget.model.userName!,
         ),
         SearchBelow(
+          size: size,
           child: Padding(
             padding: const EdgeInsets.all(
               60,

@@ -28,9 +28,9 @@ class EventScreen extends ConsumerStatefulWidget {
 
 class _EventScreenState extends ConsumerState<EventScreen> {
   final double searchHeight = 35;
-  bool _feedHover = false;
-  bool _addEventHover = false;
-  bool _initialSetting = false;
+  final bool _feedHover = false;
+  final bool _addEventHover = false;
+  final bool _initialSetting = false;
   // final List<EventModel?> _eventDataList = [];
   final TextEditingController _titleControllder = TextEditingController();
   final TextEditingController _descriptionControllder = TextEditingController();
@@ -39,8 +39,8 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       TextEditingController();
 
   // 행사 추가하기
-  String _eventTitle = "";
-  String _eventDescription = "";
+  final String _eventTitle = "";
+  final String _eventDescription = "";
 
   PlatformFile? _eventImageFile;
   Uint8List? _eventImageBytes;
@@ -48,20 +48,20 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   DateTime? _eventStartDate;
   DateTime? _eventEndDate;
 
-  String _eventPrizeWinners = "";
-  String _eventGoalScore = "";
+  final String _eventPrizeWinners = "";
+  final String _eventGoalScore = "";
 
   Map<String, dynamic> addedEventData = {};
-  bool _enabledEventButton = false;
+  final bool _enabledEventButton = false;
 
 // 피드 공지 올리기
-  String _feedDescription = "";
+  final String _feedDescription = "";
 
-  List<PlatformFile> _feedImageFile = [];
+  final List<PlatformFile> _feedImageFile = [];
   Uint8List? _feedImageBytes;
   final List<Uint8List> _feedImageArray = [];
 
-  bool _enabledFeedButton = false;
+  final bool _enabledFeedButton = false;
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -70,14 +70,14 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   Future<void> deleteEventFirebase(String documentId) async {
     AdminProfileModel data =
         await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-    final contractType = data.contractType;
-    final contractName = data.contractName;
-    late Map<String, dynamic> eventJson;
+    // final contractType = data.contractType;
+    // final contractName = data.contractName;
+    // late Map<String, dynamic> eventJson;
 
-    await ref.read(eventRepo).deleteEvent(documentId);
-    await ref
-        .read(eventProvider.notifier)
-        .getEventModels(contractType, contractName);
+    // await ref.read(eventRepo).deleteEvent(documentId);
+    // await ref
+    //     .read(eventProvider.notifier)
+    //     .getEventModels(contractType, contractName);
     removeDeleteOverlay();
   }
 
@@ -87,130 +87,129 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         .uploadEventImage(_eventImageBytes!, _eventTitle);
 
     if (eventImgURL != null) {
-      AdminProfileModel data =
-          await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-      final contractType = data.contractType;
-      final contractName = data.contractName;
-      late Map<String, dynamic> eventJson;
+      // AdminProfileModel data =
+      //     await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
+      // final contractType = data.contractType;
+      // final contractName = data.contractName;
+      // late Map<String, dynamic> eventJson;
 
-      if (contractType == "지역") {
-        String? image = await ref.read(eventRepo).getRegionImage(contractName);
-        eventJson = {
-          "allUser": false,
-          "description": _eventDescription,
-          "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
-          "startPeriod": convertTimettampToStringDot(_eventStartDate!),
-          "endPeriod": convertTimettampToStringDot(_eventEndDate!),
-          "goalScore": int.parse(_eventGoalScore),
-          "missionImage": eventImgURL,
-          "prizeWinners": int.parse(_eventPrizeWinners),
-          "state": "진행",
-          "title": _eventTitle,
-          "contractType": "region",
-          "contractName": contractName,
-          "contractLogo": image,
-          "autoProgress": false,
-        };
-      } else if (contractType == "기관") {
-        String? image =
-            await ref.read(eventRepo).getCommunityImage(contractName);
+      // if (contractType == "지역") {
+      //   String? image = await ref.read(eventRepo).getRegionImage(contractName);
+      //   eventJson = {
+      //     "allUser": false,
+      //     "description": _eventDescription,
+      //     "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
+      //     "startPeriod": convertTimettampToStringDot(_eventStartDate!),
+      //     "endPeriod": convertTimettampToStringDot(_eventEndDate!),
+      //     "goalScore": int.parse(_eventGoalScore),
+      //     "missionImage": eventImgURL,
+      //     "prizeWinners": int.parse(_eventPrizeWinners),
+      //     "state": "진행",
+      //     "title": _eventTitle,
+      //     "contractType": "region",
+      //     "contractName": contractName,
+      //     "contractLogo": image,
+      //     "autoProgress": false,
+      //   };
+      // } else if (contractType == "기관") {
+      //   String? image =
+      //       await ref.read(eventRepo).getCommunityImage(contractName);
 
-        eventJson = {
-          "allUser": false,
-          "description": _eventDescription,
-          "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
-          "startPeriod": convertTimettampToStringDot(_eventStartDate!),
-          "endPeriod": convertTimettampToStringDot(_eventEndDate!),
-          "goalScore": int.parse(_eventGoalScore),
-          "missionImage": eventImgURL,
-          "prizeWinners": int.parse(_eventPrizeWinners),
-          "state": "진행",
-          "title": _eventTitle,
-          "contractType": "community",
-          "contractName": contractName,
-          "contractLogo": image,
-          "autoProgress": false,
-        };
-      } else {
-        // 마스터
-        String? image =
-            "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/missions%2F%E1%84%8B%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8F%E1%85%A9%E1%86%AB_%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5_%E1%84%91%E1%85%B5%E1%86%BC%E1%84%8F%E1%85%B32.png?alt=media&token=0ffe5480-4d88-42c0-be29-f7d366bb62d5";
-        eventJson = {
-          "allUser": true,
-          "description": _eventDescription,
-          "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
-          "startPeriod": convertTimettampToStringDot(_eventStartDate!),
-          "endPeriod": convertTimettampToStringDot(_eventEndDate!),
-          "goalScore": int.parse(_eventGoalScore),
-          "missionImage": eventImgURL,
-          "prizeWinners": int.parse(_eventPrizeWinners),
-          "state": "진행",
-          "title": _eventTitle,
-          "contractType": "master",
-          "contractName": contractName,
-          "contractLogo": image,
-          "autoProgress": false,
-        };
-      }
-
-      await ref.read(eventRepo).saveEvent(eventJson);
-      await ref
-          .read(eventProvider.notifier)
-          .getEventModels(contractType, contractName);
-
-      context.pop();
-      showSnackBar(context, "행사가 추가되었습니다.");
+      //   eventJson = {
+      //     "allUser": false,
+      //     "description": _eventDescription,
+      //     "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
+      //     "startPeriod": convertTimettampToStringDot(_eventStartDate!),
+      //     "endPeriod": convertTimettampToStringDot(_eventEndDate!),
+      //     "goalScore": int.parse(_eventGoalScore),
+      //     "missionImage": eventImgURL,
+      //     "prizeWinners": int.parse(_eventPrizeWinners),
+      //     "state": "진행",
+      //     "title": _eventTitle,
+      //     "contractType": "community",
+      //     "contractName": contractName,
+      //     "contractLogo": image,
+      //     "autoProgress": false,
+      //   };
+    } else {
+      // 마스터
+      // String? image =
+      //     "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/missions%2F%E1%84%8B%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8F%E1%85%A9%E1%86%AB_%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5_%E1%84%91%E1%85%B5%E1%86%BC%E1%84%8F%E1%85%B32.png?alt=media&token=0ffe5480-4d88-42c0-be29-f7d366bb62d5";
+      // eventJson = {
+      //   "allUser": true,
+      //   "description": _eventDescription,
+      //   "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
+      //   "startPeriod": convertTimettampToStringDot(_eventStartDate!),
+      //   "endPeriod": convertTimettampToStringDot(_eventEndDate!),
+      //   "goalScore": int.parse(_eventGoalScore),
+      //   "missionImage": eventImgURL,
+      //   "prizeWinners": int.parse(_eventPrizeWinners),
+      //   "state": "진행",
+      //   "title": _eventTitle,
+      //   "contractType": "master",
+      //   "contractName": contractName,
+      //   "contractLogo": image,
+      //   "autoProgress": false,
+      // };
     }
+
+    // await ref.read(eventRepo).saveEvent(eventJson);
+    // await ref
+    //     .read(eventProvider.notifier)
+    //     .getEventModels(contractType, contractName);
+
+    context.pop();
+    showSnackBar(context, "행사가 추가되었습니다.");
   }
 
   Future<void> addFeedFirebase() async {
-    AdminProfileModel data =
-        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-    final contractType = data.contractType;
-    final contractName = data.contractName;
+    // AdminProfileModel data =
+    //     await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
+    // final contractType = data.contractType;
+    // final contractName = data.contractName;
 
-    final contractTypeEng = contractType == "지역"
-        ? "region"
-        : contractType == "기관"
-            ? "community"
-            : "";
+    // final contractTypeEng = contractType == "지역"
+    //     ? "region"
+    //     : contractType == "기관"
+    //         ? "community"
+    //         : "";
 
-    String userId = contractType == "마스터"
-        ? "kakao:2358828971"
-        : "notice:${contractTypeEng}_$contractName";
-    DateTime now = DateTime.now();
-    String nowString =
-        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-    String diaryId = "${userId}_$nowString";
+    // String userId = contractType == "마스터"
+    //     ? "kakao:2358828971"
+    //     : "notice:${contractTypeEng}_$contractName";
+    // DateTime now = DateTime.now();
+    // String nowString =
+    //     "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    // String diaryId = "${userId}_$nowString";
 
-    Map<String, dynamic> todayMood = {
-      "description": "기뻐요",
-      "image": 2131230971,
-      "position": 0,
-    };
+    // Map<String, dynamic> todayMood = {
+    //   "description": "기뻐요",
+    //   "image": 2131230971,
+    //   "position": 0,
+    // };
 
-    List<String> images =
-        await ref.read(eventRepo).uploadFeedImage(_feedImageArray);
+    // List<String> images =
+    //     await ref.read(eventRepo).uploadFeedImage(_feedImageArray);
 
-    Map<String, dynamic> diaryModel = {
-      "userId": userId,
-      "diaryId": diaryId,
-      "monthDate": "${now.year}-${now.month.toString().padLeft(2, '0')}",
-      "timestamp": FieldValue.serverTimestamp(),
-      "secret": false,
-      "images": images,
-      "todayMood": todayMood,
-      "numLikes": 0,
-      "numComments": 0,
-      "todayDiary": _feedDescription,
-      "blockedBy": [],
-      "contractType": contractType,
-      "contractName": contractName,
-    };
-    await ref.read(eventRepo).addNotification(userId, diaryId, diaryModel);
+    // Map<String, dynamic> diaryModel = {
+    //   "userId": userId,
+    //   "diaryId": diaryId,
+    //   "monthDate": "${now.year}-${now.month.toString().padLeft(2, '0')}",
+    //   "timestamp": FieldValue.serverTimestamp(),
+    //   "secret": false,
+    //   "images": images,
+    //   "todayMood": todayMood,
+    //   "numLikes": 0,
+    //   "numComments": 0,
+    //   "todayDiary": _feedDescription,
+    //   "blockedBy": [],
+    //   "contractType": contractType,
+    //   "contractName": contractName,
+    // };
+    // await ref.read(eventRepo).addNotification(userId, diaryId, diaryModel);
 
-    context.pop();
-    showSnackBar(context, "피드 공지가 올라갔습니다.");
+    // context.pop();
+    // showSnackBar(context, "피드 공지가 올라갔습니다.");
   }
 
   Future<void> pickImageFromGallery(
@@ -220,24 +219,24 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         type: FileType.image,
       );
       if (result == null) return;
-      setState(() {
-        _eventImageFile = result.files.first;
-        _eventImageBytes = _eventImageFile!.bytes!;
+      // setState(() {
+      //   _eventImageFile = result.files.first;
+      //   _eventImageBytes = _eventImageFile!.bytes!;
 
-        _enabledEventButton = _eventTitle.isNotEmpty &&
-            _eventDescription.isNotEmpty &&
-            _eventImageBytes != null &&
-            _eventPrizeWinners.isNotEmpty &&
-            _eventGoalScore.isNotEmpty &&
-            _eventStartDate != null &&
-            _eventEndDate != null;
-      });
+      //   _enabledEventButton = _eventTitle.isNotEmpty &&
+      //       _eventDescription.isNotEmpty &&
+      //       _eventImageBytes != null &&
+      //       _eventPrizeWinners.isNotEmpty &&
+      //       _eventGoalScore.isNotEmpty &&
+      //       _eventStartDate != null &&
+      //       _eventEndDate != null;
+      // });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("오류가 발생했습니다."),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text("오류가 발생했습니다."),
+      //   ),
+      // );
     }
   }
 
@@ -248,7 +247,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         type: FileType.image,
       );
       if (result == null) return;
-      _feedImageFile = result.files;
+      // _feedImageFile = result.files;
       for (PlatformFile file in _feedImageFile) {
         _feedImageArray.add(file.bytes!);
       }
@@ -275,13 +274,13 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       setState(() {
         _eventStartDate = picked;
 
-        _enabledEventButton = _eventTitle.isNotEmpty &&
-            _eventDescription.isNotEmpty &&
-            _eventImageBytes != null &&
-            _eventPrizeWinners.isNotEmpty &&
-            _eventGoalScore.isNotEmpty &&
-            _eventStartDate != null &&
-            _eventEndDate != null;
+        // _enabledEventButton = _eventTitle.isNotEmpty &&
+        //     _eventDescription.isNotEmpty &&
+        //     _eventImageBytes != null &&
+        //     _eventPrizeWinners.isNotEmpty &&
+        //     _eventGoalScore.isNotEmpty &&
+        //     _eventStartDate != null &&
+        //     _eventEndDate != null;
       });
     }
   }
@@ -298,13 +297,13 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       setState(() {
         _eventEndDate = picked;
 
-        _enabledEventButton = _eventTitle.isNotEmpty &&
-            _eventDescription.isNotEmpty &&
-            _eventImageBytes != null &&
-            _eventPrizeWinners.isNotEmpty &&
-            _eventGoalScore.isNotEmpty &&
-            _eventStartDate != null &&
-            _eventEndDate != null;
+        // _enabledEventButton = _eventTitle.isNotEmpty &&
+        //     _eventDescription.isNotEmpty &&
+        //     _eventImageBytes != null &&
+        //     _eventPrizeWinners.isNotEmpty &&
+        //     _eventGoalScore.isNotEmpty &&
+        //     _eventStartDate != null &&
+        //     _eventEndDate != null;
       });
     }
   }
@@ -418,10 +417,10 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     onFieldSubmitted: (value) {},
                                     onChanged: (value) {
                                       setState(() {
-                                        _feedDescription = value;
+                                        // _feedDescription = value;
 
-                                        _enabledFeedButton =
-                                            _feedDescription.isNotEmpty;
+                                        // _enabledFeedButton =
+                                        //     _feedDescription.isNotEmpty;
                                       });
                                     },
                                     controller: _descriptionControllder,
@@ -696,16 +695,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     onFieldSubmitted: (value) {},
                                     onChanged: (value) {
                                       setState(() {
-                                        _eventTitle = value;
+                                        // _eventTitle = value;
 
-                                        _enabledEventButton =
-                                            _eventTitle.isNotEmpty &&
-                                                _eventDescription.isNotEmpty &&
-                                                _eventImageBytes != null &&
-                                                _eventPrizeWinners.isNotEmpty &&
-                                                _eventGoalScore.isNotEmpty &&
-                                                _eventStartDate != null &&
-                                                _eventEndDate != null;
+                                        // _enabledEventButton =
+                                        //     _eventTitle.isNotEmpty &&
+                                        //         _eventDescription.isNotEmpty &&
+                                        //         _eventImageBytes != null &&
+                                        //         _eventPrizeWinners.isNotEmpty &&
+                                        //         _eventGoalScore.isNotEmpty &&
+                                        //         _eventStartDate != null &&
+                                        //         _eventEndDate != null;
                                       });
                                     },
                                     controller: _titleControllder,
@@ -853,16 +852,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     onFieldSubmitted: (value) {},
                                     onChanged: (value) {
                                       setState(() {
-                                        _eventDescription = value;
+                                        // _eventDescription = value;
 
-                                        _enabledEventButton =
-                                            _eventTitle.isNotEmpty &&
-                                                _eventDescription.isNotEmpty &&
-                                                _eventImageBytes != null &&
-                                                _eventPrizeWinners.isNotEmpty &&
-                                                _eventGoalScore.isNotEmpty &&
-                                                _eventStartDate != null &&
-                                                _eventEndDate != null;
+                                        // _enabledEventButton =
+                                        //     _eventTitle.isNotEmpty &&
+                                        //         _eventDescription.isNotEmpty &&
+                                        //         _eventImageBytes != null &&
+                                        //         _eventPrizeWinners.isNotEmpty &&
+                                        //         _eventGoalScore.isNotEmpty &&
+                                        //         _eventStartDate != null &&
+                                        //         _eventEndDate != null;
                                       });
                                     },
                                     controller: _descriptionControllder,
@@ -1047,16 +1046,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   onFieldSubmitted: (value) {},
                                   onChanged: (value) {
                                     setState(() {
-                                      _eventGoalScore = value;
+                                      // _eventGoalScore = value;
 
-                                      _enabledEventButton =
-                                          _eventTitle.isNotEmpty &&
-                                              _eventDescription.isNotEmpty &&
-                                              _eventImageBytes != null &&
-                                              _eventPrizeWinners.isNotEmpty &&
-                                              _eventGoalScore.isNotEmpty &&
-                                              _eventStartDate != null &&
-                                              _eventEndDate != null;
+                                      // _enabledEventButton =
+                                      //     _eventTitle.isNotEmpty &&
+                                      //         _eventDescription.isNotEmpty &&
+                                      //         _eventImageBytes != null &&
+                                      //         _eventPrizeWinners.isNotEmpty &&
+                                      //         _eventGoalScore.isNotEmpty &&
+                                      //         _eventStartDate != null &&
+                                      //         _eventEndDate != null;
                                     });
                                   },
                                   controller: _goalScoreController,
@@ -1151,16 +1150,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   onFieldSubmitted: (value) {},
                                   onChanged: (value) {
                                     setState(() {
-                                      _eventPrizeWinners = value;
+                                      // _eventPrizeWinners = value;
 
-                                      _enabledEventButton =
-                                          _eventTitle.isNotEmpty &&
-                                              _eventDescription.isNotEmpty &&
-                                              _eventImageBytes != null &&
-                                              _eventPrizeWinners.isNotEmpty &&
-                                              _eventGoalScore.isNotEmpty &&
-                                              _eventStartDate != null &&
-                                              _eventEndDate != null;
+                                      // _enabledEventButton =
+                                      //     _eventTitle.isNotEmpty &&
+                                      //         _eventDescription.isNotEmpty &&
+                                      //         _eventImageBytes != null &&
+                                      //         _eventPrizeWinners.isNotEmpty &&
+                                      //         _eventGoalScore.isNotEmpty &&
+                                      //         _eventStartDate != null &&
+                                      //         _eventEndDate != null;
                                     });
                                   },
                                   controller: _prizewinnersControllder,
@@ -1248,7 +1247,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         .read(eventProvider.notifier)
         .getEventModels(contractType, contractName);
     setState(() {
-      _initialSetting = true;
+      // _initialSetting = true;
     });
     return eventList;
   }
@@ -1384,16 +1383,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                           visible: size.width > 700,
                           child: MouseRegion(
                             cursor: SystemMouseCursors.click,
-                            onHover: (event) {
-                              setState(() {
-                                _feedHover = true;
-                              });
-                            },
-                            onExit: (event) {
-                              setState(() {
-                                _feedHover = false;
-                              });
-                            },
+                            // onHover: (event) {
+                            //   setState(() {
+                            //     _feedHover = true;
+                            //   });
+                            // },
+                            // onExit: (event) {
+                            //   setState(() {
+                            //     _feedHover = false;
+                            //   });
+                            // },
                             child: GestureDetector(
                               onTap: () => feedUploadTap(
                                   context, size.width - 270, size.height),
@@ -1430,16 +1429,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                           visible: size.width > 550,
                           child: MouseRegion(
                             cursor: SystemMouseCursors.click,
-                            onHover: (event) {
-                              setState(() {
-                                _addEventHover = true;
-                              });
-                            },
-                            onExit: (event) {
-                              setState(() {
-                                _addEventHover = false;
-                              });
-                            },
+                            // onHover: (event) {
+                            //   setState(() {
+                            //     _addEventHover = true;
+                            //   });
+                            // },
+                            // onExit: (event) {
+                            //   setState(() {
+                            //     _addEventHover = false;
+                            //   });
+                            // },
                             child: GestureDetector(
                               onTap: () => addEventTap(
                                   context, size.width - 270, size.height),
@@ -1477,6 +1476,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                 ),
               ),
               SearchBelow(
+                size: size,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return Padding(

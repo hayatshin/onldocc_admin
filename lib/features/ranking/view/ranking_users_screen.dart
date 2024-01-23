@@ -90,12 +90,12 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   List<dynamic> exportToList(UserModel userModel) {
     return [
       userModel.name,
-      userModel.age,
-      userModel.fullBirthday,
+      userModel.userAge,
+      userModel.birthYear,
       userModel.gender,
       userModel.phone,
       userModel.fullRegion,
-      userModel.registerDate
+      userModel.createdAt
     ];
   }
 
@@ -187,6 +187,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                     resetInitialList: resetInitialState,
                   ),
                   SearchBelow(
+                    size: size,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
@@ -230,7 +231,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.age,
+                                      _userDataList[i]!.userAge.toString(),
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -238,7 +239,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.fullBirthday,
+                                      _userDataList[i]!.birthYear,
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),

@@ -23,7 +23,7 @@ class TvViewModel extends AsyncNotifier<List<TvModel>> {
         await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
 
     // String contractType = contractConfigModel.contractType;
-    String contractName = data.contractName;
+    // String contractName = data.contractName;
 
     List<TvModel> tvList = [];
     List<QueryDocumentSnapshot<Map<String, dynamic>>> tvs =
@@ -37,10 +37,10 @@ class TvViewModel extends AsyncNotifier<List<TvModel>> {
       } else {
         if (tv.data().containsKey("contractName")) {
           String tvContractName = tv.get("contractName");
-          if (tvContractName == contractName) {
-            TvModel tvModel = TvModel.fromJson(tv.data());
-            tvList.add(tvModel);
-          }
+          // if (tvContractName == contractName) {
+          //   TvModel tvModel = TvModel.fromJson(tv.data());
+          //   tvList.add(tvModel);
+          // }
         }
       }
     }
@@ -61,7 +61,7 @@ class TvViewModel extends AsyncNotifier<List<TvModel>> {
             : data.contractType == "마스터"
                 ? "master"
                 : "region";
-    String contractName = data.contractName;
+    // String contractName = data.contractName;
     String documentId = "";
     String thumbnail = "";
 
@@ -83,7 +83,7 @@ class TvViewModel extends AsyncNotifier<List<TvModel>> {
       tvJson = {
         "allUser": false,
         "contractType": contractType,
-        "contractName": contractName,
+        // "contractName": contractName,
         "documentId": documentId,
         "link": link,
         "thumbnail": thumbnail,

@@ -4,12 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class UserRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _supabase = Supabase.instance.client;
 
-  UserModel dbToUserModel(QueryDocumentSnapshot<Map<String, dynamic>> user) {
+  UserModel? dbToUserModel(QueryDocumentSnapshot<Map<String, dynamic>> user) {
     try {
       final userBirthYear = user.data().containsKey("birthYear")
           ? user.get("birthYear")
@@ -75,9 +76,9 @@ class UserRepository {
       return convertUserModel;
     } catch (e) {
       // ignore: avoid_print
-      print("dbToUserModel -> ${user.data()}");
+      print("dbToUserModel -> $e");
     }
-    return UserModel.empty();
+    return null;
   }
 
   UserModel docToUserModel(DocumentSnapshot<Map<String, dynamic>> user) {
@@ -143,37 +144,50 @@ class UserRepository {
     }
   }
 
-  Future<List<UserModel?>> getAllUserData() async {
+  Future<List<Map<String, dynamic>>> initializeUserList(
+      bool userMaster, String userSubdistrictId) async {
     try {
-      final userSnapshots =
-          await _db.collection("users").orderBy("timestamp").get();
+      List<Map<String, dynamic>> userList = [];
+      if (userMaster) {
+        final data = await _supabase
+            .from("users")
+            .select('*, subdistricts(*)')
+            .order('createdAt', ascending: true, nullsFirst: true);
+        userList = data;
+      } else {
+        final data = await _supabase
+            .from("users")
+            .select('*, subdistricts(*)')
+            .eq('subdistrictId', userSubdistrictId)
+            .order('createdAt', ascending: true, nullsFirst: true);
+        userList = data;
+      }
 
-      List<UserModel?> dbAllUserList =
-          userSnapshots.docs.map((doc) => dbToUserModel(doc)).toList();
-
-      return dbAllUserList;
+      return userList;
     } catch (error) {
-      print(error);
+      // ignore: avoid_print
+      print("initializeUserList -> $error");
     }
     return [];
   }
 
   Future<List<UserModel?>> getRegionUserData(String fullRegion) async {
-    final regionStrings = fullRegion.split(" ");
-    final region = regionStrings[0].trim();
-    final smallRegion = regionStrings.skip(1).join(" ").trim();
-    final userSnapshots = await _db
-        .collection("users")
-        .where("region", isEqualTo: region)
-        .where("smallRegion", isEqualTo: smallRegion)
-        .orderBy("timestamp")
-        .get();
+    // final regionStrings = fullRegion.split(" ");
+    // final region = regionStrings[0].trim();
+    // final smallRegion = regionStrings.skip(1).join(" ").trim();
+    // final userSnapshots = await _db
+    //     .collection("users")
+    //     .where("region", isEqualTo: region)
+    //     .where("smallRegion", isEqualTo: smallRegion)
+    //     .orderBy("timestamp")
+    //     .get();
 
-    return userSnapshots.docs
-        .map((doc) => dbToUserModel(doc))
-        .toList()
-        .where((element) => element.name != "탈퇴자")
-        .toList();
+    // return userSnapshots.docs
+    //     .map((doc) => dbToUserModel(doc))
+    //     .where((element) => element != null && element.name != "탈퇴자")
+    //     .toList();
+
+    return [];
   }
 
   Future<List<UserModel?>> getCommunityUserData(String community) async {
@@ -185,8 +199,7 @@ class UserRepository {
 
     return userSnapshots.docs
         .map((doc) => dbToUserModel(doc))
-        .toList()
-        .where((element) => element.name != "탈퇴자")
+        .where((element) => element != null && element.name != "탈퇴자")
         .toList();
   }
 

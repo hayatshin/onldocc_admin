@@ -153,6 +153,7 @@ class _CaScreenState extends ConsumerState<CaScreen> {
         ),
         loadingFinished
             ? SearchBelow(
+                size: size,
                 child: Column(
                   children: [
                     Padding(

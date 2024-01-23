@@ -23,7 +23,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
     AdminProfileModel data =
         await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
     List<EventModel> eventModelList =
-        await getEventModels(data.contractType, data.contractName);
+        await getEventModels(data.contractType, data.name);
 
     return eventModelList;
   }

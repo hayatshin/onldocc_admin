@@ -2,7 +2,9 @@ import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/models/contract_notifier.dart';
+import 'package:onldocc_admin/common/models/contract_region_model.dart';
 import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
+import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -28,32 +30,41 @@ class SidebarTemplate extends ConsumerStatefulWidget {
 class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   final contractTypeController = TextEditingController();
   final contractNameController = TextEditingController();
+  final menuFontSize = Sizes.size12;
 
-  List<String> _contractItems = [""];
+  List<ContractRegionModel> _contractItems = [ContractRegionModel.empty()];
 
   void setContractType(String value) async {
-    contractNameController.text = "";
-    contractNotifier.changeContractModel(contractType: value);
-
     if (value == "지역") {
-      final regionItems = await ref.read(contractRepo).getRegionItems();
+      contractNameController.clear();
+
+      final regionItems =
+          await ref.read(contractConfigProvider.notifier).getRegionItems();
+
       setState(() {
-        _contractItems = regionItems!;
+        _contractItems = regionItems;
       });
     } else if (value == "기관") {
-      final communityItems = await ref.read(contractRepo).getCommunityItems();
-      setState(() {
-        _contractItems = communityItems!;
-      });
+      contractNameController.clear();
+
+      // final communityItems = await ref.read(contractRepo).getCommunityItems();
+      // setState(() {
+      //   _contractItems = communityItems!;
+      // });
     } else {
+      contractNameController.clear();
+      selectContractRegion.value = ContractRegionModel.empty();
+
       setState(() {
-        _contractItems = ["전체"];
+        _contractItems = [ContractRegionModel.empty()];
       });
     }
   }
 
   void setContractName(String value) async {
-    contractNotifier.changeContractModel(contractName: value);
+    // contractNotifier.changeContractModel(contractName: value);
+    selectContractRegion.value =
+        _contractItems.firstWhere((element) => element.name == value);
   }
 
   @override
@@ -64,8 +75,9 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     super.dispose();
   }
 
-  Future<AdminProfileModel> _initializeAuthProfile() async {
-    AdminProfileModel adminProfile =
+  Future<AdminProfileModel?> _initializeAuthProfile() async {
+    // AdminProfileModel? adminProfile = ref.read(adminProfileProvider).value;
+    AdminProfileModel? adminProfile =
         await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
     return adminProfile;
@@ -79,11 +91,12 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final data = snapshot.data!;
+          print("sidebar -> $data");
           return Scaffold(
             body: Row(
               children: [
                 SizedBox(
-                  width: 270,
+                  width: size.width * 0.17,
                   child: Drawer(
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
@@ -91,7 +104,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                       ),
                     ),
                     child: Container(
-                      width: size.width * 0.3,
+                      width: size.width * 0.2,
                       height: size.height,
                       decoration: BoxDecoration(
                         color: const Color(0xFFF7FAFC),
@@ -118,7 +131,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: Sizes.size20,
+                                      vertical: Sizes.size14,
                                       horizontal: Sizes.size14,
                                     ),
                                     child: Column(
@@ -126,11 +139,11 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                         CircleAvatar(
                                           radius: 24,
                                           foregroundImage:
-                                              NetworkImage(data.regionImage),
+                                              NetworkImage(data.image),
                                         ),
-                                        Gaps.v20,
+                                        Gaps.v14,
                                         Text(
-                                          data.contractName,
+                                          data.name,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
                                             color: Colors.black87,
@@ -145,42 +158,44 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                                 onChanged: (value) =>
                                                     setContractType(value),
                                                 hintText: "지역 / 기관 선택",
-                                                hintStyle: const TextStyle(
-                                                  fontSize: Sizes.size14,
+                                                hintStyle: TextStyle(
+                                                  fontSize: menuFontSize,
                                                   fontWeight: FontWeight.w400,
                                                 ),
-                                                listItemStyle: const TextStyle(
-                                                  fontSize: Sizes.size14,
+                                                listItemStyle: TextStyle(
+                                                  fontSize: menuFontSize,
                                                   fontWeight: FontWeight.w400,
                                                 ),
-                                                selectedStyle: const TextStyle(
+                                                selectedStyle: TextStyle(
                                                   color: Colors.black87,
-                                                  fontSize: Sizes.size14,
+                                                  fontSize: menuFontSize,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                                 items: const ["전체", "지역", "기관"],
                                                 controller:
                                                     contractTypeController,
                                               ),
-                                              Gaps.v20,
+                                              Gaps.v5,
                                               CustomDropdown(
                                                 onChanged: (value) =>
                                                     setContractName(value),
                                                 hintText: "세부 선택",
-                                                hintStyle: const TextStyle(
-                                                  fontSize: Sizes.size14,
+                                                hintStyle: TextStyle(
+                                                  fontSize: menuFontSize,
                                                   fontWeight: FontWeight.w400,
                                                 ),
-                                                listItemStyle: const TextStyle(
-                                                  fontSize: Sizes.size14,
+                                                listItemStyle: TextStyle(
+                                                  fontSize: menuFontSize,
                                                   fontWeight: FontWeight.w400,
                                                 ),
-                                                selectedStyle: const TextStyle(
+                                                selectedStyle: TextStyle(
                                                   color: Colors.black87,
-                                                  fontSize: Sizes.size14,
+                                                  fontSize: menuFontSize,
                                                   fontWeight: FontWeight.w500,
                                                 ),
-                                                items: _contractItems,
+                                                items: _contractItems
+                                                    .map((e) => e.name)
+                                                    .toList(),
                                                 controller:
                                                     contractNameController,
                                               )
@@ -243,8 +258,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: Sizes.size24,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: Sizes.size24,
                               ),
                               child: MouseRegion(
                                 cursor: SystemMouseCursors.click,
@@ -315,7 +330,7 @@ class SingleSidebarTile extends StatelessWidget {
       title: Text(
         title,
         style: TextStyle(
-          fontSize: Sizes.size15,
+          fontSize: Sizes.size14,
           fontWeight: FontWeight.w600,
           color: selected ? Theme.of(context).primaryColor : unselectedColor,
         ),
@@ -350,15 +365,17 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
   void initState() {
     super.initState();
     menuNotifier.addListener(() {
-      setState(() {
-        _selectedMenu = menuNotifier.selectedMenu;
-      });
+      if (mounted) {
+        setState(() {
+          _selectedMenu = menuNotifier.selectedMenu;
+        });
+      }
     });
   }
 
   @override
   void dispose() {
-    menuNotifier.dispose();
+    // menuNotifier.dispose();
     super.dispose();
   }
 
@@ -383,7 +400,7 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
       title: Text(
         widget.title,
         style: const TextStyle(
-          fontSize: Sizes.size15,
+          fontSize: Sizes.size14,
           fontWeight: FontWeight.w600,
           color: unselectedColor,
         ),
@@ -428,7 +445,7 @@ class ChildSidebarTile extends StatelessWidget {
               child: Text(
                 title,
                 style: TextStyle(
-                  fontSize: Sizes.size14,
+                  fontSize: Sizes.size13,
                   fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
                   color: selected
                       ? Theme.of(context).primaryColor

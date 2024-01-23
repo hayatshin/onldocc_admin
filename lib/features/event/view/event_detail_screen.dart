@@ -127,6 +127,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return FutureBuilder(
       future: ref
           .read(eventProvider.notifier)
@@ -143,6 +144,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                   userName: eventData!.title!,
                 ),
                 SearchBelow(
+                  size: size,
                   child: Column(
                     children: [
                       Gaps.v32,

@@ -451,6 +451,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return ref.watch(tvProvider).when(
           loading: () => CircularProgressIndicator.adaptive(
             backgroundColor: Theme.of(context).primaryColor,
@@ -534,6 +535,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                   ),
                 ),
                 SearchBelow(
+                  size: size,
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       return Padding(

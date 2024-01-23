@@ -1,20 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:onldocc_admin/utils.dart';
-
 class UserModel {
   final int? index;
   final String userId;
   final String name;
-  final String age;
-  final String fullBirthday;
+  final int userAge;
+  final String birthYear;
+  final String birthDay;
   final String gender;
   final String phone;
   final String fullRegion;
-  final String region;
-  final String smallRegion;
   final dynamic community;
-  final String registerDate;
-  final String? lastVisit;
+  final int createdAt;
+  final int? lastVisit;
   final int? totalScore;
   final int? stepScore;
   final int? diaryScore;
@@ -24,15 +20,14 @@ class UserModel {
     required this.index,
     required this.userId,
     required this.name,
-    required this.age,
-    required this.fullBirthday,
+    required this.userAge,
+    required this.birthYear,
+    required this.birthDay,
     required this.gender,
     required this.phone,
     required this.fullRegion,
-    required this.region,
-    required this.smallRegion,
     required this.community,
-    required this.registerDate,
+    required this.createdAt,
     required this.lastVisit,
     required this.totalScore,
     required this.stepScore,
@@ -44,16 +39,15 @@ class UserModel {
       : index = 0,
         userId = "",
         name = "",
-        age = "",
-        fullBirthday = "",
+        userAge = 0,
+        birthYear = "",
+        birthDay = "",
         gender = "",
         phone = "",
         fullRegion = "",
-        region = "",
-        smallRegion = "",
         community = "",
-        registerDate = "",
-        lastVisit = "",
+        createdAt = 0,
+        lastVisit = 0,
         totalScore = 0,
         stepScore = 0,
         diaryScore = 0,
@@ -63,15 +57,14 @@ class UserModel {
     return {
       "userId": userId,
       "name": name,
-      "age": age,
-      "fullBirthday": fullBirthday,
+      "userAge": userAge,
+      "birthYear": birthYear,
+      "birthDay": birthDay,
       "gender": gender,
       "phone": phone,
       "fullRegion": fullRegion,
-      "region": region,
-      "smallRegion": smallRegion,
       "community": community,
-      "registerDate": registerDate,
+      "createdAt": createdAt,
       "lastVisit": lastVisit,
       "totalScore": totalScore,
       "stepScore": stepScore,
@@ -84,29 +77,17 @@ class UserModel {
       : index = json.containsKey("index") ? json["index"] : 0,
         userId = json.containsKey("userId") ? json["userId"] : "정보 없음",
         name = json.containsKey("name") ? json["name"] : "정보 없음",
-        age = json.containsKey("age") ? json["age"] : "정보 없음",
-        fullBirthday =
-            json.containsKey("fullBirthday") ? json["fullBirthday"] : "정보 없음",
+        userAge = json.containsKey("userAge") ? json["userAge"] : 0,
+        birthYear = json.containsKey("birthYear") ? json['birthYear'] : "정보 없음",
+        birthDay = json.containsKey("birthDay") ? json['birthDay'] : "정보 없음",
         gender = json.containsKey("gender") ? json["gender"] : "정보 없음",
         phone = json.containsKey("phone") ? json["phone"] : "정보 없음",
-        fullRegion =
-            json.containsKey("fullRegion") ? json["fullRegion"] : "정보 없음",
-        region = json.containsKey("region") ? json["region"] : "",
-        smallRegion =
-            json.containsKey("smallRegion") ? json["smallRegion"] : "",
-        community = json.containsKey("community")
-            ? json["commuity"] is String
-                ? json["community"]
-                : "정보 없음"
+        fullRegion = json["subdistricts"] != null
+            ? json["subdistricts"]["subdistrict"]
             : "정보 없음",
-        registerDate =
-            json.containsKey("registerDate") ? json["registerDate"] : "정보 없음",
-        lastVisit = json.containsKey("lastVisit")
-            ? json["lastVisit"] is Timestamp
-                ? convertTimettampToStringDate(
-                    (json["lastVisit"] as Timestamp).toDate())
-                : json["lastVisit"]
-            : "",
+        community = "",
+        createdAt = json["createdAt"] ?? 0,
+        lastVisit = json["lastVisit"] ?? 0,
         totalScore = json.containsKey("totalScore") ? json["totalScore"] : 0,
         stepScore = json.containsKey("stepScore") ? json["stepScore"] : 0,
         diaryScore = json.containsKey("diaryScore") ? json["diaryScore"] : 0,
@@ -117,16 +98,15 @@ class UserModel {
     final int? index,
     final String? userId,
     final String? name,
-    final String? age,
-    final String? fullBirthday,
+    final int? userAge,
+    final String? birthYear,
+    final String? birthDay,
     final String? gender,
     final String? phone,
     final String? fullRegion,
-    final String? region,
-    final String? smallRegion,
     final String? community,
-    final String? registerDate,
-    final String? lastVisit,
+    final int? createdAt,
+    final int? lastVisit,
     final int? totalScore,
     final int? stepScore,
     final int? diaryScore,
@@ -136,15 +116,14 @@ class UserModel {
       index: index ?? this.index,
       userId: userId ?? this.userId,
       name: name ?? this.name,
-      age: age ?? this.age,
-      fullBirthday: fullBirthday ?? this.fullBirthday,
+      userAge: userAge ?? this.userAge,
+      birthYear: birthYear ?? this.birthYear,
+      birthDay: birthDay ?? this.birthDay,
       gender: gender ?? this.gender,
       phone: phone ?? this.phone,
       fullRegion: fullRegion ?? this.fullRegion,
-      region: region ?? this.region,
-      smallRegion: smallRegion ?? this.smallRegion,
       community: community ?? this.community,
-      registerDate: registerDate ?? this.registerDate,
+      createdAt: createdAt ?? this.createdAt,
       lastVisit: lastVisit ?? this.lastVisit,
       totalScore: totalScore ?? this.totalScore,
       stepScore: stepScore ?? this.stepScore,

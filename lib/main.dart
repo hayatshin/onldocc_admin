@@ -1,17 +1,26 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/router.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   try {
+    await dotenv.load(fileName: ".env");
+
     WidgetsFlutterBinding.ensureInitialized();
+
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    await Supabase.initialize(
+      url: dotenv.env["SUPABASE_URL"]!,
+      anonKey: dotenv.env["SUPABASE_ANONKEY"]!,
     );
     await SystemChrome.setPreferredOrientations(
       [
@@ -19,6 +28,7 @@ void main() async {
       ],
     );
   } catch (e) {
+    // ignore: avoid_print
     print("failed to initialize: $e");
   }
 
@@ -43,6 +53,8 @@ class OnldoccAdmin extends ConsumerWidget {
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
       title: '인지케어 관리자페이지',
+      scrollBehavior:
+          ScrollConfiguration.of(context).copyWith(scrollbars: false),
       theme: ThemeData(
         fontFamily: "NanumSquare",
         primaryColor: const Color(0xFFFF2D78),

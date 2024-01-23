@@ -152,6 +152,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                     generateCsv: generateUserCsv,
                   ),
                   SearchBelow(
+                    size: size,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(

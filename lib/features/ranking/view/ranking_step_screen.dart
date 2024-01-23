@@ -142,6 +142,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
         ),
         loadingFinished
             ? SearchBelow(
+                size: size,
                 child: Column(
                   children: [
                     Center(

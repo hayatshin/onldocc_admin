@@ -21,8 +21,7 @@ class ContractNotifier with ChangeNotifier {
       contractType: contractType ?? _contractConfigModel.contractType,
       contractName: contractName ?? _contractConfigModel.contractName,
     );
-    print(
-        "${contractConfigModel.contractType} / ${contractConfigModel.contractName}");
+
     notifyListeners();
   }
 }

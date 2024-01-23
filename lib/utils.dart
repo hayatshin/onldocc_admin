@@ -139,3 +139,104 @@ WeekMonthDay getWeekMonthDay() {
 DateTime dateStringToDateTimeDot(String dateString) {
   return DateTime.parse(dateString.replaceAll('.', '-'));
 }
+
+// supabase -utils
+
+int getCurrentSeconds() {
+  int millisecondsSinceEpoch = DateTime.now().millisecondsSinceEpoch;
+  return (millisecondsSinceEpoch / 1000).round();
+}
+
+String secondsToStringDot(int seconds) {
+  final milliseconds = seconds * 1000;
+  DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+  final f = DateFormat('yyyy.MM.dd');
+  return f.format(dateTime);
+}
+
+String secondsToStringLine(int seconds) {
+  try {
+    final milliseconds = seconds * 1000;
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+    final f = DateFormat('yyyy-MM-dd');
+    return f.format(dateTime);
+  } catch (e) {
+    return "-";
+  }
+}
+
+DateTime secondsToDatetime(int seconds) {
+  final milliseconds = seconds * 1000;
+  DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+  return dateTime;
+}
+
+String secondsToStringDiaryTimeLine(int seconds) {
+  final milliseconds = seconds * 1000;
+  DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+
+  String diaryHour = dateTime.hour == 24
+      ? "오전 0시"
+      : dateTime.hour > 12
+          ? "오후 ${dateTime.hour - 12}시"
+          : "오전 ${dateTime.hour}시";
+
+  String formattedDate =
+      '${dateTime.month}/${dateTime.day} $diaryHour ${dateTime.minute}분';
+  return formattedDate;
+}
+
+String secondsToStringDateComment(int seconds) {
+  final milliseconds = seconds * 1000;
+  DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+
+  String formattedDate =
+      '${dateTime.year.toString().substring(2)}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  return formattedDate;
+}
+
+List<dynamic> spreadDiaryImages(List data) {
+  final imagelist = data.map((e) => e["image"] as String).toList();
+
+  if (imagelist.isNotEmpty &&
+      !imagelist[0].startsWith("https://firebasestorage")) {
+    // supabase storage
+    imagelist.sort((a, b) {
+      List<String> aSegments = a.split('/');
+      List<String> bSegments = b.split('/');
+
+      int aValue = int.parse(aSegments[aSegments.length - 2]);
+      int bValue = int.parse(bSegments[bSegments.length - 2]);
+
+      return aValue.compareTo(bValue);
+    });
+    return imagelist;
+  } else {
+    // firebase storage
+    return imagelist;
+  }
+}
+
+int convertStartDateStringToSeconds(String startDate) {
+  if (startDate.contains('.')) {
+    String timeString = "00:00:00.000";
+    String combineString = "${startDate.replaceAll('.', '-')} $timeString";
+    DateTime dateTime = DateTime.parse(combineString);
+    int seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
+    return seconds;
+  } else {
+    return DateTime(2023).millisecondsSinceEpoch ~/ 1000;
+  }
+}
+
+int convertEndDateStringToSeconds(String endDate) {
+  if (endDate.contains('.')) {
+    String timeString = "23:59:99.999";
+    String combineString = "${endDate.replaceAll('.', '-')} $timeString";
+    DateTime dateTime = DateTime.parse(combineString);
+    int seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
+    return seconds;
+  } else {
+    return DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  }
+}

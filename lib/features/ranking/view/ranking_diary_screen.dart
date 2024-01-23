@@ -252,6 +252,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
         ),
         loadingFinished
             ? SearchBelow(
+                size: size,
                 child: Column(
                   children: [
                     Padding(

@@ -62,6 +62,8 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   flutter_animate: ^4.2.0+1
   url_strategy: ^0.2.0
+  supabase_flutter: ^2.3.0
+  data_table_2: ^2.5.10
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +88,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - assets/images/
     - assets/app_intro/
     - assets/app_screen/

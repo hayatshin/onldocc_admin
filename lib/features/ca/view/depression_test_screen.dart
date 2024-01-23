@@ -152,6 +152,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                     generateCsv: generateUserCsv,
                   ),
                   SearchBelow(
+                    size: size,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(

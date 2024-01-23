@@ -1,39 +1,67 @@
 class AdminProfileModel {
-  final String userId;
-  final String regionImage;
+  final String adminId;
   final bool master;
   final String contractType;
-  final String contractName;
+  final String contractRegionId;
+  final String subdistrictId;
+  final String name;
+  final String image;
+  final String phone;
+  final String mail;
 
   AdminProfileModel({
-    required this.userId,
-    required this.regionImage,
+    required this.adminId,
     required this.master,
     required this.contractType,
-    required this.contractName,
+    required this.contractRegionId,
+    required this.subdistrictId,
+    required this.name,
+    required this.image,
+    required this.phone,
+    required this.mail,
   });
 
   AdminProfileModel.empty()
-      : userId = "",
-        regionImage = "",
+      : adminId = "",
         master = false,
-        contractType = "",
-        contractName = "";
+        contractType = "region",
+        contractRegionId = "",
+        subdistrictId = "",
+        name = "",
+        image = "",
+        phone = "",
+        mail = "";
 
   AdminProfileModel.fromJson(Map<String, dynamic> json)
-      : userId = json["userId"],
-        regionImage = json["regionImage"],
+      : adminId = json["adminId"],
         master = json["master"],
-        contractType = json["contractType"],
-        contractName = json["contractName"];
+        contractType = "region",
+        contractRegionId = json["contractRegionId"] ?? "",
+        subdistrictId = json["subdistrictId"] ?? "",
+        name = json["subdistricts"] != null
+            ? json["subdistricts"]["subdistrict"]
+            : "마스터",
+        image = json["contract_regions"] != null
+            ? json["contract_regions"]["image"]
+            : "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/icons%2Ficon_solid.png?alt=media&token=3e3c0b76-a994-4068-a56b-16077c337080",
+        phone = json["contract_regions"] != null
+            ? json["contract_regions"]["phone"]
+            : "",
+        mail = json["contract_regions"] != null
+            ? json["contract_regions"]["mail"]
+            : "";
 
   Map<String, dynamic> toJson() {
     return {
-      "userId": userId,
-      "regionImage": regionImage,
+      "adminId": adminId,
       "master": master,
-      "contractType": contractType,
-      "contractName": contractName,
+      "contractType": "region",
+      "contractRegionId": contractRegionId,
+      "subdistrictId": subdistrictId,
+      "name": name,
+      "image": image,
+      "phone": phone,
+      "mail": mail,
     };
   }
 }
