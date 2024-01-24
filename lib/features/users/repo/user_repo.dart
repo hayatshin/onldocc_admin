@@ -219,8 +219,11 @@ class UserRepository {
   }
 
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
-    final userQuery = await _db.collection("users").doc(userId).get();
-    return userQuery.data();
+    final userQuery =
+        await _supabase.from("users").select('*').eq('userId', userId).single();
+    return userQuery;
+    // final userQuery = await _db.collection("users").doc(userId).get();
+    // return userQuery.data();
   }
 
   Future<UserModel?> getUserModel(String userId) async {

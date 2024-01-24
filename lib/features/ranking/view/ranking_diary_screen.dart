@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/models/mood_model.dart';
@@ -39,7 +40,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   final List<String> _listHeader = ["#", "날짜", "일기", "감정", "비밀"];
   List<DiaryModel> _diaryDataList = [];
   bool loadingFinished = false;
-  String _periodType = "이번달";
+  final String _periodType = "이번달";
   Map<int, bool> expandMap = {};
   bool expandclick = false;
   bool expandUpdate = false;
@@ -47,25 +48,34 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   final String _userName = "";
   final TextEditingController sortPeriodControllder = TextEditingController();
 
+  DateRange _selectedDateRange = DateRange(
+    getThisWeekMonday(),
+    DateTime.now(),
+  );
+
   @override
   void initState() {
     super.initState();
+    print("userId ${widget.userId}");
+
     getUserDiaryData();
   }
 
   List<dynamic> exportToList(DiaryModel diaryModel, int index) {
     return [
       (index + 1).toString(),
-      convertTimettampToStringDate(diaryModel.timestamp),
-      diaryModel.secret ? "비밀 글" : diaryModel.todayDiary,
-      diaryModel.todayMood.description,
-      diaryModel.secret ? "O" : "",
+      secondsToStringLine(diaryModel.createdAt),
+      diaryModel.secretType != "전체 공개" ? "비밀 글" : diaryModel.todayDiary,
+      moodeList
+          .firstWhere((element) => element.position == diaryModel.todayMood)
+          .description,
+      diaryModel.secretType != "전체 공개" ? "O" : "",
     ];
   }
 
-  void updateOrderPeriod(String periodType) {
+  void updateOrderPeriod(DateRange dateRange) {
     setState(() {
-      _periodType = periodType;
+      _selectedDateRange = dateRange;
       loadingFinished = false;
     });
     getUserDiaryData();
@@ -120,59 +130,29 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   Future<void> getUserDiaryData() async {
     List<DiaryModel> diaryDataList = await ref
         .read(diaryProvider.notifier)
-        .getUserDateDiaryData(widget.userId!, _periodType);
+        .getUserDateDiaryData(widget.userId!, _selectedDateRange);
 
     int totalMoods = diaryDataList.length;
-    int joyCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 0
-            : (element.todayMood as Map)["description"] == "기뻐요")
-        .length;
-    int throbCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 1
-            : (element.todayMood as Map)["description"] == "설레요")
-        .length;
-    int thanksfulCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 2
-            : (element.todayMood as Map)["description"] == "감사해요")
-        .length;
-    int shalomCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 3
-            : (element.todayMood as Map)["description"] == "평온해요")
-        .length;
-    int sosoCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 4
-            : (element.todayMood as Map)["description"] == "그냥 그래요")
-        .length;
-    int lonelyCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 5
-            : (element.todayMood as Map)["description"] == "외로워요")
-        .length;
-    int anxiousCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 6
-            : (element.todayMood as Map)["description"] == "불안해요")
-        .length;
-    int gloomyCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 7
-            : (element.todayMood as Map)["description"] == "우울해요")
-        .length;
-    int sadCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 8
-            : (element.todayMood as Map)["description"] == "슬퍼요")
-        .length;
-    int angryCounts = diaryDataList
-        .where((element) => element.todayMood is int
-            ? element.todayMood == 9
-            : (element.todayMood as Map)["description"] == "화나요")
-        .length;
+    int joyCounts =
+        diaryDataList.where((element) => element.todayMood == 0).length;
+    int throbCounts =
+        diaryDataList.where((element) => element.todayMood == 1).length;
+    int thanksfulCounts =
+        diaryDataList.where((element) => element.todayMood == 2).length;
+    int shalomCounts =
+        diaryDataList.where((element) => element.todayMood == 3).length;
+    int sosoCounts =
+        diaryDataList.where((element) => element.todayMood == 4).length;
+    int lonelyCounts =
+        diaryDataList.where((element) => element.todayMood == 5).length;
+    int anxiousCounts =
+        diaryDataList.where((element) => element.todayMood == 6).length;
+    int gloomyCounts =
+        diaryDataList.where((element) => element.todayMood == 7).length;
+    int sadCounts =
+        diaryDataList.where((element) => element.todayMood == 8).length;
+    int angryCounts =
+        diaryDataList.where((element) => element.todayMood == 9).length;
     int extraCounts = totalMoods -
         (joyCounts +
             throbCounts +
@@ -253,209 +233,214 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
         loadingFinished
             ? SearchBelow(
                 size: size,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(
-                        Sizes.size36,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          SizedBox(
-                            width: chartWidth,
-                            child: SfCalendar(
-                              view: CalendarView.month,
-                              dataSource:
-                                  DiaryDataSource(_diaryDataList, context),
-                              todayHighlightColor: Colors.grey.shade500,
-                              // view: CalendarView.week,
-                              // firstDayOfWeek: 1, // monday
-                            ),
-                          ),
-                          if (_diaryDataList.isNotEmpty)
-                            SizedBox(
-                              width: chartWidth,
-                              child: SfCircularChart(
-                                legend: const Legend(
-                                  isVisible: true,
-                                  toggleSeriesVisibility: true,
-                                ),
-                                title: ChartTitle(
-                                  text: "감정 추이",
-                                  textStyle: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                series: <PieSeries<MoodData, String>>[
-                                  PieSeries<MoodData, String>(
-                                    dataSource: _moodDistribution,
-                                    xValueMapper: (MoodData mood, _) =>
-                                        mood.mood,
-                                    yValueMapper: (MoodData mood, _) =>
-                                        mood.count,
-                                    dataLabelMapper: (MoodData mood, _) =>
-                                        "${mood.mood}: ${mood.count}",
-                                    pointColorMapper: (MoodData mood, _) =>
-                                        mood.color,
-                                    dataLabelSettings: const DataLabelSettings(
-                                      isVisible: true,
-                                      showZeroValue: false,
-                                      // labelPosition:
-                                      //     ChartDataLabelPosition.outside,
-                                      // useSeriesColor: true,
-                                    ),
-                                    explode: true,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (_diaryDataList.isEmpty)
-                            SizedBox(
-                              width: chartWidth,
-                              child: const Center(
-                                child: Text(
-                                  "일기 데이터가 없습니다.",
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                      color: Colors.grey.shade200,
-                      thickness: 1,
-                      indent: Sizes.size48,
-                    ),
-                    Gaps.v36,
-                    Center(
-                      child: Container(
-                        width: size.width - 400,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(
-                            Sizes.size10,
-                          ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(
+                          Sizes.size36,
                         ),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Sizes.size16,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            SizedBox(
+                              width: chartWidth,
+                              child: SfCalendar(
+                                view: CalendarView.month,
+                                dataSource:
+                                    DiaryDataSource(_diaryDataList, context),
+                                todayHighlightColor: Colors.grey.shade500,
+                                // view: CalendarView.week,
+                                // firstDayOfWeek: 1, // monday
+                              ),
+                            ),
+                            if (_diaryDataList.isNotEmpty)
+                              SizedBox(
+                                width: chartWidth,
+                                child: SfCircularChart(
+                                  legend: const Legend(
+                                    isVisible: true,
+                                    toggleSeriesVisibility: true,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text(
-                                          "#",
-                                          style: TextStyle(
-                                            // color: Colors.white,
-                                            fontSize: Sizes.size13,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
+                                  title: ChartTitle(
+                                    text: "감정 추이",
+                                    textStyle: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  series: <PieSeries<MoodData, String>>[
+                                    PieSeries<MoodData, String>(
+                                      dataSource: _moodDistribution,
+                                      xValueMapper: (MoodData mood, _) =>
+                                          mood.mood,
+                                      yValueMapper: (MoodData mood, _) =>
+                                          mood.count,
+                                      dataLabelMapper: (MoodData mood, _) =>
+                                          "${mood.mood}: ${mood.count}",
+                                      pointColorMapper: (MoodData mood, _) =>
+                                          mood.color,
+                                      dataLabelSettings:
+                                          const DataLabelSettings(
+                                        isVisible: true,
+                                        showZeroValue: false,
+                                        // labelPosition:
+                                        //     ChartDataLabelPosition.outside,
+                                        // useSeriesColor: true,
                                       ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Text(
-                                          "날짜",
-                                          style: TextStyle(
-                                            // color: Colors.white,
-                                            fontSize: Sizes.size13,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 8,
-                                        child: Text(
-                                          "일기",
-                                          style: TextStyle(
-                                            // color: Colors.white,
-                                            fontSize: Sizes.size13,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          "감정",
-                                          style: TextStyle(
-                                            // color: Colors.white,
-                                            fontSize: Sizes.size13,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          "비밀",
-                                          style: TextStyle(
-                                            // color: Colors.white,
-                                            fontSize: Sizes.size13,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text(
-                                          "",
-                                          style: TextStyle(
-                                            fontSize: Sizes.size13,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ],
+                                      explode: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (_diaryDataList.isEmpty)
+                              SizedBox(
+                                width: chartWidth,
+                                child: const Center(
+                                  child: Text(
+                                    "일기 데이터가 없습니다.",
                                   ),
                                 ),
-                                if (_diaryDataList.isNotEmpty)
-                                  Divider(
-                                    color: Colors.grey.shade200,
-                                  ),
-                                if (_diaryDataList.isNotEmpty) Gaps.v10,
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: _diaryDataList.length,
-                                  itemBuilder: (context, index) {
-                                    return ExpansionPanelList(
-                                      elevation: 0,
-                                      expandIconColor: Colors.grey.shade500,
-                                      expansionCallback:
-                                          (panelIndex, isExpanded) {
-                                        setState(() {
-                                          expandclick = true;
-                                          expandMap[index] = isExpanded;
-                                        });
-                                      },
-                                      children: [
-                                        ExpansionPanel(
-                                          canTapOnHeader:
-                                              !_diaryDataList[index].secret &&
-                                                      _diaryDataList[index]
-                                                              .todayDiary
-                                                              .length >
-                                                          40
-                                                  ? true
-                                                  : false,
-                                          isExpanded:
-                                              !_diaryDataList[index].secret &&
-                                                  (expandMap[index] ?? false),
-                                          backgroundColor: Colors.white,
-                                          headerBuilder: (context, isExpanded) {
-                                            return Row(
+                              ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey.shade200,
+                        thickness: 1,
+                        indent: Sizes.size48,
+                      ),
+                      Gaps.v36,
+                      Center(
+                        child: Container(
+                          width: size.width - 400,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(
+                              Sizes.size10,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: Sizes.size16,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        "#",
+                                        style: TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Text(
+                                        "날짜",
+                                        style: TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 8,
+                                      child: Text(
+                                        "일기",
+                                        style: TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        "감정",
+                                        style: TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        "비밀",
+                                        style: TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        "",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (_diaryDataList.isNotEmpty)
+                                Divider(
+                                  color: Colors.grey.shade200,
+                                ),
+                              if (_diaryDataList.isNotEmpty) Gaps.v10,
+                              Column(
+                                children: List.generate(
+                                  _diaryDataList.length,
+                                  (index) => ExpansionPanelList(
+                                    elevation: 0,
+                                    expandIconColor: Colors.grey.shade500,
+                                    expansionCallback:
+                                        (panelIndex, isExpanded) {
+                                      setState(() {
+                                        expandclick = true;
+                                        expandMap[index] = isExpanded;
+                                      });
+                                    },
+                                    children: [
+                                      ExpansionPanel(
+                                        canTapOnHeader:
+                                            _diaryDataList[index].secretType ==
+                                                        "전체 공개" &&
+                                                    _diaryDataList[index]
+                                                            .todayDiary
+                                                            .length >
+                                                        40
+                                                ? true
+                                                : false,
+                                        isExpanded:
+                                            _diaryDataList[index].secretType ==
+                                                    "전체 공개" &&
+                                                (expandMap[index] ?? false),
+                                        backgroundColor: Colors.white,
+                                        headerBuilder: (context, isExpanded) {
+                                          return Container(
+                                            color: expandMap[index] ?? false
+                                                ? Colors.lightBlue.shade50
+                                                    .withOpacity(0.4)
+                                                : Colors.white,
+                                            child: Row(
                                               children: [
                                                 Expanded(
                                                   flex: 1,
@@ -470,17 +455,18 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                 Expanded(
                                                   flex: 3,
                                                   child: Text(
-                                                    convertTimettampToStringDate(
-                                                      _diaryDataList[index]
-                                                          .timestamp,
-                                                    ),
+                                                    secondsToStringLine(
+                                                        _diaryDataList[index]
+                                                            .createdAt),
                                                     style: const TextStyle(
                                                       fontSize: Sizes.size13,
                                                     ),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
-                                                _diaryDataList[index].secret
+                                                _diaryDataList[index]
+                                                            .secretType !=
+                                                        "전체 공개"
                                                     ? Expanded(
                                                         flex: 8,
                                                         child: Text(
@@ -516,20 +502,13 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                 Expanded(
                                                   flex: 2,
                                                   child: Text(
-                                                    _diaryDataList[index]
-                                                            .todayMood is int
-                                                        ? moodeList
-                                                            .firstWhere((element) =>
-                                                                element
-                                                                    .position ==
-                                                                _diaryDataList[
-                                                                        index]
-                                                                    .todayMood)
-                                                            .description
-                                                        : (_diaryDataList[index]
-                                                                    .todayMood
-                                                                as Map)[
-                                                            "description"],
+                                                    moodeList
+                                                        .firstWhere((element) =>
+                                                            element.position ==
+                                                            _diaryDataList[
+                                                                    index]
+                                                                .todayMood)
+                                                        .description,
                                                     style: const TextStyle(
                                                       fontSize: Sizes.size13,
                                                     ),
@@ -541,7 +520,8 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                   child: Center(
                                                     child: Icon(
                                                       _diaryDataList[index]
-                                                              .secret
+                                                                  .secretType !=
+                                                              "전체 공개"
                                                           ? Icons.check
                                                           : null,
                                                       size: Sizes.size13,
@@ -549,89 +529,89 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                   ),
                                                 )
                                               ],
-                                            );
-                                          },
-                                          body: ListTile(
-                                            title: Row(
-                                              children: [
-                                                const Expanded(
-                                                  flex: 1,
-                                                  child: Text(
-                                                    "",
-                                                    style: TextStyle(
-                                                      fontSize: Sizes.size13,
-                                                    ),
+                                            ),
+                                          );
+                                        },
+                                        body: ListTile(
+                                          title: Row(
+                                            children: [
+                                              const Expanded(
+                                                flex: 1,
+                                                child: Text(
+                                                  "",
+                                                  style: TextStyle(
+                                                    fontSize: Sizes.size13,
                                                   ),
                                                 ),
-                                                const Expanded(
-                                                  flex: 2,
-                                                  child: Text(
-                                                    "",
-                                                    style: TextStyle(
-                                                      fontSize: Sizes.size13,
-                                                    ),
+                                              ),
+                                              const Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  "",
+                                                  style: TextStyle(
+                                                    fontSize: Sizes.size13,
                                                   ),
                                                 ),
-                                                _diaryDataList[index].secret
-                                                    ? Expanded(
-                                                        flex: 6,
-                                                        child: Container())
-                                                    : Expanded(
-                                                        flex: 6,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                            bottom:
-                                                                Sizes.size10,
-                                                          ),
-                                                          child: Text(
-                                                            _diaryDataList[
-                                                                    index]
-                                                                .todayDiary,
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize:
-                                                                  Sizes.size13,
-                                                            ),
+                                              ),
+                                              _diaryDataList[index]
+                                                          .secretType !=
+                                                      "전체 공개"
+                                                  ? Expanded(
+                                                      flex: 6,
+                                                      child: Container())
+                                                  : Expanded(
+                                                      flex: 6,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          bottom: Sizes.size10,
+                                                        ),
+                                                        child: Text(
+                                                          _diaryDataList[index]
+                                                              .todayDiary,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize:
+                                                                Sizes.size13,
                                                           ),
                                                         ),
                                                       ),
-                                                const Expanded(
-                                                  flex: 2,
-                                                  child: Text(
-                                                    "",
-                                                    style: TextStyle(
-                                                      fontSize: Sizes.size13,
                                                     ),
+                                              const Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  "",
+                                                  style: TextStyle(
+                                                    fontSize: Sizes.size13,
                                                   ),
                                                 ),
-                                                const Expanded(
-                                                  flex: 2,
-                                                  child: Text(
-                                                    "",
-                                                    style: TextStyle(
-                                                      fontSize: Sizes.size13,
-                                                    ),
+                                              ),
+                                              const Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  "",
+                                                  style: TextStyle(
+                                                    fontSize: Sizes.size13,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    );
-                                  },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                if (_diaryDataList.isNotEmpty) Gaps.v10,
-                              ],
-                            );
-                          },
+                              ),
+                              if (_diaryDataList.isNotEmpty) Gaps.v10,
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Gaps.v36,
-                  ],
+                      Gaps.v36,
+                    ],
+                  ),
                 ),
               )
             : Expanded(
@@ -655,12 +635,12 @@ class DiaryDataSource extends CalendarDataSource {
 
   @override
   DateTime getStartTime(int index) {
-    return appointments![index].timestamp;
+    return secondsToDatetime(appointments![index].createdAt);
   }
 
   @override
   DateTime getEndTime(int index) {
-    return appointments![index].timestamp;
+    return secondsToDatetime(appointments![index].createdAt);
   }
 
   @override

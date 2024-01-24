@@ -1,18 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/models/contract_notifier.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 
-class UserViewModel extends AsyncNotifier<UserModel> {
+class UserViewModel extends AsyncNotifier<List<UserModel?>> {
   late UserRepository _userRepo;
   @override
-  FutureOr<UserModel> build() {
+  FutureOr<List<UserModel?>> build() async {
     _userRepo = UserRepository();
-    return UserModel.empty();
+    return await initializeUserList();
   }
 
   List<UserModel?> filterTableRows(
@@ -152,10 +151,12 @@ class UserViewModel extends AsyncNotifier<UserModel> {
     final userlist =
         await _userRepo.initializeUserList(selectMaster, selectSubdistrictId);
     final modelList = userlist.map((e) => UserModel.fromJson(e)).toList();
-    return modelList.where((e) => e.name != "탈퇴자").toList();
+    final filterList = modelList.where((e) => e.name != "탈퇴자").toList();
+    final indexList = indexUserModel("종합 점수", filterList);
+    return indexList;
   }
 }
 
-final userProvider = AsyncNotifierProvider<UserViewModel, UserModel>(
+final userProvider = AsyncNotifierProvider<UserViewModel, List<UserModel?>>(
   () => UserViewModel(),
 );

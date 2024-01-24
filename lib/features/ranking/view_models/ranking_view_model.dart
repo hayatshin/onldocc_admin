@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/ranking/repo/ranking_repo.dart';
@@ -13,6 +14,22 @@ class RankingViewModel extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() async {}
 
+  // supabase
+  Future<List<UserModel>> getUserPoints(DateRange range) async {
+    final userList = ref.read(userProvider).value ??
+        await ref.read(userProvider.notifier).initializeUserList();
+
+    List<UserModel> nonNullUserList =
+        userList.where((e) => e != null).cast<UserModel>().toList();
+
+    final points = await _rankingRepo.getUserPoints(nonNullUserList, range);
+    final userpoints = points.map((e) => UserModel.fromJson(e)).toList();
+    userpoints.sort((a, b) => b.totalScore!.compareTo(a.totalScore!));
+
+    return indexRankingModel(userpoints);
+  }
+
+  // firebase
   List<UserModel> indexRankingModel(List<UserModel> userList) {
     int count = 1;
     List<UserModel> list = [];

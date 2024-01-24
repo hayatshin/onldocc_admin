@@ -82,17 +82,20 @@ class UserModel {
         birthDay = json.containsKey("birthDay") ? json['birthDay'] : "정보 없음",
         gender = json.containsKey("gender") ? json["gender"] : "정보 없음",
         phone = json.containsKey("phone") ? json["phone"] : "정보 없음",
-        fullRegion = json["subdistricts"] != null
-            ? json["subdistricts"]["subdistrict"]
-            : "정보 없음",
+        fullRegion =
+            json.containsKey("subdistricts") && json["subdistricts"] != null
+                ? json["subdistricts"]["subdistrict"]
+                : "정보 없음",
         community = "",
         createdAt = json["createdAt"] ?? 0,
-        lastVisit = json["lastVisit"] ?? 0,
-        totalScore = json.containsKey("totalScore") ? json["totalScore"] : 0,
-        stepScore = json.containsKey("stepScore") ? json["stepScore"] : 0,
-        diaryScore = json.containsKey("diaryScore") ? json["diaryScore"] : 0,
+        lastVisit = json.containsKey("lastVisit") && json["lastVisit"] != null
+            ? json["lastVisit"]
+            : 0,
+        totalScore = json.containsKey("totalPoint") ? json["totalPoint"] : 0,
+        stepScore = json.containsKey("stepPoint") ? json["stepPoint"] : 0,
+        diaryScore = json.containsKey("diaryPoint") ? json["diaryPoint"] : 0,
         commentScore =
-            json.containsKey("commentScore") ? json["commentScore"] : 0;
+            json.containsKey("commentPoint") ? json["commentPoint"] : 0;
 
   UserModel copyWith({
     final int? index,

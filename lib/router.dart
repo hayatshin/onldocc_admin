@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/sidebar_template.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart';
@@ -37,35 +38,65 @@ final routerProvider = Provider(
             switch (state.fullPath) {
               case "/":
                 return child;
+
               case UsersScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(0, context);
                 return SidebarTemplate(selectedMenuURL: 0, child: child);
+
               case RankingScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(1, context);
                 return SidebarTemplate(selectedMenuURL: 1, child: child);
+
               case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}":
+                () => menuNotifier.setSelectedMenu(2, context);
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
+
               case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}/:userId":
+                () => menuNotifier.setSelectedMenu(2, context);
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
+
               case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}":
+                () => menuNotifier.setSelectedMenu(3, context);
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
+
               case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}/:userId":
+                () => menuNotifier.setSelectedMenu(3, context);
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
+
               case CaScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
+
               case "${CaScreen.routeURL}/:userId":
+                () => menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
+
               case AlzheimerTestScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(5, context);
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
+
               case "${AlzheimerTestScreen.routeURL}/:testId":
+                () => menuNotifier.setSelectedMenu(5, context);
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
+
               case DepressionTestScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(6, context);
                 return SidebarTemplate(selectedMenuURL: 6, child: child);
+
               case "${DepressionTestScreen.routeURL}/:testId":
+                () => menuNotifier.setSelectedMenu(6, context);
                 return SidebarTemplate(selectedMenuURL: 6, child: child);
+
               case EventScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(7, context);
                 return SidebarTemplate(selectedMenuURL: 7, child: child);
+
               case "${EventScreen.routeURL}/:eventId":
+                () => menuNotifier.setSelectedMenu(7, context);
                 return SidebarTemplate(selectedMenuURL: 7, child: child);
+
               case TvScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(8, context);
                 return SidebarTemplate(selectedMenuURL: 8, child: child);
             }
             return child;

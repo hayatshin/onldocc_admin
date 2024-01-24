@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
@@ -35,19 +36,24 @@ class RankingStepScreen extends ConsumerStatefulWidget {
 class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   final List<String> _listHeader = ["날짜", "걸음수"];
   List<StepModel> _stepDataList = [];
-  String _periodType = "이번달";
-  String? _userName = "";
+  final String _periodType = "이번달";
+  final String _userName = "";
   bool loadingFinished = false;
   final TextEditingController sortPeriodControllder = TextEditingController();
+  DateRange _selectedDateRange = DateRange(
+    getThisWeekMonday(),
+    DateTime.now(),
+  );
 
-  Future<void> updateOrderPeriod(String periodType) async {
+  Future<void> updateOrderPeriod(DateRange dateRange) async {
     setState(() {
-      _periodType = periodType;
+      _selectedDateRange = dateRange;
       loadingFinished = false;
     });
     final stepDataList = await ref
         .read(stepProvider.notifier)
-        .getUserDateStepData(widget.userId!, _periodType);
+        .getUserDateStepData(widget.userId!, dateRange);
+
     setState(() {
       loadingFinished = true;
       _stepDataList = stepDataList;
@@ -107,13 +113,10 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   }
 
   Future<void> getUserStepData() async {
-    final userProfile =
-        await ref.read(userProvider.notifier).getUserModel(widget.userId!);
-    _userName = userProfile!.name;
-
     final stepDataList = await ref
         .read(stepProvider.notifier)
-        .getUserDateStepData(widget.userId!, _periodType);
+        .getUserDateStepData(widget.userId!, _selectedDateRange);
+
     setState(() {
       loadingFinished = true;
       _stepDataList = stepDataList;
@@ -143,89 +146,91 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
         loadingFinished
             ? SearchBelow(
                 size: size,
-                child: Column(
-                  children: [
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: Sizes.size60,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: Sizes.size60,
+                          ),
+                          child: SizedBox(
+                            width: size.width - 600,
+                            height: 300,
+                            child: SfCartesianChart(
+                              // Initialize category axis
+                              primaryXAxis: CategoryAxis(),
+                              series: <LineSeries<StepModel, String>>[
+                                LineSeries(
+                                    // Bind data source
+                                    dataSource: _stepDataList,
+                                    xValueMapper: (StepModel step, _) =>
+                                        step.date,
+                                    yValueMapper: (StepModel step, _) =>
+                                        step.dailyStep)
+                              ],
+                            ),
+                          ),
                         ),
+                      ),
+                      Center(
                         child: SizedBox(
                           width: size.width - 600,
-                          height: 300,
-                          child: SfCartesianChart(
-                            // Initialize category axis
-                            primaryXAxis: CategoryAxis(),
-                            series: <LineSeries<StepModel, String>>[
-                              LineSeries(
-                                  // Bind data source
-                                  dataSource: _stepDataList,
-                                  xValueMapper: (StepModel step, _) =>
-                                      step.date,
-                                  yValueMapper: (StepModel step, _) =>
-                                      step.dailyStep)
+                          child: DataTable(
+                            columns: const [
+                              DataColumn(
+                                label: Expanded(
+                                  child: Text(
+                                    "날짜",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Expanded(
+                                  child: Text(
+                                    "걸음수",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            rows: [
+                              for (var i = 0; i < _stepDataList.length; i++)
+                                DataRow(
+                                  cells: [
+                                    DataCell(
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          _stepDataList[i].date,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          numberDecimalCommans(
+                                              _stepDataList[i].dailyStep!),
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size13,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                             ],
                           ),
                         ),
                       ),
-                    ),
-                    Center(
-                      child: SizedBox(
-                        width: size.width - 600,
-                        child: DataTable(
-                          columns: const [
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  "날짜",
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  "걸음수",
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ],
-                          rows: [
-                            for (var i = 0; i < _stepDataList.length; i++)
-                              DataRow(
-                                cells: [
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        _stepDataList[i].date,
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        numberDecimalCommans(
-                                            _stepDataList[i].dailyStep!),
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               )
             : Expanded(

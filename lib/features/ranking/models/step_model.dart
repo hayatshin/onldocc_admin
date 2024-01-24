@@ -17,7 +17,7 @@ class StepModel {
 
   StepModel.fromJson(Map<String, dynamic> json)
       : date = json["date"],
-        dailyStep = json["dailyStep"];
+        dailyStep = json["step"];
 
   StepModel copyWith({
     final String? date,

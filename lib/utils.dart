@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:intl/intl.dart';
 
@@ -43,6 +44,16 @@ List<DateTime> getBetweenDays(DateTime startDate, DateTime endDate) {
     currentDate = currentDate.add(const Duration(days: 1));
   }
   return dates;
+}
+
+String daterangeToSlashString(DateRange range) {
+  return "${datetimeToSlashString(range.start)} - ${datetimeToSlashString(range.end)}";
+}
+
+String datetimeToSlashString(DateTime date) {
+  final dateString =
+      "${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}";
+  return dateString;
 }
 
 String convertTimettampToStringDate(DateTime date) {
@@ -239,4 +250,50 @@ int convertEndDateStringToSeconds(String endDate) {
   } else {
     return DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
+}
+
+int convertStartDateTimeToSeconds(DateTime date) {
+  final startDate = DateTime(date.year, date.month, date.day, 0, 0, 0);
+  int millisecondsSinceEpoch = startDate.millisecondsSinceEpoch;
+  return (millisecondsSinceEpoch / 1000).round();
+}
+
+int convertEndDateTimeToSeconds(DateTime date) {
+  final endDate = DateTime(date.year, date.month, date.day, 23, 59, 999);
+  int millisecondsSinceEpoch = endDate.millisecondsSinceEpoch;
+  return (millisecondsSinceEpoch / 1000).round();
+}
+
+DateTime getThisWeekMonday() {
+  DateTime now = DateTime.now();
+  int difference = now.weekday - 1;
+  DateTime thisweekMonday = now.subtract(Duration(days: difference));
+  return thisweekMonday;
+}
+
+DateTime getLastWeekSunday() {
+  DateTime now = DateTime.now();
+  int difference = now.weekday - 7;
+  DateTime lastweekSunday = now.subtract(Duration(days: difference + 7));
+  return lastweekSunday;
+}
+
+DateTime getThisMonth1stday() {
+  DateTime now = DateTime.now();
+  DateTime firstDateOfMonth = DateTime(now.year, now.month, 1);
+  return firstDateOfMonth;
+}
+
+DateTime getLastMonth1stday() {
+  DateTime now = DateTime.now();
+  DateTime firstDateOfMonth = DateTime(now.year, now.month - 1, 1);
+  return firstDateOfMonth;
+}
+
+DateTime getLastMonthLastday() {
+  DateTime now = DateTime.now();
+  DateTime firstDateOfMonth = DateTime(now.year, now.month, 1);
+  DateTime lastDateOfLastMonth =
+      firstDateOfMonth.subtract(const Duration(days: 1));
+  return lastDateOfLastMonth;
 }

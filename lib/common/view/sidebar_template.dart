@@ -46,11 +46,6 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
       });
     } else if (value == "기관") {
       contractNameController.clear();
-
-      // final communityItems = await ref.read(contractRepo).getCommunityItems();
-      // setState(() {
-      //   _contractItems = communityItems!;
-      // });
     } else {
       contractNameController.clear();
       selectContractRegion.value = ContractRegionModel.empty();
@@ -65,6 +60,11 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     // contractNotifier.changeContractModel(contractName: value);
     selectContractRegion.value =
         _contractItems.firstWhere((element) => element.name == value);
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -91,7 +91,6 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final data = snapshot.data!;
-          print("sidebar -> $data");
           return Scaffold(
             body: Row(
               children: [
@@ -207,7 +206,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                 ),
                                 Gaps.v20,
                                 SingleSidebarTile(
-                                  selected: menuNotifier.selectedMenu == 0,
+                                  selected: widget.selectedMenuURL == 0,
                                   selectedIcon: Icons.emoji_people_rounded,
                                   unselectedIcon:
                                       Icons.accessibility_new_rounded,

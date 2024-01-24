@@ -57,11 +57,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     getUserModelList();
 
     selectContractRegion.addListener(() async {
-      setState(() {
-        loadingFinished = false;
-      });
+      if (mounted) {
+        setState(() {
+          loadingFinished = false;
+        });
 
-      await getUserModelList();
+        await getUserModelList();
+      }
     });
 
     // contractNotifier.addListener(() async {

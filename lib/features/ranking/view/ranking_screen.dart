@@ -1,11 +1,15 @@
 import 'dart:convert';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/models/contract_notifier.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_period_order.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -38,28 +42,30 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     "일기",
     "댓글"
   ];
-  late String _userContractType;
-  late String _userContractName;
-  final bool _initialUserDataListState = true;
-  bool _updateUserDataListState = false;
-  final String _sortOrderStandard = "종합 점수";
-  String _sortOrderPeriod = "이번주";
+
   bool loadingFinished = false;
   final int _currentSortColumn = 0;
   final bool _isSortAsc = true;
   WeekMonthDay weekMonthDay = getWeekMonthDay();
 
+  String sortOder = "totalPoint";
+
+  DateRange? selectedDateRange = DateRange(
+    getThisWeekMonday(),
+    DateTime.now(),
+  );
+
   @override
   void initState() {
     super.initState();
 
-    getScoreList();
-    contractNotifier.addListener(() async {
-      setState(() {
-        loadingFinished = false;
-      });
-      await getScoreList();
-    });
+    getScoreList(selectedDateRange);
+    // contractNotifier.addListener(() async {
+    //   setState(() {
+    //     loadingFinished = false;
+    //   });
+    //   await getScoreList();
+    // });
   }
 
   void resetInitialState() async {
@@ -77,7 +83,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
     setState(() {
       _beforeFilterUserDataList = _userDataList;
-      _updateUserDataListState = true;
       _userDataList = newUserDataList;
     });
   }
@@ -139,11 +144,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
       ..click();
   }
 
-  Future<List<UserModel?>> getScoreList() async {
-    final userList = await ref
-        .read(rankingProvider.notifier)
-        .updateUsersListScore(
-            weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
+  Future<List<UserModel?>> getScoreList(DateRange? range) async {
+    final userList =
+        await ref.read(rankingProvider.notifier).getUserPoints(range!);
 
     if (mounted) {
       setState(() {
@@ -154,13 +157,13 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     return userList;
   }
 
-  void updateOrderStandard(String value) {
+  Future<void> updateOrderStandard(String value) async {
     List<UserModel?> copiedUserDataList = [..._userDataList];
     int count = 1;
-    List<UserModel> list = [];
 
+    List<UserModel> list = [];
     switch (value) {
-      case "종합 점수":
+      case "totalPoint":
         copiedUserDataList
             .sort((a, b) => b!.totalScore!.compareTo(a!.totalScore!));
 
@@ -177,7 +180,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         }
 
         break;
-      case "걸음수":
+      case "stepPoint":
         copiedUserDataList
             .sort((a, b) => b!.stepScore!.compareTo(a!.stepScore!));
 
@@ -193,7 +196,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           }
         }
         break;
-      case "일기":
+      case "diaryPoint":
         copiedUserDataList
             .sort((a, b) => b!.diaryScore!.compareTo(a!.diaryScore!));
 
@@ -209,7 +212,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           }
         }
         break;
-      case "댓글":
+      case "commentPoint":
         copiedUserDataList
             .sort((a, b) => b!.commentScore!.compareTo(a!.commentScore!));
 
@@ -227,62 +230,23 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         break;
     }
     setState(() {
-      _userDataList = copiedUserDataList;
+      sortOder = value;
+      _userDataList = list;
     });
   }
 
-  void updateOrderPeriod(String value) async {
+  void updateOrderPeriod(DateRange? value) async {
     setState(() {
-      _sortOrderPeriod = value;
       loadingFinished = false;
+      selectedDateRange = value;
     });
-    switch (value) {
-      case "이번달":
-        final userList = await ref
-            .read(rankingProvider.notifier)
-            .updateUsersListScore(weekMonthDay.thisMonth.startDate,
-                weekMonthDay.thisMonth.endDate);
 
-        if (mounted) {
-          setState(() {
-            loadingFinished = true;
-            _userDataList = userList;
-          });
-        }
-        break;
-      case "이번주":
-        final userList = await ref
-            .read(rankingProvider.notifier)
-            .updateUsersListScore(
-                weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
-
-        if (mounted) {
-          setState(() {
-            loadingFinished = true;
-            _userDataList = userList;
-          });
-        }
-        break;
-      case "지난달":
-        final userList = await ref
-            .read(rankingProvider.notifier)
-            .updateUsersListScore(weekMonthDay.lastMonth.startDate,
-                weekMonthDay.lastMonth.endDate);
-
-        if (mounted) {
-          setState(() {
-            loadingFinished = true;
-            _userDataList = userList;
-          });
-        }
-        break;
-    }
+    await getScoreList(value);
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final tableWidth = size.width - 270 - 64;
     return AnimatedBuilder(
       animation: contractNotifier,
       builder: (context, child) {
@@ -297,195 +261,250 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                 ),
                 SearchBelow(
                   size: size,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: tableWidth,
-                      child: DataTable(
-                        sortColumnIndex: _currentSortColumn,
-                        sortAscending: _isSortAsc,
-                        columns: [
-                          const DataColumn(
-                            label: Text(
-                              "#",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(
+                      Sizes.size10,
+                    ),
+                    child: DataTable2(
+                      sortColumnIndex: _currentSortColumn,
+                      sortAscending: _isSortAsc,
+                      columns: [
+                        const DataColumn2(
+                          fixedWidth: 50,
+                          label: Text(
+                            "#",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
                             ),
                           ),
-                          const DataColumn(
-                            label: Text(
-                              "이름",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
+                        ),
+                        const DataColumn2(
+                          label: Text(
+                            "이름",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
                             ),
                           ),
-                          const DataColumn(
-                            label: Text(
-                              "나이",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
+                        ),
+                        const DataColumn2(
+                          fixedWidth: 80,
+                          label: Text(
+                            "나이",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
                             ),
                           ),
-                          const DataColumn(
-                            label: Text(
-                              "성별",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
+                        ),
+                        const DataColumn2(
+                          fixedWidth: 100,
+                          label: Text(
+                            "성별",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
                             ),
                           ),
-                          const DataColumn(
-                            label: Text(
-                              "핸드폰 번호",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
+                        ),
+                        const DataColumn2(
+                          fixedWidth: 180,
+                          label: Text(
+                            "핸드폰 번호",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
                             ),
                           ),
-                          DataColumn(
-                            label: const Text(
-                              "종합 점수",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
+                        ),
+                        DataColumn2(
+                          fixedWidth: 150,
+                          label: Row(
+                            children: [
+                              const Text(
+                                "종합 점수",
+                                style: TextStyle(
+                                  fontSize: Sizes.size13,
+                                ),
                               ),
-                            ),
-                            onSort: (columnIndex, ascending) =>
-                                updateOrderStandard("종합 점수"),
+                              Gaps.h3,
+                              Icon(
+                                sortOder == "totalPoint"
+                                    ? Icons.expand_more_rounded
+                                    : Icons.expand_less_rounded,
+                                size: 14,
+                                color: Colors.grey.shade600,
+                              )
+                            ],
                           ),
-                          DataColumn(
-                            label: const Text(
-                              "걸음수",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
+                          onSort: (columnIndex, ascending) =>
+                              updateOrderStandard("totalPoint"),
+                        ),
+                        DataColumn2(
+                          fixedWidth: 140,
+                          label: Row(
+                            children: [
+                              const Text(
+                                "걸음수",
+                                style: TextStyle(
+                                  fontSize: Sizes.size13,
+                                ),
                               ),
-                            ),
-                            onSort: (columnIndex, ascending) =>
-                                updateOrderStandard("걸음수"),
+                              Gaps.h3,
+                              Icon(
+                                sortOder == "stepPoint"
+                                    ? Icons.expand_more_rounded
+                                    : Icons.expand_less_rounded,
+                                size: 14,
+                                color: Colors.grey.shade600,
+                              )
+                            ],
                           ),
-                          DataColumn(
-                            label: const Text(
-                              "일기",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
+                          onSort: (columnIndex, ascending) =>
+                              updateOrderStandard("stepPoint"),
+                        ),
+                        DataColumn2(
+                          fixedWidth: 140,
+                          label: Row(
+                            children: [
+                              const Text(
+                                "일기",
+                                style: TextStyle(
+                                  fontSize: Sizes.size13,
+                                ),
                               ),
-                            ),
-                            onSort: (columnIndex, ascending) =>
-                                updateOrderStandard("일기"),
+                              Gaps.h3,
+                              Icon(
+                                sortOder == "diaryPoint"
+                                    ? Icons.expand_more_rounded
+                                    : Icons.expand_less_rounded,
+                                size: 14,
+                                color: Colors.grey.shade600,
+                              )
+                            ],
                           ),
-                          DataColumn(
-                            label: const Text(
-                              "댓글",
-                              style: TextStyle(
-                                fontSize: Sizes.size13,
+                          onSort: (columnIndex, ascending) =>
+                              updateOrderStandard("diaryPoint"),
+                        ),
+                        DataColumn2(
+                          fixedWidth: 140,
+                          label: Row(
+                            children: [
+                              const Text(
+                                "댓글",
+                                style: TextStyle(
+                                  fontSize: Sizes.size13,
+                                ),
                               ),
-                            ),
-                            onSort: (columnIndex, ascending) =>
-                                updateOrderStandard("댓글"),
+                              Gaps.h3,
+                              Icon(
+                                sortOder == "commentPoint"
+                                    ? Icons.expand_more_rounded
+                                    : Icons.expand_less_rounded,
+                                size: 14,
+                                color: Colors.grey.shade600,
+                              )
+                            ],
                           ),
-                        ],
-                        rows: [
-                          for (var i = 0; i < _userDataList.length; i++)
-                            DataRow(
-                              cells: [
-                                DataCell(
-                                  Text(
-                                    _userDataList[i]!.index.toString(),
+                          onSort: (columnIndex, ascending) =>
+                              updateOrderStandard("commentPoint"),
+                        ),
+                      ],
+                      rows: [
+                        for (var i = 0; i < _userDataList.length; i++)
+                          DataRow2(
+                            cells: [
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.index.toString(),
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.name.length > 8
+                                      ? "${_userDataList[i]!.name.substring(0, 8)}.."
+                                      : _userDataList[i]!.name,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.userAge.toString(),
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.gender,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.phone,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    numberDecimalCommans(
+                                        _userDataList[i]!.totalScore!),
+                                    textAlign: TextAlign.end,
                                     style: const TextStyle(
                                       fontSize: Sizes.size13,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Text(
-                                    _userDataList[i]!.name.length > 10
-                                        ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                                        : _userDataList[i]!.name,
+                              ),
+                              DataCell(
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    numberDecimalCommans(
+                                        _userDataList[i]!.stepScore!),
+                                    textAlign: TextAlign.end,
                                     style: const TextStyle(
                                       fontSize: Sizes.size13,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Text(
-                                    _userDataList[i]!.userAge.toString(),
+                              ),
+                              DataCell(
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    numberDecimalCommans(
+                                        _userDataList[i]!.diaryScore!),
                                     style: const TextStyle(
                                       fontSize: Sizes.size13,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Text(
-                                    _userDataList[i]!.gender,
+                              ),
+                              DataCell(
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    numberDecimalCommans(
+                                        _userDataList[i]!.commentScore!),
                                     style: const TextStyle(
                                       fontSize: Sizes.size13,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Text(
-                                    _userDataList[i]!.phone,
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size13,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      numberDecimalCommans(
-                                          _userDataList[i]!.totalScore!),
-                                      textAlign: TextAlign.end,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      numberDecimalCommans(
-                                          _userDataList[i]!.stepScore!),
-                                      textAlign: TextAlign.end,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      numberDecimalCommans(
-                                          _userDataList[i]!.diaryScore!),
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      numberDecimalCommans(
-                                          _userDataList[i]!.commentScore!),
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
                   ),
                 )

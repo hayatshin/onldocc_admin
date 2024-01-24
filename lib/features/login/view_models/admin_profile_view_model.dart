@@ -38,7 +38,6 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
 
     Map<String, dynamic>? adminProfile =
         await _authRepository.getAdminProfile(_authRepository.user!.uid);
-    print("getAdminPRofile-> $adminProfile");
     if (adminProfile != null) {
       adminProfileModel = AdminProfileModel.fromJson(adminProfile);
       selectContractRegion.value = ContractRegionModel(

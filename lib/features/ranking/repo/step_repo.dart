@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StepRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final _supabase = Supabase.instance.client;
 
   Future<int> calculateStepScore(String userId, DateTime date) async {
     int dailyScore = 0;
@@ -42,18 +44,29 @@ class StepRepository {
 
     await Future.forEach(dateList, (DateTime date) async {
       final dateString = convertTimettampToStringDate(date);
-      final query =
-          await _db.collection("period_step_count").doc(dateString).get();
-      final userExists = query.data()?.containsKey(userId);
-      if (userExists!) {
-        dynamic dailyStepString = query.get(userId);
-        final int dailyStepInt = dailyStepString as int;
-        final Map<String, dynamic> dailyStepMap = {
-          "date": dateString,
-          "dailyStep": dailyStepInt,
-        };
-        stepList.add(dailyStepMap);
+
+      final query = await _supabase
+          .from("steps")
+          .select('*')
+          .eq('userId', userId)
+          .eq('date', dateString);
+
+      if (query.length == 1) {
+        stepList.add(query[0]);
       }
+
+      // final query =
+      //     await _db.collection("period_step_count").doc(dateString).get();
+      // final userExists = query.data()?.containsKey(userId);
+      // if (userExists!) {
+      //   dynamic dailyStepString = query.get(userId);
+      //   final int dailyStepInt = dailyStepString as int;
+      //   final Map<String, dynamic> dailyStepMap = {
+      //     "date": dateString,
+      //     "dailyStep": dailyStepInt,
+      //   };
+      //   stepList.add(dailyStepMap);
+      // }
     });
 
     return stepList;

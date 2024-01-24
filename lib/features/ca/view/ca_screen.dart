@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
@@ -37,7 +38,7 @@ class _CaScreenState extends ConsumerState<CaScreen> {
   final List<String> _listHeader = ["#", "날짜", "인지 결과", "문제", "정답", "제출 답"];
   List<CaModel> _caDataList = [];
   bool loadingFinished = false;
-  String _periodType = "이번달";
+  final String _periodType = "이번달";
   final String _userName = "";
   late List<QuestionResultData> qrDistribution;
   final TextEditingController sortPeriodControllder = TextEditingController();
@@ -53,9 +54,9 @@ class _CaScreenState extends ConsumerState<CaScreen> {
     ];
   }
 
-  void updateOrderPeriod(String periodType) {
+  void updateOrderPeriod(DateRange dateRange) {
     setState(() {
-      _periodType = periodType;
+      // _periodType = periodType;
       loadingFinished = false;
     });
     getUserCaData();

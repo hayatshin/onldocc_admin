@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/ranking/models/step_model.dart';
 import 'package:onldocc_admin/features/ranking/repo/step_repo.dart';
@@ -18,27 +19,31 @@ class StepViewModel extends AsyncNotifier<List<StepModel>> {
   }
 
   Future<List<StepModel>> getUserDateStepData(
-      String userId, String periodType) async {
-    List<StepModel> stepList = [];
-    late List<Map<String, dynamic>> userRef;
+      String userId, DateRange dateRange) async {
+    // List<StepModel> stepList = [];
 
-    if (periodType == "이번주") {
-      userRef = await _stepRepository.getUserCertinDateStepData(userId,
-          weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
-    } else if (periodType == "이번달") {
-      userRef = await _stepRepository.getUserCertinDateStepData(userId,
-          weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
-    } else if (periodType == "지난달") {
-      userRef = await _stepRepository.getUserCertinDateStepData(userId,
-          weekMonthDay.lastMonth.startDate, weekMonthDay.lastMonth.endDate);
-    }
+    final stepList = await _stepRepository.getUserCertinDateStepData(
+        userId, dateRange.start, dateRange.end);
+    return stepList.map((step) => StepModel.fromJson(step)).toList();
+    // late List<Map<String, dynamic>> userRef;
 
-    for (var stepJson in userRef) {
-      StepModel stepModel = StepModel.fromJson(stepJson);
-      stepList.add(stepModel);
-    }
+    // if (periodType == "이번주") {
+    //   userRef = await _stepRepository.getUserCertinDateStepData(userId,
+    //       weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
+    // } else if (periodType == "이번달") {
+    //   userRef = await _stepRepository.getUserCertinDateStepData(userId,
+    //       weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
+    // } else if (periodType == "지난달") {
+    //   userRef = await _stepRepository.getUserCertinDateStepData(userId,
+    //       weekMonthDay.lastMonth.startDate, weekMonthDay.lastMonth.endDate);
+    // }
 
-    return stepList;
+    // for (var stepJson in userRef) {
+    //   StepModel stepModel = StepModel.fromJson(stepJson);
+    //   stepList.add(stepModel);
+    // }
+
+    // return stepList;
   }
 }
 

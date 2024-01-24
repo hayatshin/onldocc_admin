@@ -1,15 +1,17 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class SearchPeriodOrder extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
   final void Function() generateCsv;
   final void Function(String) updateOrderStandard;
-  final void Function(String) updateOrderPeriod;
+  final void Function(DateRange?) updateOrderPeriod;
   const SearchPeriodOrder({
     super.key,
     required this.filterUserList,
@@ -27,6 +29,10 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
   final TextEditingController _searchUserController = TextEditingController();
   final TextEditingController _sortbyController = TextEditingController();
   final TextEditingController _sortPeriodControllder = TextEditingController();
+  final DateRange _selectedDateRange = DateRange(
+    getThisWeekMonday(),
+    DateTime.now(),
+  );
 
   final double searchHeight = 35;
   String? _setSearchBy = "name";
@@ -80,64 +86,32 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                           SizedBox(
                             width: 200,
                             height: searchHeight,
-                            child: CustomDropdown(
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
+                            child: DateRangeField(
+                              pickerBuilder: datePickerBuilder,
+                              decoration: InputDecoration(
+                                label: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: Sizes.size10,
+                                  ),
+                                  child: Text(
+                                    daterangeToSlashString(
+                                        selectedDateRangeNotifier.value!),
+                                    style: TextStyle(
+                                      fontSize: Sizes.size15,
+                                      color: Colors.grey.shade900,
+                                    ),
+                                  ),
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(
-                                Sizes.size4,
-                              ),
-                              onChanged: (value) =>
-                                  widget.updateOrderStandard(value),
-                              hintText: "정렬 기준 선택",
-                              hintStyle: TextStyle(
-                                color: Colors.grey.shade800,
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              listItemStyle: const TextStyle(
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              selectedStyle: const TextStyle(
-                                color: Colors.black87,
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              items: const ["종합 점수", "걸음수", "일기", "댓글"],
-                              controller: _sortbyController,
-                            ),
-                          ),
-                          Gaps.h14,
-                          SizedBox(
-                            width: 150,
-                            height: searchHeight,
-                            child: CustomDropdown(
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                              borderRadius: BorderRadius.circular(
-                                Sizes.size4,
-                              ),
-                              onChanged: (value) =>
-                                  widget.updateOrderPeriod(value),
-                              hintText: "기간 선택",
-                              hintStyle: TextStyle(
-                                color: Colors.grey.shade800,
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              listItemStyle: const TextStyle(
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              selectedStyle: const TextStyle(
-                                color: Colors.black87,
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              items: const ["이번주", "이번달", "지난달"],
-                              controller: _sortPeriodControllder,
+                              onDateRangeSelected: (DateRange? value) {
+                                selectedDateRangeNotifier.value = value;
+                                value == null
+                                    ? widget
+                                        .updateOrderPeriod(_selectedDateRange)
+                                    : widget.updateOrderPeriod(value);
+                              },
+                              selectedDateRange:
+                                  selectedDateRangeNotifier.value,
                             ),
                           ),
                         ],
@@ -406,3 +380,52 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
     );
   }
 }
+
+Widget datePickerBuilder(
+        BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
+        [bool doubleMonth = true]) =>
+    DateRangePickerWidget(
+      height: 350,
+      doubleMonth: doubleMonth,
+      quickDateRanges: [
+        QuickDateRange(dateRange: null, label: "선택 지우기"),
+        QuickDateRange(
+          label: '이번주',
+          dateRange: DateRange(
+            getThisWeekMonday(),
+            DateTime.now(),
+          ),
+        ),
+        QuickDateRange(
+          label: '지난주',
+          dateRange: DateRange(
+            getThisWeekMonday().subtract(const Duration(days: 7)),
+            getLastWeekSunday(),
+          ),
+        ),
+        QuickDateRange(
+          label: '이번달',
+          dateRange: DateRange(
+            getThisMonth1stday(),
+            DateTime.now(),
+          ),
+        ),
+        QuickDateRange(
+          label: '지난달',
+          dateRange: DateRange(
+            getLastMonth1stday(),
+            getLastMonthLastday(),
+          ),
+        ),
+      ],
+      minimumDateRangeLength: 2,
+      initialDateRange: DateRange(
+        getThisWeekMonday(),
+        DateTime.now(),
+      ),
+      initialDisplayedDate: DateTime.now(),
+      onDateRangeChanged: onDateRangeChanged,
+    );
+
+final selectedDateRangeNotifier =
+    ValueNotifier<DateRange?>(DateRange(getThisWeekMonday(), DateTime.now()));
