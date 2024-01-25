@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
-import 'package:onldocc_admin/features/ca/view/ca_screen.dart';
+import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
@@ -21,7 +21,7 @@ class MenuNotifier extends ChangeNotifier {
     if (menu == 1) context.goNamed(RankingScreen.routeName);
     if (menu == 2) context.goNamed(RankingUsersScreen.stepRouteName);
     if (menu == 3) context.goNamed(RankingUsersScreen.diaryRouteName);
-    if (menu == 4) context.goNamed(CaScreen.routeName);
+    if (menu == 4) context.goNamed(QuizScreen.routeName);
     if (menu == 5) context.goNamed(AlzheimerTestScreen.routeName);
     if (menu == 6) context.goNamed(DepressionTestScreen.routeName);
     if (menu == 7) context.goNamed(EventScreen.routeName);

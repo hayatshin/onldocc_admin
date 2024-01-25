@@ -42,7 +42,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
 
   List<dynamic> exportToList(CognitionTestModel testModel) {
     return [
-      testModel.timestamp,
+      secondsToStringLine(testModel.createdAt),
       testModel.result,
       testModel.totalPoint,
       testModel.userName,
@@ -123,7 +123,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
   Future<void> _initializeTableList() async {
     final testList = await ref
         .read(cognitionTestProvider.notifier)
-        .getAdminAlzheimerTestData();
+        .getCognitionTestData(alzheimer_test);
     setState(() {
       loadingFinihsed = true;
       _testList = testList;
@@ -178,7 +178,8 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                                 cells: [
                                   DataCell(
                                     Text(
-                                      _testList[i].timestamp,
+                                      secondsToStringLine(
+                                          _testList[i].createdAt),
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -218,7 +219,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _testList[i].userAge!,
+                                      _testList[i].userAge!.toString(),
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),

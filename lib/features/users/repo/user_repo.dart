@@ -12,37 +12,36 @@ class UserRepository {
 
   UserModel? dbToUserModel(QueryDocumentSnapshot<Map<String, dynamic>> user) {
     try {
-      final userBirthYear = user.data().containsKey("birthYear")
-          ? user.get("birthYear")
-          : "정보 없음";
+      final userBirthYear =
+          user.data().containsKey("birthYear") ? user.get("birthYear") : "-";
       final userBirthDay =
           user.data().containsKey("birthDay") ? user.get("birthDay") : null;
       final userBirthMonth = userBirthDay != null || userBirthDay != ""
           ? userBirthDay.toString().length == 4
               ? userBirthDay.toString().substring(0, 2)
               : ""
-          : "정보";
+          : "";
       final userBirthDate = userBirthDay != null || userBirthDay != ""
           ? userBirthDay.toString().length == 4
               ? userBirthDay.toString().substring(2, 4)
               : ""
-          : "없음";
+          : "-";
 
       final userFullBirthday =
           userBirthYear == "" && userBirthMonth == "" && userBirthDate == ""
-              ? "정보 없음"
+              ? "-"
               : "$userBirthYear.$userBirthMonth.$userBirthDate";
-      final userAge = userBirthYear != "정보 없음" &&
-              userBirthDay != "정보 없음" &&
+      final userAge = userBirthYear != "-" &&
+              userBirthDay != "-" &&
               userBirthYear != "" &&
               userBirthDay != ""
           ? userAgeCalculation(userBirthYear, userBirthDay)
-          : "정보 없음";
+          : "-";
       final Timestamp? dbTimestamp =
           user.data().containsKey("timestamp") ? user.get("timestamp") : null;
       final String userRegisterDate = dbTimestamp != null
           ? DateFormat('yyyy.MM.dd').format(dbTimestamp.toDate())
-          : "정보 없음";
+          : "-";
       final Timestamp? dbLastVisit =
           user.data().containsKey("lastVisit") ? user.get("lastVisit") : null;
 
@@ -58,12 +57,12 @@ class UserRepository {
       final userFullRegion = "$userRegion $userSmallRegion";
 
       Map<String, dynamic> userModel = {
-        "userId": user.get("userId") ?? "정보 없음",
-        "name": user.get("name") ?? "정보 없음",
+        "userId": user.get("userId") ?? "-",
+        "name": user.get("name") ?? "-",
         "age": userAge,
         "fullBirthday": userFullBirthday,
-        "gender": user.get("gender") ?? "정보 없음",
-        "phone": user.get("phone") ?? "정보 없음",
+        "gender": user.get("gender") ?? "-",
+        "phone": user.get("phone") ?? "-",
         "fullRegion": userFullRegion,
         "registerDate": userRegisterDate,
         "lastVisit": lastVisit,
@@ -83,9 +82,8 @@ class UserRepository {
 
   UserModel docToUserModel(DocumentSnapshot<Map<String, dynamic>> user) {
     try {
-      final userBirthYear = user.data()!.containsKey("birthYear")
-          ? user.get("birthYear")
-          : "정보 없음";
+      final userBirthYear =
+          user.data()!.containsKey("birthYear") ? user.get("birthYear") : "-";
       final userBirthDay =
           user.data()!.containsKey("birthDay") ? user.get("birthDay") : null;
       final userBirthMonth = userBirthDay != null
@@ -100,14 +98,14 @@ class UserRepository {
           : "없음";
 
       final userFullBirthday = "$userBirthYear.$userBirthMonth.$userBirthDate";
-      final userAge = userBirthYear != "정보 없음" && userBirthDay != "정보 없음"
+      final userAge = userBirthYear != "-" && userBirthDay != "-"
           ? userAgeCalculation(userBirthYear, userBirthDay)
-          : "정보 없음";
+          : "-";
       final Timestamp? dbTimestamp =
           user.data()!.containsKey("timestamp") ? user.get("timestamp") : null;
       final String userRegisterDate = dbTimestamp != null
           ? DateFormat('yyyy.MM.dd').format(dbTimestamp.toDate())
-          : "정보 없음";
+          : "-";
       final Timestamp? dbLastVisit =
           user.data()!.containsKey("lastVisit") ? user.get("lastVisit") : null;
       final String lastVisit = dbLastVisit != null

@@ -20,8 +20,8 @@ class RankingUsersScreen extends ConsumerStatefulWidget {
   static const stepRouteName = "stepRanking";
   static const diaryRouteURL = "diary";
   static const diaryRouteName = "diaryRanking";
-  static const caRouteURL = "ca";
-  static const caRouteName = "caRanking";
+  static const caRouteURL = "quiz";
+  static const caRouteName = "quizRanking";
   final String? rankingType;
   const RankingUsersScreen({
     super.key,
@@ -156,8 +156,8 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
     } else if (widget.rankingType == "diary") {
       context.go("/ranking/diary/$userId",
           extra: RankingExtra.fromJson(extraJson));
-    } else if (widget.rankingType == "ca") {
-      context.go("/ca/$userId", extra: RankingExtra.fromJson(extraJson));
+    } else if (widget.rankingType == "quiz") {
+      context.go("/quiz/$userId", extra: RankingExtra.fromJson(extraJson));
     }
   }
 

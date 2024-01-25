@@ -42,7 +42,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
 
   List<dynamic> exportToList(CognitionTestModel testModel) {
     return [
-      testModel.timestamp,
+      secondsToStringLine(testModel.createdAt),
       testModel.result,
       testModel.totalPoint,
       testModel.userName,
@@ -123,7 +123,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
   Future<void> _initializeTableList() async {
     final testList = await ref
         .read(cognitionTestProvider.notifier)
-        .getAdminDepressionTestData();
+        .getCognitionTestData(depression_test);
     setState(() {
       loadingFinihsed = true;
       _testList = testList;
@@ -178,7 +178,8 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                                 cells: [
                                   DataCell(
                                     Text(
-                                      _testList[i].timestamp,
+                                      secondsToStringLine(
+                                          _testList[i].createdAt),
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),
@@ -218,7 +219,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _testList[i].userAge!,
+                                      _testList[i].userAge!.toString(),
                                       style: const TextStyle(
                                         fontSize: Sizes.size13,
                                       ),

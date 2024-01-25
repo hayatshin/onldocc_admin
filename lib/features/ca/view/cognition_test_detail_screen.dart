@@ -7,6 +7,7 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/consts/cognition_test_questionnaire.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
+import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
 class CognitionTestDetailScreen extends StatefulWidget {
@@ -33,15 +34,15 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
   String testType = "";
 
   void _initializeTestInfo() {
-    testDate = "시행 날짜: ${widget.model.timestamp}";
+    testDate = "시행 날짜:  ${secondsToStringLine(widget.model.createdAt)}";
     totalPoint =
-        "총점: ${widget.model.totalPoint}점 / ${widget.model.testType == "alzheimer_test" ? alzheimer_questionnaire_strings.length : depression_questionnaire_strings.length}점";
-    result = "분류: ${widget.model.result}";
+        "총점:  ${widget.model.totalPoint}점 / ${widget.model.testType == "alzheimer_test" ? alzheimer_questionnaire_strings.length : depression_questionnaire_strings.length}점";
+    result = "분류:  ${widget.model.result}";
 
-    name = "이름: ${widget.model.userName}";
-    gender = "성별: ${widget.model.userGender}";
-    age = "나이: ${widget.model.userAge}";
-    phone = "번호: ${widget.model.userPhone}";
+    name = "이름:  ${widget.model.userName}";
+    gender = "성별:  ${widget.model.userGender}";
+    age = "나이:  ${widget.model.userAge}세";
+    phone = "번호:  ${widget.model.userPhone}";
 
     testType =
         widget.model.testType == "alzheimer_test" ? "치매 조기 검사" : "노인 우울척도 검사";
@@ -62,7 +63,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     list.add(_listHeader);
 
     for (int i = 0; i < alzheimer_questionnaire_strings.length; i++) {
-      String answer = widget.model.answerList[i] == true ? "예" : "아니오";
+      String answer = widget.model.userAnswers[i] == true ? "예" : "아니오";
       final itemlist = exportToList(alzheimer_questionnaire_strings[i], answer);
       list.add(itemlist);
     }
@@ -122,81 +123,135 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
         ),
         SearchBelow(
           size: size,
-          child: Padding(
-            padding: const EdgeInsets.all(
-              60,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TestInfoText(text: testDate),
-                TestInfoText(text: totalPoint),
-                TestInfoText(text: result),
-                TestInfoText(text: name),
-                TestInfoText(text: gender),
-                TestInfoText(text: age),
-                TestInfoText(text: phone),
-                Gaps.v32,
-                Center(
-                  child: SizedBox(
-                    width: size.width - 600,
-                    child: DataTable(
-                      columns: const [
-                        DataColumn(
-                          label: Expanded(
-                            child: Text(
-                              "문항",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+          child: SingleChildScrollView(
+            child: Container(
+              color: Colors.grey.shade100,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 60,
+                  horizontal: 200,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TestInfoText(text: testDate),
+                            TestInfoText(text: totalPoint),
+                            TestInfoText(text: result),
+                          ],
                         ),
-                        DataColumn(
-                          label: Expanded(
-                            child: Text(
-                              "답변",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ],
-                      rows: [
-                        for (var i = 0;
-                            i < alzheimer_questionnaire_strings.length;
-                            i++)
-                          DataRow(
-                            cells: [
-                              DataCell(
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    alzheimer_questionnaire_strings[i],
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size13,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    widget.model.answerList[i] == true
-                                        ? "예"
-                                        : "아니오",
-                                    textAlign: TextAlign.end,
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size13,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        Gaps.h80,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            UserInfoText(text: name),
+                            UserInfoText(text: gender),
+                            UserInfoText(text: age),
+                            UserInfoText(text: phone),
+                          ],
+                        )
                       ],
                     ),
-                  ),
+                    Gaps.v32,
+                    Center(
+                      child: Container(
+                        width: size.width - 600,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1.0,
+                            color: Colors.black,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            Sizes.size5,
+                          ),
+                          color: Colors.white,
+                        ),
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  "#",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  "문항",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  "답변",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                          rows: [
+                            for (var i = 0;
+                                i < alzheimer_questionnaire_strings.length;
+                                i++)
+                              DataRow(
+                                cells: [
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        (i + 1).toString(),
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        alzheimer_questionnaire_strings[i],
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        widget.model.userAnswers[i] == true
+                                            ? "예"
+                                            : "아니오",
+                                        textAlign: TextAlign.end,
+                                        style: const TextStyle(
+                                          fontSize: Sizes.size13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -214,14 +269,66 @@ class TestInfoText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final header = text.split(':')[0];
+    final contents = text.replaceAll("$header: ", "");
     return Column(
       children: [
-        Text(
-          "◦ $text",
-          style: const TextStyle(
-            fontSize: Sizes.size15,
-            fontWeight: FontWeight.w500,
-          ),
+        Row(
+          children: [
+            Text(
+              "🔹  $header",
+              style: const TextStyle(
+                fontSize: Sizes.size15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Gaps.h20,
+            Text(
+              contents,
+              style: const TextStyle(
+                fontSize: Sizes.size15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        Gaps.v10,
+      ],
+    );
+  }
+}
+
+class UserInfoText extends StatelessWidget {
+  final String text;
+  const UserInfoText({
+    super.key,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final header = text.split(':')[0];
+    final contents = text.replaceAll("$header: ", "");
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              "▪️   $header",
+              style: const TextStyle(
+                fontSize: Sizes.size15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Gaps.h20,
+            Text(
+              contents,
+              style: const TextStyle(
+                fontSize: Sizes.size15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
         Gaps.v10,
       ],

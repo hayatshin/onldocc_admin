@@ -75,17 +75,17 @@ class UserModel {
 
   UserModel.fromJson(Map<String, dynamic> json)
       : index = json.containsKey("index") ? json["index"] : 0,
-        userId = json.containsKey("userId") ? json["userId"] : "정보 없음",
-        name = json.containsKey("name") ? json["name"] : "정보 없음",
+        userId = json.containsKey("userId") ? json["userId"] : "-",
+        name = json.containsKey("name") ? json["name"] : "-",
         userAge = json.containsKey("userAge") ? json["userAge"] : 0,
-        birthYear = json.containsKey("birthYear") ? json['birthYear'] : "정보 없음",
-        birthDay = json.containsKey("birthDay") ? json['birthDay'] : "정보 없음",
-        gender = json.containsKey("gender") ? json["gender"] : "정보 없음",
-        phone = json.containsKey("phone") ? json["phone"] : "정보 없음",
+        birthYear = json.containsKey("birthYear") ? json['birthYear'] : "-",
+        birthDay = json.containsKey("birthDay") ? json['birthDay'] : "-",
+        gender = json.containsKey("gender") ? json["gender"] : "-",
+        phone = json.containsKey("phone") ? json["phone"] : "-",
         fullRegion =
             json.containsKey("subdistricts") && json["subdistricts"] != null
                 ? json["subdistricts"]["subdistrict"]
-                : "정보 없음",
+                : "-",
         community = "",
         createdAt = json["createdAt"] ?? 0,
         lastVisit = json.containsKey("lastVisit") && json["lastVisit"] != null

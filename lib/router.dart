@@ -11,7 +11,7 @@ import 'package:onldocc_admin/features/event/view/event_detail_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
-import 'package:onldocc_admin/features/ca/view/ca_screen.dart';
+import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_diary_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_step_screen.dart';
@@ -63,11 +63,11 @@ final routerProvider = Provider(
                 () => menuNotifier.setSelectedMenu(3, context);
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
 
-              case CaScreen.routeURL:
+              case QuizScreen.routeURL:
                 () => menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
 
-              case "${CaScreen.routeURL}/:userId":
+              case "${QuizScreen.routeURL}/:userId":
                 () => menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
 
@@ -185,12 +185,12 @@ final routerProvider = Provider(
               ],
             ),
             GoRoute(
-              name: CaScreen.routeName,
-              path: CaScreen.routeURL,
+              name: QuizScreen.routeName,
+              path: QuizScreen.routeURL,
               pageBuilder: (context, state) => NoTransitionPage(
                 key: state.pageKey,
                 child: const RankingUsersScreen(
-                  rankingType: "ca",
+                  rankingType: "quiz",
                 ),
               ),
               routes: [
@@ -198,7 +198,7 @@ final routerProvider = Provider(
                   path: ":userId",
                   pageBuilder: (context, state) => MaterialPage(
                     key: state.pageKey,
-                    child: CaScreen(
+                    child: QuizScreen(
                       // index: state.pathParameters["index"],
                       userId: state.pathParameters["userId"],
                       userName: state.extra != null
