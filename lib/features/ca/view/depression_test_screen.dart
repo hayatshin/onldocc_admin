@@ -11,6 +11,7 @@ import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/cognition_test_view_model.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
@@ -140,9 +141,9 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final tableWidth = size.width - 270 - 64;
-    return AnimatedBuilder(
-      animation: contractNotifier,
-      builder: (context, child) {
+    return ValueListenableBuilder(
+      valueListenable: selectContractRegion,
+      builder: (context, value, child) {
         return loadingFinihsed
             ? Column(
                 children: [
@@ -270,7 +271,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                   ),
                 ],
               )
-            : loadingWidget();
+            : loadingWidget(context);
       },
     );
   }

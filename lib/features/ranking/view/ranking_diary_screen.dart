@@ -8,6 +8,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/models/mood_model.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
@@ -614,14 +615,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                   ),
                 ),
               )
-            : Expanded(
-                child: Center(
-                  child: LoadingAnimationWidget.inkDrop(
-                    color: Colors.grey.shade600,
-                    size: Sizes.size32,
-                  ),
-                ),
-              )
+            : loadingWidget(context)
       ],
     );
   }

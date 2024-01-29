@@ -1,12 +1,21 @@
+import 'dart:io';
+import 'dart:html' as html;
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
+import 'package:collection/collection.dart';
 
 class EventRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  final _supabase = Supabase.instance.client;
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       getAllEvents() async {
@@ -14,6 +23,39 @@ class EventRepository {
     return query.docs;
   }
 
+// supabase
+  Future<List<Map<String, dynamic>>> getUserEvents(
+      AdminProfileModel adminProfile) async {
+    if (adminProfile.master) {
+      final data =
+          await _supabase.from("events").select('*, contract_regions(*)');
+      return data;
+    } else {
+      final allUsers =
+          await _supabase.from("events").select('*').eq('allUsers', true);
+      final contractRegions = await _supabase
+          .from("events")
+          .select('*, contract_regions(*)')
+          .neq('allUsers', false)
+          .eq('contractRegionId', adminProfile.contractRegionId);
+      return [...contractRegions, ...allUsers];
+    }
+  }
+
+  Future<void> deleteEvent(String eventId) async {
+    await _supabase.from("events").delete().match({'eventId': eventId});
+  }
+
+  Future<List<Map<String, dynamic>>> getEventPariticipants(
+      String eventId) async {
+    final data = await _supabase
+        .from("event_participants")
+        .select('*, users(*)')
+        .eq('eventId', eventId);
+    return data;
+  }
+
+// firebase
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getRegionEvents(
       String fullRegion) async {
     final regionQueries = await _db
@@ -72,9 +114,9 @@ class EventRepository {
     await _db.collection("mission").doc(eventJson["documentId"]).set(eventJson);
   }
 
-  Future<void> deleteEvent(String documentId) async {
-    await _db.collection("mission").doc(documentId).delete();
-  }
+  // Future<void> deleteEvent(String documentId) async {
+  //   await _db.collection("mission").doc(documentId).delete();
+  // }
 
   Future<String?> uploadEventImage(Uint8List file, String fileName) async {
     final fileRef = _storage.ref().child("events/$fileName");

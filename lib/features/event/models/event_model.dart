@@ -1,84 +1,91 @@
 class EventModel {
-  final bool? allUser;
-  final String? contractType;
-  final String? contractName;
-  final String? contractLogo;
-  final String? description;
-  final String? documentId;
-  final String? startPeriod;
-  final String? endPeriod;
-  final int? goalScore;
-  final String? missionImage;
-  final int? prizeWinners;
-  final String? state;
-  final String? title;
-  final bool? autoProgress;
+  final String eventId;
+  final String title;
+  final String description;
+  final String eventImage;
+  final bool allUsers;
+  final String contractOrgType;
+  final String? contractRegionId;
+  final String? contractCommunityId;
+  final int targetScore;
+  final int achieversNumber;
+  final String startDate;
+  final String endDate;
+  final String state;
+  final String? orgSubdistrictId;
+  final String? orgImage;
 
-  EventModel(
-    this.allUser,
-    this.contractType,
-    this.contractName,
-    this.contractLogo,
-    this.description,
-    this.documentId,
-    this.startPeriod,
-    this.endPeriod,
-    this.goalScore,
-    this.missionImage,
-    this.prizeWinners,
-    this.state,
-    this.title,
-    this.autoProgress,
-  );
+  EventModel({
+    required this.eventId,
+    required this.title,
+    required this.description,
+    required this.eventImage,
+    required this.allUsers,
+    required this.contractOrgType,
+    this.contractRegionId,
+    this.contractCommunityId,
+    required this.targetScore,
+    required this.achieversNumber,
+    required this.startDate,
+    required this.endDate,
+    required this.state,
+    this.orgSubdistrictId,
+    this.orgImage,
+  });
 
   EventModel.empty()
-      : allUser = false,
-        contractType = "",
-        contractName = "",
-        contractLogo = "",
-        description = "",
-        documentId = "",
-        startPeriod = "",
-        endPeriod = "",
-        goalScore = 0,
-        missionImage = "",
-        prizeWinners = 0,
-        state = "",
+      : eventId = "",
         title = "",
-        autoProgress = true;
+        description = "",
+        eventImage = "",
+        allUsers = true,
+        contractOrgType = "region",
+        contractRegionId = "",
+        contractCommunityId = "",
+        targetScore = 0,
+        achieversNumber = 0,
+        startDate = "",
+        endDate = "",
+        state = "진행",
+        orgSubdistrictId = "",
+        orgImage = "";
 
   Map<String, dynamic> toJson() {
     return {
-      "allUser": allUser ?? false,
-      "contractType": contractType,
-      "contractName": contractName,
-      "contractLogo": contractLogo,
-      "description": description,
-      "documentId": documentId,
-      "startPeriod": startPeriod,
-      "endPeriod": endPeriod,
-      "goalScore": goalScore,
-      "missionImage": missionImage,
-      "prizeWinners": prizeWinners,
-      "state": state ?? "진행",
+      "eventId": eventId,
       "title": title,
-      "autoProgress": autoProgress ?? true,
+      "description": description,
+      "eventImage": eventImage,
+      "allUsers": allUsers,
+      "contractOrgType": contractOrgType,
+      "contractRegionId": contractRegionId,
+      "contractCommunityId": contractCommunityId,
+      "targetScore": targetScore,
+      "achieversNumber": achieversNumber,
+      "startDate": startDate,
+      "endDate": endDate,
+      "state": state,
+      "orgSubdistrictId": orgSubdistrictId,
+      "orgImage": orgImage,
     };
   }
 
   EventModel.fromJson(Map<String, dynamic> json)
-      : allUser = json["allUser"] ?? false,
-        contractType = json["contractType"] ?? "",
-        contractName = json["contractName"] ?? "",
-        contractLogo = json["contractLogo"] ?? "",
-        description = json["description"] ?? "",
-        documentId = json["documentId"] ?? "",
-        startPeriod = json["startPeriod"] ?? "무제한",
-        endPeriod = json["endPeriod"] ?? "무제한",
-        goalScore = json["goalScore"] ?? 0,
-        missionImage = json["missionImage"] ?? "",
-        prizeWinners = json["prizeWinners"] ?? 0,
-        state = json["state"] ?? "진행",
-        title = json["title"] ?? "",
-        autoProgress = json["autoProgress"] ?? true;
+      : eventId = json["eventId"],
+        title = json["title"],
+        description = json["description"],
+        eventImage = json["eventImage"],
+        allUsers = json["allUsers"],
+        contractOrgType = json["contractOrgType"],
+        contractRegionId = json["contractRegionId"],
+        contractCommunityId = json["contractCommunityId"],
+        targetScore = json["targetScore"],
+        achieversNumber = json["achieversNumber"],
+        startDate = json["startDate"],
+        endDate = json["endDate"],
+        state = json["state"],
+        orgSubdistrictId = json.containsKey("contract_regions")
+            ? json["contract_regions"]["subdistrictId"]
+            : "",
+        orgImage = json["contract_regions"]["image"];
 }

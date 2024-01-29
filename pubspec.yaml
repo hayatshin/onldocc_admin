@@ -65,6 +65,7 @@ dependencies:
   supabase_flutter: ^2.3.0
   data_table_2: ^2.5.10
   http: ^1.1.2
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:

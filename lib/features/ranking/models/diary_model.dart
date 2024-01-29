@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class DiaryModel {
   final String userId;
@@ -9,6 +10,8 @@ class DiaryModel {
   final int numLikes;
   final int numComments;
   final String todayDiary;
+  final List<String>? images;
+  final bool? notice;
 
   DiaryModel({
     required this.userId,
@@ -19,6 +22,8 @@ class DiaryModel {
     required this.numLikes,
     required this.numComments,
     required this.todayDiary,
+    this.images,
+    this.notice,
   });
 
   DiaryModel.empty()
@@ -29,7 +34,9 @@ class DiaryModel {
         todayMood = 0,
         numLikes = 0,
         numComments = 0,
-        todayDiary = "";
+        todayDiary = "",
+        images = [],
+        notice = false;
 
   Map<String, dynamic> toJson() {
     return {
@@ -41,6 +48,7 @@ class DiaryModel {
       "numLikes": numLikes,
       "numComments": numComments,
       "todayDiary": todayDiary,
+      "notice": notice,
     };
   }
 
@@ -52,7 +60,10 @@ class DiaryModel {
         todayMood = json["todayMood"],
         numLikes = json.containsKey("numLikes") ? json["numLikes"] : 0,
         numComments = json.containsKey("numComments") ? json["numComments"] : 0,
-        todayDiary = json.containsKey("todayDiary") ? json["todayDiary"] : "";
+        todayDiary = json.containsKey("todayDiary") ? json["todayDiary"] : "",
+        images =
+            json.containsKey("images") ? spreadDiaryImages(json["images"]) : [],
+        notice = json.containsKey("notice") ? json["notice"] : false;
 
   DiaryModel copyWith({
     final String? userId,
@@ -64,6 +75,8 @@ class DiaryModel {
     final int? numLikes,
     final int? numComments,
     final String? todayDiary,
+    final List<String>? images,
+    final bool? notice,
   }) {
     return DiaryModel(
       userId: userId ?? this.userId,
@@ -74,6 +87,8 @@ class DiaryModel {
       numLikes: numLikes ?? this.numLikes,
       numComments: numComments ?? this.numComments,
       todayDiary: todayDiary ?? this.todayDiary,
+      images: images ?? this.images,
+      notice: notice ?? this.notice,
     );
   }
 }

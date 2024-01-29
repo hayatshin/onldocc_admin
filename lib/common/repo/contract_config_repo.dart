@@ -10,6 +10,19 @@ class ContractConfigRepository {
     return contractRegions;
   }
 
+  Future<String> convertSubdistrictIdToName(String? subdistrictId) async {
+    if (subdistrictId != null) {
+      final data = await _supabase
+          .from("subdistricts")
+          .select('subdistrict')
+          .eq('subdistrictId', subdistrictId)
+          .single();
+      return data["subdistrict"];
+    } else {
+      return "";
+    }
+  }
+
   Future<List<String>?> getCommunityItems() async {
     return ["없음"];
   }

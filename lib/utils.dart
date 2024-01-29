@@ -46,6 +46,13 @@ List<DateTime> getBetweenDays(DateTime startDate, DateTime endDate) {
   return dates;
 }
 
+String todayToStringLine() {
+  DateTime dateTime = DateTime.now();
+  String formattedDate =
+      '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
+  return formattedDate;
+}
+
 String daterangeToSlashString(DateRange range) {
   return "${datetimeToSlashString(range.start)} - ${datetimeToSlashString(range.end)}";
 }
@@ -206,7 +213,7 @@ String secondsToStringDateComment(int seconds) {
   return formattedDate;
 }
 
-List<dynamic> spreadDiaryImages(List data) {
+List<String> spreadDiaryImages(List data) {
   final imagelist = data.map((e) => e["image"] as String).toList();
 
   if (imagelist.isNotEmpty &&

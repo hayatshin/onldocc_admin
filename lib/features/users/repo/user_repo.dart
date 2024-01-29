@@ -10,137 +10,154 @@ class UserRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final _supabase = Supabase.instance.client;
 
-  UserModel? dbToUserModel(QueryDocumentSnapshot<Map<String, dynamic>> user) {
-    try {
-      final userBirthYear =
-          user.data().containsKey("birthYear") ? user.get("birthYear") : "-";
-      final userBirthDay =
-          user.data().containsKey("birthDay") ? user.get("birthDay") : null;
-      final userBirthMonth = userBirthDay != null || userBirthDay != ""
-          ? userBirthDay.toString().length == 4
-              ? userBirthDay.toString().substring(0, 2)
-              : ""
-          : "";
-      final userBirthDate = userBirthDay != null || userBirthDay != ""
-          ? userBirthDay.toString().length == 4
-              ? userBirthDay.toString().substring(2, 4)
-              : ""
-          : "-";
-
-      final userFullBirthday =
-          userBirthYear == "" && userBirthMonth == "" && userBirthDate == ""
-              ? "-"
-              : "$userBirthYear.$userBirthMonth.$userBirthDate";
-      final userAge = userBirthYear != "-" &&
-              userBirthDay != "-" &&
-              userBirthYear != "" &&
-              userBirthDay != ""
-          ? userAgeCalculation(userBirthYear, userBirthDay)
-          : "-";
-      final Timestamp? dbTimestamp =
-          user.data().containsKey("timestamp") ? user.get("timestamp") : null;
-      final String userRegisterDate = dbTimestamp != null
-          ? DateFormat('yyyy.MM.dd').format(dbTimestamp.toDate())
-          : "-";
-      final Timestamp? dbLastVisit =
-          user.data().containsKey("lastVisit") ? user.get("lastVisit") : null;
-
-      final String lastVisit = dbLastVisit != null
-          ? DateFormat('yyyy.MM.dd').format(dbLastVisit.toDate())
-          : "";
-
-      final userRegion =
-          user.data().containsKey("region") ? user.get("region") : "정보";
-      final userSmallRegion = user.data().containsKey("smallRegion")
-          ? user.get("smallRegion")
-          : "없음";
-      final userFullRegion = "$userRegion $userSmallRegion";
-
-      Map<String, dynamic> userModel = {
-        "userId": user.get("userId") ?? "-",
-        "name": user.get("name") ?? "-",
-        "age": userAge,
-        "fullBirthday": userFullBirthday,
-        "gender": user.get("gender") ?? "-",
-        "phone": user.get("phone") ?? "-",
-        "fullRegion": userFullRegion,
-        "registerDate": userRegisterDate,
-        "lastVisit": lastVisit,
-        "totalScore": 0,
-        "stepScore": 0,
-        "diaryScore": 0,
-        "commentScore": 0,
-      };
-      UserModel convertUserModel = UserModel.fromJson(userModel);
-      return convertUserModel;
-    } catch (e) {
-      // ignore: avoid_print
-      print("dbToUserModel -> $e");
-    }
-    return null;
+  Future<void> saveAdminUser(Map<String, dynamic> userJson) async {
+    await _supabase.from("users").upsert(userJson);
   }
 
-  UserModel docToUserModel(DocumentSnapshot<Map<String, dynamic>> user) {
+  Future<bool> checkUserExists(String certainUid) async {
     try {
-      final userBirthYear =
-          user.data()!.containsKey("birthYear") ? user.get("birthYear") : "-";
-      final userBirthDay =
-          user.data()!.containsKey("birthDay") ? user.get("birthDay") : null;
-      final userBirthMonth = userBirthDay != null
-          ? userBirthDay.toString().length == 4
-              ? userBirthDay.toString().substring(0, 2)
-              : "77"
-          : "정보";
-      final userBirthDate = userBirthDay != null
-          ? userBirthDay.toString().length == 4
-              ? userBirthDay.toString().substring(2, 4)
-              : "77"
-          : "없음";
+      final userData = await _supabase
+          .from("users")
+          .select('*')
+          .eq('userId', certainUid)
+          .count(CountOption.exact);
 
-      final userFullBirthday = "$userBirthYear.$userBirthMonth.$userBirthDate";
-      final userAge = userBirthYear != "-" && userBirthDay != "-"
-          ? userAgeCalculation(userBirthYear, userBirthDay)
-          : "-";
-      final Timestamp? dbTimestamp =
-          user.data()!.containsKey("timestamp") ? user.get("timestamp") : null;
-      final String userRegisterDate = dbTimestamp != null
-          ? DateFormat('yyyy.MM.dd').format(dbTimestamp.toDate())
-          : "-";
-      final Timestamp? dbLastVisit =
-          user.data()!.containsKey("lastVisit") ? user.get("lastVisit") : null;
-      final String lastVisit = dbLastVisit != null
-          ? DateFormat('yyyy.MM.dd').format(dbLastVisit.toDate())
-          : "";
-      final userRegion =
-          user.data()!.containsKey("region") ? user.get("region") : "정보";
-      final userSmallRegion = user.data()!.containsKey("smallRegion")
-          ? user.get("smallRegion")
-          : "없음";
-      final userFullRegion = "$userRegion $userSmallRegion";
-
-      Map<String, dynamic> userModel = {
-        "userId": user.get("userId"),
-        "name": user.get("name"),
-        "age": userAge,
-        "fullBirthday": userFullBirthday,
-        "gender": user.get("gender"),
-        "phone": user.get("phone"),
-        "fullRegion": userFullRegion,
-        "registerDate": userRegisterDate,
-        "lastVisit": lastVisit,
-        "totalScore": 0,
-        "stepScore": 0,
-        "diaryScore": 0,
-        "commentScore": 0,
-      };
-      UserModel convertUserModel = UserModel.fromJson(userModel);
-      return convertUserModel;
+      return userData.count != 0;
     } catch (e) {
-      // ignore: avoid_print
-      print("docToUserModel -> $e");
-      return UserModel.empty();
+      return false;
     }
   }
+
+  // UserModel? dbToUserModel(QueryDocumentSnapshot<Map<String, dynamic>> user) {
+  //   try {
+  //     final userBirthYear =
+  //         user.data().containsKey("birthYear") ? user.get("birthYear") : "-";
+  //     final userBirthDay =
+  //         user.data().containsKey("birthDay") ? user.get("birthDay") : null;
+  //     final userBirthMonth = userBirthDay != null || userBirthDay != ""
+  //         ? userBirthDay.toString().length == 4
+  //             ? userBirthDay.toString().substring(0, 2)
+  //             : ""
+  //         : "";
+  //     final userBirthDate = userBirthDay != null || userBirthDay != ""
+  //         ? userBirthDay.toString().length == 4
+  //             ? userBirthDay.toString().substring(2, 4)
+  //             : ""
+  //         : "-";
+
+  //     final userFullBirthday =
+  //         userBirthYear == "" && userBirthMonth == "" && userBirthDate == ""
+  //             ? "-"
+  //             : "$userBirthYear.$userBirthMonth.$userBirthDate";
+  //     final userAge = userBirthYear != "-" &&
+  //             userBirthDay != "-" &&
+  //             userBirthYear != "" &&
+  //             userBirthDay != ""
+  //         ? userAgeCalculation(userBirthYear, userBirthDay)
+  //         : "-";
+  //     final Timestamp? dbTimestamp =
+  //         user.data().containsKey("timestamp") ? user.get("timestamp") : null;
+  //     final String userRegisterDate = dbTimestamp != null
+  //         ? DateFormat('yyyy.MM.dd').format(dbTimestamp.toDate())
+  //         : "-";
+  //     final Timestamp? dbLastVisit =
+  //         user.data().containsKey("lastVisit") ? user.get("lastVisit") : null;
+
+  //     final String lastVisit = dbLastVisit != null
+  //         ? DateFormat('yyyy.MM.dd').format(dbLastVisit.toDate())
+  //         : "";
+
+  //     final userRegion =
+  //         user.data().containsKey("region") ? user.get("region") : "";
+  //     final userSmallRegion =
+  //         user.data().containsKey("smallRegion") ? user.get("smallRegion") : "";
+  //     final userFullRegion = "$userRegion $userSmallRegion";
+
+  //     Map<String, dynamic> userModel = {
+  //       "userId": user.get("userId") ?? "-",
+  //       "name": user.get("name") ?? "-",
+  //       "age": userAge,
+  //       "fullBirthday": userFullBirthday,
+  //       "gender": user.get("gender") ?? "-",
+  //       "phone": user.get("phone") ?? "-",
+  //       "fullRegion": userFullRegion,
+  //       "registerDate": userRegisterDate,
+  //       "lastVisit": lastVisit,
+  //       "totalScore": 0,
+  //       "stepScore": 0,
+  //       "diaryScore": 0,
+  //       "commentScore": 0,
+  //     };
+  //     UserModel convertUserModel = UserModel.fromJson(userModel);
+  //     return convertUserModel;
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print("dbToUserModel -> $e");
+  //   }
+  //   return null;
+  // }
+
+  // UserModel docToUserModel(DocumentSnapshot<Map<String, dynamic>> user) {
+  //   try {
+  //     final userBirthYear =
+  //         user.data()!.containsKey("birthYear") ? user.get("birthYear") : "-";
+  //     final userBirthDay =
+  //         user.data()!.containsKey("birthDay") ? user.get("birthDay") : null;
+  //     final userBirthMonth = userBirthDay != null
+  //         ? userBirthDay.toString().length == 4
+  //             ? userBirthDay.toString().substring(0, 2)
+  //             : "77"
+  //         : "정보";
+  //     final userBirthDate = userBirthDay != null
+  //         ? userBirthDay.toString().length == 4
+  //             ? userBirthDay.toString().substring(2, 4)
+  //             : "77"
+  //         : "없음";
+
+  //     final userFullBirthday = "$userBirthYear.$userBirthMonth.$userBirthDate";
+  //     final userAge = userBirthYear != "-" && userBirthDay != "-"
+  //         ? userAgeCalculation(userBirthYear, userBirthDay)
+  //         : "-";
+  //     final Timestamp? dbTimestamp =
+  //         user.data()!.containsKey("timestamp") ? user.get("timestamp") : null;
+  //     final String userRegisterDate = dbTimestamp != null
+  //         ? DateFormat('yyyy.MM.dd').format(dbTimestamp.toDate())
+  //         : "-";
+  //     final Timestamp? dbLastVisit =
+  //         user.data()!.containsKey("lastVisit") ? user.get("lastVisit") : null;
+  //     final String lastVisit = dbLastVisit != null
+  //         ? DateFormat('yyyy.MM.dd').format(dbLastVisit.toDate())
+  //         : "";
+  //     final userRegion =
+  //         user.data()!.containsKey("region") ? user.get("region") : "정보";
+  //     final userSmallRegion = user.data()!.containsKey("smallRegion")
+  //         ? user.get("smallRegion")
+  //         : "없음";
+  //     final userFullRegion = "$userRegion $userSmallRegion";
+
+  //     Map<String, dynamic> userModel = {
+  //       "userId": user.get("userId"),
+  //       "name": user.get("name"),
+  //       "age": userAge,
+  //       "fullBirthday": userFullBirthday,
+  //       "gender": user.get("gender"),
+  //       "phone": user.get("phone"),
+  //       "fullRegion": userFullRegion,
+  //       "registerDate": userRegisterDate,
+  //       "lastVisit": lastVisit,
+  //       "totalScore": 0,
+  //       "stepScore": 0,
+  //       "diaryScore": 0,
+  //       "commentScore": 0,
+  //     };
+  //     UserModel convertUserModel = UserModel.fromJson(userModel);
+  //     return convertUserModel;
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print("docToUserModel -> $e");
+  //     return UserModel.empty();
+  //   }
+  // }
 
   Future<List<Map<String, dynamic>>> initializeUserList(
       bool userMaster, String userSubdistrictId) async {
@@ -188,18 +205,18 @@ class UserRepository {
     return [];
   }
 
-  Future<List<UserModel?>> getCommunityUserData(String community) async {
-    final userSnapshots = await _db
-        .collection("users")
-        .where("community", arrayContains: community)
-        .orderBy("timestamp")
-        .get();
+  // Future<List<UserModel?>> getCommunityUserData(String community) async {
+  //   final userSnapshots = await _db
+  //       .collection("users")
+  //       .where("community", arrayContains: community)
+  //       .orderBy("timestamp")
+  //       .get();
 
-    return userSnapshots.docs
-        .map((doc) => dbToUserModel(doc))
-        .where((element) => element != null && element.name != "탈퇴자")
-        .toList();
-  }
+  //   return userSnapshots.docs
+  //       .map((doc) => dbToUserModel(doc))
+  //       .where((element) => element != null && element.name != "탈퇴자")
+  //       .toList();
+  // }
 
   Future<void> deleteUser(String userId) async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -224,15 +241,15 @@ class UserRepository {
     // return userQuery.data();
   }
 
-  Future<UserModel?> getUserModel(String userId) async {
-    final userQuery = await _db.collection("users").doc(userId).get();
+  // Future<UserModel?> getUserModel(String userId) async {
+  //   final userQuery = await _db.collection("users").doc(userId).get();
 
-    if (userQuery.exists) {
-      UserModel userModel = docToUserModel(userQuery);
-      return userModel;
-    }
-    return null;
-  }
+  //   if (userQuery.exists) {
+  //     UserModel userModel = docToUserModel(userQuery);
+  //     return userModel;
+  //   }
+  //   return null;
+  // }
 }
 
 final userRepo = Provider((ref) => UserRepository());

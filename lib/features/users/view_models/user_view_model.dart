@@ -5,6 +5,7 @@ import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class UserViewModel extends AsyncNotifier<List<UserModel?>> {
   late UserRepository _userRepo;
@@ -12,6 +13,27 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
   FutureOr<List<UserModel?>> build() async {
     _userRepo = UserRepository();
     return await initializeUserList();
+  }
+
+  Future<void> saveAdminUser(String notiUserId) async {
+    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+
+    final userJson = {
+      "userId": notiUserId,
+      "avatar": adminProfileModel!.image,
+      "loginType": "어드민",
+      "gender": "남성",
+      "birthYear": "1960",
+      "birthDay": "0101",
+      "phone": adminProfileModel.phone,
+      "name": adminProfileModel.name,
+      "userAge": 60,
+      "createdAt": getCurrentSeconds(),
+      "subdistrictId": adminProfileModel.subdistrictId == ""
+          ? "d1_s1"
+          : adminProfileModel.subdistrictId,
+    };
+    await _userRepo.saveAdminUser(userJson);
   }
 
   List<UserModel?> filterTableRows(

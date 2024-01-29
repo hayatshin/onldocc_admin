@@ -7,11 +7,13 @@ import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
+import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
 import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
+import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_diary_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_step_screen.dart';
@@ -87,17 +89,21 @@ final routerProvider = Provider(
                 () => menuNotifier.setSelectedMenu(6, context);
                 return SidebarTemplate(selectedMenuURL: 6, child: child);
 
+              case NoticeScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(7, context);
+                return SidebarTemplate(selectedMenuURL: 7, child: child);
+
               case EventScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(7, context);
-                return SidebarTemplate(selectedMenuURL: 7, child: child);
-
-              case "${EventScreen.routeURL}/:eventId":
-                () => menuNotifier.setSelectedMenu(7, context);
-                return SidebarTemplate(selectedMenuURL: 7, child: child);
-
-              case TvScreen.routeURL:
                 () => menuNotifier.setSelectedMenu(8, context);
                 return SidebarTemplate(selectedMenuURL: 8, child: child);
+
+              case "${EventScreen.routeURL}/:eventId":
+                () => menuNotifier.setSelectedMenu(8, context);
+                return SidebarTemplate(selectedMenuURL: 8, child: child);
+
+              case TvScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(9, context);
+                return SidebarTemplate(selectedMenuURL: 9, child: child);
             }
             return child;
           },
@@ -249,6 +255,14 @@ final routerProvider = Provider(
               ],
             ),
             GoRoute(
+              name: NoticeScreen.routeName,
+              path: NoticeScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const NoticeScreen(),
+              ),
+            ),
+            GoRoute(
               name: EventScreen.routeName,
               path: EventScreen.routeURL,
               pageBuilder: (context, state) => NoTransitionPage(
@@ -258,12 +272,14 @@ final routerProvider = Provider(
               routes: [
                 GoRoute(
                   path: ":eventId",
-                  pageBuilder: (context, state) => MaterialPage(
-                    key: state.pageKey,
-                    child: EventDetailScreen(
-                      eventId: state.pathParameters['eventId'],
-                    ),
-                  ),
+                  pageBuilder: (context, state) {
+                    return MaterialPage(
+                      key: state.pageKey,
+                      child: EventDetailScreen(
+                        eventModel: state.extra as EventModel,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

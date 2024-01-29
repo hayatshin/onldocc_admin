@@ -3,28 +3,32 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
+import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/models/event_user_model.dart';
+import 'package:onldocc_admin/features/event/models/participant_model.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
 class EventDetailScreen extends ConsumerStatefulWidget {
-  final String? eventId;
+  final EventModel? eventModel;
   const EventDetailScreen({
     super.key,
-    required this.eventId,
+    required this.eventModel,
   });
 
   @override
   ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
 }
 
-class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
-    with SingleTickerProviderStateMixin {
+class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   final searchHeight = 35;
   final List<EventUserModel> _participantsList = [];
   final List<String> _listHeader = [
@@ -39,24 +43,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     "달성 여부"
   ];
   late AnimationController _animationController;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimtaion;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(-1, 0),
-      end: Offset.zero,
-    ).animate(_animationController);
-    _animationController.forward();
-
-    _fadeAnimtaion =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
   }
 
   @override
@@ -114,7 +104,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     final formatDate =
         "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
-    String fileName = "인지케어 행사 $eventTitle.csv";
+    String fileName = "인지케어 행사 $eventTitle $formatDate.csv";
 
     final encodedUri = Uri.dataFromString(
       csvContent,
@@ -128,311 +118,320 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return FutureBuilder(
-      future: ref
-          .read(eventProvider.notifier)
-          .getCertainEventModel(widget.eventId!),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final eventData = snapshot.data;
-          return Scaffold(
-            body: Column(
-              children: [
-                Csv(
-                  generateCsv: () => generateUserCsv(eventData.title!),
-                  rankingType: "event",
-                  userName: eventData!.title!,
-                ),
-                SearchBelow(
-                  size: size,
-                  child: Column(
-                    children: [
-                      Gaps.v32,
-                      IntrinsicHeight(
-                        child: Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              FadeTransition(
-                                opacity: _fadeAnimtaion,
-                                child: SlideTransition(
-                                  position: _slideAnimation,
-                                  child: SizedBox(
-                                    width: 300,
-                                    height: 400,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size10,
-                                      ),
-                                      child: Image.network(
-                                        eventData.missionImage!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+    return Scaffold(
+      body: Column(
+        children: [
+          Csv(
+            generateCsv: () => generateUserCsv(widget.eventModel!.title),
+            rankingType: "event",
+            userName: widget.eventModel!.title,
+          ),
+          SearchBelow(
+            size: size,
+            child: Container(
+              color: Colors.grey.shade50,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Gaps.v32,
+                  IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: Sizes.size20,
+                        horizontal: 200,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Container(
+                            width: 250,
+                            height: 300,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 2,
+                            )),
+                            child: Image.network(
+                              widget.eventModel!.eventImage,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          Gaps.h80,
+                          SizedBox(
+                            width: 400,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  widget.eventModel!.description
+                                      .replaceAll('\\n', '\n'),
+                                  overflow: TextOverflow.visible,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size14,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ),
-                              Gaps.h40,
-                              SizedBox(
-                                width: 400,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
+                                Gaps.v32,
+                                const Divider(
+                                  color: Colors.black,
+                                  thickness: 1.5,
+                                  endIndent: 10,
+                                ),
+                                Gaps.v32,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Text(
-                                      eventData.description!
-                                          .replaceAll('\\n', '\n'),
-                                      overflow: TextOverflow.visible,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size14,
-                                        fontWeight: FontWeight.w400,
+                                    Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: Theme.of(context).primaryColor,
+                                      size: Sizes.size20,
+                                    ),
+                                    Gaps.h16,
+                                    FutureBuilder(
+                                      future: ref
+                                          .read(contractRepo)
+                                          .convertSubdistrictIdToName(widget
+                                              .eventModel!.orgSubdistrictId),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return RichText(
+                                            textAlign: TextAlign.center,
+                                            text: TextSpan(
+                                              text: "주최기관:  ",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: Sizes.size15,
+                                                color: Colors.grey.shade800,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: snapshot.data!,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: Sizes.size15,
+                                                    color: Colors.grey.shade800,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                        return Container();
+                                      },
+                                    ),
+                                    Gaps.h20,
+                                    CircleAvatar(
+                                      radius: 15,
+                                      backgroundImage: NetworkImage(
+                                        widget.eventModel!.orgImage!,
                                       ),
-                                    ),
-                                    Gaps.v32,
-                                    Divider(
-                                      color: Colors.grey.shade300,
-                                      height: 1,
-                                    ),
-                                    Gaps.v32,
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle_outline_rounded,
-                                          color: Colors.grey.shade500,
-                                          size: Sizes.size20,
-                                        ),
-                                        Gaps.h16,
-                                        RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            text: "주최기관:  ",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: Sizes.size15,
-                                              color: Colors.grey.shade800,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: eventData.contractName,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: Sizes.size15,
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        Gaps.h20,
-                                        CircleAvatar(
-                                          radius: 15,
-                                          backgroundImage: NetworkImage(
-                                            eventData.contractLogo!,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Gaps.v10,
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle_outline_rounded,
-                                          color: Colors.grey.shade500,
-                                          size: Sizes.size20,
-                                        ),
-                                        Gaps.h16,
-                                        RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            text: "시작일:  ",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: Sizes.size15,
-                                              color: Colors.grey.shade800,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: eventData.startPeriod,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: Sizes.size15,
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Gaps.v10,
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle_outline_rounded,
-                                          color: Colors.grey.shade500,
-                                          size: Sizes.size20,
-                                        ),
-                                        Gaps.h16,
-                                        RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            text: "종료일:  ",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: Sizes.size15,
-                                              color: Colors.grey.shade800,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: eventData.endPeriod,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: Sizes.size15,
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Gaps.v10,
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle_outline_rounded,
-                                          color: Colors.grey.shade500,
-                                          size: Sizes.size20,
-                                        ),
-                                        Gaps.h16,
-                                        RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            text: "목표 점수:  ",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: Sizes.size15,
-                                              color: Colors.grey.shade800,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: "${eventData.goalScore}점",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: Sizes.size15,
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Gaps.v10,
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle_outline_rounded,
-                                          color: Colors.grey.shade500,
-                                          size: Sizes.size20,
-                                        ),
-                                        Gaps.h16,
-                                        RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            text: "달성자 수 제한:  ",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: Sizes.size15,
-                                              color: Colors.grey.shade800,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: eventData.prizeWinners ==
-                                                        0
-                                                    ? "무제한"
-                                                    : "${eventData.prizeWinners}명",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: Sizes.size15,
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Gaps.v10,
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle_outline_rounded,
-                                          color: Colors.grey.shade500,
-                                          size: Sizes.size20,
-                                        ),
-                                        Gaps.h16,
-                                        RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            text: "진행 상황:  ",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: Sizes.size15,
-                                              color: Colors.grey.shade800,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: eventData.state,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: Sizes.size15,
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
                                     ),
                                   ],
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Gaps.v52,
-                      FutureBuilder(
-                        future: ref
-                            .read(eventProvider.notifier)
-                            .updateEventParticipantsList(
-                              eventData.startPeriod!,
-                              eventData.endPeriod!,
-                              eventData.documentId!,
-                              eventData.goalScore!,
+                                Gaps.v10,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: Theme.of(context).primaryColor,
+                                      size: Sizes.size20,
+                                    ),
+                                    Gaps.h16,
+                                    RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        text: "시작일:  ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: Sizes.size15,
+                                          color: Colors.grey.shade800,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: widget.eventModel!.startDate,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: Sizes.size15,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Gaps.v10,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: Theme.of(context).primaryColor,
+                                      size: Sizes.size20,
+                                    ),
+                                    Gaps.h16,
+                                    RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        text: "종료일:  ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: Sizes.size15,
+                                          color: Colors.grey.shade800,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: widget.eventModel!.endDate,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: Sizes.size15,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Gaps.v10,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: Theme.of(context).primaryColor,
+                                      size: Sizes.size20,
+                                    ),
+                                    Gaps.h16,
+                                    RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        text: "목표 점수:  ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: Sizes.size15,
+                                          color: Colors.grey.shade800,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text:
+                                                "${widget.eventModel!.targetScore}점",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: Sizes.size15,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Gaps.v10,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: Theme.of(context).primaryColor,
+                                      size: Sizes.size20,
+                                    ),
+                                    Gaps.h16,
+                                    RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        text: "달성자 수 제한:  ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: Sizes.size15,
+                                          color: Colors.grey.shade800,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: widget.eventModel!
+                                                        .achieversNumber ==
+                                                    0
+                                                ? "무제한"
+                                                : "${widget.eventModel!.achieversNumber}명",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: Sizes.size15,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Gaps.v10,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: Colors.blue,
+                                      size: Sizes.size20,
+                                    ),
+                                    Gaps.h16,
+                                    RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        text: "진행 상황:  ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: Sizes.size15,
+                                          color: Colors.grey.shade800,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: widget.eventModel!.state,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: Sizes.size15,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Text(snapshot.error.toString());
-                          } else if (snapshot.hasData) {
-                            List<EventUserModel> participants = snapshot.data!;
-                            return DataTable(
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Gaps.v52,
+                  FutureBuilder(
+                    future: ref
+                        .read(eventProvider.notifier)
+                        .getEventParticipants(widget.eventModel!),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
+                      } else if (snapshot.hasData) {
+                        List<ParticipantModel> participants = snapshot.data!;
+                        participants.sort(
+                            (a, b) => b.totalPoint.compareTo(a.totalPoint));
+                        return Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1.0,
+                                color: Colors.black,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                Sizes.size5,
+                              ),
+                              color: Colors.white,
+                            ),
+                            child: DataTable(
                               columns: const [
                                 DataColumn(
                                   label: Text(
@@ -521,7 +520,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].name ?? "",
+                                          participants[i].name,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -529,7 +528,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].age ?? "",
+                                          participants[i].userAge.toString(),
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -537,7 +536,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].gender ?? "",
+                                          participants[i].gender,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -545,7 +544,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].phone ?? "",
+                                          participants[i].phone,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -553,7 +552,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].fullRegion ?? "",
+                                          participants[i].smallRegion,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -561,12 +560,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].participateDate !=
-                                                  null
-                                              ? convertTimettampToStringDate(
-                                                  participants[i]
-                                                      .participateDate!)
-                                              : "",
+                                          secondsToStringLine(
+                                              participants[i].createdAt),
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -574,7 +569,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].userPoint.toString(),
+                                          participants[i].totalPoint.toString(),
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -582,7 +577,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].goalOrNot!
+                                          participants[i].totalPoint >=
+                                                  widget.eventModel!.targetScore
                                               ? "달성"
                                               : "미달성",
                                           style: const TextStyle(
@@ -593,27 +589,19 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                                     ],
                                   ),
                               ],
-                            );
-                          }
-                          return Center(
-                            child: LoadingAnimationWidget.inkDrop(
-                              color: Colors.grey.shade600,
-                              size: Sizes.size20,
                             ),
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              ],
+                          ),
+                        );
+                      }
+                      return loadingWidget(context);
+                    },
+                  )
+                ],
+              ),
             ),
-          );
-        }
-        return CircularProgressIndicator.adaptive(
-          backgroundColor: Theme.of(context).primaryColor,
-        );
-      },
+          ),
+        ],
+      ),
     );
   }
 }

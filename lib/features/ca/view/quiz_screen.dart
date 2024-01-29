@@ -5,6 +5,7 @@ import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/features/ca/models/quiz_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/quiz_view_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -386,14 +387,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                   ),
                 ),
               )
-            : Expanded(
-                child: Center(
-                  child: LoadingAnimationWidget.inkDrop(
-                    color: Colors.grey.shade600,
-                    size: Sizes.size32,
-                  ),
-                ),
-              ),
+            : loadingWidget(context),
       ],
     );
   }

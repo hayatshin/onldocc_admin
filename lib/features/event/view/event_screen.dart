@@ -5,13 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
+import 'package:onldocc_admin/features/notice/widgets/upload_notification_widget.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
 import '../../../constants/gaps.dart';
@@ -27,10 +30,10 @@ class EventScreen extends ConsumerStatefulWidget {
 }
 
 class _EventScreenState extends ConsumerState<EventScreen> {
-  final double searchHeight = 35;
+  double searchHeight = 35;
   final bool _feedHover = false;
   final bool _addEventHover = false;
-  final bool _initialSetting = false;
+  bool _initialSetting = false;
   // final List<EventModel?> _eventDataList = [];
   final TextEditingController _titleControllder = TextEditingController();
   final TextEditingController _descriptionControllder = TextEditingController();
@@ -38,9 +41,11 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   final TextEditingController _prizewinnersControllder =
       TextEditingController();
 
+  List<EventModel> eventList = [];
+
   // 행사 추가하기
-  final String _eventTitle = "";
-  final String _eventDescription = "";
+  String _eventTitle = "";
+  String _eventDescription = "";
 
   PlatformFile? _eventImageFile;
   Uint8List? _eventImageBytes;
@@ -49,10 +54,10 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   DateTime? _eventEndDate;
 
   final String _eventPrizeWinners = "";
-  final String _eventGoalScore = "";
+  String _eventGoalScore = "";
 
   Map<String, dynamic> addedEventData = {};
-  final bool _enabledEventButton = false;
+  bool _enabledEventButton = false;
 
 // 피드 공지 올리기
   final String _feedDescription = "";
@@ -63,21 +68,12 @@ class _EventScreenState extends ConsumerState<EventScreen> {
 
   final bool _enabledFeedButton = false;
 
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
 
-  Future<void> deleteEventFirebase(String documentId) async {
-    AdminProfileModel data =
-        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-    // final contractType = data.contractType;
-    // final contractName = data.contractName;
-    // late Map<String, dynamic> eventJson;
-
-    // await ref.read(eventRepo).deleteEvent(documentId);
-    // await ref
-    //     .read(eventProvider.notifier)
-    //     .getEventModels(contractType, contractName);
+  Future<void> deleteEventFirebase(String eventId) async {
+    await ref.read(eventRepo).deleteEvent(eventId);
     removeDeleteOverlay();
   }
 
@@ -162,56 +158,6 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     showSnackBar(context, "행사가 추가되었습니다.");
   }
 
-  Future<void> addFeedFirebase() async {
-    // AdminProfileModel data =
-    //     await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-    // final contractType = data.contractType;
-    // final contractName = data.contractName;
-
-    // final contractTypeEng = contractType == "지역"
-    //     ? "region"
-    //     : contractType == "기관"
-    //         ? "community"
-    //         : "";
-
-    // String userId = contractType == "마스터"
-    //     ? "kakao:2358828971"
-    //     : "notice:${contractTypeEng}_$contractName";
-    // DateTime now = DateTime.now();
-    // String nowString =
-    //     "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-    // String diaryId = "${userId}_$nowString";
-
-    // Map<String, dynamic> todayMood = {
-    //   "description": "기뻐요",
-    //   "image": 2131230971,
-    //   "position": 0,
-    // };
-
-    // List<String> images =
-    //     await ref.read(eventRepo).uploadFeedImage(_feedImageArray);
-
-    // Map<String, dynamic> diaryModel = {
-    //   "userId": userId,
-    //   "diaryId": diaryId,
-    //   "monthDate": "${now.year}-${now.month.toString().padLeft(2, '0')}",
-    //   "timestamp": FieldValue.serverTimestamp(),
-    //   "secret": false,
-    //   "images": images,
-    //   "todayMood": todayMood,
-    //   "numLikes": 0,
-    //   "numComments": 0,
-    //   "todayDiary": _feedDescription,
-    //   "blockedBy": [],
-    //   "contractType": contractType,
-    //   "contractName": contractName,
-    // };
-    // await ref.read(eventRepo).addNotification(userId, diaryId, diaryModel);
-
-    // context.pop();
-    // showSnackBar(context, "피드 공지가 올라갔습니다.");
-  }
-
   Future<void> pickImageFromGallery(
       void Function(void Function()) setState) async {
     try {
@@ -219,24 +165,24 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         type: FileType.image,
       );
       if (result == null) return;
-      // setState(() {
-      //   _eventImageFile = result.files.first;
-      //   _eventImageBytes = _eventImageFile!.bytes!;
+      setState(() {
+        _eventImageFile = result.files.first;
+        _eventImageBytes = _eventImageFile!.bytes!;
 
-      //   _enabledEventButton = _eventTitle.isNotEmpty &&
-      //       _eventDescription.isNotEmpty &&
-      //       _eventImageBytes != null &&
-      //       _eventPrizeWinners.isNotEmpty &&
-      //       _eventGoalScore.isNotEmpty &&
-      //       _eventStartDate != null &&
-      //       _eventEndDate != null;
-      // });
+        _enabledEventButton = _eventTitle.isNotEmpty &&
+            _eventDescription.isNotEmpty &&
+            _eventImageBytes != null &&
+            _eventPrizeWinners.isNotEmpty &&
+            _eventGoalScore.isNotEmpty &&
+            _eventStartDate != null &&
+            _eventEndDate != null;
+      });
     } catch (e) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(
-      //     content: Text("오류가 발생했습니다."),
-      //   ),
-      // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("오류가 발생했습니다."),
+        ),
+      );
     }
   }
 
@@ -274,13 +220,13 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       setState(() {
         _eventStartDate = picked;
 
-        // _enabledEventButton = _eventTitle.isNotEmpty &&
-        //     _eventDescription.isNotEmpty &&
-        //     _eventImageBytes != null &&
-        //     _eventPrizeWinners.isNotEmpty &&
-        //     _eventGoalScore.isNotEmpty &&
-        //     _eventStartDate != null &&
-        //     _eventEndDate != null;
+        _enabledEventButton = _eventTitle.isNotEmpty &&
+            _eventDescription.isNotEmpty &&
+            _eventImageBytes != null &&
+            _eventPrizeWinners.isNotEmpty &&
+            _eventGoalScore.isNotEmpty &&
+            _eventStartDate != null &&
+            _eventEndDate != null;
       });
     }
   }
@@ -297,13 +243,13 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       setState(() {
         _eventEndDate = picked;
 
-        // _enabledEventButton = _eventTitle.isNotEmpty &&
-        //     _eventDescription.isNotEmpty &&
-        //     _eventImageBytes != null &&
-        //     _eventPrizeWinners.isNotEmpty &&
-        //     _eventGoalScore.isNotEmpty &&
-        //     _eventStartDate != null &&
-        //     _eventEndDate != null;
+        _enabledEventButton = _eventTitle.isNotEmpty &&
+            _eventDescription.isNotEmpty &&
+            _eventImageBytes != null &&
+            _eventPrizeWinners.isNotEmpty &&
+            _eventGoalScore.isNotEmpty &&
+            _eventStartDate != null &&
+            _eventEndDate != null;
       });
     }
   }
@@ -317,274 +263,18 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         minWidth: totalWidth,
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              height: totalHeight * 0.8,
-              width: totalWidth,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(Sizes.size10),
-                  topRight: Radius.circular(Sizes.size10),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(
-                  Sizes.size40,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed:
-                                _enabledFeedButton ? addFeedFirebase : null,
-                            style: ButtonStyle(
-                              side:
-                                  MaterialStateProperty.resolveWith<BorderSide>(
-                                (states) {
-                                  return BorderSide(
-                                    color: _enabledFeedButton
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey.shade800,
-                                    width: 1,
-                                  );
-                                },
-                              ),
-                              backgroundColor: MaterialStateProperty.all(
-                                Colors.white,
-                              ),
-                              surfaceTintColor: MaterialStateProperty.all(
-                                _enabledFeedButton
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.grey.shade800,
-                              ),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    Sizes.size10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              "피드 공지 올리기",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: _enabledFeedButton
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.grey.shade800,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    Gaps.v52,
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: totalWidth * 0.1,
-                                  height: 200,
-                                  child: const Text(
-                                    "공지 내용",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    textAlign: TextAlign.start,
-                                  ),
-                                ),
-                                Gaps.h32,
-                                SizedBox(
-                                  width: totalWidth * 0.7,
-                                  height: 200,
-                                  child: TextFormField(
-                                    expands: true,
-                                    maxLines: null,
-                                    minLines: null,
-                                    onFieldSubmitted: (value) {},
-                                    onChanged: (value) {
-                                      setState(() {
-                                        // _feedDescription = value;
-
-                                        // _enabledFeedButton =
-                                        //     _feedDescription.isNotEmpty;
-                                      });
-                                    },
-                                    controller: _descriptionControllder,
-                                    textAlignVertical: TextAlignVertical.top,
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size12,
-                                      color: Colors.black87,
-                                    ),
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      hintText: "",
-                                      hintStyle: TextStyle(
-                                        fontSize: Sizes.size12,
-                                        color: Colors.grey.shade400,
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey.shade50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                      ),
-                                      errorStyle: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey.shade300,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: Sizes.size20,
-                                        vertical: Sizes.size20,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Gaps.v52,
-                            SizedBox(
-                              height: 200,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: totalWidth * 0.1,
-                                    child: const Text(
-                                      "이미지 (선택)",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                  Gaps.h32,
-                                  SizedBox(
-                                    child: ElevatedButton(
-                                      onPressed: () =>
-                                          pickMultipleImagesFromGallery(
-                                              setState),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey.shade200,
-                                        surfaceTintColor: Colors.pink.shade200,
-                                      ),
-                                      child: Text(
-                                        '이미지 올리기',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade800,
-                                          fontSize: Sizes.size12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Gaps.h32,
-                                  Expanded(
-                                    child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: _feedImageArray.length,
-                                      itemBuilder: (context, index) {
-                                        return Stack(
-                                          children: [
-                                            SizedBox(
-                                              width: 200,
-                                              height: 200,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size5,
-                                                ),
-                                                child: Image.memory(
-                                                  _feedImageArray[index],
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: 10,
-                                              right: 10,
-                                              child: MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _feedImageArray
-                                                          .removeAt(index);
-                                                    });
-                                                  },
-                                                  child: CircleAvatar(
-                                                    backgroundColor:
-                                                        Colors.grey.shade100,
-                                                    child: const Icon(
-                                                      Icons.close_rounded,
-                                                      color: Colors.black87,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      },
-                                      separatorBuilder: (context, index) {
-                                        return Gaps.h10;
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+        return UploadNotificationWidget(
+          context: context,
+          totalWidth: totalWidth,
+          totalHeight: totalHeight,
+          refreshScreen: refreshScreen,
         );
       },
     );
+  }
+
+  void refreshScreen() {
+    getUserEvents();
   }
 
   void addEventTap(
@@ -695,16 +385,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     onFieldSubmitted: (value) {},
                                     onChanged: (value) {
                                       setState(() {
-                                        // _eventTitle = value;
+                                        _eventTitle = value;
 
-                                        // _enabledEventButton =
-                                        //     _eventTitle.isNotEmpty &&
-                                        //         _eventDescription.isNotEmpty &&
-                                        //         _eventImageBytes != null &&
-                                        //         _eventPrizeWinners.isNotEmpty &&
-                                        //         _eventGoalScore.isNotEmpty &&
-                                        //         _eventStartDate != null &&
-                                        //         _eventEndDate != null;
+                                        _enabledEventButton =
+                                            _eventTitle.isNotEmpty &&
+                                                _eventDescription.isNotEmpty &&
+                                                _eventImageBytes != null &&
+                                                _eventPrizeWinners.isNotEmpty &&
+                                                _eventGoalScore.isNotEmpty &&
+                                                _eventStartDate != null &&
+                                                _eventEndDate != null;
                                       });
                                     },
                                     controller: _titleControllder,
@@ -852,16 +542,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     onFieldSubmitted: (value) {},
                                     onChanged: (value) {
                                       setState(() {
-                                        // _eventDescription = value;
+                                        _eventDescription = value;
 
-                                        // _enabledEventButton =
-                                        //     _eventTitle.isNotEmpty &&
-                                        //         _eventDescription.isNotEmpty &&
-                                        //         _eventImageBytes != null &&
-                                        //         _eventPrizeWinners.isNotEmpty &&
-                                        //         _eventGoalScore.isNotEmpty &&
-                                        //         _eventStartDate != null &&
-                                        //         _eventEndDate != null;
+                                        _enabledEventButton =
+                                            _eventTitle.isNotEmpty &&
+                                                _eventDescription.isNotEmpty &&
+                                                _eventImageBytes != null &&
+                                                _eventPrizeWinners.isNotEmpty &&
+                                                _eventGoalScore.isNotEmpty &&
+                                                _eventStartDate != null &&
+                                                _eventEndDate != null;
                                       });
                                     },
                                     controller: _descriptionControllder,
@@ -1046,16 +736,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   onFieldSubmitted: (value) {},
                                   onChanged: (value) {
                                     setState(() {
-                                      // _eventGoalScore = value;
+                                      _eventGoalScore = value;
 
-                                      // _enabledEventButton =
-                                      //     _eventTitle.isNotEmpty &&
-                                      //         _eventDescription.isNotEmpty &&
-                                      //         _eventImageBytes != null &&
-                                      //         _eventPrizeWinners.isNotEmpty &&
-                                      //         _eventGoalScore.isNotEmpty &&
-                                      //         _eventStartDate != null &&
-                                      //         _eventEndDate != null;
+                                      _enabledEventButton =
+                                          _eventTitle.isNotEmpty &&
+                                              _eventDescription.isNotEmpty &&
+                                              _eventImageBytes != null &&
+                                              _eventPrizeWinners.isNotEmpty &&
+                                              _eventGoalScore.isNotEmpty &&
+                                              _eventStartDate != null &&
+                                              _eventEndDate != null;
                                     });
                                   },
                                   controller: _goalScoreController,
@@ -1241,15 +931,14 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     );
   }
 
-  Future<List<EventModel>> getEvents(
-      String contractType, String contractName) async {
-    List<EventModel> eventList = await ref
-        .read(eventProvider.notifier)
-        .getEventModels(contractType, contractName);
+  Future<void> getUserEvents() async {
+    List<EventModel> dbeventList =
+        await ref.read(eventProvider.notifier).getUserEvents();
+
     setState(() {
-      // _initialSetting = true;
+      eventList = dbeventList;
+      _initialSetting = true;
     });
-    return eventList;
   }
 
   void removeDeleteOverlay() {
@@ -1334,8 +1023,14 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
   }
 
-  void goDetailEvent(String eventId) {
-    context.go("/event/$eventId");
+  void goDetailEvent(EventModel eventModel) {
+    context.go("/event/${eventModel.eventId}", extra: eventModel);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserEvents();
   }
 
   @override
@@ -1352,485 +1047,445 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return ref.watch(eventProvider).when(
-        loading: () => CircularProgressIndicator.adaptive(
-              backgroundColor: Theme.of(context).primaryColor,
-            ),
-        error: (error, stackTrace) => const ErrorScreen(),
-        data: (data) {
-          final eventList = data;
-          return Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey.shade200,
-                    ),
-                  ),
-                ),
-                child: SizedBox(
-                  height: searchHeight + Sizes.size40,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: Sizes.size10,
-                      horizontal: Sizes.size32,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Visibility(
-                          visible: size.width > 700,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            // onHover: (event) {
-                            //   setState(() {
-                            //     _feedHover = true;
-                            //   });
-                            // },
-                            // onExit: (event) {
-                            //   setState(() {
-                            //     _feedHover = false;
-                            //   });
-                            // },
-                            child: GestureDetector(
-                              onTap: () => feedUploadTap(
-                                  context, size.width - 270, size.height),
-                              child: Container(
-                                width: 150,
-                                height: searchHeight,
-                                decoration: BoxDecoration(
-                                  color: _feedHover
-                                      ? Colors.grey.shade200
-                                      : Colors.white,
-                                  border: Border.all(
-                                    color: Colors.grey.shade800,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    Sizes.size10,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "피드 공지 올리기",
-                                    style: TextStyle(
-                                      color: Colors.grey.shade800,
-                                      fontSize: Sizes.size14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Gaps.h20,
-                        Visibility(
-                          visible: size.width > 550,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            // onHover: (event) {
-                            //   setState(() {
-                            //     _addEventHover = true;
-                            //   });
-                            // },
-                            // onExit: (event) {
-                            //   setState(() {
-                            //     _addEventHover = false;
-                            //   });
-                            // },
-                            child: GestureDetector(
-                              onTap: () => addEventTap(
-                                  context, size.width - 270, size.height),
-                              child: Container(
-                                width: 150,
-                                height: searchHeight,
-                                decoration: BoxDecoration(
-                                  color: _addEventHover
-                                      ? Colors.grey.shade200
-                                      : Colors.white,
-                                  border: Border.all(
-                                    color: Colors.grey.shade800,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    Sizes.size10,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "행사 추가하기",
-                                    style: TextStyle(
-                                      color: Colors.grey.shade800,
-                                      fontSize: Sizes.size14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey.shade200,
               ),
-              SearchBelow(
-                size: size,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: Sizes.size40,
-                        horizontal: Sizes.size20,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(
-                            Sizes.size10,
+            ),
+          ),
+          child: SizedBox(
+            height: searchHeight + Sizes.size40,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: Sizes.size10,
+                horizontal: Sizes.size32,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Gaps.h20,
+                  Visibility(
+                    visible: size.width > 550,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      // onHover: (event) {
+                      //   setState(() {
+                      //     _addEventHover = true;
+                      //   });
+                      // },
+                      // onExit: (event) {
+                      //   setState(() {
+                      //     _addEventHover = false;
+                      //   });
+                      // },
+                      child: GestureDetector(
+                        onTap: () =>
+                            addEventTap(context, size.width - 270, size.height),
+                        child: Container(
+                          width: 150,
+                          height: searchHeight,
+                          decoration: BoxDecoration(
+                            color: _addEventHover
+                                ? Colors.grey.shade200
+                                : Colors.white,
+                            border: Border.all(
+                              color: Colors.grey.shade800,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              Sizes.size10,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "행사 추가하기",
+                              style: TextStyle(
+                                color: Colors.grey.shade800,
+                                fontSize: Sizes.size14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                         ),
-                        child: Column(
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SearchBelow(
+          size: size,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: Sizes.size40,
+                  horizontal: Sizes.size20,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size10,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Sizes.size16,
+                        ),
+                        child: Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: Sizes.size16,
-                              ),
-                              child: Row(
-                                children: [
-                                  const Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "#",
-                                        style: TextStyle(
-                                          // color: Colors.white,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
+                            const Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "#",
+                                  style: TextStyle(
+                                    // color: Colors.white,
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  const Expanded(
-                                    flex: 3,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "행사",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 5,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "설명",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "주최 기관",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "시작일",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "종료일",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "진행 상황",
-                                        style: TextStyle(
-                                          // color: Colors.white,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "삭제",
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "선택",
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                            Divider(
-                              color: Colors.grey.shade200,
-                            ),
-                            Gaps.v16,
-                            SingleChildScrollView(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: eventList.length,
-                                itemBuilder: (context, index) {
-                                  return Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              (index + 1).toString(),
-                                              style: const TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              eventList[index].title!,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              eventList[index]
-                                                  .description!
-                                                  .replaceAll('\\n', '\n'),
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              eventList[index].contractName!,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              eventList[index].startPeriod!,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            eventList[index].endPeriod!,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              // color: Colors.white,
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            eventList[index].state!,
-                                            style: const TextStyle(
-                                              // color: Colors.white,
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      eventList[index].allUser != true
-                                          ? Expanded(
-                                              flex: 1,
-                                              child: MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () =>
-                                                      showDeleteOverlay(
-                                                          context,
-                                                          eventList[index]
-                                                              .documentId!,
-                                                          eventList[index]
-                                                              .title!),
-                                                  child: const Icon(
-                                                    Icons.delete,
-                                                    size: Sizes.size16,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : Expanded(
-                                              flex: 1,
-                                              child: Container(),
-                                            ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: MouseRegion(
-                                            cursor: SystemMouseCursors.click,
-                                            child: GestureDetector(
-                                              onTap: () => goDetailEvent(
-                                                  eventList[index].documentId!),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  vertical: Sizes.size10,
-                                                ),
-                                                child: CircleAvatar(
-                                                  backgroundColor:
-                                                      Colors.grey.shade200,
-                                                  child: Icon(
-                                                    Icons.chevron_right,
-                                                    size: Sizes.size16,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
+                            const Expanded(
+                              flex: 3,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "행사",
+                                  style: TextStyle(
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
                             ),
-                            Gaps.v16,
+                            const Expanded(
+                              flex: 5,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "설명",
+                                  style: TextStyle(
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "주최 기관",
+                                  style: TextStyle(
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "시작일",
+                                  style: TextStyle(
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "종료일",
+                                  style: TextStyle(
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "진행 상황",
+                                  style: TextStyle(
+                                    // color: Colors.white,
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "삭제",
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "선택",
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    );
-                  },
+                      Divider(
+                        color: Colors.grey.shade200,
+                      ),
+                      Gaps.v16,
+                      SingleChildScrollView(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: eventList.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(
+                                      Sizes.size10,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        (index + 1).toString(),
+                                        style: const TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(
+                                      Sizes.size10,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        eventList[index].title,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(
+                                      Sizes.size10,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        eventList[index]
+                                            .description
+                                            .replaceAll('\\n', '\n'),
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                FutureBuilder(
+                                  future: ref
+                                      .read(contractRepo)
+                                      .convertSubdistrictIdToName(
+                                          eventList[index].orgSubdistrictId),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Expanded(
+                                        flex: 2,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(
+                                            Sizes.size10,
+                                          ),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              snapshot.data!,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                // color: Colors.white,
+                                                fontSize: Sizes.size12,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return Container();
+                                  },
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(
+                                      Sizes.size10,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        eventList[index].startDate,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      eventList[index].endDate,
+                                      softWrap: true,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        // color: Colors.white,
+                                        fontSize: Sizes.size12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      eventList[index].state,
+                                      style: const TextStyle(
+                                        // color: Colors.white,
+                                        fontSize: Sizes.size12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                eventList[index].allUsers != true
+                                    ? Expanded(
+                                        flex: 1,
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => showDeleteOverlay(
+                                                context,
+                                                eventList[index].eventId,
+                                                eventList[index].title),
+                                            child: const Icon(
+                                              Icons.delete,
+                                              size: Sizes.size16,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          "권한\n없음",
+                                          style: TextStyle(
+                                            color: Colors.grey.shade400,
+                                            fontSize: Sizes.size12,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      child: GestureDetector(
+                                        onTap: () =>
+                                            goDetailEvent(eventList[index]),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: Sizes.size10,
+                                          ),
+                                          child: CircleAvatar(
+                                            backgroundColor:
+                                                Colors.grey.shade200,
+                                            child: Icon(
+                                              Icons.chevron_right,
+                                              size: Sizes.size16,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      Gaps.v16,
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        });
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 }
