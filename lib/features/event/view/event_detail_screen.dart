@@ -42,7 +42,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     "점수",
     "달성 여부"
   ];
-  late AnimationController _animationController;
 
   @override
   void initState() {
@@ -51,7 +50,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
   @override
   void dispose() {
-    _animationController.dispose();
     super.dispose();
   }
 

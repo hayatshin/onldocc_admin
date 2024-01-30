@@ -65,8 +65,6 @@ class EventModel {
       "startDate": startDate,
       "endDate": endDate,
       "state": state,
-      "orgSubdistrictId": orgSubdistrictId,
-      "orgImage": orgImage,
     };
   }
 
@@ -87,5 +85,7 @@ class EventModel {
         orgSubdistrictId = json.containsKey("contract_regions")
             ? json["contract_regions"]["subdistrictId"]
             : "",
-        orgImage = json["contract_regions"]["image"];
+        orgImage = json.containsKey("contract_regions")
+            ? json["contract_regions"]["image"]
+            : "";
 }

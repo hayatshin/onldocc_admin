@@ -28,7 +28,7 @@ class BottomModalButton extends StatelessWidget {
           side: MaterialStateProperty.resolveWith<BorderSide>(
             (states) {
               return BorderSide(
-                color: hoverBottomButton && text != "공지 삭제하기"
+                color: hoverBottomButton && !text.contains("삭제하기")
                     ? Theme.of(context).primaryColor
                     : Colors.grey.shade800,
                 width: 1,
@@ -39,7 +39,7 @@ class BottomModalButton extends StatelessWidget {
             Colors.white,
           ),
           surfaceTintColor: MaterialStateProperty.all(
-            hoverBottomButton && text != "공지 삭제하기"
+            hoverBottomButton && !text.contains("삭제하기")
                 ? Theme.of(context).primaryColor
                 : Colors.grey.shade800,
           ),
@@ -55,7 +55,7 @@ class BottomModalButton extends StatelessWidget {
           text,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: hoverBottomButton && text != "공지 삭제하기"
+            color: hoverBottomButton && !text.contains("삭제하기")
                 ? Theme.of(context).primaryColor
                 : Colors.grey.shade800,
           ),

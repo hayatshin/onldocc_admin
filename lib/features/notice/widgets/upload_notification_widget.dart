@@ -68,11 +68,8 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
         .read(noticeProvider.notifier)
         .addFeedNotification(_feedDescription, _feedImageArray);
     if (!mounted) return;
-    showSnackBar(context, "성공적으로 공지가 올라갔습니다.");
-    Future.delayed(const Duration(milliseconds: 500), () {
-      widget.refreshScreen();
-      Navigator.of(context).pop();
-    });
+
+    resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen());
   }
 
   @override

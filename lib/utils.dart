@@ -259,6 +259,28 @@ int convertEndDateStringToSeconds(String endDate) {
   }
 }
 
+DateTime convertStartDateStringToDateTime(String startDate) {
+  if (startDate.contains('.')) {
+    String timeString = "00:00:00.000";
+    String combineString = "${startDate.replaceAll('.', '-')} $timeString";
+    DateTime dateTime = DateTime.parse(combineString);
+    return dateTime;
+  } else {
+    return DateTime(2024);
+  }
+}
+
+DateTime convertEndDateStringToDateTime(String endDate) {
+  if (endDate.contains('.')) {
+    String timeString = "23:59:99.999";
+    String combineString = "${endDate.replaceAll('.', '-')} $timeString";
+    DateTime dateTime = DateTime.parse(combineString);
+    return dateTime;
+  } else {
+    return DateTime(2024);
+  }
+}
+
 int convertStartDateTimeToSeconds(DateTime date) {
   final startDate = DateTime(date.year, date.month, date.day, 0, 0, 0);
   int millisecondsSinceEpoch = startDate.millisecondsSinceEpoch;
@@ -303,4 +325,13 @@ DateTime getLastMonthLastday() {
   DateTime lastDateOfLastMonth =
       firstDateOfMonth.subtract(const Duration(days: 1));
   return lastDateOfLastMonth;
+}
+
+void resultBottomModal(
+    BuildContext context, String text, Function() refreshScreen) {
+  showSnackBar(context, text);
+  Future.delayed(const Duration(milliseconds: 500), () {
+    refreshScreen();
+    Navigator.of(context).pop();
+  });
 }

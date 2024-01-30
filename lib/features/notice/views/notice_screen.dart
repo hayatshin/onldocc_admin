@@ -77,7 +77,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
     );
   }
 
-  Future<void> refreshScreen() async {
+  void refreshScreen() {
     fetchAllNoticies();
   }
 

@@ -9,9 +9,12 @@ import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/error_screen.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
+import 'package:onldocc_admin/common/widgets/top_button.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
+import 'package:onldocc_admin/features/event/widgets/edit_event_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/upload_event_widget.dart';
 import 'package:onldocc_admin/features/notice/widgets/upload_notification_widget.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
@@ -31,247 +34,13 @@ class EventScreen extends ConsumerStatefulWidget {
 
 class _EventScreenState extends ConsumerState<EventScreen> {
   double searchHeight = 35;
-  final bool _feedHover = false;
-  final bool _addEventHover = false;
-  bool _initialSetting = false;
-  // final List<EventModel?> _eventDataList = [];
-  final TextEditingController _titleControllder = TextEditingController();
-  final TextEditingController _descriptionControllder = TextEditingController();
-  final TextEditingController _goalScoreController = TextEditingController();
-  final TextEditingController _prizewinnersControllder =
-      TextEditingController();
+  bool _addEventHover = false;
 
   List<EventModel> eventList = [];
 
-  // 행사 추가하기
-  String _eventTitle = "";
-  String _eventDescription = "";
-
-  PlatformFile? _eventImageFile;
-  Uint8List? _eventImageBytes;
-
-  DateTime? _eventStartDate;
-  DateTime? _eventEndDate;
-
-  final String _eventPrizeWinners = "";
-  String _eventGoalScore = "";
-
   Map<String, dynamic> addedEventData = {};
-  bool _enabledEventButton = false;
-
-// 피드 공지 올리기
-  final String _feedDescription = "";
-
-  final List<PlatformFile> _feedImageFile = [];
-  Uint8List? _feedImageBytes;
-  final List<Uint8List> _feedImageArray = [];
-
-  final bool _enabledFeedButton = false;
 
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
-  OverlayEntry? overlayEntry;
-
-  Future<void> deleteEventFirebase(String eventId) async {
-    await ref.read(eventRepo).deleteEvent(eventId);
-    removeDeleteOverlay();
-  }
-
-  Future<void> addEventFirebase() async {
-    String? eventImgURL = await ref
-        .read(eventRepo)
-        .uploadEventImage(_eventImageBytes!, _eventTitle);
-
-    if (eventImgURL != null) {
-      // AdminProfileModel data =
-      //     await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-      // final contractType = data.contractType;
-      // final contractName = data.contractName;
-      // late Map<String, dynamic> eventJson;
-
-      // if (contractType == "지역") {
-      //   String? image = await ref.read(eventRepo).getRegionImage(contractName);
-      //   eventJson = {
-      //     "allUser": false,
-      //     "description": _eventDescription,
-      //     "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
-      //     "startPeriod": convertTimettampToStringDot(_eventStartDate!),
-      //     "endPeriod": convertTimettampToStringDot(_eventEndDate!),
-      //     "goalScore": int.parse(_eventGoalScore),
-      //     "missionImage": eventImgURL,
-      //     "prizeWinners": int.parse(_eventPrizeWinners),
-      //     "state": "진행",
-      //     "title": _eventTitle,
-      //     "contractType": "region",
-      //     "contractName": contractName,
-      //     "contractLogo": image,
-      //     "autoProgress": false,
-      //   };
-      // } else if (contractType == "기관") {
-      //   String? image =
-      //       await ref.read(eventRepo).getCommunityImage(contractName);
-
-      //   eventJson = {
-      //     "allUser": false,
-      //     "description": _eventDescription,
-      //     "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
-      //     "startPeriod": convertTimettampToStringDot(_eventStartDate!),
-      //     "endPeriod": convertTimettampToStringDot(_eventEndDate!),
-      //     "goalScore": int.parse(_eventGoalScore),
-      //     "missionImage": eventImgURL,
-      //     "prizeWinners": int.parse(_eventPrizeWinners),
-      //     "state": "진행",
-      //     "title": _eventTitle,
-      //     "contractType": "community",
-      //     "contractName": contractName,
-      //     "contractLogo": image,
-      //     "autoProgress": false,
-      //   };
-    } else {
-      // 마스터
-      // String? image =
-      //     "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/missions%2F%E1%84%8B%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8F%E1%85%A9%E1%86%AB_%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5_%E1%84%91%E1%85%B5%E1%86%BC%E1%84%8F%E1%85%B32.png?alt=media&token=0ffe5480-4d88-42c0-be29-f7d366bb62d5";
-      // eventJson = {
-      //   "allUser": true,
-      //   "description": _eventDescription,
-      //   "documentId": DateTime.now().millisecondsSinceEpoch.toString(),
-      //   "startPeriod": convertTimettampToStringDot(_eventStartDate!),
-      //   "endPeriod": convertTimettampToStringDot(_eventEndDate!),
-      //   "goalScore": int.parse(_eventGoalScore),
-      //   "missionImage": eventImgURL,
-      //   "prizeWinners": int.parse(_eventPrizeWinners),
-      //   "state": "진행",
-      //   "title": _eventTitle,
-      //   "contractType": "master",
-      //   "contractName": contractName,
-      //   "contractLogo": image,
-      //   "autoProgress": false,
-      // };
-    }
-
-    // await ref.read(eventRepo).saveEvent(eventJson);
-    // await ref
-    //     .read(eventProvider.notifier)
-    //     .getEventModels(contractType, contractName);
-
-    context.pop();
-    showSnackBar(context, "행사가 추가되었습니다.");
-  }
-
-  Future<void> pickImageFromGallery(
-      void Function(void Function()) setState) async {
-    try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
-        type: FileType.image,
-      );
-      if (result == null) return;
-      setState(() {
-        _eventImageFile = result.files.first;
-        _eventImageBytes = _eventImageFile!.bytes!;
-
-        _enabledEventButton = _eventTitle.isNotEmpty &&
-            _eventDescription.isNotEmpty &&
-            _eventImageBytes != null &&
-            _eventPrizeWinners.isNotEmpty &&
-            _eventGoalScore.isNotEmpty &&
-            _eventStartDate != null &&
-            _eventEndDate != null;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("오류가 발생했습니다."),
-        ),
-      );
-    }
-  }
-
-  Future<void> pickMultipleImagesFromGallery(
-      void Function(void Function()) setState) async {
-    try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
-        type: FileType.image,
-      );
-      if (result == null) return;
-      // _feedImageFile = result.files;
-      for (PlatformFile file in _feedImageFile) {
-        _feedImageArray.add(file.bytes!);
-      }
-      setState(() {});
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-    }
-  }
-
-  void selectStartPeriod(void Function(void Function()) setState) async {
-    DateTime now = DateTime.now();
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: now,
-      firstDate: DateTime(now.year),
-      lastDate: now,
-    );
-
-    if (picked != null) {
-      setState(() {
-        _eventStartDate = picked;
-
-        _enabledEventButton = _eventTitle.isNotEmpty &&
-            _eventDescription.isNotEmpty &&
-            _eventImageBytes != null &&
-            _eventPrizeWinners.isNotEmpty &&
-            _eventGoalScore.isNotEmpty &&
-            _eventStartDate != null &&
-            _eventEndDate != null;
-      });
-    }
-  }
-
-  void selectEndPeriod(void Function(void Function()) setState) async {
-    DateTime now = DateTime.now();
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: now,
-      firstDate: DateTime(now.year),
-      lastDate: now,
-    );
-    if (picked != null) {
-      setState(() {
-        _eventEndDate = picked;
-
-        _enabledEventButton = _eventTitle.isNotEmpty &&
-            _eventDescription.isNotEmpty &&
-            _eventImageBytes != null &&
-            _eventPrizeWinners.isNotEmpty &&
-            _eventGoalScore.isNotEmpty &&
-            _eventStartDate != null &&
-            _eventEndDate != null;
-      });
-    }
-  }
-
-  void feedUploadTap(
-      BuildContext context, double totalWidth, double totalHeight) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      constraints: BoxConstraints(
-        minWidth: totalWidth,
-      ),
-      builder: (context) {
-        return UploadNotificationWidget(
-          context: context,
-          totalWidth: totalWidth,
-          totalHeight: totalHeight,
-          refreshScreen: refreshScreen,
-        );
-      },
-    );
-  }
 
   void refreshScreen() {
     getUserEvents();
@@ -286,647 +55,32 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         minWidth: totalWidth,
       ),
       builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Container(
-            width: totalWidth,
-            height: totalHeight * 0.8,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(Sizes.size10),
-                topRight: Radius.circular(Sizes.size10),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(
-                Sizes.size40,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        height: 40,
-                        child: ElevatedButton(
-                          onPressed:
-                              _enabledEventButton ? addEventFirebase : null,
-                          style: ButtonStyle(
-                            side: MaterialStateProperty.resolveWith<BorderSide>(
-                              (states) {
-                                return BorderSide(
-                                  color: _enabledEventButton
-                                      ? Theme.of(context).primaryColor
-                                      : Colors.grey.shade800,
-                                  width: 1,
-                                );
-                              },
-                            ),
-                            backgroundColor: MaterialStateProperty.all(
-                              Colors.white,
-                            ),
-                            surfaceTintColor: MaterialStateProperty.all(
-                              _enabledEventButton
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey.shade800,
-                            ),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size10,
-                                ),
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            "행사 추가하기",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: _enabledEventButton
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey.shade800,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Gaps.v52,
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Gaps.v52,
-                          IntrinsicHeight(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: SizedBox(
-                                    width: totalWidth * 0.1,
-                                    child: const Text(
-                                      "행사 타이틀",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Gaps.h32,
-                                SizedBox(
-                                  width: totalWidth * 0.6,
-                                  child: TextFormField(
-                                    maxLength: 50,
-                                    onFieldSubmitted: (value) {},
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _eventTitle = value;
+        return UploadEventWidget(
+          context: context,
+          totalWidth: totalWidth,
+          totalHeight: totalHeight,
+          refreshScreen: refreshScreen,
+        );
+      },
+    );
+  }
 
-                                        _enabledEventButton =
-                                            _eventTitle.isNotEmpty &&
-                                                _eventDescription.isNotEmpty &&
-                                                _eventImageBytes != null &&
-                                                _eventPrizeWinners.isNotEmpty &&
-                                                _eventGoalScore.isNotEmpty &&
-                                                _eventStartDate != null &&
-                                                _eventEndDate != null;
-                                      });
-                                    },
-                                    controller: _titleControllder,
-                                    textAlignVertical: TextAlignVertical.center,
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size12,
-                                      color: Colors.black87,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "",
-                                      hintStyle: TextStyle(
-                                        fontSize: Sizes.size12,
-                                        color: Colors.grey.shade400,
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey.shade50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                      ),
-                                      errorStyle: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey.shade300,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: Sizes.size20,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: totalWidth * 0.1,
-                                child: const Text(
-                                  "행사 이미지",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              Gaps.h32,
-                              Container(
-                                width: 200,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      Sizes.size5,
-                                    ),
-                                    border: Border.all(
-                                      color: Colors.grey.shade200,
-                                    )),
-                                child: _eventImageFile == null
-                                    ? Icon(
-                                        Icons.image,
-                                        size: Sizes.size80,
-                                        color: Colors.grey.shade200,
-                                      )
-                                    : Image.memory(
-                                        _eventImageBytes!,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                              Gaps.h52,
-                              SizedBox(
-                                height: 200,
-                                child: Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: ElevatedButton(
-                                    onPressed: () =>
-                                        pickImageFromGallery(setState),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey.shade200,
-                                      surfaceTintColor: Colors.pink.shade200,
-                                    ),
-                                    child: Text(
-                                      '이미지 올리기',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade800,
-                                        fontSize: Sizes.size12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          Gaps.v52,
-                          IntrinsicHeight(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(
-                                  width: totalWidth * 0.1,
-                                  child: const Text(
-                                    "행사 설명",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    textAlign: TextAlign.start,
-                                  ),
-                                ),
-                                Gaps.h32,
-                                SizedBox(
-                                  width: totalWidth * 0.6,
-                                  height: 200,
-                                  child: TextFormField(
-                                    maxLength: 200,
-                                    expands: true,
-                                    maxLines: null,
-                                    minLines: null,
-                                    onFieldSubmitted: (value) {},
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _eventDescription = value;
-
-                                        _enabledEventButton =
-                                            _eventTitle.isNotEmpty &&
-                                                _eventDescription.isNotEmpty &&
-                                                _eventImageBytes != null &&
-                                                _eventPrizeWinners.isNotEmpty &&
-                                                _eventGoalScore.isNotEmpty &&
-                                                _eventStartDate != null &&
-                                                _eventEndDate != null;
-                                      });
-                                    },
-                                    controller: _descriptionControllder,
-                                    textAlignVertical: TextAlignVertical.top,
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size12,
-                                      color: Colors.black87,
-                                    ),
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      hintText: "",
-                                      hintStyle: TextStyle(
-                                        fontSize: Sizes.size12,
-                                        color: Colors.grey.shade400,
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey.shade50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                      ),
-                                      errorStyle: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey.shade300,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: Sizes.size20,
-                                        vertical: Sizes.size20,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Gaps.v52,
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: totalWidth * 0.1,
-                                      child: const Text(
-                                        "시작일",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ),
-                                    Gaps.h32,
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: ElevatedButton(
-                                        onPressed: () =>
-                                            selectStartPeriod(setState),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey.shade200,
-                                          surfaceTintColor:
-                                              Colors.pink.shade200,
-                                        ),
-                                        child: Text(
-                                          '날짜 선택하기',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade800,
-                                            fontSize: Sizes.size12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Gaps.h20,
-                                    if (_eventStartDate != null)
-                                      Text(
-                                        "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
-                                        style: TextStyle(
-                                          color: Colors.grey.shade800,
-                                          fontSize: Sizes.size12,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: totalWidth * 0.1,
-                                      child: const Text(
-                                        "종료일",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ),
-                                    Gaps.h32,
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: ElevatedButton(
-                                        onPressed: () =>
-                                            selectEndPeriod(setState),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey.shade200,
-                                          surfaceTintColor:
-                                              Colors.pink.shade200,
-                                        ),
-                                        child: Text(
-                                          '날짜 선택하기',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade800,
-                                            fontSize: Sizes.size12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Gaps.h20,
-                                    if (_eventEndDate != null)
-                                      Text(
-                                        "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
-                                        style: TextStyle(
-                                          color: Colors.grey.shade800,
-                                          fontSize: Sizes.size12,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Gaps.v52,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              SizedBox(
-                                width: totalWidth * 0.1,
-                                child: const Text(
-                                  "목표 점수 설정",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              Gaps.h32,
-                              SizedBox(
-                                width: 60,
-                                child: TextFormField(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  minLines: 1,
-                                  onFieldSubmitted: (value) {},
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _eventGoalScore = value;
-
-                                      _enabledEventButton =
-                                          _eventTitle.isNotEmpty &&
-                                              _eventDescription.isNotEmpty &&
-                                              _eventImageBytes != null &&
-                                              _eventPrizeWinners.isNotEmpty &&
-                                              _eventGoalScore.isNotEmpty &&
-                                              _eventStartDate != null &&
-                                              _eventEndDate != null;
-                                    });
-                                  },
-                                  controller: _goalScoreController,
-                                  textAlignVertical: TextAlignVertical.top,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size12,
-                                    color: Colors.black87,
-                                  ),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    hintText: "",
-                                    hintStyle: TextStyle(
-                                      fontSize: Sizes.size12,
-                                      color: Colors.grey.shade400,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey.shade50,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                    ),
-                                    errorStyle: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: Sizes.size10,
-                                      vertical: Sizes.size10,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Gaps.h10,
-                              Text(
-                                "점",
-                                style: TextStyle(
-                                  fontSize: Sizes.size14,
-                                  color: Colors.grey.shade800,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              )
-                            ],
-                          ),
-                          Gaps.v52,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              SizedBox(
-                                width: totalWidth * 0.1,
-                                child: const Text(
-                                  "당첨자 수 제한",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              Gaps.h32,
-                              SizedBox(
-                                width: 60,
-                                child: TextFormField(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  minLines: 1,
-                                  onFieldSubmitted: (value) {},
-                                  onChanged: (value) {
-                                    setState(() {
-                                      // _eventPrizeWinners = value;
-
-                                      // _enabledEventButton =
-                                      //     _eventTitle.isNotEmpty &&
-                                      //         _eventDescription.isNotEmpty &&
-                                      //         _eventImageBytes != null &&
-                                      //         _eventPrizeWinners.isNotEmpty &&
-                                      //         _eventGoalScore.isNotEmpty &&
-                                      //         _eventStartDate != null &&
-                                      //         _eventEndDate != null;
-                                    });
-                                  },
-                                  controller: _prizewinnersControllder,
-                                  textAlignVertical: TextAlignVertical.top,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size12,
-                                    color: Colors.black87,
-                                  ),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    hintText: "",
-                                    hintStyle: TextStyle(
-                                      fontSize: Sizes.size12,
-                                      color: Colors.grey.shade400,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey.shade50,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                    ),
-                                    errorStyle: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: Sizes.size10,
-                                      vertical: Sizes.size10,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Gaps.h10,
-                              Text(
-                                "명",
-                                style: TextStyle(
-                                  fontSize: Sizes.size14,
-                                  color: Colors.grey.shade800,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
+  void editEventTap(BuildContext context, double totalWidth, double totalHeight,
+      EventModel eventModel) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      constraints: BoxConstraints(
+        minWidth: totalWidth,
+      ),
+      builder: (context) {
+        return EditEventWidget(
+          context: context,
+          totalWidth: totalWidth,
+          totalHeight: totalHeight,
+          eventModel: eventModel,
+          refreshScreen: refreshScreen,
+        );
       },
     );
   }
@@ -937,90 +91,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
 
     setState(() {
       eventList = dbeventList;
-      _initialSetting = true;
     });
-  }
-
-  void removeDeleteOverlay() {
-    overlayEntry?.remove();
-    overlayEntry = null;
-  }
-
-  void showDeleteOverlay(
-      BuildContext context, String eventId, String eventName) async {
-    removeDeleteOverlay();
-
-    // assert(overlayEntry == null);
-
-    overlayEntry = OverlayEntry(
-      builder: (context) => Positioned.fill(
-        child: Material(
-          color: Colors.black54,
-          child: Center(
-            child: AlertDialog(
-              title: Text(
-                eventName.length > 10
-                    ? "${eventName.substring(0, 11)}.."
-                    : eventName,
-                style: const TextStyle(
-                  fontSize: Sizes.size20,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              backgroundColor: Colors.white,
-              content: const Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "정말로 삭제하시겠습니까?",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                    ),
-                  ),
-                  Text(
-                    "삭제하면 다시 되돌릴 수 없습니다.",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: removeDeleteOverlay,
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
-                  ),
-                  child: Text(
-                    "취소",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      color: Colors.grey.shade800,
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () => deleteEventFirebase(eventId),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
-                  ),
-                  child: const Text(
-                    "삭제",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
   }
 
   void goDetailEvent(EventModel eventModel) {
@@ -1035,12 +106,6 @@ class _EventScreenState extends ConsumerState<EventScreen> {
 
   @override
   void dispose() {
-    _titleControllder.dispose();
-    _descriptionControllder.dispose();
-    _prizewinnersControllder.dispose();
-    _goalScoreController.dispose();
-
-    removeDeleteOverlay();
     super.dispose();
   }
 
@@ -1072,19 +137,19 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                     visible: size.width > 550,
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
-                      // onHover: (event) {
-                      //   setState(() {
-                      //     _addEventHover = true;
-                      //   });
-                      // },
-                      // onExit: (event) {
-                      //   setState(() {
-                      //     _addEventHover = false;
-                      //   });
-                      // },
+                      onHover: (event) {
+                        setState(() {
+                          _addEventHover = true;
+                        });
+                      },
+                      onExit: (event) {
+                        setState(() {
+                          _addEventHover = false;
+                        });
+                      },
                       child: GestureDetector(
                         onTap: () =>
-                            addEventTap(context, size.width - 270, size.height),
+                            addEventTap(context, size.width, size.height),
                         child: Container(
                           width: 150,
                           height: searchHeight,
@@ -1240,7 +305,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                               child: Align(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  "삭제",
+                                  "수정",
                                   style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                     fontSize: Sizes.size12,
@@ -1422,12 +487,14 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                         child: MouseRegion(
                                           cursor: SystemMouseCursors.click,
                                           child: GestureDetector(
-                                            onTap: () => showDeleteOverlay(
-                                                context,
-                                                eventList[index].eventId,
-                                                eventList[index].title),
+                                            onTap: () => editEventTap(
+                                              context,
+                                              size.width,
+                                              size.height,
+                                              eventList[index],
+                                            ),
                                             child: const Icon(
-                                              Icons.delete,
+                                              Icons.edit,
                                               size: Sizes.size16,
                                             ),
                                           ),
