@@ -12,6 +12,7 @@ class EventModel {
   final String startDate;
   final String endDate;
   final String state;
+  final int? createdAt;
   final String? orgSubdistrictId;
   final String? orgImage;
 
@@ -29,6 +30,7 @@ class EventModel {
     required this.startDate,
     required this.endDate,
     required this.state,
+    this.createdAt,
     this.orgSubdistrictId,
     this.orgImage,
   });
@@ -47,10 +49,30 @@ class EventModel {
         startDate = "",
         endDate = "",
         state = "진행",
+        createdAt = 0,
         orgSubdistrictId = "",
         orgImage = "";
 
   Map<String, dynamic> toJson() {
+    return {
+      "eventId": eventId,
+      "title": title,
+      "description": description,
+      "eventImage": eventImage,
+      "allUsers": allUsers,
+      "contractOrgType": contractOrgType,
+      "contractRegionId": contractRegionId,
+      "contractCommunityId": contractCommunityId,
+      "targetScore": targetScore,
+      "achieversNumber": achieversNumber,
+      "startDate": startDate,
+      "endDate": endDate,
+      "state": state,
+      "createdAt": createdAt,
+    };
+  }
+
+  Map<String, dynamic> editToJson() {
     return {
       "eventId": eventId,
       "title": title,
@@ -82,6 +104,7 @@ class EventModel {
         startDate = json["startDate"],
         endDate = json["endDate"],
         state = json["state"],
+        createdAt = json["createdAt"],
         orgSubdistrictId = json.containsKey("contract_regions")
             ? json["contract_regions"]["subdistrictId"]
             : "",

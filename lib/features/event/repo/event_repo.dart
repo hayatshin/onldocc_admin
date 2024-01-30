@@ -29,20 +29,33 @@ class EventRepository {
       AdminProfileModel adminProfile) async {
     if (adminProfile.master) {
       final data =
-          await _supabase.from("events").select('*, contract_regions(*)');
+          await _supabase.from("events").select('*, contract_regions(*)').order(
+                'createdAt',
+                ascending: true,
+              );
       return data;
     } else {
       final allUsers = await _supabase
           .from("events")
           .select('*, contract_regions(*)')
-          .eq('allUsers', true);
+          .eq('allUsers', true)
+          .order(
+            'createdAt',
+            ascending: true,
+          );
       final contractRegions = await _supabase
           .from("events")
           .select('*, contract_regions(*)')
           .eq('allUsers', false)
-          .eq('contractRegionId', adminProfile.contractRegionId);
+          .eq('contractRegionId', adminProfile.contractRegionId)
+          .order(
+            'createdAt',
+            ascending: true,
+          );
 
-      return [...contractRegions, ...allUsers];
+      final combinedList = [...contractRegions, ...allUsers];
+      return combinedList.sorted(
+          (a, b) => (a["createdAt"] as int).compareTo(b["createdAt"] as int));
     }
   }
 
@@ -84,7 +97,7 @@ class EventRepository {
   Future<void> editEvent(EventModel eventModel) async {
     await _supabase
         .from("events")
-        .update(eventModel.toJson())
+        .update(eventModel.editToJson())
         .match({"eventId": eventModel.eventId});
   }
 

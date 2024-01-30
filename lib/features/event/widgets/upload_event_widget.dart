@@ -165,6 +165,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
       state: "진행",
+      createdAt: getCurrentSeconds(),
       contractRegionId: adminProfileModel!.contractRegionId,
     );
 
