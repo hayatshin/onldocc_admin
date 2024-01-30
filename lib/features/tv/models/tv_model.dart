@@ -1,62 +1,82 @@
 class TvModel {
-  final int? index;
   final String thumbnail;
   final String title;
   final String link;
-  final bool allUser;
-  final String documentId;
+  final bool allUsers;
+  final String videoId;
+  final int createdAt;
+  final String? contractRegionId;
+  final String? contractCommunityId;
 
   TvModel({
-    required this.index,
     required this.thumbnail,
     required this.title,
     required this.link,
-    required this.allUser,
-    required this.documentId,
+    required this.allUsers,
+    required this.videoId,
+    required this.createdAt,
+    this.contractRegionId,
+    this.contractCommunityId,
   });
 
   TvModel.empty()
-      : index = 0,
-        thumbnail = "",
+      : thumbnail = "",
         title = "",
         link = "",
-        allUser = false,
-        documentId = "";
+        allUsers = false,
+        videoId = "",
+        createdAt = 0,
+        contractRegionId = "",
+        contractCommunityId = "";
 
   Map<String, dynamic> toJson() {
     return {
-      "index": index,
       "thumbnail": thumbnail,
       "title": title,
       "link": link,
-      "allUser": allUser,
-      "documentId": documentId,
+      "allUsers": allUsers,
+      "videoId": videoId,
+      "createdAt": createdAt,
+      "contractRegionId": contractRegionId,
+      "contractCommunityId": contractCommunityId,
+    };
+  }
+
+  Map<String, dynamic> editToJson() {
+    return {
+      "thumbnail": thumbnail,
+      "title": title,
+      "link": link,
+      "allUsers": allUsers,
+      "videoId": videoId,
     };
   }
 
   TvModel.fromJson(Map<String, dynamic> json)
-      : index = json["index"],
-        thumbnail = json["thumbnail"],
+      : thumbnail = json["thumbnail"],
         title = json["title"],
         link = json["link"],
-        allUser = json["allUser"],
-        documentId = json["documentId"];
+        allUsers = json["allUsers"],
+        videoId = json["videoId"],
+        createdAt = json["createdAt"],
+        contractRegionId = json["contractRegionId"] ?? "",
+        contractCommunityId = json["contract_communityId"] ?? "";
 
   TvModel copyWith({
-    final int? index,
     final String? thumbnail,
     final String? title,
     final String? link,
-    final bool? allUser,
-    final String? documentId,
+    final bool? allUsers,
+    final String? videoId,
+    final int? createdAt,
   }) {
     return TvModel(
-      index: index ?? this.index,
       thumbnail: thumbnail ?? this.thumbnail,
       title: title ?? this.title,
       link: link ?? this.link,
-      allUser: allUser ?? this.allUser,
-      documentId: documentId ?? this.documentId,
+      allUsers: allUsers ?? this.allUsers,
+      videoId: videoId ?? this.videoId,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

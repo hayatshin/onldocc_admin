@@ -271,7 +271,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                         color: Colors.grey.shade200,
                       ),
                       Gaps.v16,
-                      SingleChildScrollView(
+                      Expanded(
                         child: ListView.builder(
                           shrinkWrap: true,
                           itemCount: _noticeList.length,

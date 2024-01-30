@@ -335,3 +335,36 @@ void resultBottomModal(
     Navigator.of(context).pop();
   });
 }
+
+Widget noAuthorizedWidget() {
+  return Text(
+    "권한\n없음",
+    style: TextStyle(
+      color: Colors.grey.shade400,
+      fontSize: Sizes.size12,
+    ),
+    textAlign: TextAlign.center,
+  );
+}
+
+String getVideoId(String link) {
+  String documentId = "";
+  if (link.contains("youtu.be")) {
+    final parts = link.split("youtu.be/");
+    documentId = parts[1];
+  } else if (link.contains("youtube.com")) {
+    final parts = link.split("watch?v=");
+    documentId = parts[1];
+  }
+  return documentId;
+}
+
+String getVideoThumbnail(String videoId, String link) {
+  String thumbnail = "";
+  if (link.contains("youtu.be")) {
+    thumbnail = "http://i3.ytimg.com/vi/$videoId/hqdefault.jpg";
+  } else if (link.contains("youtube.com")) {
+    thumbnail = "https://img.youtube.com/vi/$videoId/mqdefault.jpg";
+  }
+  return thumbnail;
+}

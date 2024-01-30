@@ -502,14 +502,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                       )
                                     : Expanded(
                                         flex: 1,
-                                        child: Text(
-                                          "권한\n없음",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade400,
-                                            fontSize: Sizes.size12,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
+                                        child: noAuthorizedWidget(),
                                       ),
                                 Expanded(
                                   flex: 1,

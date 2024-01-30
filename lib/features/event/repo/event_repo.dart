@@ -54,8 +54,9 @@ class EventRepository {
           );
 
       final combinedList = [...contractRegions, ...allUsers];
-      return combinedList.sorted(
+      combinedList.sort(
           (a, b) => (a["createdAt"] as int).compareTo(b["createdAt"] as int));
+      return combinedList;
     }
   }
 
