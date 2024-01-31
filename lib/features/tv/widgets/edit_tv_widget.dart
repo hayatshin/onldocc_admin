@@ -6,7 +6,6 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/repo/tv_repo.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:provider/provider.dart';
 
 class EditTvWidget extends ConsumerStatefulWidget {
   final BuildContext context;

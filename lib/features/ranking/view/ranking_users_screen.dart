@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,12 +7,10 @@ import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
 
 class RankingUsersScreen extends ConsumerStatefulWidget {
   static const stepRouteURL = "step";
@@ -39,26 +35,6 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
 
   List<UserModel?> _userDataList = [];
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final List<String> _userListHeader = [
-    "이름",
-    "나이",
-    "출생일",
-    "성별",
-    "핸드폰 번호",
-    "거주 지역",
-    "가입일",
-    "마지막 방문일"
-  ];
-  final List<String> _tableHeader = [
-    "#",
-    "이름",
-    "나이",
-    "출생일",
-    "성별",
-    "핸드폰 번호",
-    "거주 지역",
-    "선택"
-  ];
   @override
   void initState() {
     super.initState();

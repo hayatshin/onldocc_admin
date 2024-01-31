@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
@@ -13,8 +12,6 @@ import 'package:onldocc_admin/features/ranking/view_models/step_view_model.dart'
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:universal_html/html.dart';
-
-import '../../users/view_models/user_view_model.dart';
 
 class RankingStepScreen extends ConsumerStatefulWidget {
   // final String? index;
@@ -37,7 +34,6 @@ class RankingStepScreen extends ConsumerStatefulWidget {
 class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
   final List<String> _listHeader = ["날짜", "걸음수"];
   List<StepModel> _stepDataList = [];
-  final String _periodType = "이번달";
   final String _userName = "";
   bool loadingFinished = false;
   final TextEditingController sortPeriodControllder = TextEditingController();

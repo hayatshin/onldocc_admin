@@ -1,12 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/widgets/bottom_modal_button.dart';
-import 'package:onldocc_admin/common/widgets/top_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
@@ -14,7 +11,6 @@ import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class UploadEventWidget extends ConsumerStatefulWidget {

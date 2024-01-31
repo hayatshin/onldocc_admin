@@ -1,9 +1,7 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/models/contract_notifier.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
-import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';

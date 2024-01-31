@@ -1,12 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/widgets/bottom_modal_button.dart';
-import 'package:onldocc_admin/common/widgets/top_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
@@ -14,8 +11,6 @@ import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class EditEventWidget extends ConsumerStatefulWidget {
   final BuildContext context;
@@ -37,7 +32,6 @@ class EditEventWidget extends ConsumerStatefulWidget {
 }
 
 class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
-  bool _enabledEventButton = false;
   final TextEditingController _titleControllder = TextEditingController();
   final TextEditingController _descriptionControllder = TextEditingController();
   final TextEditingController _goalScoreController = TextEditingController();
@@ -76,7 +70,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
       setState(() {
         _eventStartDate = picked;
       });
-      checkEnabledEventButton();
     }
   }
 
@@ -92,7 +85,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
       setState(() {
         _eventEndDate = picked;
       });
-      checkEnabledEventButton();
     }
   }
 
@@ -107,7 +99,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
         _eventImageFile = result.files.first;
         _eventImage = _eventImageFile!.bytes!;
       });
-      checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -138,18 +129,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
         ),
       );
     }
-  }
-
-  void checkEnabledEventButton() {
-    setState(() {
-      _enabledEventButton = _eventTitle.isNotEmpty &&
-          _eventDescription.isNotEmpty &&
-          _eventImage != null &&
-          _eventPrizeWinners.isNotEmpty &&
-          _eventGoalScore.isNotEmpty &&
-          _eventStartDate != null &&
-          _eventEndDate != null;
-    });
   }
 
   Future<void> _submitEvent() async {
@@ -367,7 +346,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                   setState(() {
                                     _eventTitle = value;
                                   });
-                                  checkEnabledEventButton();
                                 },
                                 controller: _titleControllder,
                                 textAlignVertical: TextAlignVertical.center,
@@ -518,7 +496,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                   setState(() {
                                     _eventDescription = value;
                                   });
-                                  checkEnabledEventButton();
                                 },
                                 controller: _descriptionControllder,
                                 textAlignVertical: TextAlignVertical.top,
@@ -704,7 +681,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                     setState(() {
                                       _eventGoalScore = value;
                                     });
-                                    checkEnabledEventButton();
                                   },
                                   controller: _goalScoreController,
                                   textAlignVertical: TextAlignVertical.top,
@@ -804,7 +780,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                     setState(() {
                                       _eventPrizeWinners = value;
                                     });
-                                    checkEnabledEventButton();
                                   },
                                   controller: _prizewinnersControllder,
                                   textAlignVertical: TextAlignVertical.top,

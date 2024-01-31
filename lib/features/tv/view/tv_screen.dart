@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:onldocc_admin/common/view/error_screen.dart';
 import 'package:onldocc_admin/common/widgets/top_button.dart';
 import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
-import 'package:onldocc_admin/features/tv/repo/tv_repo.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
 import 'package:onldocc_admin/features/tv/widgets/edit_tv_widget.dart';
 import 'package:onldocc_admin/features/tv/widgets/upload_tv_widget.dart';
@@ -29,7 +26,6 @@ class TvScreen extends ConsumerStatefulWidget {
 
 class _TvScreenState extends ConsumerState<TvScreen> {
   List<TvModel> _tvList = [];
-  bool _uploadVideoHover = false;
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -111,27 +107,14 @@ class _TvScreenState extends ConsumerState<TvScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    onHover: (event) {
-                      setState(() {
-                        _uploadVideoHover = true;
-                      });
-                    },
-                    onExit: (event) {
-                      setState(() {
-                        _uploadVideoHover = false;
-                      });
-                    },
-                    child: TopButton(
-                      text: "영상 올리기",
-                      actionFunction: () => uploadVideoTap(
-                        context,
-                        size.width,
-                        size.height,
-                      ),
+                  TopButton(
+                    text: "영상 올리기",
+                    actionFunction: () => uploadVideoTap(
+                      context,
+                      size.width,
+                      size.height,
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
