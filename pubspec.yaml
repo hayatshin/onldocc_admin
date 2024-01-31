@@ -66,6 +66,7 @@ dependencies:
   data_table_2: ^2.5.10
   http: ^1.1.2
   uuid: ^4.3.3
+  cp949_codec: ^1.0.2
 
 dev_dependencies:
   flutter_test:

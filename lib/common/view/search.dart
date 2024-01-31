@@ -4,10 +4,12 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 
 class Search extends ConsumerStatefulWidget {
+  final String menuText;
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
   const Search({
     super.key,
+    required this.menuText,
     required this.filterUserList,
     required this.resetInitialList,
   });
@@ -51,6 +53,15 @@ class _SearchState extends ConsumerState<Search> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Text(
+              widget.menuText,
+              style: TextStyle(
+                background: Paint()
+                  ..color = Theme.of(context).primaryColor.withOpacity(0.1),
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             Visibility(
               visible: size.width > 800,
               child: Align(

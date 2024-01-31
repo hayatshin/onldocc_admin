@@ -97,7 +97,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
 
     final encodedUri = Uri.dataFromString(
       "$testInfo\n\n$csvContent",
-      encoding: Encoding.getByName("utf-8"),
+      encoding: Encoding.getByName(encodingType()),
     ).toString();
     final anchor = AnchorElement(href: encodedUri)
       ..setAttribute('download', fileName)

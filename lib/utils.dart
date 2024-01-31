@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:intl/intl.dart';
+import 'dart:html' as html;
 
 void showSnackBar(BuildContext context, String error) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -367,4 +368,10 @@ String getVideoThumbnail(String videoId, String link) {
     thumbnail = "https://img.youtube.com/vi/$videoId/mqdefault.jpg";
   }
   return thumbnail;
+}
+
+String encodingType() {
+  String platform = html.window.navigator.platform!.toLowerCase();
+  String encodingType = platform.contains("win") ? "EUC-KR" : "utf-8";
+  return encodingType;
 }

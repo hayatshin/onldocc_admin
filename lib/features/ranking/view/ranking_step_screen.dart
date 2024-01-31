@@ -88,7 +88,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
         if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
-          csvContent += row[i];
+          csvContent += row[i].toString();
         }
         // csvContent += row[i].toString();
 
@@ -106,7 +106,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
 
     final encodedUri = Uri.dataFromString(
       csvContent,
-      encoding: Encoding.getByName("utf-8"),
+      encoding: Encoding.getByName(encodingType()),
     ).toString();
     final anchor = AnchorElement(href: encodedUri)
       ..setAttribute('download', fileName)
@@ -234,7 +234,9 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
                   ),
                 ),
               )
-            : loadingWidget(context)
+            : Expanded(
+                child: loadingWidget(context),
+              )
       ],
     );
   }

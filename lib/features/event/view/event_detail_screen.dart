@@ -29,8 +29,8 @@ class EventDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
-  final searchHeight = 35;
-  final List<EventUserModel> _participantsList = [];
+  List<ParticipantModel> _participants = [];
+  bool _initializeParticipants = false;
   final List<String> _listHeader = [
     "#",
     "이름",
@@ -46,6 +46,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   @override
   void initState() {
     super.initState();
+    initializePariticants();
   }
 
   @override
@@ -53,21 +54,24 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     super.dispose();
   }
 
-  List<dynamic> exportToList(EventUserModel eventUserModel, int index) {
+  List<dynamic> exportToList(ParticipantModel participantModel, int index) {
     return [
       (index + 1).toString(),
-      eventUserModel.name,
-      eventUserModel.age,
-      eventUserModel.gender,
-      eventUserModel.phone,
-      eventUserModel.fullRegion,
-      convertTimettampToStringDate(eventUserModel.participateDate!),
-      eventUserModel.userPoint.toString(),
-      eventUserModel.goalOrNot! ? "달성" : "미달성",
+      participantModel.name,
+      participantModel.userAge,
+      participantModel.gender,
+      participantModel.phone,
+      participantModel.smallRegion,
+      secondsToStringLine(participantModel.createdAt),
+      participantModel.totalPoint.toString(),
+      participantModel.totalPoint >= widget.eventModel!.targetScore
+          ? "달성"
+          : "미달성",
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<EventUserModel?> participantsList) {
+  List<List<dynamic>> exportToFullList(
+      List<ParticipantModel?> participantsList) {
     List<List<dynamic>> list = [];
 
     list.add(_listHeader);
@@ -80,7 +84,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   }
 
   void generateUserCsv(String eventTitle) {
-    final csvData = exportToFullList(_participantsList);
+    final csvData = exportToFullList(_participants);
 
     String csvContent = '';
     for (var row in csvData) {
@@ -88,7 +92,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
-          csvContent += row[i];
+          csvContent += row[i].toString();
         }
         // csvContent += row[i].toString();
 
@@ -111,6 +115,18 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     final anchor = AnchorElement(href: encodedUri)
       ..setAttribute('download', fileName)
       ..click();
+  }
+
+  Future<void> initializePariticants() async {
+    final participants = await ref
+        .read(eventProvider.notifier)
+        .getEventParticipants(widget.eventModel!);
+    participants.sort((a, b) => b.totalPoint.compareTo(a.totalPoint));
+
+    setState(() {
+      _participants = participants;
+      _initializeParticipants = true;
+    });
   }
 
   @override
@@ -406,18 +422,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     ),
                   ),
                   Gaps.v52,
-                  FutureBuilder(
-                    future: ref
-                        .read(eventProvider.notifier)
-                        .getEventParticipants(widget.eventModel!),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text(snapshot.error.toString());
-                      } else if (snapshot.hasData) {
-                        List<ParticipantModel> participants = snapshot.data!;
-                        participants.sort(
-                            (a, b) => b.totalPoint.compareTo(a.totalPoint));
-                        return Center(
+                  _initializeParticipants
+                      ? Center(
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -505,7 +511,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                 ),
                               ],
                               rows: [
-                                for (var i = 0; i < participants.length; i++)
+                                for (var i = 0; i < _participants.length; i++)
                                   DataRow(
                                     cells: [
                                       DataCell(
@@ -518,7 +524,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].name,
+                                          _participants[i].name,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -526,7 +532,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].userAge.toString(),
+                                          _participants[i].userAge.toString(),
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -534,7 +540,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].gender,
+                                          _participants[i].gender,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -542,7 +548,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].phone,
+                                          _participants[i].phone,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -550,7 +556,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].smallRegion,
+                                          _participants[i].smallRegion,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -559,7 +565,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       DataCell(
                                         Text(
                                           secondsToStringLine(
-                                              participants[i].createdAt),
+                                              _participants[i].createdAt),
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -567,7 +573,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].totalPoint.toString(),
+                                          _participants[i]
+                                              .totalPoint
+                                              .toString(),
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),
@@ -575,7 +583,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          participants[i].totalPoint >=
+                                          _participants[i].totalPoint >=
                                                   widget.eventModel!.targetScore
                                               ? "달성"
                                               : "미달성",
@@ -589,11 +597,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                               ],
                             ),
                           ),
-                        );
-                      }
-                      return loadingWidget(context);
-                    },
-                  )
+                        )
+                      : loadingWidget(context)
                 ],
               ),
             ),

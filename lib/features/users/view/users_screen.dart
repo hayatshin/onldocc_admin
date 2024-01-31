@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html' as html;
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
@@ -102,8 +103,10 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       userModel.gender,
       userModel.phone,
       userModel.fullRegion,
-      userModel.createdAt,
-      userModel.lastVisit,
+      secondsToStringLine(userModel.createdAt),
+      userModel.lastVisit != 0
+          ? secondsToStringLine(userModel.lastVisit!)
+          : "-",
     ];
   }
 
@@ -127,7 +130,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
-          csvContent += row[i];
+          csvContent += row[i].toString();
         }
 
         if (i != row.length - 1) {
@@ -144,8 +147,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
     final encodedUri = Uri.dataFromString(
       csvContent,
-      encoding: Encoding.getByName("utf-8"),
+      encoding: Encoding.getByName(encodingType()),
     ).toString();
+
     final anchor = AnchorElement(href: encodedUri)
       ..setAttribute('download', fileName)
       ..click();
@@ -490,8 +494,10 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      secondsToStringLine(
-                                          _userDataList[i]!.lastVisit!),
+                                      _userDataList[i]!.lastVisit != 0
+                                          ? secondsToStringLine(
+                                              _userDataList[i]!.lastVisit!)
+                                          : "-",
                                       style: TextStyle(
                                         fontSize: tableFontSize,
                                       ),

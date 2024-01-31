@@ -13,6 +13,7 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
 class RankingUsersScreen extends ConsumerStatefulWidget {
@@ -89,62 +90,6 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
     });
   }
 
-  List<dynamic> exportToList(UserModel userModel) {
-    return [
-      userModel.name,
-      userModel.userAge,
-      userModel.birthYear,
-      userModel.gender,
-      userModel.phone,
-      userModel.fullRegion,
-      userModel.createdAt
-    ];
-  }
-
-  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
-    List<List<dynamic>> list = [];
-
-    list.add(_userListHeader);
-
-    for (var item in userDataList) {
-      final itemList = exportToList(item!);
-      list.add(itemList);
-    }
-    return list;
-  }
-
-  void generateUserCsv() {
-    final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i];
-        }
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 회원관리 $formatDate.csv";
-
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName("utf-8"),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
-  }
-
   void goDetailPage({int? index, String? userId, String? userName}) {
     Map<String, String?> extraJson = {
       "userId": userId,
@@ -177,10 +122,16 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final menuTitle = widget.rankingType == "step"
+        ? "회원별 걸음수"
+        : widget.rankingType == "diary"
+            ? "회원별 일기"
+            : "회원별 문제 풀기";
     return loadingFinished
         ? Column(
             children: [
               Search(
+                menuText: menuTitle,
                 filterUserList: filterUserDataList,
                 resetInitialList: resetInitialState,
               ),

@@ -94,11 +94,12 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
       userModel.index,
       userModel.name,
       userModel.userAge,
-      userModel.birthYear,
       userModel.gender,
       userModel.phone,
-      userModel.fullRegion,
-      userModel.createdAt
+      userModel.totalScore,
+      userModel.stepScore,
+      userModel.diaryScore,
+      userModel.commentScore,
     ];
   }
 
@@ -119,10 +120,10 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     String csvContent = '';
     for (var row in csvData) {
       for (var i = 0; i < row.length; i++) {
-        if (row[i].contains(',')) {
+        if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
-          csvContent += row[i];
+          csvContent += row[i].toString();
         }
 
         if (i != row.length - 1) {
@@ -139,7 +140,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
     final encodedUri = Uri.dataFromString(
       csvContent,
-      encoding: Encoding.getByName("utf-8"),
+      encoding: Encoding.getByName(encodingType()),
     ).toString();
     final anchor = AnchorElement(href: encodedUri)
       ..setAttribute('download', fileName)

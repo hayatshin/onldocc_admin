@@ -36,7 +36,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
     "성별",
     "나이",
     "핸드폰 번호",
-    "자세히 보기",
+    "자세히 보기"
   ];
   List<CognitionTestModel> _beforeFilterTestDataList = [];
   List<CognitionTestModel> _testList = [];
@@ -56,7 +56,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
   List<List<dynamic>> exportToFullList() {
     List<List<dynamic>> list = [];
 
-    final csvHeader = _tableHeader.sublist(0, _tableHeader.length);
+    final csvHeader = _tableHeader.sublist(0, _tableHeader.length - 1);
     list.add(csvHeader);
 
     for (var item in _testList) {
@@ -74,7 +74,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
         if (row[i].toString().contains(',')) {
           csvContent += '"${row[i]}"';
         } else {
-          csvContent += row[i];
+          csvContent += row[i].toString();
         }
 
         if (i != row.length - 1) {
@@ -90,7 +90,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
 
     final encodedUri = Uri.dataFromString(
       csvContent,
-      encoding: Encoding.getByName("utf-8"),
+      encoding: Encoding.getByName(encodingType()),
     ).toString();
     final anchor = AnchorElement(href: encodedUri)
       ..setAttribute('download', fileName)

@@ -57,7 +57,6 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   @override
   void initState() {
     super.initState();
-    print("userId ${widget.userId}");
 
     getUserDiaryData();
   }
@@ -100,10 +99,11 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
     String csvContent = '';
     for (var row in csvData) {
       for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
+        if (row[i].toString().contains(',') ||
+            row[i].toString().contains('\n')) {
           csvContent += '"${row[i]}"';
         } else {
-          csvContent += row[i];
+          csvContent += row[i].toString();
         }
         // csvContent += row[i].toString();
 
@@ -121,7 +121,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
     final encodedUri = Uri.dataFromString(
       csvContent,
-      encoding: Encoding.getByName("utf-8"),
+      encoding: Encoding.getByName(encodingType()),
     ).toString();
     final anchor = AnchorElement(href: encodedUri)
       ..setAttribute('download', fileName)
@@ -615,7 +615,9 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                   ),
                 ),
               )
-            : loadingWidget(context)
+            : Expanded(
+                child: loadingWidget(context),
+              )
       ],
     );
   }

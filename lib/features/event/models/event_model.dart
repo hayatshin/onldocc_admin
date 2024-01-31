@@ -1,3 +1,5 @@
+import 'package:onldocc_admin/utils.dart';
+
 class EventModel {
   final String eventId;
   final String title;
@@ -103,7 +105,10 @@ class EventModel {
         achieversNumber = json["achieversNumber"],
         startDate = json["startDate"],
         endDate = json["endDate"],
-        state = json["state"],
+        state =
+            convertEndDateStringToSeconds(json["endDate"]) > getCurrentSeconds()
+                ? "진행"
+                : "종료",
         createdAt = json["createdAt"],
         orgSubdistrictId = json.containsKey("contract_regions")
             ? json["contract_regions"]["subdistrictId"]
