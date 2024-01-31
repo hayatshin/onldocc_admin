@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:onldocc_admin/utils.dart';
-
 class CognitionTestModel {
   final String testType;
   final String testId;

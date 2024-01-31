@@ -2,7 +2,6 @@ class UserModel {
   final int? index;
   final String userId;
   final String name;
-  final int userAge;
   final String birthYear;
   final String birthDay;
   final String gender;
@@ -20,7 +19,6 @@ class UserModel {
     required this.index,
     required this.userId,
     required this.name,
-    required this.userAge,
     required this.birthYear,
     required this.birthDay,
     required this.gender,
@@ -39,7 +37,6 @@ class UserModel {
       : index = 0,
         userId = "",
         name = "",
-        userAge = 0,
         birthYear = "",
         birthDay = "",
         gender = "",
@@ -57,7 +54,6 @@ class UserModel {
     return {
       "userId": userId,
       "name": name,
-      "userAge": userAge,
       "birthYear": birthYear,
       "birthDay": birthDay,
       "gender": gender,
@@ -77,7 +73,6 @@ class UserModel {
       : index = json.containsKey("index") ? json["index"] : 0,
         userId = json.containsKey("userId") ? json["userId"] : "-",
         name = json.containsKey("name") ? json["name"] : "-",
-        userAge = json.containsKey("userAge") ? json["userAge"] : 0,
         birthYear = json.containsKey("birthYear") ? json['birthYear'] : "-",
         birthDay = json.containsKey("birthDay") ? json['birthDay'] : "-",
         gender = json.containsKey("gender") ? json["gender"] : "-",
@@ -101,7 +96,6 @@ class UserModel {
     final int? index,
     final String? userId,
     final String? name,
-    final int? userAge,
     final String? birthYear,
     final String? birthDay,
     final String? gender,
@@ -119,7 +113,6 @@ class UserModel {
       index: index ?? this.index,
       userId: userId ?? this.userId,
       name: name ?? this.name,
-      userAge: userAge ?? this.userAge,
       birthYear: birthYear ?? this.birthYear,
       birthDay: birthDay ?? this.birthDay,
       gender: gender ?? this.gender,

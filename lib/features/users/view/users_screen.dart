@@ -67,13 +67,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         await getUserModelList();
       }
     });
-
-    // contractNotifier.addListener(() async {
-    //   setState(() {
-    //     loadingFinished = false;
-    //   });
-    //   await getUserModelList();
-    // });
   }
 
   void resetInitialState() {
@@ -98,7 +91,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   List<dynamic> exportToList(UserModel userModel) {
     return [
       userModel.name,
-      userModel.userAge,
+      userAgeCalculation(userModel.birthYear, userModel.birthDay),
       userModel.birthYear,
       userModel.gender,
       userModel.phone,
@@ -445,7 +438,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      _userDataList[i]!.userAge.toString(),
+                                      userAgeCalculation(
+                                          _userDataList[i]!.birthYear,
+                                          _userDataList[i]!.birthDay),
                                       style: TextStyle(
                                         fontSize: tableFontSize,
                                       ),

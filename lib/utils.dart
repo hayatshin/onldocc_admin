@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:intl/intl.dart';
-import 'dart:html' as html;
+// import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 
 void showSnackBar(BuildContext context, String error) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -28,11 +29,16 @@ bool isDatePassed(String certainBirthday) {
 }
 
 String userAgeCalculation(String birthYear, String birthDay) {
-  late int returnAge;
-  final int currentYear = DateTime.now().year;
-  final initialAge = currentYear - int.parse(birthYear);
-  returnAge = isDatePassed(birthDay) ? initialAge : initialAge - 1;
-  return returnAge.toString();
+  try {
+    late int returnAge;
+    final int currentYear = DateTime.now().year;
+    final initialAge = currentYear - int.parse(birthYear);
+    returnAge = isDatePassed(birthDay) ? initialAge : initialAge - 1;
+    return returnAge.toString();
+  } catch (e) {
+    // ignore: avoid_print
+    return "";
+  }
 }
 
 List<DateTime> getBetweenDays(DateTime startDate, DateTime endDate) {
@@ -103,56 +109,6 @@ double calculateMaxContentHeight(String description, double diaryWidth) {
 String numberDecimalCommans(int number) {
   String formattedNumber = NumberFormat('#,##0').format(number);
   return formattedNumber;
-}
-
-class StartEndDate {
-  final DateTime startDate;
-  final DateTime endDate;
-
-  StartEndDate({
-    required this.startDate,
-    required this.endDate,
-  });
-}
-
-class WeekMonthDay {
-  final StartEndDate thisWeek;
-  final StartEndDate lastMonth;
-  final StartEndDate thisMonth;
-
-  WeekMonthDay({
-    required this.thisWeek,
-    required this.lastMonth,
-    required this.thisMonth,
-  });
-}
-
-WeekMonthDay getWeekMonthDay() {
-  DateTime currentDate = DateTime.now();
-  int currentWeekDay = currentDate.weekday;
-
-  DateTime startOfThisWeek1 =
-      currentDate.subtract(Duration(days: currentWeekDay - 1));
-  DateTime startOfThisWeek2 = DateTime(startOfThisWeek1.year,
-      startOfThisWeek1.month, startOfThisWeek1.day, 0, 0, 0);
-
-  StartEndDate thisWeek =
-      StartEndDate(startDate: startOfThisWeek2, endDate: DateTime.now());
-
-  DateTime startDateOfLastMonth =
-      DateTime(currentDate.year, currentDate.month - 1, 1, 0, 0, 0);
-  DateTime endDateOfLastMonth =
-      DateTime(currentDate.year, currentDate.month, 0, 23, 59, 59);
-  StartEndDate lastMonth = StartEndDate(
-      startDate: startDateOfLastMonth, endDate: endDateOfLastMonth);
-
-  DateTime startDateOfThisMonth =
-      DateTime(currentDate.year, currentDate.month, 1, 0, 0, 0);
-  StartEndDate thisMonth =
-      StartEndDate(startDate: startDateOfThisMonth, endDate: DateTime.now());
-
-  return WeekMonthDay(
-      thisWeek: thisWeek, lastMonth: lastMonth, thisMonth: thisMonth);
 }
 
 DateTime dateStringToDateTimeDot(String dateString) {

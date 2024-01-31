@@ -48,7 +48,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   bool loadingFinished = false;
   final int _currentSortColumn = 0;
   final bool _isSortAsc = true;
-  WeekMonthDay weekMonthDay = getWeekMonthDay();
 
   String sortOder = "totalPoint";
 
@@ -62,12 +61,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     super.initState();
 
     getScoreList(selectedDateRange);
-    // contractNotifier.addListener(() async {
-    //   setState(() {
-    //     loadingFinished = false;
-    //   });
-    //   await getScoreList();
-    // });
   }
 
   void resetInitialState() async {
@@ -93,7 +86,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     return [
       userModel.index,
       userModel.name,
-      userModel.userAge,
+      userAgeCalculation(userModel.birthYear, userModel.birthDay),
       userModel.gender,
       userModel.phone,
       userModel.totalScore,
@@ -430,7 +423,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           ),
                           DataCell(
                             Text(
-                              _userDataList[i]!.userAge.toString(),
+                              userAgeCalculation(_userDataList[i]!.birthYear,
+                                      _userDataList[i]!.birthDay)
+                                  .toString(),
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
                               ),

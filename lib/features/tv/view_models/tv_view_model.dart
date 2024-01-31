@@ -1,117 +1,22 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/repo/tv_repo.dart';
 
-class TvViewModel extends AsyncNotifier<List<TvModel>> {
-  late TvRepository _tvRepository;
+class TvViewModel extends AsyncNotifier<void> {
   @override
-  FutureOr<List<TvModel>> build() async {
-    _tvRepository = TvRepository();
-    List<TvModel> tvList = await getCertainTvList();
-    return tvList;
-  }
+  FutureOr<void> build() async {}
 
-  // supabase
   Future<List<TvModel>> getUserTvs() async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final tvList = await ref.read(tvRepo).getUserTvs(adminProfileModel!);
     return tvList.map((e) => TvModel.fromJson(e)).toList();
   }
-
-  // firebase
-  Future<List<TvModel>> getCertainTvList() async {
-    state = const AsyncValue.loading();
-
-    AdminProfileModel data =
-        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-
-    // String contractType = contractConfigModel.contractType;
-    // String contractName = data.contractName;
-
-    List<TvModel> tvList = [];
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> tvs =
-        await ref.read(tvRepo).getAllTvs();
-    for (QueryDocumentSnapshot<Map<String, dynamic>> tv in tvs) {
-      bool allUser = tv.get("allUser");
-
-      if (allUser) {
-        TvModel tvModel = TvModel.fromJson(tv.data());
-        tvList.add(tvModel);
-      } else {
-        if (tv.data().containsKey("contractName")) {
-          String tvContractName = tv.get("contractName");
-          // if (tvContractName == contractName) {
-          //   TvModel tvModel = TvModel.fromJson(tv.data());
-          //   tvList.add(tvModel);
-          // }
-        }
-      }
-    }
-
-    state = AsyncValue.data(tvList);
-    return tvList;
-  }
-
-  Future<void> saveTvwithJson(String title, String link) async {
-    Map<String, dynamic> tvJson = {};
-
-    AdminProfileModel data =
-        await ref.read(contractConfigProvider.notifier).getMyAdminProfile();
-    String contractType = data.contractType == "지역"
-        ? "region"
-        : data.contractType == "기관"
-            ? "community"
-            : data.contractType == "마스터"
-                ? "master"
-                : "region";
-    // String contractName = data.contractName;
-    String documentId = "";
-    String thumbnail = "";
-
-    if (link.contains("youtu.be")) {
-      final parts = link.split("youtu.be/");
-      documentId = parts[1];
-    } else if (link.contains("youtube.com")) {
-      final parts = link.split("watch?v=");
-      documentId = parts[1];
-    }
-
-    if (link.contains("youtu.be")) {
-      thumbnail = "http://i3.ytimg.com/vi/$documentId/hqdefault.jpg";
-    } else if (link.contains("youtube.com")) {
-      thumbnail = "https://img.youtube.com/vi/$documentId/mqdefault.jpg";
-    }
-
-    if (contractType != "마스터") {
-      tvJson = {
-        "allUser": false,
-        "contractType": contractType,
-        // "contractName": contractName,
-        "documentId": documentId,
-        "link": link,
-        "thumbnail": thumbnail,
-        "title": title,
-      };
-    } else {
-      tvJson = {
-        "allUser": true,
-        "documentId": documentId,
-        "link": link,
-        "thumbnail": thumbnail,
-        "title": title,
-      };
-    }
-
-    await ref.read(tvRepo).saveTv(tvJson, documentId);
-  }
 }
 
-final tvProvider = AsyncNotifierProvider<TvViewModel, List<TvModel>>(
+final tvProvider = AsyncNotifierProvider<TvViewModel, void>(
   () => TvViewModel(),
 );

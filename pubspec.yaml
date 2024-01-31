@@ -51,7 +51,7 @@ dependencies:
   csv: ^5.0.2
   flutter_date_range_picker: ^0.0.14
   url_launcher: ^6.0.0
-  universal_html: ^2.2.2
+  universal_html: ^2.2.4
   dartz: ^0.10.0
   syncfusion_flutter_charts: ^22.1.38
   syncfusion_flutter_calendar: ^22.1.39

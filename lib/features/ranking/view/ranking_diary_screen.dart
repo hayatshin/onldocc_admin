@@ -1,10 +1,7 @@
 import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:onldocc_admin/common/models/mood_model.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
@@ -12,7 +9,6 @@ import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
-import 'package:onldocc_admin/features/ranking/repo/diary_repo.dart';
 import 'package:onldocc_admin/features/ranking/view_models/diary_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';

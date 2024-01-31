@@ -1,41 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StepRepository {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
   final _supabase = Supabase.instance.client;
-
-  Future<int> calculateStepScore(String userId, DateTime date) async {
-    int dailyScore = 0;
-    final dateString = convertTimettampToStringDate(date);
-    final query =
-        await _db.collection("period_step_count").doc(dateString).get();
-
-    if (query.exists) {
-      final userExists = query.data()?.containsKey(userId);
-
-      if (userExists!) {
-        dynamic dailyStepString = query.get(userId);
-
-        final int dailyStepInt = dailyStepString as int;
-
-        dailyScore = dailyStepInt < 0
-            ? 0
-            : dailyStepInt > 10000
-                ? 100
-                : ((dailyStepInt / 1000).floor()) * 10;
-      }
-    }
-    return dailyScore;
-  }
-
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserAllDateStepData(
-      String userId) async {
-    final query = await _db.collection("user_step_cout").doc(userId).get();
-    return query;
-  }
 
   Future<List<Map<String, dynamic>>> getUserCertinDateStepData(
       String userId, DateTime startDate, DateTime endDate) async {
@@ -54,19 +22,6 @@ class StepRepository {
       if (query.length == 1) {
         stepList.add(query[0]);
       }
-
-      // final query =
-      //     await _db.collection("period_step_count").doc(dateString).get();
-      // final userExists = query.data()?.containsKey(userId);
-      // if (userExists!) {
-      //   dynamic dailyStepString = query.get(userId);
-      //   final int dailyStepInt = dailyStepString as int;
-      //   final Map<String, dynamic> dailyStepMap = {
-      //     "date": dateString,
-      //     "dailyStep": dailyStepInt,
-      //   };
-      //   stepList.add(dailyStepMap);
-      // }
     });
 
     return stepList;

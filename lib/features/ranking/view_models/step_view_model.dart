@@ -4,12 +4,10 @@ import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/ranking/models/step_model.dart';
 import 'package:onldocc_admin/features/ranking/repo/step_repo.dart';
-import 'package:onldocc_admin/utils.dart';
 
 class StepViewModel extends AsyncNotifier<List<StepModel>> {
   DateTime now = DateTime.now();
   late StepRepository _stepRepository;
-  WeekMonthDay weekMonthDay = getWeekMonthDay();
 
   @override
   FutureOr<List<StepModel>> build() {
@@ -20,30 +18,9 @@ class StepViewModel extends AsyncNotifier<List<StepModel>> {
 
   Future<List<StepModel>> getUserDateStepData(
       String userId, DateRange dateRange) async {
-    // List<StepModel> stepList = [];
-
     final stepList = await _stepRepository.getUserCertinDateStepData(
         userId, dateRange.start, dateRange.end);
     return stepList.map((step) => StepModel.fromJson(step)).toList();
-    // late List<Map<String, dynamic>> userRef;
-
-    // if (periodType == "이번주") {
-    //   userRef = await _stepRepository.getUserCertinDateStepData(userId,
-    //       weekMonthDay.thisWeek.startDate, weekMonthDay.thisWeek.endDate);
-    // } else if (periodType == "이번달") {
-    //   userRef = await _stepRepository.getUserCertinDateStepData(userId,
-    //       weekMonthDay.thisMonth.startDate, weekMonthDay.thisMonth.endDate);
-    // } else if (periodType == "지난달") {
-    //   userRef = await _stepRepository.getUserCertinDateStepData(userId,
-    //       weekMonthDay.lastMonth.startDate, weekMonthDay.lastMonth.endDate);
-    // }
-
-    // for (var stepJson in userRef) {
-    //   StepModel stepModel = StepModel.fromJson(stepJson);
-    //   stepList.add(stepModel);
-    // }
-
-    // return stepList;
   }
 }
 

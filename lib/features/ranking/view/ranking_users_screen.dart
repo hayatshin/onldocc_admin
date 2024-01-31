@@ -242,7 +242,9 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                           ),
                           DataCell(
                             Text(
-                              _userDataList[i]!.userAge.toString(),
+                              userAgeCalculation(_userDataList[i]!.birthYear,
+                                      _userDataList[i]!.birthDay)
+                                  .toString(),
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
                               ),
