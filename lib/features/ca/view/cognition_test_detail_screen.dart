@@ -63,7 +63,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     list.add(_listHeader);
 
     for (int i = 0; i < alzheimer_questionnaire_strings.length; i++) {
-      String answer = widget.model.userAnswers[i] == true ? "예" : "아니오";
+      String answer = widget.model.userAnswers["a$i"]! ? "예" : "아니오";
       final itemlist = exportToList(alzheimer_questionnaire_strings[i], answer);
       list.add(itemlist);
     }
@@ -202,7 +202,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                             ),
                           ],
                           rows: [
-                            for (var i = 0;
+                            for (int i = 0;
                                 i < alzheimer_questionnaire_strings.length;
                                 i++)
                               DataRow(
@@ -233,7 +233,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                                     Align(
                                       alignment: Alignment.center,
                                       child: Text(
-                                        widget.model.userAnswers[i] == true
+                                        widget.model.userAnswers["a$i"]!
                                             ? "예"
                                             : "아니오",
                                         textAlign: TextAlign.end,

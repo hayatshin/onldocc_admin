@@ -7,7 +7,6 @@ import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/features/event/widgets/edit_event_widget.dart';
 import 'package:onldocc_admin/features/event/widgets/upload_event_widget.dart';
-
 import 'package:onldocc_admin/utils.dart';
 
 import '../../../constants/gaps.dart';
@@ -463,7 +462,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      eventList[index].state,
+                                      eventList[index].state!,
                                       style: const TextStyle(
                                         // color: Colors.white,
                                         fontSize: Sizes.size12,

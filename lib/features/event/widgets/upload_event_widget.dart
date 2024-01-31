@@ -160,7 +160,6 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       achieversNumber: int.parse(_eventPrizeWinners),
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
-      state: "진행",
       createdAt: getCurrentSeconds(),
       contractRegionId: adminProfileModel!.contractRegionId,
     );

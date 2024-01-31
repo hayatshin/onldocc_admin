@@ -65,7 +65,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
         .addFeedNotification(_feedDescription, _feedImageArray);
     if (!mounted) return;
 
-    resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen());
+    resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen);
   }
 
   @override

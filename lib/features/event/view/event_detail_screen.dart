@@ -9,7 +9,6 @@ import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
-
 import 'package:onldocc_admin/features/event/models/participant_model.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -530,7 +529,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          _participants[i].userAge.toString(),
+                                          _participants[i].userAge,
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),

@@ -148,7 +148,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
       achieversNumber: int.parse(_eventPrizeWinners),
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
-      state: "진행",
       contractRegionId: adminProfileModel!.contractRegionId,
     );
 

@@ -10,7 +10,6 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
-import 'package:onldocc_admin/utils.dart';
 
 class RankingUsersScreen extends ConsumerStatefulWidget {
   static const stepRouteURL = "step";
@@ -218,9 +217,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                           ),
                           DataCell(
                             Text(
-                              userAgeCalculation(_userDataList[i]!.birthYear,
-                                      _userDataList[i]!.birthDay)
-                                  .toString(),
+                              _userDataList[i]!.userAge!,
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
                               ),

@@ -1,7 +1,10 @@
+import 'package:onldocc_admin/utils.dart';
+
 class UserModel {
   final int? index;
   final String userId;
   final String name;
+  final String? userAge;
   final String birthYear;
   final String birthDay;
   final String gender;
@@ -19,6 +22,7 @@ class UserModel {
     required this.index,
     required this.userId,
     required this.name,
+    this.userAge,
     required this.birthYear,
     required this.birthDay,
     required this.gender,
@@ -37,6 +41,7 @@ class UserModel {
       : index = 0,
         userId = "",
         name = "",
+        userAge = "-",
         birthYear = "",
         birthDay = "",
         gender = "",
@@ -73,6 +78,7 @@ class UserModel {
       : index = json.containsKey("index") ? json["index"] : 0,
         userId = json.containsKey("userId") ? json["userId"] : "-",
         name = json.containsKey("name") ? json["name"] : "-",
+        userAge = userAgeCalculation(json["birthYear"], json["birthDay"]),
         birthYear = json.containsKey("birthYear") ? json['birthYear'] : "-",
         birthDay = json.containsKey("birthDay") ? json['birthDay'] : "-",
         gender = json.containsKey("gender") ? json["gender"] : "-",
@@ -96,6 +102,7 @@ class UserModel {
     final int? index,
     final String? userId,
     final String? name,
+    final String? userAge,
     final String? birthYear,
     final String? birthDay,
     final String? gender,
@@ -113,6 +120,7 @@ class UserModel {
       index: index ?? this.index,
       userId: userId ?? this.userId,
       name: name ?? this.name,
+      userAge: userAge ?? this.userAge,
       birthYear: birthYear ?? this.birthYear,
       birthDay: birthDay ?? this.birthDay,
       gender: gender ?? this.gender,

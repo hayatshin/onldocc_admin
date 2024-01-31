@@ -1,7 +1,9 @@
+import 'package:onldocc_admin/utils.dart';
+
 class ParticipantModel {
   final String userId;
   final String name;
-  final int userAge;
+  final String userAge;
   final String gender;
   final String phone;
   final String subdistrictId;
@@ -24,7 +26,8 @@ class ParticipantModel {
   ParticipantModel.fromJson(Map<String, dynamic> json)
       : userId = json["users"]["userId"],
         name = json["users"]["name"],
-        userAge = json["users"]["userAge"],
+        userAge = userAgeCalculation(
+            json["users"]["birthYear"], json["users"]["birthDay"]),
         gender = json["users"]["gender"],
         phone = json["users"]["phone"],
         subdistrictId = json["users"]["subdistrictId"],

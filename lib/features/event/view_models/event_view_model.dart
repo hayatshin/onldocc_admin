@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
@@ -10,7 +11,6 @@ import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:http/http.dart' as http;
 
 class EventViewModel extends AsyncNotifier<void> {
   late EventRepository _eventRepository;
@@ -33,6 +33,7 @@ class EventViewModel extends AsyncNotifier<void> {
       EventModel eventModel) async {
     final participants =
         await _eventRepository.getEventPariticipants(eventModel.eventId);
+
     final modelList = await Future.wait(participants.map((e) async {
       final model = ParticipantModel.fromJson(e);
       final userRegion = await ref
@@ -41,9 +42,11 @@ class EventViewModel extends AsyncNotifier<void> {
 
       int startSeconds = convertStartDateStringToSeconds(eventModel.startDate);
       int endSeconds = convertEndDateStringToSeconds(eventModel.endDate);
+      int userStartSeconds =
+          model.createdAt > startSeconds ? model.createdAt : startSeconds;
 
       final pointData =
-          await getEventUserScore(model.userId, startSeconds, endSeconds);
+          await getEventUserScore(model.userId, userStartSeconds, endSeconds);
 
       final userPoint = pointData[0]["totalPoint"];
       final rModel = model.copyWith(

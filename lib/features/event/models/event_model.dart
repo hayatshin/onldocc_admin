@@ -13,7 +13,7 @@ class EventModel {
   final int achieversNumber;
   final String startDate;
   final String endDate;
-  final String state;
+  final String? state;
   final int? createdAt;
   final String? orgSubdistrictId;
   final String? orgImage;
@@ -31,7 +31,7 @@ class EventModel {
     required this.achieversNumber,
     required this.startDate,
     required this.endDate,
-    required this.state,
+    this.state,
     this.createdAt,
     this.orgSubdistrictId,
     this.orgImage,
@@ -69,7 +69,6 @@ class EventModel {
       "achieversNumber": achieversNumber,
       "startDate": startDate,
       "endDate": endDate,
-      "state": state,
       "createdAt": createdAt,
     };
   }
@@ -88,7 +87,6 @@ class EventModel {
       "achieversNumber": achieversNumber,
       "startDate": startDate,
       "endDate": endDate,
-      "state": state,
     };
   }
 

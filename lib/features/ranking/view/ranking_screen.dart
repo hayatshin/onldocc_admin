@@ -82,7 +82,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     return [
       userModel.index,
       userModel.name,
-      userAgeCalculation(userModel.birthYear, userModel.birthDay),
+      userModel.userAge,
       userModel.gender,
       userModel.phone,
       userModel.totalScore,
@@ -419,9 +419,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           ),
                           DataCell(
                             Text(
-                              userAgeCalculation(_userDataList[i]!.birthYear,
-                                      _userDataList[i]!.birthDay)
-                                  .toString(),
+                              _userDataList[i]!.userAge!,
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
                               ),

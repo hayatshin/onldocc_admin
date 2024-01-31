@@ -88,7 +88,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   List<dynamic> exportToList(UserModel userModel) {
     return [
       userModel.name,
-      userAgeCalculation(userModel.birthYear, userModel.birthDay),
+      userModel.userAge,
       userModel.birthYear,
       userModel.gender,
       userModel.phone,
@@ -435,9 +435,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   ),
                                   DataCell(
                                     Text(
-                                      userAgeCalculation(
-                                          _userDataList[i]!.birthYear,
-                                          _userDataList[i]!.birthDay),
+                                      _userDataList[i]!.userAge!,
                                       style: TextStyle(
                                         fontSize: tableFontSize,
                                       ),
