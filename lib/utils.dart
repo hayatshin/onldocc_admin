@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:intl/intl.dart';
+import 'package:onldocc_admin/constants/sizes.dart';
 // import 'dart:html' as html;
 import 'package:universal_html/html.dart' as html;
 
@@ -177,11 +177,11 @@ List<String> spreadDiaryImages(List data) {
       !imagelist[0].startsWith("https://firebasestorage")) {
     // supabase storage
     imagelist.sort((a, b) {
-      List<String> aSegments = a.split('/');
-      List<String> bSegments = b.split('/');
+      List<String> aSegments = a.split('-imageOrder-');
+      List<String> bSegments = b.split('-imageOrder-');
 
-      int aValue = int.parse(aSegments[aSegments.length - 2]);
-      int bValue = int.parse(bSegments[bSegments.length - 2]);
+      int aValue = int.parse(aSegments.last);
+      int bValue = int.parse(bSegments.last);
 
       return aValue.compareTo(bValue);
     });

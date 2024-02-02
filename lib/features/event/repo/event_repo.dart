@@ -1,10 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:collection/collection.dart';
 
 class EventRepository {
   final _supabase = Supabase.instance.client;
@@ -27,6 +27,7 @@ class EventRepository {
             'createdAt',
             ascending: true,
           );
+
       final contractRegions = await _supabase
           .from("events")
           .select('*, contract_regions(*)')

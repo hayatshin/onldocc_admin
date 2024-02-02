@@ -1,3 +1,5 @@
+import 'package:onldocc_admin/utils.dart';
+
 class CognitionTestModel {
   final String testType;
   final String testId;
@@ -8,7 +10,7 @@ class CognitionTestModel {
   final String result;
   final String? userName;
   final String? userGender;
-  final int? userAge;
+  final String? userAge;
   final String? userPhone;
 
   CognitionTestModel({
@@ -37,7 +39,8 @@ class CognitionTestModel {
         result = json.containsKey("result") ? json["result"] : "",
         userName = json["users"]["name"] ?? "-",
         userGender = json["users"]["gender"] ?? "-",
-        userAge = json["users"]["userAge"] ?? 0,
+        userAge = userAgeCalculation(
+            json["users"]["birthYear"], json["users"]["birthDay"]),
         userPhone = json["users"]["phone"] ?? "-";
 
   // CognitionTestModel copyWith({

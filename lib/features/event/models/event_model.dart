@@ -97,7 +97,7 @@ class EventModel {
         eventImage = json["eventImage"],
         allUsers = json["allUsers"],
         contractOrgType = json["contractOrgType"],
-        contractRegionId = json["contractRegionId"],
+        contractRegionId = json["contractRegionId"] ?? "",
         contractCommunityId = json["contractCommunityId"],
         targetScore = json["targetScore"],
         achieversNumber = json["achieversNumber"],
@@ -108,10 +108,10 @@ class EventModel {
                 ? "진행"
                 : "종료",
         createdAt = json["createdAt"],
-        orgSubdistrictId = json.containsKey("contract_regions")
+        orgSubdistrictId = json["contract_regions"] != null
             ? json["contract_regions"]["subdistrictId"]
             : "",
-        orgImage = json.containsKey("contract_regions")
+        orgImage = json["contract_regions"] != null
             ? json["contract_regions"]["image"]
             : "";
 }

@@ -43,6 +43,8 @@ class _EditNotificationWidgetState
   OverlayEntry? overlayEntry;
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
 
+  bool tapEditNotification = false;
+
   Future<void> pickMultipleImagesFromGallery(
       void Function(void Function()) setState) async {
     try {
@@ -80,6 +82,9 @@ class _EditNotificationWidgetState
 
   Future<void> _editFeedNotification() async {
     try {
+      setState(() {
+        tapEditNotification = true;
+      });
       await ref.read(noticeProvider.notifier).editFeedNotification(
           widget.diaryModel.diaryId, _feedDescription, _feedImageArray);
       if (!mounted) return;
@@ -222,12 +227,14 @@ class _EditNotificationWidgetState
                       submitFunction: () => showDeleteOverlay(
                           context, widget.diaryModel.todayDiary),
                       hoverBottomButton: true,
+                      loading: false,
                     ),
                     Gaps.h20,
                     BottomModalButton(
                       text: "공지 수정하기",
                       submitFunction: _editFeedNotification,
                       hoverBottomButton: true,
+                      loading: tapEditNotification,
                     ),
                   ],
                 ),
@@ -261,6 +268,7 @@ class _EditNotificationWidgetState
                                 controller: _descriptionControllder,
                                 textAlignVertical: TextAlignVertical.top,
                                 style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
                                 ),

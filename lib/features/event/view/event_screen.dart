@@ -419,7 +419,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                         ),
                                       );
                                     }
-                                    return Container();
+                                    return const Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        "-",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size12,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    );
                                   },
                                 ),
                                 Expanded(

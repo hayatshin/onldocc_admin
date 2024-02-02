@@ -57,13 +57,15 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   OverlayEntry? overlayEntry;
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
 
+  bool tapEditEvent = false;
+
   void selectStartPeriod(void Function(void Function()) setState) async {
     DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: _eventStartDate,
       firstDate: DateTime(now.year),
-      lastDate: now,
+      lastDate: DateTime(2030),
     );
 
     if (picked != null) {
@@ -77,9 +79,9 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
     DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: _eventEndDate,
       firstDate: DateTime(now.year),
-      lastDate: now,
+      lastDate: DateTime(2030),
     );
     if (picked != null) {
       setState(() {
@@ -132,6 +134,10 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   }
 
   Future<void> _submitEvent() async {
+    setState(() {
+      tapEditEvent = true;
+    });
+
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final eventId = widget.eventModel.eventId;
     final evnetImageUrl = await ref
@@ -290,8 +296,11 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(
-            Sizes.size40,
+          padding: const EdgeInsets.only(
+            top: Sizes.size40,
+            left: Sizes.size40,
+            right: Sizes.size40,
+            bottom: Sizes.size60,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -304,12 +313,14 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                     submitFunction: () => showDeleteOverlay(context,
                         widget.eventModel.eventId, widget.eventModel.title),
                     hoverBottomButton: true,
+                    loading: false,
                   ),
                   Gaps.h20,
                   BottomModalButton(
                     text: "행사 수정하기",
                     submitFunction: _submitEvent,
                     hoverBottomButton: true,
+                    loading: tapEditEvent,
                   ),
                 ],
               ),
@@ -349,6 +360,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 controller: _titleControllder,
                                 textAlignVertical: TextAlignVertical.center,
                                 style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
                                 ),
@@ -499,6 +511,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 controller: _descriptionControllder,
                                 textAlignVertical: TextAlignVertical.top,
                                 style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
                                 ),
@@ -556,11 +569,12 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                       ),
                       Gaps.v52,
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             flex: 1,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
                                   width: widget.totalWidth * 0.1,
@@ -596,6 +610,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                   Text(
                                     "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
+                                      fontWeight: FontWeight.w600,
                                       color: Colors.grey.shade800,
                                       fontSize: Sizes.size14,
                                     ),
@@ -606,7 +621,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                           Expanded(
                             flex: 1,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
                                   width: widget.totalWidth * 0.1,
@@ -641,6 +656,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                   Text(
                                     "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
+                                      fontWeight: FontWeight.w600,
                                       color: Colors.grey.shade800,
                                       fontSize: Sizes.size14,
                                     ),
@@ -684,6 +700,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                   controller: _goalScoreController,
                                   textAlignVertical: TextAlignVertical.top,
                                   style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
                                     fontSize: Sizes.size14,
                                     color: Colors.black87,
                                   ),
@@ -783,6 +800,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                   controller: _prizewinnersControllder,
                                   textAlignVertical: TextAlignVertical.top,
                                   style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
                                     fontSize: Sizes.size14,
                                     color: Colors.black87,
                                   ),

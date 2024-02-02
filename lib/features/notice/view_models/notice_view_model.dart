@@ -27,6 +27,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
   Future<void> addFeedNotification(
       String todayDiary, List<dynamic> imageList) async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+
     final notiUserId = "noti:${adminProfileModel!.subdistrictId}";
     final diaryId = "${getCurrentSeconds()}_$notiUserId";
 

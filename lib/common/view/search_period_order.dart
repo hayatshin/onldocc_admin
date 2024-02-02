@@ -94,7 +94,8 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                                   ),
                                   child: Text(
                                     daterangeToSlashString(
-                                        selectedDateRangeNotifier.value!),
+                                        selectedDateRangeNotifier.value ??
+                                            _selectedDateRange),
                                     style: TextStyle(
                                       fontSize: Sizes.size15,
                                       color: Colors.grey.shade900,

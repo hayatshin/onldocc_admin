@@ -27,11 +27,8 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
       "birthDay": "0101",
       "phone": adminProfileModel.phone,
       "name": adminProfileModel.name,
-      "userAge": 60,
       "createdAt": getCurrentSeconds(),
-      "subdistrictId": adminProfileModel.subdistrictId == ""
-          ? "d1_s1"
-          : adminProfileModel.subdistrictId,
+      "subdistrictId": adminProfileModel.subdistrictId,
     };
     await _userRepo.saveAdminUser(userJson);
   }

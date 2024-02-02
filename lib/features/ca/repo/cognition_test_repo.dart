@@ -10,7 +10,11 @@ class CognitionTestRepository {
       final query = await _supabase
           .from("cognition_test")
           .select('*, users!inner(*)')
-          .eq('testType', testType);
+          .eq('testType', testType)
+          .order(
+            'createdAt',
+            ascending: false,
+          );
 
       return query;
     } else {
@@ -18,7 +22,11 @@ class CognitionTestRepository {
           .from("cognition_test")
           .select('*, users!inner(*)')
           .eq('users.subdistrictId', adminProfileModel.subdistrictId)
-          .eq('testType', testType);
+          .eq('testType', testType)
+          .order(
+            'createdAt',
+            ascending: false,
+          );
 
       return query;
     }

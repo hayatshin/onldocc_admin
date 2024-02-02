@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/features/notice/view_models/notice_view_model.dart';
 import 'package:onldocc_admin/features/notice/widgets/edit_notification_widget.dart';
 import 'package:onldocc_admin/features/notice/widgets/upload_notification_widget.dart';
@@ -20,7 +21,6 @@ class NoticeScreen extends ConsumerStatefulWidget {
 }
 
 class _NoticeScreenState extends ConsumerState<NoticeScreen> {
-  double searchHeight = 35;
   bool _feedHover = false;
 
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

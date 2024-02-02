@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/common/widgets/bottom_modal_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
@@ -39,7 +40,13 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   String _title = "";
   String _link = "";
 
+  bool tapUploadTv = false;
+
   void _submitTv() async {
+    setState(() {
+      tapUploadTv = true;
+    });
+
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final videoId = getVideoId(_link);
     final thumbnail = getVideoThumbnail(videoId, _link);
@@ -57,18 +64,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
     await ref.read(tvRepo).addTv(tvModel);
     if (!mounted) return;
     resultBottomModal(context, "성공적으로 영상이 올라갔습니다.", widget.refreshScreen);
-
-    // if (_formKey.currentState != null) {
-    //   if (_formKey.currentState!.validate()) {
-    //     _formKey.currentState!.save();
-
-    //     await ref.read(tvProvider.notifier).saveTvwithJson(_title, _link);
-    //     await ref.read(tvProvider.notifier).getCertainTvList();
-    //     if (!mounted) return;
-    //     context.pop();
-    //     showSnackBar(context, "영상이 추가되었습니다.");
-    //   }
-    // }
   }
 
   @override
@@ -103,51 +98,11 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SizedBox(
-                          width: 200,
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed:
-                                _enabledUploadVideoButton ? _submitTv : null,
-                            style: ButtonStyle(
-                              side:
-                                  MaterialStateProperty.resolveWith<BorderSide>(
-                                (states) {
-                                  return BorderSide(
-                                    color: _enabledUploadVideoButton
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey.shade800,
-                                    width: 1,
-                                  );
-                                },
-                              ),
-                              backgroundColor: MaterialStateProperty.all(
-                                Colors.white,
-                              ),
-                              surfaceTintColor: MaterialStateProperty.all(
-                                _enabledUploadVideoButton
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.grey.shade800,
-                              ),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    Sizes.size10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              "영상 올리기",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: _enabledUploadVideoButton
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.grey.shade800,
-                              ),
-                            ),
-                          ),
+                        BottomModalButton(
+                          text: "영상 올리기",
+                          submitFunction: _submitTv,
+                          hoverBottomButton: _enabledUploadVideoButton,
+                          loading: tapUploadTv,
                         ),
                       ],
                     ),
@@ -195,13 +150,14 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                     },
                                     textAlignVertical: TextAlignVertical.center,
                                     style: const TextStyle(
-                                      fontSize: Sizes.size12,
+                                      fontSize: Sizes.size14,
                                       color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                     decoration: InputDecoration(
                                       hintText: "",
                                       hintStyle: TextStyle(
-                                        fontSize: Sizes.size12,
+                                        fontSize: Sizes.size14,
                                         color: Colors.grey.shade400,
                                         fontWeight: FontWeight.w300,
                                       ),
@@ -293,13 +249,14 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                     },
                                     textAlignVertical: TextAlignVertical.center,
                                     style: const TextStyle(
-                                      fontSize: Sizes.size12,
+                                      fontSize: Sizes.size14,
                                       color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                     decoration: InputDecoration(
                                       hintText: "",
                                       hintStyle: TextStyle(
-                                        fontSize: Sizes.size12,
+                                        fontSize: Sizes.size14,
                                         color: Colors.grey.shade400,
                                         fontWeight: FontWeight.w300,
                                       ),

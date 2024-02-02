@@ -37,6 +37,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
   OverlayEntry? overlayEntry;
 
   String _title = "";
+  bool tapEditTv = false;
 
   Future<void> deleteTv(String documentId) async {
     removeDeleteOverlay();
@@ -128,6 +129,9 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
   }
 
   void _editTv() async {
+    setState(() {
+      tapEditTv = true;
+    });
     await ref.read(tvRepo).editTv(widget.tvModel.videoId, _title);
     if (!mounted) return;
     resultBottomModal(
@@ -188,12 +192,14 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                             widget.tvModel.title,
                           ),
                           hoverBottomButton: true,
+                          loading: false,
                         ),
                         Gaps.h40,
                         BottomModalButton(
                           text: "영상 수정하기",
                           submitFunction: _editTv,
                           hoverBottomButton: true,
+                          loading: tapEditTv,
                         ),
                       ],
                     ),
@@ -237,13 +243,13 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                                     },
                                     textAlignVertical: TextAlignVertical.center,
                                     style: const TextStyle(
-                                      fontSize: Sizes.size12,
+                                      fontSize: Sizes.size14,
                                       color: Colors.black87,
                                     ),
                                     decoration: InputDecoration(
                                       hintText: "",
                                       hintStyle: TextStyle(
-                                        fontSize: Sizes.size12,
+                                        fontSize: Sizes.size14,
                                         color: Colors.grey.shade400,
                                         fontWeight: FontWeight.w300,
                                       ),
@@ -310,7 +316,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                                   child: Text(
                                     widget.tvModel.link,
                                     style: const TextStyle(
-                                      fontSize: Sizes.size12,
+                                      fontSize: Sizes.size14,
                                       color: Colors.black87,
                                     ),
                                   ),

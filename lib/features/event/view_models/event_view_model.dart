@@ -25,6 +25,7 @@ class EventViewModel extends AsyncNotifier<void> {
 
   Future<List<EventModel>> getUserEvents() async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+
     final events = await _eventRepository.getUserEvents(adminProfileModel!);
     return events.map((e) => EventModel.fromJson(e)).toList();
   }

@@ -54,13 +54,15 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   final List<PlatformFile> _feedImageFile = [];
   final List<Uint8List> _feedImageArray = [];
 
+  bool tapUploadEvent = false;
+
   void selectStartPeriod(void Function(void Function()) setState) async {
     DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: now,
-      firstDate: DateTime(now.year),
-      lastDate: now,
+      firstDate: DateTime(now.year, now.month, 1),
+      lastDate: DateTime(2030),
     );
 
     if (picked != null) {
@@ -76,8 +78,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: now,
-      firstDate: DateTime(now.year),
-      lastDate: now,
+      firstDate: DateTime(now.year, now.month, 1),
+      lastDate: DateTime(2030),
     );
     if (picked != null) {
       setState(() {
@@ -144,6 +146,10 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   }
 
   Future<void> _submitEvent() async {
+    setState(() {
+      tapUploadEvent = true;
+    });
+
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final eventId = const Uuid().v4();
     final evnetImageUrl = await ref
@@ -192,8 +198,11 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(
-            Sizes.size40,
+          padding: const EdgeInsets.only(
+            top: Sizes.size40,
+            left: Sizes.size40,
+            right: Sizes.size40,
+            bottom: Sizes.size60,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -208,6 +217,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       text: "행사 추가하기",
                       submitFunction: _submitEvent,
                       hoverBottomButton: _enabledEventButton,
+                      loading: tapUploadEvent,
                     ),
                   ),
                 ],
@@ -251,6 +261,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 style: const TextStyle(
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 decoration: InputDecoration(
                                   hintText: "",
@@ -397,6 +408,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 style: const TextStyle(
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -452,11 +464,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       ),
                       Gaps.v52,
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             flex: 1,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
                                   width: widget.totalWidth * 0.1,
@@ -492,6 +505,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   Text(
                                     "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
+                                      fontWeight: FontWeight.w600,
                                       color: Colors.grey.shade800,
                                       fontSize: Sizes.size14,
                                     ),
@@ -502,7 +516,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                           Expanded(
                             flex: 1,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
                                   width: widget.totalWidth * 0.1,
@@ -537,6 +551,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   Text(
                                     "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
+                                      fontWeight: FontWeight.w600,
                                       color: Colors.grey.shade800,
                                       fontSize: Sizes.size14,
                                     ),
@@ -583,6 +598,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   style: const TextStyle(
                                     fontSize: Sizes.size14,
                                     color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                   decoration: InputDecoration(
                                     isDense: true,
@@ -681,6 +697,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   controller: _prizewinnersControllder,
                                   textAlignVertical: TextAlignVertical.top,
                                   style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
                                     fontSize: Sizes.size14,
                                     color: Colors.black87,
                                   ),

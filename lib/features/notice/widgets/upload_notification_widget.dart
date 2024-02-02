@@ -36,6 +36,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
 
   final TextEditingController _descriptionControllder = TextEditingController();
   bool uploadHoverBottmoButton = false;
+  bool tapUploadNotification = false;
 
   Future<void> pickMultipleImagesFromGallery(
       void Function(void Function()) setState) async {
@@ -60,6 +61,9 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
   }
 
   Future<void> _submitFeedNotification() async {
+    setState(() {
+      tapUploadNotification = true;
+    });
     await ref
         .read(noticeProvider.notifier)
         .addFeedNotification(_feedDescription, _feedImageArray);
@@ -114,6 +118,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                       text: "피드 공지 올리기",
                       submitFunction: _submitFeedNotification,
                       hoverBottomButton: uploadHoverBottmoButton,
+                      loading: tapUploadNotification,
                     ),
                   ],
                 ),
@@ -147,6 +152,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                                 controller: _descriptionControllder,
                                 textAlignVertical: TextAlignVertical.top,
                                 style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
                                 ),
