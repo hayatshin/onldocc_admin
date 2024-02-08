@@ -7,6 +7,7 @@ import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/features/ca/models/quiz_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/quiz_view_model.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:universal_html/html.dart';
 
@@ -112,7 +113,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       ..click();
   }
 
-  Future<List<QuizModel>> getUserCaData() async {
+  Future<void> getUserCaData() async {
     List<QuizModel> caDataList = await ref
         .read(caProvider.notifier)
         .getUserDateCaData(widget.userId!, _selectedDateRange);
@@ -129,17 +130,52 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           result: "틀림", count: wrongCounts, color: Colors.grey.shade500),
     ];
 
-    setState(() {
-      loadingFinished = true;
-      _caDataList = caDataList;
-    });
-    return caDataList;
+    if (selectContractRegion.value.subdistrictId == "") {
+      if (mounted) {
+        setState(() {
+          loadingFinished = true;
+          _caDataList = caDataList;
+        });
+      }
+    } else {
+      if (selectContractRegion.value.contractCommunityId != "" &&
+          selectContractRegion.value.contractCommunityId != null) {
+        final filterDataList = caDataList
+            .where((e) =>
+                e.userContractCommunityId ==
+                selectContractRegion.value.contractCommunityId)
+            .toList();
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _caDataList = filterDataList;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _caDataList = caDataList;
+          });
+        }
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
     getUserCaData();
+
+    selectContractRegion.addListener(() async {
+      if (mounted) {
+        setState(() {
+          loadingFinished = false;
+        });
+
+        await getUserCaData();
+      }
+    });
   }
 
   @override

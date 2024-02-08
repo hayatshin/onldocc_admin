@@ -20,15 +20,18 @@ class NoticeViewModel extends AsyncNotifier<void> {
   Future<List<DiaryModel>> fetchAllNotices() async {
     final notices = await ref
         .read(noticeRepo)
-        .fetchAllNotices(adminProfileModel!.subdistrictId);
+        .fetchAllNotices(selectContractRegion.value.subdistrictId);
     return notices.map((e) => DiaryModel.fromJson(e)).toList();
   }
 
-  Future<void> addFeedNotification(
+  Future<void> addFeedNotification(AdminProfileModel adminProfileModel,
       String todayDiary, List<dynamic> imageList) async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-
-    final notiUserId = "noti:${adminProfileModel!.subdistrictId}";
+    final notiUserId = adminProfileModel.master
+        ? "noti:injicare"
+        : selectContractRegion.value.contractCommunityId == "" ||
+                selectContractRegion.value.contractCommunityId == null
+            ? "noti:${adminProfileModel.subdistrictId}"
+            : "noti:${selectContractRegion.value.contractCommunityId}";
     final diaryId = "${getCurrentSeconds()}_$notiUserId";
 
     DiaryModel feedNotiModel = DiaryModel(
@@ -46,7 +49,9 @@ class NoticeViewModel extends AsyncNotifier<void> {
     final isUserExist = await ref.read(userRepo).checkUserExists(notiUserId);
 
     if (!isUserExist) {
-      await ref.read(userProvider.notifier).saveAdminUser(notiUserId);
+      await ref
+          .read(userProvider.notifier)
+          .saveAdminUser(notiUserId, selectContractRegion.value);
     }
 
     await ref.read(noticeRepo).addFeedNotification(feedNotiModel.toJson());

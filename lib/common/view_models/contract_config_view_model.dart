@@ -24,7 +24,19 @@ class ContractConfigViewModel extends AsyncNotifier<void> {
 
   Future<List<ContractRegionModel>> getRegionItems() async {
     final regionlist = await _contractConfigRepo.getRegionItems();
-    return regionlist!.map((e) => ContractRegionModel.fromJson(e)).toList();
+
+    return regionlist!
+        .map((e) => ContractRegionModel.fromJsonRegion(e))
+        .toList();
+  }
+
+  Future<List<ContractRegionModel>> getCommunityItems(
+      String subdistrictId) async {
+    final communityList =
+        await _contractConfigRepo.getCommunityItems(subdistrictId);
+    return communityList!
+        .map((e) => ContractRegionModel.fromJsonCommunity(e))
+        .toList();
   }
 }
 

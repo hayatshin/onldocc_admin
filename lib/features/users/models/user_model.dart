@@ -10,7 +10,7 @@ class UserModel {
   final String gender;
   final String phone;
   final String fullRegion;
-  final dynamic community;
+  final String contractCommunityId;
   final int createdAt;
   final int? lastVisit;
   final int? totalScore;
@@ -28,7 +28,7 @@ class UserModel {
     required this.gender,
     required this.phone,
     required this.fullRegion,
-    required this.community,
+    required this.contractCommunityId,
     required this.createdAt,
     required this.lastVisit,
     required this.totalScore,
@@ -47,7 +47,7 @@ class UserModel {
         gender = "",
         phone = "",
         fullRegion = "",
-        community = "",
+        contractCommunityId = "",
         createdAt = 0,
         lastVisit = 0,
         totalScore = 0,
@@ -64,7 +64,7 @@ class UserModel {
       "gender": gender,
       "phone": phone,
       "fullRegion": fullRegion,
-      "community": community,
+      "contractCommunityId": contractCommunityId,
       "createdAt": createdAt,
       "lastVisit": lastVisit,
       "totalScore": totalScore,
@@ -87,7 +87,7 @@ class UserModel {
             json.containsKey("subdistricts") && json["subdistricts"] != null
                 ? json["subdistricts"]["subdistrict"]
                 : "-",
-        community = "",
+        contractCommunityId = json["contractCommunityId"] ?? "",
         createdAt = json["createdAt"] ?? 0,
         lastVisit = json.containsKey("lastVisit") && json["lastVisit"] != null
             ? json["lastVisit"]
@@ -108,7 +108,7 @@ class UserModel {
     final String? gender,
     final String? phone,
     final String? fullRegion,
-    final String? community,
+    final String? contractCommunityId,
     final int? createdAt,
     final int? lastVisit,
     final int? totalScore,
@@ -126,7 +126,7 @@ class UserModel {
       gender: gender ?? this.gender,
       phone: phone ?? this.phone,
       fullRegion: fullRegion ?? this.fullRegion,
-      community: community ?? this.community,
+      contractCommunityId: contractCommunityId ?? this.contractCommunityId,
       createdAt: createdAt ?? this.createdAt,
       lastVisit: lastVisit ?? this.lastVisit,
       totalScore: totalScore ?? this.totalScore,

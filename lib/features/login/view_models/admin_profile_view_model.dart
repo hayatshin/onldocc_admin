@@ -56,17 +56,17 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
     state = await AsyncValue.guard(
       () async {
         await _authRepository.signIn(email, password);
-        AdminProfileModel? adminProfileModel = await getAdminProfile();
-        if (adminProfileModel != null) {
-          selectContractRegion.value = ContractRegionModel(
-            name: adminProfileModel.name,
-            contractRegionId: adminProfileModel.contractRegionId,
-            subdistrictId: adminProfileModel.subdistrictId,
-            image: adminProfileModel.image,
-          );
-          return adminProfileModel;
-        }
-        return null;
+        Map<String, dynamic>? adminProfile =
+            await _authRepository.getAdminProfile(_authRepository.user!.uid);
+        final adminProfileModel = AdminProfileModel.fromJson(adminProfile!);
+
+        selectContractRegion.value = ContractRegionModel(
+          name: adminProfileModel.name,
+          contractRegionId: adminProfileModel.contractRegionId,
+          subdistrictId: adminProfileModel.subdistrictId,
+          image: adminProfileModel.image,
+        );
+        return adminProfileModel;
       },
     );
 

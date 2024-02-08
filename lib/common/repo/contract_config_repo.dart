@@ -23,8 +23,14 @@ class ContractConfigRepository {
     }
   }
 
-  Future<List<String>?> getCommunityItems() async {
-    return ["없음"];
+  Future<List<Map<String, dynamic>>?> getCommunityItems(
+      String subdistrictId) async {
+    final contractCommunities = await _supabase
+        .from("contract_communities")
+        .select('*')
+        .eq('subdistrictId', subdistrictId);
+
+    return contractCommunities;
   }
 }
 

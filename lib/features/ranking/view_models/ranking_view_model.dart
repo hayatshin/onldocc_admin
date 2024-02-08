@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/repo/ranking_repo.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
@@ -13,7 +14,9 @@ class RankingViewModel extends AsyncNotifier<void> {
 
   Future<List<UserModel>> getUserPoints(DateRange range) async {
     final userList = ref.read(userProvider).value ??
-        await ref.read(userProvider.notifier).initializeUserList();
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value.subdistrictId);
 
     List<UserModel> nonNullUserList =
         userList.where((e) => e != null).cast<UserModel>().toList();

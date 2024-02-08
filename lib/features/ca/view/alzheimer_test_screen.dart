@@ -25,7 +25,7 @@ class AlzheimerTestScreen extends ConsumerStatefulWidget {
 }
 
 class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
-  bool loadingFinihsed = false;
+  bool loadingFinished = false;
   final List<String> _tableHeader = [
     "시행 날짜",
     "분류",
@@ -123,16 +123,53 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
     final testList = await ref
         .read(cognitionTestProvider.notifier)
         .getCognitionTestData(alzheimer_test);
-    setState(() {
-      loadingFinihsed = true;
-      _testList = testList;
-    });
+
+    if (selectContractRegion.value.subdistrictId == "") {
+      if (mounted) {
+        setState(() {
+          loadingFinished = true;
+          _testList = testList;
+        });
+      }
+    } else {
+      if (selectContractRegion.value.contractCommunityId != "" &&
+          selectContractRegion.value.contractCommunityId != null) {
+        final filterDataList = testList
+            .where((e) =>
+                e.userContractCommunityId ==
+                selectContractRegion.value.contractCommunityId)
+            .toList();
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _testList = filterDataList;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _testList = testList;
+          });
+        }
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
     _initializeTableList();
+
+    selectContractRegion.addListener(() async {
+      if (mounted) {
+        setState(() {
+          loadingFinished = false;
+        });
+
+        await _initializeTableList();
+      }
+    });
   }
 
   @override
@@ -142,7 +179,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
     return ValueListenableBuilder(
       valueListenable: selectContractRegion,
       builder: (context, value, child) {
-        return loadingFinihsed
+        return loadingFinished
             ? Column(
                 children: [
                   SearchCsv(

@@ -8,6 +8,7 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:skeletons/skeletons.dart';
 
 const unselectedColor = Colors.black54;
 
@@ -26,285 +27,354 @@ class SidebarTemplate extends ConsumerStatefulWidget {
 }
 
 class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
-  final contractTypeController = TextEditingController();
-  final contractNameController = TextEditingController();
+  final contractRegionController = TextEditingController();
+  final contractCommunityController = TextEditingController();
   final menuFontSize = Sizes.size12;
+  AdminProfileModel _adminProfileModel = AdminProfileModel.empty();
 
-  List<ContractRegionModel> _contractItems = [ContractRegionModel.empty()];
+  List<ContractRegionModel> _contractRegionItems = [
+    ContractRegionModel.empty()
+  ];
+  List<ContractRegionModel> _contractCommunityItems = [
+    ContractRegionModel.empty()
+  ];
 
-  void setContractType(String value) async {
-    if (value == "지역") {
-      contractNameController.clear();
+  Future<void> _initializeAdminMasterSetting() async {
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
+    selectContractRegion.value = ContractRegionModel(
+      name: adminProfileModel!.name,
+      subdistrictId: adminProfileModel.subdistrictId,
+      contractRegionId: adminProfileModel.contractRegionId,
+      image: adminProfileModel.image,
+    );
+
+    if (adminProfileModel.master) {
       final regionItems =
           await ref.read(contractConfigProvider.notifier).getRegionItems();
 
       setState(() {
-        _contractItems = regionItems;
+        _contractRegionItems = [
+          ContractRegionModel.empty(),
+          ...regionItems,
+        ];
       });
-    } else if (value == "기관") {
-      contractNameController.clear();
     } else {
-      contractNameController.clear();
-      selectContractRegion.value = ContractRegionModel.empty();
+      final communityItems = await ref
+          .read(contractConfigProvider.notifier)
+          .getCommunityItems(adminProfileModel.subdistrictId);
+
+      final communityList = [
+        ContractRegionModel.total(adminProfileModel.subdistrictId),
+        ...communityItems
+      ];
+
+      communityListValueNotifier.value = communityList;
 
       setState(() {
-        _contractItems = [ContractRegionModel.empty()];
+        _contractCommunityItems = communityList;
       });
     }
+
+    setState(() {
+      _adminProfileModel = adminProfileModel;
+    });
   }
 
-  void setContractName(String value) async {
-    // contractNotifier.changeContractModel(contractName: value);
+  void setContractRegion(String value) async {
+    contractCommunityController.clear();
+
+    final selectRegion =
+        _contractRegionItems.firstWhere((element) => element.name == value);
+
+    final communityItems = await ref
+        .read(contractConfigProvider.notifier)
+        .getCommunityItems(selectRegion.subdistrictId);
+
+    selectContractRegion.value = selectRegion;
+
+    setState(() {
+      _contractCommunityItems = [
+        ContractRegionModel.total(selectRegion.subdistrictId),
+        ...communityItems
+      ];
+    });
+  }
+
+  void setContractCommunity(String value) async {
     selectContractRegion.value =
-        _contractItems.firstWhere((element) => element.name == value);
+        _contractCommunityItems.firstWhere((element) => element.name == value);
   }
 
   @override
   void initState() {
     super.initState();
+
+    _initializeAdminMasterSetting();
   }
 
   @override
   void dispose() {
-    contractTypeController.dispose();
-    contractNameController.dispose();
+    contractRegionController.dispose();
+    contractCommunityController.dispose();
 
     super.dispose();
-  }
-
-  Future<AdminProfileModel?> _initializeAuthProfile() async {
-    // AdminProfileModel? adminProfile = ref.read(adminProfileProvider).value;
-    AdminProfileModel? adminProfile =
-        await ref.read(adminProfileProvider.notifier).getAdminProfile();
-
-    return adminProfile;
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return FutureBuilder(
-      future: _initializeAuthProfile(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final data = snapshot.data!;
-          return Scaffold(
-            body: Row(
-              children: [
-                SizedBox(
-                  width: size.width * 0.17,
-                  child: Drawer(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.zero,
-                      ),
+    return Scaffold(
+      body: Row(
+        children: [
+          SizedBox(
+            width: size.width * 0.17,
+            child: Drawer(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.zero,
+                ),
+              ),
+              child: Container(
+                width: size.width * 0.2,
+                height: size.height,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF7FAFC),
+                  border: Border(
+                    right: BorderSide(
+                      color: Colors.grey.shade200,
                     ),
-                    child: Container(
-                      width: size.width * 0.2,
-                      height: size.height,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF7FAFC),
-                        border: Border(
-                          right: BorderSide(
-                            color: Colors.grey.shade200,
-                          ),
-                        ),
-                      ),
-                      child: Column(
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
                         children: [
-                          Expanded(
-                            child: ListView(
-                              padding: EdgeInsets.zero,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: Colors.grey.shade200,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: Sizes.size14,
-                                      horizontal: Sizes.size14,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 24,
-                                          foregroundImage:
-                                              NetworkImage(data.image),
-                                        ),
-                                        Gaps.v14,
-                                        Text(
-                                          data.name,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            color: Colors.black87,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        if (data.master)
-                                          Column(
-                                            children: [
-                                              Gaps.v20,
-                                              CustomDropdown(
-                                                onChanged: (value) =>
-                                                    setContractType(value),
-                                                hintText: "지역 / 기관 선택",
-                                                hintStyle: TextStyle(
-                                                  fontSize: menuFontSize,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                                listItemStyle: TextStyle(
-                                                  fontSize: menuFontSize,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                                selectedStyle: TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize: menuFontSize,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                items: const ["전체", "지역", "기관"],
-                                                controller:
-                                                    contractTypeController,
-                                              ),
-                                              Gaps.v5,
-                                              CustomDropdown(
-                                                onChanged: (value) =>
-                                                    setContractName(value),
-                                                hintText: "세부 선택",
-                                                hintStyle: TextStyle(
-                                                  fontSize: menuFontSize,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                                listItemStyle: TextStyle(
-                                                  fontSize: menuFontSize,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                                selectedStyle: TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize: menuFontSize,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                items: _contractItems
-                                                    .map((e) => e.name)
-                                                    .toList(),
-                                                controller:
-                                                    contractNameController,
-                                              )
-                                            ],
-                                          )
-                                      ],
-                                    ),
-                                  ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey.shade200,
                                 ),
-                                Gaps.v20,
-                                SingleSidebarTile(
-                                  selected: widget.selectedMenuURL == 0,
-                                  selectedIcon: Icons.emoji_people_rounded,
-                                  unselectedIcon:
-                                      Icons.accessibility_new_rounded,
-                                  title: "회원 관리",
-                                  action: () =>
-                                      menuNotifier.setSelectedMenu(0, context),
-                                ),
-                                const ParentSidebarTile(
-                                  icon: Icons.auto_graph,
-                                  title: "점수 관리",
-                                  children: [
-                                    "전체 점수",
-                                    "회원별 걸음수",
-                                    "회원별 일기",
-                                  ],
-                                  standardIndex: 1,
-                                ),
-                                const ParentSidebarTile(
-                                  icon: Icons.psychology_rounded,
-                                  title: "회원별 인지 관리",
-                                  children: [
-                                    "문제 풀기",
-                                    "온라인 치매 검사",
-                                    "노인 우울척도 검사"
-                                  ],
-                                  standardIndex: 4,
-                                ),
-                                SingleSidebarTile(
-                                  selected: menuNotifier.selectedMenu == 7,
-                                  selectedIcon: Icons.notifications_active,
-                                  unselectedIcon: Icons.notifications_none,
-                                  title: "공지 관리",
-                                  action: () =>
-                                      menuNotifier.setSelectedMenu(7, context),
-                                ),
-                                SingleSidebarTile(
-                                  selected: menuNotifier.selectedMenu == 8,
-                                  selectedIcon: Icons.event_available_rounded,
-                                  unselectedIcon: Icons.calendar_today_rounded,
-                                  title: "행사 관리",
-                                  action: () =>
-                                      menuNotifier.setSelectedMenu(8, context),
-                                ),
-                                SingleSidebarTile(
-                                  selected: menuNotifier.selectedMenu == 9,
-                                  selectedIcon: Icons.ondemand_video_rounded,
-                                  unselectedIcon: Icons.tv_rounded,
-                                  title: "재밌는 테레비 관리",
-                                  action: () =>
-                                      menuNotifier.setSelectedMenu(9, context),
-                                ),
-                                Gaps.v40,
-                              ],
+                              ),
                             ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: Sizes.size24,
+                                vertical: Sizes.size14,
+                                horizontal: Sizes.size14,
                               ),
-                              child: MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    ref
-                                        .read(adminProfileProvider.notifier)
-                                        .logOut(context);
-                                  },
-                                  child: const Text(
-                                    "로그아웃",
-                                    style: TextStyle(
-                                      fontSize: Sizes.size14,
-                                      fontWeight: FontWeight.w500,
-                                      color: unselectedColor,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    clipBehavior: Clip.hardEdge,
+                                    child: Image.network(
+                                      _adminProfileModel.image,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return const SkeletonAvatar(
+                                          style: SkeletonAvatarStyle(
+                                            shape: BoxShape.circle,
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder:
+                                          (context, exception, stackTrace) {
+                                        return const SkeletonAvatar(
+                                          style: SkeletonAvatarStyle(
+                                            shape: BoxShape.circle,
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
-                                ),
+                                  Gaps.v14,
+                                  Text(
+                                    _adminProfileModel.name,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Gaps.v20,
+                                  if (_adminProfileModel.master)
+                                    Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "---- 지역 선택 ----",
+                                              style: TextStyle(
+                                                  fontSize: menuFontSize,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.blueGrey),
+                                            ),
+                                          ],
+                                        ),
+                                        Gaps.v5,
+                                        CustomDropdown(
+                                          onChanged: (value) =>
+                                              setContractRegion(value),
+                                          hintText: "지역 선택",
+                                          decoration: CustomDropdownDecoration(
+                                            hintStyle: TextStyle(
+                                              fontSize: menuFontSize,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                            listItemStyle: TextStyle(
+                                              fontSize: menuFontSize,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          items: _contractRegionItems
+                                              .map((e) => e.name)
+                                              .toList(),
+                                          // controller: contractRegionController,
+                                          excludeSelected: false,
+                                          initialItem:
+                                              _contractRegionItems[0].name,
+                                        ),
+                                        Gaps.v5,
+                                      ],
+                                    ),
+                                  Gaps.v10,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "---- 기관 선택 ----",
+                                        style: TextStyle(
+                                            fontSize: menuFontSize,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.blueGrey),
+                                      ),
+                                    ],
+                                  ),
+                                  Gaps.v5,
+                                  CustomDropdown(
+                                    onChanged: (value) =>
+                                        setContractCommunity(value),
+                                    decoration: CustomDropdownDecoration(
+                                      listItemStyle: TextStyle(
+                                        fontSize: menuFontSize,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    items: _contractCommunityItems
+                                        .map((e) => e.name)
+                                        .toList(),
+                                    initialItem:
+                                        _contractCommunityItems[0].name,
+                                    // controller: contractCommunityController,
+                                    excludeSelected: false,
+                                  )
+                                ],
                               ),
                             ),
-                          )
+                          ),
+                          Gaps.v20,
+                          SingleSidebarTile(
+                            selected: widget.selectedMenuURL == 0,
+                            selectedIcon: Icons.emoji_people_rounded,
+                            unselectedIcon: Icons.accessibility_new_rounded,
+                            title: "회원 관리",
+                            action: () =>
+                                menuNotifier.setSelectedMenu(0, context),
+                          ),
+                          const ParentSidebarTile(
+                            icon: Icons.auto_graph,
+                            title: "점수 관리",
+                            children: [
+                              "전체 점수",
+                              "회원별 걸음수",
+                              "회원별 일기",
+                            ],
+                            standardIndex: 1,
+                          ),
+                          const ParentSidebarTile(
+                            icon: Icons.psychology_rounded,
+                            title: "회원별 인지 관리",
+                            children: ["문제 풀기", "온라인 치매 검사", "노인 우울척도 검사"],
+                            standardIndex: 4,
+                          ),
+                          SingleSidebarTile(
+                            selected: menuNotifier.selectedMenu == 7,
+                            selectedIcon: Icons.notifications_active,
+                            unselectedIcon: Icons.notifications_none,
+                            title: "공지 관리",
+                            action: () =>
+                                menuNotifier.setSelectedMenu(7, context),
+                          ),
+                          SingleSidebarTile(
+                            selected: menuNotifier.selectedMenu == 8,
+                            selectedIcon: Icons.event_available_rounded,
+                            unselectedIcon: Icons.calendar_today_rounded,
+                            title: "행사 관리",
+                            action: () =>
+                                menuNotifier.setSelectedMenu(8, context),
+                          ),
+                          SingleSidebarTile(
+                            selected: menuNotifier.selectedMenu == 9,
+                            selectedIcon: Icons.ondemand_video_rounded,
+                            unselectedIcon: Icons.tv_rounded,
+                            title: "재밌는 테레비 관리",
+                            action: () =>
+                                menuNotifier.setSelectedMenu(9, context),
+                          ),
+                          Gaps.v40,
                         ],
                       ),
                     ),
-                  ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Sizes.size24,
+                        ),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {
+                              ref
+                                  .read(adminProfileProvider.notifier)
+                                  .logOut(context);
+                            },
+                            child: const Text(
+                              "로그아웃",
+                              style: TextStyle(
+                                fontSize: Sizes.size14,
+                                fontWeight: FontWeight.w500,
+                                color: unselectedColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-                Expanded(
-                  child: ValueListenableBuilder(
-                    valueListenable: selectContractRegion,
-                    builder: (context, value, child) => widget.child,
-                  ),
-                ),
-              ],
+              ),
             ),
-          );
-        } else if (snapshot.hasError) {
-          return Text(snapshot.error.toString());
-        }
-        return Container();
-      },
+          ),
+          Expanded(
+            child: widget.child,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -467,3 +537,5 @@ class ChildSidebarTile extends StatelessWidget {
     );
   }
 }
+
+final communityListValueNotifier = ValueNotifier<List<ContractRegionModel>>([]);

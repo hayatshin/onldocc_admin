@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/widgets/top_button.dart';
 import 'package:onldocc_admin/constants/const.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
 import 'package:onldocc_admin/features/tv/widgets/edit_tv_widget.dart';
@@ -30,6 +31,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
+  bool loadingFinished = false;
 
   void uploadVideoTap(
       BuildContext context, double totalWidth, double totalHeight) {
@@ -74,14 +76,56 @@ class _TvScreenState extends ConsumerState<TvScreen> {
   void initState() {
     super.initState();
     getUserTvs();
+
+    selectContractRegion.addListener(() async {
+      if (mounted) {
+        setState(() {
+          loadingFinished = false;
+        });
+
+        await getUserTvs();
+      }
+    });
   }
 
   Future<void> getUserTvs() async {
     final tvList = await ref.read(tvProvider.notifier).getUserTvs();
 
-    setState(() {
-      _tvList = tvList;
-    });
+    if (selectContractRegion.value.subdistrictId == "") {
+      if (mounted) {
+        setState(() {
+          loadingFinished = true;
+          _tvList = tvList;
+        });
+      }
+    } else {
+      if (selectContractRegion.value.contractCommunityId != "" &&
+          selectContractRegion.value.contractCommunityId != null) {
+        final filterDataList = tvList
+            .where((e) =>
+                e.contractCommunityId ==
+                selectContractRegion.value.contractCommunityId)
+            .toList();
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _tvList = filterDataList;
+          });
+        }
+      } else {
+        final filterDataList = tvList
+            .where((e) =>
+                e.contractCommunityId == null || e.contractCommunityId == "")
+            .toList();
+
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _tvList = filterDataList;
+          });
+        }
+      }
+    }
   }
 
   @override

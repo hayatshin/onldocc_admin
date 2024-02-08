@@ -59,6 +59,9 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       videoId: videoId,
       createdAt: getCurrentSeconds(),
       contractRegionId: adminProfileModel!.contractRegionId,
+      contractCommunityId: selectContractRegion.value.contractCommunityId != ""
+          ? selectContractRegion.value.contractCommunityId
+          : null,
     );
 
     await ref.read(tvRepo).addTv(tvModel);

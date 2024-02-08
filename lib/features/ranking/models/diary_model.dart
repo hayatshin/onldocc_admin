@@ -11,6 +11,8 @@ class DiaryModel {
   final String todayDiary;
   final List<String>? images;
   final bool? notice;
+  final String? userSubdistrictId;
+  final String? userContractCommunityId;
 
   DiaryModel({
     required this.userId,
@@ -23,6 +25,8 @@ class DiaryModel {
     required this.todayDiary,
     this.images,
     this.notice,
+    this.userSubdistrictId,
+    this.userContractCommunityId,
   });
 
   DiaryModel.empty()
@@ -35,7 +39,9 @@ class DiaryModel {
         numComments = 0,
         todayDiary = "",
         images = [],
-        notice = false;
+        notice = false,
+        userSubdistrictId = "",
+        userContractCommunityId = "";
 
   Map<String, dynamic> toJson() {
     return {
@@ -62,7 +68,9 @@ class DiaryModel {
         todayDiary = json.containsKey("todayDiary") ? json["todayDiary"] : "",
         images =
             json.containsKey("images") ? spreadDiaryImages(json["images"]) : [],
-        notice = json.containsKey("notice") ? json["notice"] : false;
+        notice = json.containsKey("notice") ? json["notice"] : false,
+        userSubdistrictId = json["users"]["subdistrictId"],
+        userContractCommunityId = json["users"]["contractCommunityId"];
 
   DiaryModel copyWith({
     final String? userId,
@@ -76,6 +84,8 @@ class DiaryModel {
     final String? todayDiary,
     final List<String>? images,
     final bool? notice,
+    final String? userSubdistrictId,
+    final String? userContractCommunityId,
   }) {
     return DiaryModel(
       userId: userId ?? this.userId,
@@ -88,6 +98,9 @@ class DiaryModel {
       todayDiary: todayDiary ?? this.todayDiary,
       images: images ?? this.images,
       notice: notice ?? this.notice,
+      userSubdistrictId: userSubdistrictId ?? this.userSubdistrictId,
+      userContractCommunityId:
+          userContractCommunityId ?? this.userContractCommunityId,
     );
   }
 }

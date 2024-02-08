@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/widgets/bottom_modal_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/notice/view_models/notice_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
@@ -64,9 +66,11 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
     setState(() {
       tapUploadNotification = true;
     });
-    await ref
-        .read(noticeProvider.notifier)
-        .addFeedNotification(_feedDescription, _feedImageArray);
+
+    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+
+    await ref.read(noticeProvider.notifier).addFeedNotification(
+        adminProfileModel!, _feedDescription, _feedImageArray);
     if (!mounted) return;
 
     resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen);

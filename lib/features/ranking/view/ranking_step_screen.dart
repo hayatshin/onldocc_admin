@@ -47,6 +47,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
       _selectedDateRange = dateRange;
       loadingFinished = false;
     });
+
     final stepDataList = await ref
         .read(stepProvider.notifier)
         .getUserDateStepData(widget.userId!, dateRange);

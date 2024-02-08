@@ -8,37 +8,25 @@ class TvRepository {
 
   // supabase
   Future<List<Map<String, dynamic>>> getUserTvs(
-      AdminProfileModel adminProfile) async {
-    if (adminProfile.master) {
-      final data =
+      AdminProfileModel model, String contractRegionId) async {
+    if (model.master && contractRegionId == "") {
+      final allUsers =
           await _supabase.from("videos").select('*, contract_regions(*)').order(
                 'createdAt',
                 ascending: true,
               );
-      return data;
+      return allUsers;
     } else {
-      final allUsers = await _supabase
-          .from("videos")
-          .select('*, contract_regions(*)')
-          .eq('allUsers', true)
-          .order(
-            'createdAt',
-            ascending: true,
-          );
       final contractRegions = await _supabase
           .from("videos")
           .select('*, contract_regions(*)')
           .eq('allUsers', false)
-          .eq('contractRegionId', adminProfile.contractRegionId)
+          .eq('contractRegionId', contractRegionId)
           .order(
             'createdAt',
             ascending: true,
           );
-
-      final combinedList = [...contractRegions, ...allUsers];
-      combinedList.sort(
-          (a, b) => (a["createdAt"] as int).compareTo(b["createdAt"] as int));
-      return combinedList;
+      return contractRegions;
     }
   }
 

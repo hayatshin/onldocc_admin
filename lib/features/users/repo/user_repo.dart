@@ -24,19 +24,21 @@ class UserRepository {
   }
 
   Future<List<Map<String, dynamic>>> initializeUserList(
-      bool userMaster, String userSubdistrictId) async {
+      String userSubdistrictId) async {
     try {
       List<Map<String, dynamic>> userList = [];
-      if (userMaster) {
+      if (userSubdistrictId == "") {
         final data = await _supabase
             .from("users")
             .select('*, subdistricts(*)')
+            .neq('loginType', '어드민')
             .order('createdAt', ascending: true, nullsFirst: true);
         userList = data;
       } else {
         final data = await _supabase
             .from("users")
             .select('*, subdistricts(*)')
+            .neq('loginType', '어드민')
             .eq('subdistrictId', userSubdistrictId)
             .order('createdAt', ascending: true, nullsFirst: true);
         userList = data;

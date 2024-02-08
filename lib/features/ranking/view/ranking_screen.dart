@@ -9,6 +9,7 @@ import 'package:onldocc_admin/common/view/search_period_order.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
@@ -57,6 +58,16 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     super.initState();
 
     getScoreList(selectedDateRange);
+
+    selectContractRegion.addListener(() async {
+      if (mounted) {
+        setState(() {
+          loadingFinished = false;
+        });
+
+        await getScoreList(selectedDateRange);
+      }
+    });
   }
 
   void resetInitialState() async {
@@ -136,17 +147,40 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
       ..click();
   }
 
-  Future<List<UserModel?>> getScoreList(DateRange? range) async {
+  Future<void> getScoreList(DateRange? range) async {
     final userList =
         await ref.read(rankingProvider.notifier).getUserPoints(range!);
 
-    if (mounted) {
-      setState(() {
-        loadingFinished = true;
-        _userDataList = userList;
-      });
+    if (selectContractRegion.value.subdistrictId == "") {
+      if (mounted) {
+        setState(() {
+          loadingFinished = true;
+          _userDataList = userList;
+        });
+      }
+    } else {
+      if (selectContractRegion.value.contractCommunityId != "" &&
+          selectContractRegion.value.contractCommunityId != null) {
+        final filterDataList = userList
+            .where((e) =>
+                e.contractCommunityId ==
+                selectContractRegion.value.contractCommunityId)
+            .toList();
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _userDataList = filterDataList;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _userDataList = userList;
+          });
+        }
+      }
     }
-    return userList;
   }
 
   Future<void> updateOrderStandard(String value) async {
@@ -239,6 +273,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return loadingFinished
         ? Column(children: [
             SearchPeriodOrder(

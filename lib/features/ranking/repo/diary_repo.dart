@@ -11,7 +11,7 @@ class DiaryRepository {
     int endSeconds = convertEndDateTimeToSeconds(endDate);
     final doc = await _supabase
         .from("diaries")
-        .select('*')
+        .select('*, users(*)')
         .eq('userId', userId)
         .gte('createdAt', startSeconds)
         .lte('createdAt', endSeconds);

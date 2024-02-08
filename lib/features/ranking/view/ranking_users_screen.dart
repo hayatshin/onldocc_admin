@@ -2,11 +2,11 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:onldocc_admin/common/models/contract_notifier.dart';
 import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
@@ -38,11 +38,15 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   void initState() {
     super.initState();
     getUserModelList();
-    contractNotifier.addListener(() async {
-      setState(() {
-        loadingFinished = false;
-      });
-      await getUserModelList();
+
+    selectContractRegion.addListener(() async {
+      if (mounted) {
+        setState(() {
+          loadingFinished = false;
+        });
+
+        await getUserModelList();
+      }
     });
   }
 
@@ -81,17 +85,42 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
     }
   }
 
-  Future<List<UserModel?>> getUserModelList() async {
+  Future<void> getUserModelList() async {
     final userList = ref.read(userProvider).value ??
-        await ref.read(userProvider.notifier).initializeUserList();
-    if (mounted) {
-      setState(() {
-        loadingFinished = true;
-        _userDataList = userList;
-      });
-    }
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value.subdistrictId);
 
-    return userList;
+    if (selectContractRegion.value.subdistrictId == "") {
+      if (mounted) {
+        setState(() {
+          loadingFinished = true;
+          _userDataList = userList;
+        });
+      }
+    } else {
+      if (selectContractRegion.value.contractCommunityId != "" &&
+          selectContractRegion.value.contractCommunityId != null) {
+        final filterDataList = userList
+            .where((e) =>
+                e!.contractCommunityId ==
+                selectContractRegion.value.contractCommunityId)
+            .toList();
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _userDataList = filterDataList;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _userDataList = userList;
+          });
+        }
+      }
+    }
   }
 
   @override

@@ -112,10 +112,11 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                           left: Sizes.size10,
                         ),
                         child: Text(
-                          daterangeToSlashString(
-                              selectedDateRangeNotifier.value!),
+                          daterangeToSlashString(selectedDateRangeNotifier
+                                  .value ??
+                              DateRange(getThisWeekMonday(), DateTime.now())),
                           style: TextStyle(
-                            fontSize: Sizes.size15,
+                            fontSize: Sizes.size12,
                             color: Colors.grey.shade900,
                           ),
                         ),

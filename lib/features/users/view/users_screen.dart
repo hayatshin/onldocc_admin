@@ -145,18 +145,41 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       ..click();
   }
 
-  Future<List<UserModel?>> getUserModelList() async {
-    List<UserModel?> userDataList =
-        await ref.read(userProvider.notifier).initializeUserList();
+  Future<void> getUserModelList() async {
+    List<UserModel?> userDataList = await ref
+        .read(userProvider.notifier)
+        .initializeUserList(selectContractRegion.value.subdistrictId);
 
-    if (mounted) {
-      setState(() {
-        loadingFinished = true;
-        _userDataList = userDataList;
-      });
+    if (selectContractRegion.value.subdistrictId == "") {
+      if (mounted) {
+        setState(() {
+          loadingFinished = true;
+          _userDataList = userDataList;
+        });
+      }
+    } else {
+      if (selectContractRegion.value.contractCommunityId != "" &&
+          selectContractRegion.value.contractCommunityId != null) {
+        final filterDataList = userDataList
+            .where((e) =>
+                e!.contractCommunityId ==
+                selectContractRegion.value.contractCommunityId)
+            .toList();
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _userDataList = filterDataList;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            loadingFinished = true;
+            _userDataList = userDataList;
+          });
+        }
+      }
     }
-
-    return userDataList;
   }
 
   void removeDeleteOverlay() {

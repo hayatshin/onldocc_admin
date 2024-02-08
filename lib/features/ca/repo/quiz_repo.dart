@@ -7,7 +7,7 @@ class QuizRepository {
       String userId, int startSeconds, int endSeconds) async {
     final query = await _supabase
         .from("quizzes")
-        .select('*')
+        .select('*, users(*)')
         .eq('userId', userId)
         .gte('createdAt', startSeconds)
         .lte('createdAt', endSeconds);

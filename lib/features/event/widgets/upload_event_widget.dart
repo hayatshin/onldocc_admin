@@ -168,6 +168,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       endDate: convertTimettampToStringDot(_eventEndDate!),
       createdAt: getCurrentSeconds(),
       contractRegionId: adminProfileModel!.contractRegionId,
+      contractCommunityId: selectContractRegion.value.contractCommunityId != ""
+          ? selectContractRegion.value.contractCommunityId
+          : null,
     );
 
     await ref.read(eventRepo).addEvent(eventModel);

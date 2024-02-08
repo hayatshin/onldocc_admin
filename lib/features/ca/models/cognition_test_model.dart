@@ -12,6 +12,8 @@ class CognitionTestModel {
   final String? userGender;
   final String? userAge;
   final String? userPhone;
+  final String userSubdistrictId;
+  final String userContractCommunityId;
 
   CognitionTestModel({
     required this.testType,
@@ -25,6 +27,8 @@ class CognitionTestModel {
     this.userGender,
     this.userAge,
     this.userPhone,
+    required this.userSubdistrictId,
+    required this.userContractCommunityId,
   });
 
   CognitionTestModel.fromJson(Map<String, dynamic> json)
@@ -41,7 +45,9 @@ class CognitionTestModel {
         userGender = json["users"]["gender"] ?? "-",
         userAge = userAgeCalculation(
             json["users"]["birthYear"], json["users"]["birthDay"]),
-        userPhone = json["users"]["phone"] ?? "-";
+        userPhone = json["users"]["phone"] ?? "-",
+        userSubdistrictId = json["users"]['subdistrictId'] ?? "",
+        userContractCommunityId = json["users"]["contractCommunityId"] ?? "";
 
   // CognitionTestModel copyWith({
   //   String? userName,

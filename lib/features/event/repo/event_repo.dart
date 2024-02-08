@@ -10,15 +10,8 @@ class EventRepository {
   final _supabase = Supabase.instance.client;
 
   Future<List<Map<String, dynamic>>> getUserEvents(
-      AdminProfileModel adminProfile) async {
-    if (adminProfile.master) {
-      final data =
-          await _supabase.from("events").select('*, contract_regions(*)').order(
-                'createdAt',
-                ascending: true,
-              );
-      return data;
-    } else {
+      AdminProfileModel model, String contractRegionId) async {
+    if (model.master && contractRegionId == "") {
       final allUsers = await _supabase
           .from("events")
           .select('*, contract_regions(*)')
@@ -27,21 +20,19 @@ class EventRepository {
             'createdAt',
             ascending: true,
           );
-
+      return allUsers;
+    } else {
       final contractRegions = await _supabase
           .from("events")
           .select('*, contract_regions(*)')
           .eq('allUsers', false)
-          .eq('contractRegionId', adminProfile.contractRegionId)
+          .eq('contractRegionId', contractRegionId)
           .order(
             'createdAt',
             ascending: true,
           );
 
-      final combinedList = [...contractRegions, ...allUsers];
-      combinedList.sort(
-          (a, b) => (a["createdAt"] as int).compareTo(b["createdAt"] as int));
-      return combinedList;
+      return contractRegions;
     }
   }
 
