@@ -67,7 +67,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
           .getCommunityItems(adminProfileModel.subdistrictId);
 
       final communityList = [
-        ContractRegionModel.total(adminProfileModel.subdistrictId),
+        ContractRegionModel.total(adminProfileModel.contractRegionId,
+            adminProfileModel.subdistrictId),
         ...communityItems
       ];
 
@@ -97,7 +98,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
 
     setState(() {
       _contractCommunityItems = [
-        ContractRegionModel.total(selectRegion.subdistrictId),
+        ContractRegionModel.total(
+            selectRegion.contractRegionId!, selectRegion.subdistrictId),
         ...communityItems
       ];
     });

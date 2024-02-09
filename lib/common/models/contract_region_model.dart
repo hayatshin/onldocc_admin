@@ -20,9 +20,10 @@ class ContractRegionModel {
         subdistrictId = "",
         image = "";
 
-  ContractRegionModel.total(String adminSubdistrictId)
+  ContractRegionModel.total(
+      String adminContractRegionId, String adminSubdistrictId)
       : name = "전체",
-        contractRegionId = "",
+        contractRegionId = adminContractRegionId,
         contractCommunityId = "",
         subdistrictId = adminSubdistrictId,
         image =
@@ -39,7 +40,7 @@ class ContractRegionModel {
 
   ContractRegionModel.fromJsonCommunity(Map<String, dynamic> json)
       : name = json["name"],
-        contractRegionId = "",
+        contractRegionId = json["contractRegionId"] ?? "",
         contractCommunityId = json["contractCommunityId"] ?? "",
         subdistrictId = json["subdistrictId"] ?? "",
         image = json["image"] ??

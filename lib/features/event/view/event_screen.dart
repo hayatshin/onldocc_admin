@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
+import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/features/event/widgets/edit_event_widget.dart';
@@ -24,7 +25,6 @@ class EventScreen extends ConsumerStatefulWidget {
 }
 
 class _EventScreenState extends ConsumerState<EventScreen> {
-  double searchHeight = 35;
   bool _addEventHover = false;
 
   List<EventModel> eventList = [];

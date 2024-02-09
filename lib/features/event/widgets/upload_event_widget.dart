@@ -161,7 +161,6 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       description: _eventDescription,
       eventImage: evnetImageUrl,
       allUsers: false,
-      contractOrgType: "region",
       targetScore: int.parse(_eventGoalScore),
       achieversNumber: int.parse(_eventPrizeWinners),
       startDate: convertTimettampToStringDot(_eventStartDate!),

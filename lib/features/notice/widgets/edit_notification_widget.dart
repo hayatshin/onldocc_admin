@@ -4,8 +4,6 @@ import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/models/contract_region_model.dart';
-import 'package:onldocc_admin/common/view/sidebar_template.dart';
 import 'package:onldocc_admin/common/widgets/bottom_modal_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -46,9 +44,6 @@ class _EditNotificationWidgetState
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
 
   bool tapEditNotification = false;
-
-  ContractRegionModel? _selectRegionNotice;
-  final TextEditingController _communityController = TextEditingController();
 
   Future<void> pickMultipleImagesFromGallery(
       void Function(void Function()) setState) async {
@@ -190,14 +185,7 @@ class _EditNotificationWidgetState
       });
     });
 
-    final initializeSelectRegion = widget.diaryModel.userContractCommunityId ==
-            ""
-        ? ContractRegionModel.total(widget.diaryModel.userSubdistrictId!)
-        : communityListValueNotifier.value.firstWhere((e) =>
-            e.contractCommunityId == widget.diaryModel.userContractCommunityId);
-
     setState(() {
-      _selectRegionNotice = initializeSelectRegion;
       _feedDescription = widget.diaryModel.todayDiary;
       _feedImageArray.addAll(widget.diaryModel.images!);
     });

@@ -12,15 +12,16 @@ import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class EventViewModel extends AsyncNotifier<void> {
+class EventViewModel extends AsyncNotifier<List<EventModel>> {
   late EventRepository _eventRepository;
 
   static final pointUpFunctions = Uri.parse(
       "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-up-functions");
 
   @override
-  FutureOr<void> build() async {
+  FutureOr<List<EventModel>> build() async {
     _eventRepository = EventRepository();
+    return getUserEvents();
   }
 
   Future<List<EventModel>> getUserEvents() async {
@@ -28,7 +29,9 @@ class EventViewModel extends AsyncNotifier<void> {
 
     final events = await _eventRepository.getUserEvents(
         adminProfileModel!, selectContractRegion.value.contractRegionId!);
-    return events.map((e) => EventModel.fromJson(e)).toList();
+
+    final list = events.map((e) => EventModel.fromJson(e)).toList();
+    return list;
   }
 
   Future<List<ParticipantModel>> getEventParticipants(
@@ -85,6 +88,6 @@ class EventViewModel extends AsyncNotifier<void> {
   }
 }
 
-final eventProvider = AsyncNotifierProvider<EventViewModel, void>(
+final eventProvider = AsyncNotifierProvider<EventViewModel, List<EventModel>>(
   () => EventViewModel(),
 );

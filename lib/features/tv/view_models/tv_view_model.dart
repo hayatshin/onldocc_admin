@@ -12,6 +12,7 @@ class TvViewModel extends AsyncNotifier<void> {
 
   Future<List<TvModel>> getUserTvs() async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+
     final tvList = await ref.read(tvRepo).getUserTvs(
         adminProfileModel!, selectContractRegion.value.contractRegionId!);
     return tvList.map((e) => TvModel.fromJson(e)).toList();

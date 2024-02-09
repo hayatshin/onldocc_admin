@@ -8,8 +8,6 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
-import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
-import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class EditEventWidget extends ConsumerStatefulWidget {
@@ -138,7 +136,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
       tapEditEvent = true;
     });
 
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    // AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final eventId = widget.eventModel.eventId;
     final evnetImageUrl = await ref
         .read(eventRepo)
@@ -149,12 +147,14 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
       description: _eventDescription,
       eventImage: evnetImageUrl,
       allUsers: false,
-      contractOrgType: "region",
       targetScore: int.parse(_eventGoalScore),
       achieversNumber: int.parse(_eventPrizeWinners),
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
-      contractRegionId: adminProfileModel!.contractRegionId,
+      // subdistrictId: adminProfileModel!.subdistrictId,
+      // contractCommunityId: selectContractRegion.value.contractCommunityId != ""
+      //     ? selectContractRegion.value.contractCommunityId
+      //     : null,
     );
 
     await ref.read(eventRepo).editEvent(eventModel);

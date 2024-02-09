@@ -6,7 +6,6 @@ class EventModel {
   final String description;
   final String eventImage;
   final bool allUsers;
-  final String contractOrgType;
   final String? contractRegionId;
   final String? contractCommunityId;
   final int targetScore;
@@ -24,7 +23,6 @@ class EventModel {
     required this.description,
     required this.eventImage,
     required this.allUsers,
-    required this.contractOrgType,
     this.contractRegionId,
     this.contractCommunityId,
     required this.targetScore,
@@ -43,7 +41,6 @@ class EventModel {
         description = "",
         eventImage = "",
         allUsers = true,
-        contractOrgType = "region",
         contractRegionId = "",
         contractCommunityId = "",
         targetScore = 0,
@@ -62,7 +59,6 @@ class EventModel {
       "description": description,
       "eventImage": eventImage,
       "allUsers": allUsers,
-      "contractOrgType": contractOrgType,
       "contractRegionId": contractRegionId,
       "contractCommunityId": contractCommunityId,
       "targetScore": targetScore,
@@ -80,7 +76,6 @@ class EventModel {
       "description": description,
       "eventImage": eventImage,
       "allUsers": allUsers,
-      "contractOrgType": contractOrgType,
       "contractRegionId": contractRegionId,
       "contractCommunityId": contractCommunityId,
       "targetScore": targetScore,
@@ -96,9 +91,8 @@ class EventModel {
         description = json["description"],
         eventImage = json["eventImage"],
         allUsers = json["allUsers"],
-        contractOrgType = json["contractOrgType"],
         contractRegionId = json["contractRegionId"] ?? "",
-        contractCommunityId = json["contractCommunityId"],
+        contractCommunityId = json["contractCommunityId"] ?? "",
         targetScore = json["targetScore"],
         achieversNumber = json["achieversNumber"],
         startDate = json["startDate"],
