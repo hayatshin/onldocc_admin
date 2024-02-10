@@ -60,7 +60,7 @@ class TvModel {
         videoId = json["videoId"],
         createdAt = json["createdAt"],
         contractRegionId = json["contractRegionId"] ?? "",
-        contractCommunityId = json["contract_communityId"] ?? "";
+        contractCommunityId = json["contractCommunityId"] ?? "";
 
   TvModel copyWith({
     final String? thumbnail,

@@ -21,7 +21,7 @@ class TvRepository {
           .from("videos")
           .select('*, contract_regions(*)')
           .eq('allUsers', false)
-          .eq('subdistrictId', contractRegionId)
+          .eq('contractRegionId', contractRegionId)
           .order(
             'createdAt',
             ascending: true,

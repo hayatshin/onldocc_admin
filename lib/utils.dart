@@ -308,7 +308,7 @@ String getVideoId(String link) {
   String documentId = "";
   if (link.contains("youtu.be")) {
     final parts = link.split("youtu.be/");
-    documentId = parts[1];
+    documentId = parts[1].split('?').first;
   } else if (link.contains("youtube.com")) {
     final parts = link.split("watch?v=");
     documentId = parts[1];

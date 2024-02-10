@@ -30,8 +30,8 @@ class NoticeViewModel extends AsyncNotifier<void> {
         ? "noti:injicare"
         : selectContractRegion.value.contractCommunityId == "" ||
                 selectContractRegion.value.contractCommunityId == null
-            ? "noti:${adminProfileModel.subdistrictId}"
-            : "noti:${selectContractRegion.value.contractCommunityId}";
+            ? "noti:region:${adminProfileModel.subdistrictId}"
+            : "noti:community:${selectContractRegion.value.contractCommunityId}";
     final diaryId = "${getCurrentSeconds()}_$notiUserId";
 
     DiaryModel feedNotiModel = DiaryModel(

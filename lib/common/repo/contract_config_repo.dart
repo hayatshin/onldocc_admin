@@ -23,6 +23,20 @@ class ContractConfigRepository {
     }
   }
 
+  Future<String> convertContractCommunityIdToName(
+      String? contractCommunityId) async {
+    if (contractCommunityId != null) {
+      final data = await _supabase
+          .from("contract_communities")
+          .select('name')
+          .eq('contractCommunityId', contractCommunityId)
+          .single();
+      return data["name"];
+    } else {
+      return "";
+    }
+  }
+
   Future<List<Map<String, dynamic>>?> getCommunityItems(
       String subdistrictId) async {
     final contractCommunities = await _supabase

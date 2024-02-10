@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
+import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
@@ -20,6 +21,13 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
       String notiUserId, ContractRegionModel selectRegionModel) async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
 
+    final name = notiUserId.contains("region")
+        ? await ref
+            .read(contractRepo)
+            .convertSubdistrictIdToName(selectRegionModel.subdistrictId)
+        : await ref.read(contractRepo).convertContractCommunityIdToName(
+            selectRegionModel.contractCommunityId);
+
     final userJson = {
       "userId": notiUserId,
       "avatar": adminProfileModel!.image,
@@ -28,7 +36,7 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
       "birthYear": "1960",
       "birthDay": "0101",
       "phone": adminProfileModel.phone,
-      "name": adminProfileModel.name,
+      "name": name.split(' ').last,
       "createdAt": getCurrentSeconds(),
       "subdistrictId": selectRegionModel.subdistrictId != ""
           ? selectRegionModel.subdistrictId
