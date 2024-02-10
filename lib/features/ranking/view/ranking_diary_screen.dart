@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/models/mood_model.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/widgets/loading_widget.dart';
+import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
@@ -612,8 +612,8 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                   ),
                 ),
               )
-            : Expanded(
-                child: loadingWidget(context),
+            : const Expanded(
+                child: SkeletonLoadingScreen(),
               )
       ],
     );

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
-import 'package:onldocc_admin/common/widgets/loading_widget.dart';
+import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/cognition_test_view_model.dart';
@@ -306,7 +306,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                   ),
                 ],
               )
-            : loadingWidget(context);
+            : const SkeletonLoadingScreen();
       },
     );
   }

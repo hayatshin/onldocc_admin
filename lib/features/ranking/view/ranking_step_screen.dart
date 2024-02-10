@@ -5,7 +5,7 @@ import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/csv_period.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/widgets/loading_widget.dart';
+import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ranking/models/step_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/step_view_model.dart';
@@ -231,8 +231,8 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
                   ),
                 ),
               )
-            : Expanded(
-                child: loadingWidget(context),
+            : const Expanded(
+                child: SkeletonLoadingScreen(),
               )
       ],
     );

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/widgets/loading_widget.dart';
+import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
@@ -595,7 +595,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                             ),
                           ),
                         )
-                      : loadingWidget(context)
+                      : const SkeletonLoadingScreen()
                 ],
               ),
             ),

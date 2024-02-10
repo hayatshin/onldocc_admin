@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/widgets/loading_widget.dart';
+import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
@@ -316,6 +316,6 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
               )
             ],
           )
-        : loadingWidget(context);
+        : const SkeletonLoadingScreen();
   }
 }
