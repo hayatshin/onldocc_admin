@@ -99,6 +99,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
   Future<void> fetchAllNoticies() async {
     final noticeList =
         await ref.read(noticeProvider.notifier).fetchAllNotices();
+    print("noticeList -> $noticeList");
 
     if (selectContractRegion.value.subdistrictId == "") {
       // 마스터

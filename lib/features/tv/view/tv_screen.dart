@@ -7,7 +7,6 @@ import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
 import 'package:onldocc_admin/features/tv/widgets/edit_tv_widget.dart';
 import 'package:onldocc_admin/features/tv/widgets/upload_tv_widget.dart';
-import 'package:onldocc_admin/utils.dart';
 
 import '../../../common/view/search_below.dart';
 import '../../../constants/gaps.dart';
@@ -319,32 +318,27 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                     ),
                                   ),
                                 ),
-                                _tvList[index].allUsers != true
-                                    ? Expanded(
-                                        flex: 2,
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: MouseRegion(
-                                            cursor: SystemMouseCursors.click,
-                                            child: GestureDetector(
-                                              onTap: () => editVideoTap(
-                                                context,
-                                                size.width,
-                                                size.height,
-                                                _tvList[index],
-                                              ),
-                                              child: const Icon(
-                                                Icons.edit,
-                                                size: Sizes.size16,
-                                              ),
-                                            ),
-                                          ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      child: GestureDetector(
+                                        onTap: () => editVideoTap(
+                                          context,
+                                          size.width,
+                                          size.height,
+                                          _tvList[index],
                                         ),
-                                      )
-                                    : Expanded(
-                                        flex: 2,
-                                        child: noAuthorizedWidget(),
+                                        child: const Icon(
+                                          Icons.edit,
+                                          size: Sizes.size16,
+                                        ),
                                       ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             );
                           },

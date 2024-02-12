@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,7 +37,6 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
     "핸드폰 번호",
     "자세히 보기"
   ];
-  List<CognitionTestModel> _beforeFilterTestDataList = [];
   List<CognitionTestModel> _testList = [];
 
   List<dynamic> exportToList(CognitionTestModel testModel) {
@@ -95,27 +95,29 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
       ..click();
   }
 
-  void resetInitialState() {
-    setState(() {
-      _testList = _beforeFilterTestDataList;
-    });
-  }
+  Future<void> filterUserDataList(
+      String? searchBy, String searchKeyword) async {
+    List<CognitionTestModel> initialList =
+        ref.read(cognitionTestProvider).value ??
+            await ref
+                .read(cognitionTestProvider.notifier)
+                .getCognitionTestData(depression_test);
 
-  void filterUserDataList(String? searchBy, String searchKeyword) {
-    final newTableList = ref
-        .read(cognitionTestProvider.notifier)
-        .filterTableRows(
-          _testList,
-          searchBy!,
-          searchKeyword,
-        )
-        .where((element) => element != null)
-        .cast<CognitionTestModel>()
-        .toList();
+    List<CognitionTestModel> filterList = [];
+    if (searchBy == "name") {
+      filterList = initialList
+          .where((element) => element.userName!.contains(searchKeyword))
+          .cast<CognitionTestModel>()
+          .toList();
+    } else {
+      filterList = initialList
+          .where((element) => element.userPhone!.contains(searchKeyword))
+          .cast<CognitionTestModel>()
+          .toList();
+    }
 
     setState(() {
-      _beforeFilterTestDataList = _testList;
-      _testList = newTableList;
+      _testList = filterList;
     });
   }
 
@@ -184,123 +186,185 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                 children: [
                   SearchCsv(
                     filterUserList: filterUserDataList,
-                    resetInitialList: resetInitialState,
+                    resetInitialList: _initializeTableList,
                     generateCsv: generateUserCsv,
                   ),
                   SearchBelow(
                     size: size,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: tableWidth,
-                        child: DataTable(
-                          columns: [
-                            for (String header in _tableHeader)
-                              DataColumn(
-                                label: Text(
-                                  header,
-                                  style: TextStyle(
-                                    fontSize: Sizes.size13,
-                                    color: header == "자세히 보기"
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.black,
+                    child: SizedBox(
+                      width: tableWidth,
+                      child: DataTable2(
+                        columns: [
+                          const DataColumn2(
+                            fixedWidth: 130,
+                            label: Text(
+                              "시행 날짜",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const DataColumn2(
+                            fixedWidth: 100,
+                            label: Text(
+                              "분류",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const DataColumn2(
+                            fixedWidth: 100,
+                            label: Text(
+                              "점수",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const DataColumn2(
+                            label: Text(
+                              "이름",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const DataColumn2(
+                            fixedWidth: 100,
+                            label: Text(
+                              "성별",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const DataColumn2(
+                            fixedWidth: 100,
+                            label: Text(
+                              "나이",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const DataColumn2(
+                            label: Text(
+                              "핸드폰 번호",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          DataColumn2(
+                            fixedWidth: 100,
+                            label: Text(
+                              "자세히 보기",
+                              style: TextStyle(
+                                fontSize: Sizes.size13,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                        rows: [
+                          for (int i = 0; i < _testList.length; i++)
+                            DataRow2(
+                              cells: [
+                                DataCell(
+                                  Text(
+                                    secondsToStringLine(_testList[i].createdAt),
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size13,
+                                    ),
                                   ),
                                 ),
-                              ),
-                          ],
-                          rows: [
-                            for (int i = 0; i < _testList.length; i++)
-                              DataRow(
-                                cells: [
-                                  DataCell(
-                                    Text(
-                                      secondsToStringLine(
-                                          _testList[i].createdAt),
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                DataCell(
+                                  Text(
+                                    _testList[i].result,
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _testList[i].result,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _testList[i].totalPoint.toString(),
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _testList[i].totalPoint.toString(),
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _testList[i].userName!,
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size13,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _testList[i].userName!,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _testList[i].userGender!,
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _testList[i].userGender!,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _testList[i].userAge!.toString(),
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _testList[i].userAge!.toString(),
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _testList[i].userPhone!,
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size13,
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      _testList[i].userPhone!,
-                                      style: const TextStyle(
-                                        fontSize: Sizes.size13,
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          context.go(
-                                            "/depression/${_testList[i].testId}",
-                                            extra: _testList[i],
-                                          );
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: Sizes.size10,
-                                          ),
-                                          child: CircleAvatar(
-                                            backgroundColor:
-                                                Colors.grey.shade200,
-                                            child: Icon(
-                                              Icons.chevron_right,
-                                              size: Sizes.size16,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
+                                ),
+                                DataCell(
+                                  MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        context.go(
+                                          "/depression/${_testList[i].testId}",
+                                          extra: _testList[i],
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: Sizes.size10,
+                                        ),
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.grey.shade200,
+                                          child: Icon(
+                                            Icons.chevron_right,
+                                            size: Sizes.size16,
+                                            color:
+                                                Theme.of(context).primaryColor,
                                           ),
                                         ),
                                       ),
                                     ),
-                                  )
-                                ],
-                              )
-                          ],
-                        ),
+                                  ),
+                                )
+                              ],
+                            )
+                        ],
                       ),
                     ),
                   ),

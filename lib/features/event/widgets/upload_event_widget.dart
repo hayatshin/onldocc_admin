@@ -155,18 +155,21 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     final evnetImageUrl = await ref
         .read(eventRepo)
         .uploadSingleImageToStorage(eventId, _eventImageBytes);
+
     final eventModel = EventModel(
       eventId: eventId,
       title: _eventTitle,
       description: _eventDescription,
       eventImage: evnetImageUrl,
-      allUsers: false,
+      allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
       targetScore: int.parse(_eventGoalScore),
       achieversNumber: int.parse(_eventPrizeWinners),
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
       createdAt: getCurrentSeconds(),
-      contractRegionId: adminProfileModel!.contractRegionId,
+      contractRegionId: adminProfileModel!.contractRegionId != ""
+          ? adminProfileModel.contractRegionId
+          : null,
       contractCommunityId: selectContractRegion.value.contractCommunityId != ""
           ? selectContractRegion.value.contractCommunityId
           : null,

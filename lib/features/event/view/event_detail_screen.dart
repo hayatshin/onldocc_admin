@@ -6,6 +6,7 @@ import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
@@ -229,14 +230,38 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                             ),
                                           );
                                         }
-                                        return Container();
+                                        return RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            text: "주최기관:  ",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: Sizes.size15,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: "인지케어",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: Sizes.size15,
+                                                  color: Colors.grey.shade800,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        );
                                       },
                                     ),
                                     Gaps.h20,
                                     CircleAvatar(
                                       radius: 15,
                                       backgroundImage: NetworkImage(
-                                        widget.eventModel!.orgImage!,
+                                        widget.eventModel!.orgImage != "" &&
+                                                widget.eventModel!.orgImage !=
+                                                    null
+                                            ? widget.eventModel!.orgImage!
+                                            : injicareAvatar,
                                       ),
                                     ),
                                   ],

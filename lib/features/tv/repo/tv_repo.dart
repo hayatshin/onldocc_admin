@@ -10,11 +10,14 @@ class TvRepository {
   Future<List<Map<String, dynamic>>> getUserTvs(
       AdminProfileModel model, String contractRegionId) async {
     if (model.master && contractRegionId == "") {
-      final allUsers =
-          await _supabase.from("videos").select('*, contract_regions(*)').order(
-                'createdAt',
-                ascending: true,
-              );
+      final allUsers = await _supabase
+          .from("videos")
+          .select('*, contract_regions(*)')
+          .eq('allUsers', true)
+          .order(
+            'createdAt',
+            ascending: true,
+          );
       return allUsers;
     } else {
       final contractRegions = await _supabase

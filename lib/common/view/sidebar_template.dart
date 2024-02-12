@@ -85,8 +85,6 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   }
 
   void setContractRegion(String value) async {
-    contractCommunityController.clear();
-
     final selectRegion =
         _contractRegionItems.firstWhere((element) => element.name == value);
 
@@ -290,7 +288,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                           ),
                           Gaps.v20,
                           SingleSidebarTile(
-                            selected: widget.selectedMenuURL == 0,
+                            selected: menuNotifier.selectedMenu == 0,
                             selectedIcon: Icons.emoji_people_rounded,
                             unselectedIcon: Icons.accessibility_new_rounded,
                             title: "회원 관리",

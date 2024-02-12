@@ -8,6 +8,7 @@ import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
@@ -25,8 +26,6 @@ class UsersScreen extends ConsumerStatefulWidget {
 }
 
 class _UsersScreenState extends ConsumerState<UsersScreen> {
-  List<UserModel?> _beforeFilterUserDataList = [];
-
   bool loadingFinished = false;
 
   List<UserModel?> _userDataList = [];
@@ -66,23 +65,40 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     });
   }
 
-  void resetInitialState() {
-    setState(() {
-      _userDataList = _beforeFilterUserDataList;
-    });
-  }
+  Future<void> filterUserDataList(
+      String? searchBy, String searchKeyword) async {
+    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    List<UserModel?> userDataList = ref.read(userProvider).value ??
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(adminProfileModel!.subdistrictId);
 
-  void filterUserDataList(String? searchBy, String searchKeyword) {
-    final newUserDataList = ref.read(userProvider.notifier).filterTableRows(
-          _userDataList,
-          searchBy!,
-          searchKeyword,
-        );
+    List<UserModel> filterList = [];
+    if (searchBy == "name") {
+      filterList = userDataList
+          .where((element) => element!.name.contains(searchKeyword))
+          .cast<UserModel>()
+          .toList();
+    } else {
+      filterList = userDataList
+          .where((element) => element!.phone.contains(searchKeyword))
+          .cast<UserModel>()
+          .toList();
+    }
 
     setState(() {
-      _beforeFilterUserDataList = _userDataList;
-      _userDataList = newUserDataList;
+      _userDataList = filterList;
     });
+
+    // final newUserDataList = ref.read(userProvider.notifier).filterTableRows(
+    //       userDataList,
+    //       searchBy!,
+    //       searchKeyword,
+    //     );
+
+    // setState(() {
+    //   _userDataList = newUserDataList;
+    // });
   }
 
   List<dynamic> exportToList(UserModel userModel) {
@@ -285,7 +301,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     children: [
                       SearchCsv(
                         filterUserList: filterUserDataList,
-                        resetInitialList: resetInitialState,
+                        resetInitialList: getUserModelList,
                         generateCsv: generateUserCsv,
                       ),
                       SearchBelow(

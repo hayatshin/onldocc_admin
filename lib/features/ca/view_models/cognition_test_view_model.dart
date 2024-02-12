@@ -9,12 +9,13 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 const alzheimer_test = "alzheimer_test";
 const depression_test = "depression_test";
 
-class CognitionViewModel extends AsyncNotifier<void> {
+class CognitionViewModel extends AsyncNotifier<List<CognitionTestModel>> {
   late CognitionTestRepository _cognitionTestRepo;
 
   @override
-  FutureOr<void> build() async {
+  FutureOr<List<CognitionTestModel>> build() async {
     _cognitionTestRepo = CognitionTestRepository();
+    return [];
   }
 
   Future<List<CognitionTestModel>> getCognitionTestData(String testType) async {
@@ -23,7 +24,7 @@ class CognitionViewModel extends AsyncNotifier<void> {
     final list =
         await _cognitionTestRepo.getTestData(testType, adminProfileModel!);
     final modelList = list.map((e) => CognitionTestModel.fromJson(e)).toList();
-
+    state = AsyncData(modelList);
     return modelList;
   }
 
@@ -43,4 +44,5 @@ class CognitionViewModel extends AsyncNotifier<void> {
 }
 
 final cognitionTestProvider =
-    AsyncNotifierProvider<CognitionViewModel, void>(() => CognitionViewModel());
+    AsyncNotifierProvider<CognitionViewModel, List<CognitionTestModel>>(
+        () => CognitionViewModel());

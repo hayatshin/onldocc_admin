@@ -10,7 +10,6 @@ import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/features/event/widgets/edit_event_widget.dart';
 import 'package:onldocc_admin/features/event/widgets/upload_event_widget.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
-import 'package:onldocc_admin/utils.dart';
 
 import '../../../constants/gaps.dart';
 import '../../../constants/sizes.dart';
@@ -523,30 +522,24 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                           ),
                                         ),
                                       ),
-                                      eventList[index].allUsers != true
-                                          ? Expanded(
-                                              flex: 1,
-                                              child: MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () => editEventTap(
-                                                    context,
-                                                    size.width,
-                                                    size.height,
-                                                    eventList[index],
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.edit,
-                                                    size: Sizes.size16,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : Expanded(
-                                              flex: 1,
-                                              child: noAuthorizedWidget(),
+                                      Expanded(
+                                        flex: 1,
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => editEventTap(
+                                              context,
+                                              size.width,
+                                              size.height,
+                                              eventList[index],
                                             ),
+                                            child: const Icon(
+                                              Icons.edit,
+                                              size: Sizes.size16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                       Expanded(
                                         flex: 1,
                                         child: Align(

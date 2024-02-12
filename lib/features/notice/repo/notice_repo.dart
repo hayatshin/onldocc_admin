@@ -8,13 +8,23 @@ class NoticeRepository {
 
   Future<List<Map<String, dynamic>>> fetchAllNotices(
       String subdistrictId) async {
-    final notices = await _supabase
-        .from("diaries")
-        .select('*, users!inner(*), images(*)')
-        .eq('users.subdistrictId', subdistrictId)
-        .eq('notice', true)
-        .order('createdAt', ascending: false);
-    return notices;
+    if (subdistrictId == "") {
+      final notices = await _supabase
+          .from("diaries")
+          .select('*, users!inner(*), images(*)')
+          .eq('userId', 'noti:injicare')
+          .eq('notice', true)
+          .order('createdAt', ascending: false);
+      return notices;
+    } else {
+      final notices = await _supabase
+          .from("diaries")
+          .select('*, users!inner(*), images(*)')
+          .eq('users.subdistrictId', subdistrictId)
+          .eq('notice', true)
+          .order('createdAt', ascending: false);
+      return notices;
+    }
   }
 
   Future<void> deleteDiaryImageStorage(

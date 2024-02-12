@@ -7,19 +7,20 @@ import 'package:onldocc_admin/features/ranking/repo/ranking_repo.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 
-class RankingViewModel extends AsyncNotifier<void> {
+class RankingViewModel extends AsyncNotifier<List<UserModel>> {
   final RankingRepository _rankingRepo = RankingRepository();
   @override
-  FutureOr<void> build() async {}
+  FutureOr<List<UserModel>> build() async {
+    return [];
+  }
 
   Future<List<UserModel>> getUserPoints(DateRange range) async {
-    final userList = ref.read(userProvider).value ??
-        await ref
-            .read(userProvider.notifier)
-            .initializeUserList(selectContractRegion.value.subdistrictId);
+    List<UserModel?> userDataList = await ref
+        .read(userProvider.notifier)
+        .initializeUserList(selectContractRegion.value.subdistrictId);
 
     List<UserModel> nonNullUserList =
-        userList.where((e) => e != null).cast<UserModel>().toList();
+        userDataList.where((e) => e != null).cast<UserModel>().toList();
 
     final points = await _rankingRepo.getUserPoints(nonNullUserList, range);
     final userpoints = points.map((e) => UserModel.fromJson(e)).toList();
@@ -46,6 +47,7 @@ class RankingViewModel extends AsyncNotifier<void> {
   }
 }
 
-final rankingProvider = AsyncNotifierProvider<RankingViewModel, void>(
+final rankingProvider =
+    AsyncNotifierProvider<RankingViewModel, List<UserModel>>(
   () => RankingViewModel(),
 );

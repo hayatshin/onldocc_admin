@@ -79,6 +79,7 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
     final userlist = await _userRepo.initializeUserList(subdistrictId);
     final modelList = userlist.map((e) => UserModel.fromJson(e)).toList();
     final filterList = modelList.where((e) => e.name != "탈퇴자").toList();
+    state = AsyncData(filterList);
     return filterList;
   }
 }

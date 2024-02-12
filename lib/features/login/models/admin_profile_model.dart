@@ -1,3 +1,5 @@
+import 'package:onldocc_admin/constants/const.dart';
+
 class AdminProfileModel {
   final String adminId;
   final bool master;
@@ -43,7 +45,7 @@ class AdminProfileModel {
             : "마스터",
         image = json["contract_regions"] != null
             ? json["contract_regions"]["image"]
-            : "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/icons%2Ficon_solid.png?alt=media&token=3e3c0b76-a994-4068-a56b-16077c337080",
+            : injicareAvatar,
         phone = json["contract_regions"] != null
             ? json["contract_regions"]["phone"]
             : "",

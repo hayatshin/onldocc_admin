@@ -6,6 +6,7 @@ import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/models/ranking_extra.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
@@ -29,7 +30,6 @@ class RankingUsersScreen extends ConsumerStatefulWidget {
 }
 
 class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
-  List<UserModel?> _beforeFilterUserDataList = [];
   bool loadingFinished = false;
 
   List<UserModel?> _userDataList = [];
@@ -50,22 +50,29 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
     });
   }
 
-  void resetInitialState() {
-    setState(() {
-      _userDataList = _beforeFilterUserDataList;
-    });
-  }
+  Future<void> filterUserDataList(
+      String? searchBy, String searchKeyword) async {
+    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    List<UserModel?> userDataList = ref.read(userProvider).value ??
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(adminProfileModel!.subdistrictId);
 
-  void filterUserDataList(String? searchBy, String searchKeyword) {
-    final newUserDataList = ref.read(userProvider.notifier).filterTableRows(
-          _userDataList,
-          searchBy!,
-          searchKeyword,
-        );
+    List<UserModel> filterList = [];
+    if (searchBy == "name") {
+      filterList = userDataList
+          .where((element) => element!.name.contains(searchKeyword))
+          .cast<UserModel>()
+          .toList();
+    } else {
+      filterList = userDataList
+          .where((element) => element!.phone.contains(searchKeyword))
+          .cast<UserModel>()
+          .toList();
+    }
 
     setState(() {
-      _beforeFilterUserDataList = _userDataList;
-      _userDataList = newUserDataList;
+      _userDataList = filterList;
     });
   }
 
@@ -86,10 +93,15 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   }
 
   Future<void> getUserModelList() async {
-    final userList = ref.read(userProvider).value ??
-        await ref
+    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    final userList = adminProfileModel!.master
+        ? await ref
             .read(userProvider.notifier)
-            .initializeUserList(selectContractRegion.value.subdistrictId);
+            .initializeUserList(selectContractRegion.value.subdistrictId)
+        : ref.read(userProvider).value ??
+            await ref
+                .read(userProvider.notifier)
+                .initializeUserList(selectContractRegion.value.subdistrictId);
 
     if (selectContractRegion.value.subdistrictId == "") {
       if (mounted) {
@@ -137,7 +149,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
               Search(
                 menuText: menuTitle,
                 filterUserList: filterUserDataList,
-                resetInitialList: resetInitialState,
+                resetInitialList: getUserModelList,
               ),
               SearchBelow(
                 size: size,

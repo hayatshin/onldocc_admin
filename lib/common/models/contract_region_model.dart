@@ -1,3 +1,5 @@
+import 'package:onldocc_admin/constants/const.dart';
+
 class ContractRegionModel {
   final String name;
   final String? contractRegionId;
@@ -26,8 +28,7 @@ class ContractRegionModel {
         contractRegionId = adminContractRegionId,
         contractCommunityId = "",
         subdistrictId = adminSubdistrictId,
-        image =
-            "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/icons%2Ficon_solid.png?alt=media&token=3e3c0b76-a994-4068-a56b-16077c337080";
+        image = injicareAvatar;
 
   ContractRegionModel.fromJsonRegion(Map<String, dynamic> json)
       : name = json["subdistricts"]["subdistrict"],
@@ -36,13 +37,12 @@ class ContractRegionModel {
         subdistrictId = json["subdistrictId"] ?? "",
         image = json["contractRegions"] != null
             ? json["contractRegions"]["image"]
-            : "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/icons%2Ficon_solid.png?alt=media&token=3e3c0b76-a994-4068-a56b-16077c337080";
+            : injicareAvatar;
 
   ContractRegionModel.fromJsonCommunity(Map<String, dynamic> json)
       : name = json["name"],
         contractRegionId = json["contractRegionId"] ?? "",
         contractCommunityId = json["contractCommunityId"] ?? "",
         subdistrictId = json["subdistrictId"] ?? "",
-        image = json["image"] ??
-            "https://firebasestorage.googleapis.com/v0/b/chungchunon-android-dd695.appspot.com/o/icons%2Ficon_solid.png?alt=media&token=3e3c0b76-a994-4068-a56b-16077c337080";
+        image = json["image"] ?? injicareAvatar;
 }

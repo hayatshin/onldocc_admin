@@ -68,7 +68,12 @@ class EventRepository {
   }
 
   Future<void> addEvent(EventModel eventModel) async {
-    await _supabase.from("events").insert(eventModel.toJson());
+    try {
+      await _supabase.from("events").insert(eventModel.toJson());
+    } catch (e) {
+      // ignore: avoid_print
+      print("addEvent: $e");
+    }
   }
 
   Future<void> editEvent(EventModel eventModel) async {
