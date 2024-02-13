@@ -12,6 +12,7 @@ import 'package:onldocc_admin/features/ranking/view_models/diary_view_model.dart
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:to_csv/to_csv.dart' as exportCSV;
 
 class RankingDiaryScreen extends ConsumerStatefulWidget {
   // final String? index;
@@ -55,7 +56,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
     getUserDiaryData();
   }
 
-  List<dynamic> exportToList(DiaryModel diaryModel, int index) {
+  List<String> exportToList(DiaryModel diaryModel, int index) {
     return [
       (index + 1).toString(),
       secondsToStringLine(diaryModel.createdAt),
@@ -75,10 +76,10 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
     getUserDiaryData();
   }
 
-  List<List<dynamic>> exportToFullList(List<DiaryModel?> diaryModelList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<DiaryModel?> diaryModelList) {
+    List<List<String>> list = [];
 
-    list.add(_listHeader);
+    // list.add(_listHeader);
 
     for (int i = 0; i < diaryModelList.length; i++) {
       final itemList = exportToList(diaryModelList[i]!, i);
@@ -89,31 +90,13 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList(_diaryDataList);
+    const String fileName = "인지케어 회원별 일기";
 
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',') ||
-            row[i].toString().contains('\n')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-        // csvContent += row[i].toString();
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 회원별 일기 $_userName $formatDate.csv";
-
-    downloadCsv(csvContent, fileName);
+    exportCSV.myCSV(
+      _listHeader,
+      csvData,
+      fileName: fileName,
+    );
   }
 
   Future<void> getUserDiaryData() async {

@@ -9,6 +9,7 @@ import 'package:onldocc_admin/features/ranking/models/step_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/step_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:to_csv/to_csv.dart' as exportCSV;
 
 class RankingStepScreen extends ConsumerStatefulWidget {
   // final String? index;
@@ -55,17 +56,17 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
     });
   }
 
-  List<dynamic> exportToList(StepModel stepModel) {
+  List<String> exportToList(StepModel stepModel) {
     return [
       stepModel.date,
       stepModel.dailyStep.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<StepModel?> stepDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<StepModel?> stepDataList) {
+    List<List<String>> list = [];
 
-    list.add(_listHeader);
+    // list.add(_listHeader);
 
     for (var item in stepDataList) {
       final itemList = exportToList(item!);
@@ -76,29 +77,13 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList(_stepDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-        // csvContent += row[i].toString();
+    const String fileName = "인지케어 회원별 걸음수";
 
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 회원별 걸음수 $_userName $formatDate.csv";
-
-    downloadCsv(csvContent, fileName);
+    exportCSV.myCSV(
+      _listHeader,
+      csvData,
+      fileName: fileName,
+    );
   }
 
   Future<void> getUserStepData() async {

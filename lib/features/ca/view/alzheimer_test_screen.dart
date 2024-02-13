@@ -10,6 +10,7 @@ import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/cognition_test_view_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
+import 'package:to_csv/to_csv.dart' as exportCSV;
 
 class AlzheimerTestScreen extends ConsumerStatefulWidget {
   static const routeURL = "/alzheimer";
@@ -36,23 +37,22 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
   ];
   List<CognitionTestModel> _testList = [];
 
-  List<dynamic> exportToList(CognitionTestModel testModel) {
+  List<String> exportToList(CognitionTestModel testModel) {
     return [
       secondsToStringLine(testModel.createdAt),
       testModel.result,
-      testModel.totalPoint,
-      testModel.userName,
-      testModel.userGender,
-      testModel.userAge,
-      testModel.userPhone,
+      testModel.totalPoint.toString(),
+      testModel.userName.toString(),
+      testModel.userGender.toString(),
+      testModel.userAge.toString(),
+      testModel.userPhone.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList() {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList() {
+    List<List<String>> list = [];
 
-    final csvHeader = _tableHeader.sublist(0, _tableHeader.length - 1);
-    list.add(csvHeader);
+    // list.add(csvHeader);
 
     for (var item in _testList) {
       final itemList = exportToList(item);
@@ -63,27 +63,14 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList();
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
+    const String fileName = "온라인 치매 검사";
+    final csvHeader = _tableHeader.sublist(0, _tableHeader.length - 1);
 
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate = convertTimettampToStringDate(currentDate);
-
-    final String fileName = "온라인 치매 검사 $formatDate.csv";
-
-    downloadCsv(csvContent, fileName);
+    exportCSV.myCSV(
+      csvHeader,
+      csvData,
+      fileName: fileName,
+    );
   }
 
   Future<void> filterUserDataList(

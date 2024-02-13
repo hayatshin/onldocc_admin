@@ -11,6 +11,7 @@ import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
+import 'package:to_csv/to_csv.dart' as exportCSV;
 
 import '../../users/models/user_model.dart';
 import '../../users/view_models/user_view_model.dart';
@@ -93,24 +94,24 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     });
   }
 
-  List<dynamic> exportToList(UserModel userModel) {
+  List<String> exportToList(UserModel userModel) {
     return [
-      userModel.index,
+      userModel.index.toString(),
       userModel.name,
-      userModel.userAge,
+      userModel.userAge.toString(),
       userModel.gender,
       userModel.phone,
-      userModel.totalScore,
-      userModel.stepScore,
-      userModel.diaryScore,
-      userModel.commentScore,
+      userModel.totalScore.toString(),
+      userModel.stepScore.toString(),
+      userModel.diaryScore.toString(),
+      userModel.commentScore.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<UserModel?> userDataList) {
+    List<List<String>> list = [];
 
-    list.add(_userListHeader);
+    // list.add(_userListHeader);
 
     for (var item in userDataList) {
       final itemList = exportToList(item!);
@@ -121,28 +122,13 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
+    const String fileName = "인지케어 전체 점수";
 
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 전체 점수 $formatDate.csv";
-
-    downloadCsv(csvContent, fileName);
+    exportCSV.myCSV(
+      _userListHeader,
+      csvData,
+      fileName: fileName,
+    );
   }
 
   Future<void> resetInitialList() async {

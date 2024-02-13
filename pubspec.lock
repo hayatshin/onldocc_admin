@@ -217,6 +217,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.5.0"
+  file_saver:
+    dependency: transitive
+    description:
+      name: file_saver
+      sha256: "8ffd91ae9f543c5ebbfec71a814ee5aa9e21176d31335133308abf63f4c42e8a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.9"
   file_selector_linux:
     dependency: transitive
     description:
@@ -773,6 +781,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  share_plus:
+    dependency: transitive
+    description:
+      name: share_plus
+      sha256: "3ef39599b00059db0990ca2e30fca0a29d8b37aae924d60063f8e0184cf20900"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.2.2"
+  share_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: share_plus_platform_interface
+      sha256: df08bc3a07d01f5ea47b45d03ffcba1fa9cd5370fb44b3f38c70e42cced0f956
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.1"
   shared_preferences:
     dependency: transitive
     description:
@@ -994,6 +1018,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.2"
+  to_csv:
+    dependency: "direct main"
+    description:
+      name: to_csv
+      sha256: "52b31fa320c5d83b900cb8b73f4438c4cc851b154ab8ec06cadfd88cd2962dba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.1"
   typed_data:
     dependency: transitive
     description:

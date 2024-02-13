@@ -6,6 +6,7 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/consts/cognition_test_questionnaire.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/utils.dart';
+import 'package:to_csv/to_csv.dart' as exportCSV;
 
 class CognitionTestDetailScreen extends StatefulWidget {
   final CognitionTestModel model;
@@ -47,17 +48,15 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     setState(() {});
   }
 
-  List<dynamic> exportToList(String questionnaire, String answer) {
+  List<String> exportToList(String questionnaire, String answer) {
     return [
       questionnaire,
       answer,
     ];
   }
 
-  List<List<dynamic>> exportToFullList() {
-    List<List<dynamic>> list = [];
-
-    list.add(_listHeader);
+  List<List<String>> exportToFullList() {
+    List<List<String>> list = [];
 
     for (int i = 0; i < alzheimer_questionnaire_strings.length; i++) {
       String answer = widget.model.userAnswers["a$i"]! ? "예" : "아니오";
@@ -65,34 +64,23 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
       list.add(itemlist);
     }
 
+    String testInfo =
+        "\n\n$testDate\n$totalPoint\n$result\n\n$name\n$gender\n$age\n$phone";
+
+    list.add([testInfo]);
+
     return list;
   }
 
   void generateUserCsv() {
-    String testInfo =
-        "$testDate\n$totalPoint\n$result\n\n$name\n$gender\n$age\n$phone";
-
     final csvData = exportToFullList();
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i];
-        }
-        // csvContent += row[i].toString();
+    final String fileName = "인지케어 $testType ${widget.model.userName}";
 
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-
-    final String fileName = "인지케어 $testType ${widget.model.userName}.csv";
-
-    downloadCsv(csvContent, fileName);
+    exportCSV.myCSV(
+      _listHeader,
+      csvData,
+      fileName: fileName,
+    );
   }
 
   @override
