@@ -30,6 +30,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
   final List<String> _userListHeader = [
+    "#",
     "이름",
     "나이",
     "출생일",
@@ -88,8 +89,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     });
   }
 
-  List<dynamic> exportToList(UserModel userModel) {
+  List<dynamic> exportToList(int index, UserModel userModel) {
     return [
+      index,
       userModel.name,
       userModel.userAge,
       userModel.birthYear,
@@ -108,8 +110,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
     list.add(_userListHeader);
 
-    for (var item in userDataList) {
-      final itemList = exportToList(item!);
+    for (var i = 0; i < userDataList.length; i++) {
+      final itemList = exportToList(i, userDataList[i]!);
       list.add(itemList);
     }
     return list;
