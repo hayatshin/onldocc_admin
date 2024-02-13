@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +11,7 @@ import 'package:onldocc_admin/features/ranking/models/step_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/step_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:to_csv/to_csv.dart' as exportCSV;
+import 'package:universal_html/html.dart';
 
 class RankingStepScreen extends ConsumerStatefulWidget {
   // final String? index;
@@ -56,17 +58,17 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
     });
   }
 
-  List<String> exportToList(StepModel stepModel) {
+  List<dynamic> exportToList(StepModel stepModel) {
     return [
       stepModel.date,
       stepModel.dailyStep.toString(),
     ];
   }
 
-  List<List<String>> exportToFullList(List<StepModel?> stepDataList) {
-    List<List<String>> list = [];
+  List<List<dynamic>> exportToFullList(List<StepModel?> stepDataList) {
+    List<List<dynamic>> list = [];
 
-    // list.add(_listHeader);
+    list.add(_listHeader);
 
     for (var item in stepDataList) {
       final itemList = exportToList(item!);
@@ -77,13 +79,35 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList(_stepDataList);
-    const String fileName = "인지케어 회원별 걸음수";
+    String csvContent = '';
+    for (var row in csvData) {
+      for (var i = 0; i < row.length; i++) {
+        if (row[i].toString().contains(',')) {
+          csvContent += '"${row[i]}"';
+        } else {
+          csvContent += row[i].toString();
+        }
+        // csvContent += row[i].toString();
 
-    exportCSV.myCSV(
-      _listHeader,
-      csvData,
-      fileName: fileName,
-    );
+        if (i != row.length - 1) {
+          csvContent += ',';
+        }
+      }
+      csvContent += '\n';
+    }
+    final currentDate = DateTime.now();
+    final formatDate =
+        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+    final String fileName = "인지케어 회원별 걸음수 $_userName $formatDate.csv";
+
+    final encodedUri = Uri.dataFromString(
+      csvContent,
+      encoding: Encoding.getByName(encodingType()),
+    ).toString();
+    final anchor = AnchorElement(href: encodedUri)
+      ..setAttribute('download', fileName)
+      ..click();
   }
 
   Future<void> getUserStepData() async {

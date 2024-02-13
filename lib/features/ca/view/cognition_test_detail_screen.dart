@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
@@ -6,7 +8,7 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/consts/cognition_test_questionnaire.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:to_csv/to_csv.dart' as exportCSV;
+import 'package:universal_html/html.dart';
 
 class CognitionTestDetailScreen extends StatefulWidget {
   final CognitionTestModel model;
@@ -48,15 +50,17 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     setState(() {});
   }
 
-  List<String> exportToList(String questionnaire, String answer) {
+  List<dynamic> exportToList(String questionnaire, String answer) {
     return [
       questionnaire,
       answer,
     ];
   }
 
-  List<List<String>> exportToFullList() {
-    List<List<String>> list = [];
+  List<List<dynamic>> exportToFullList() {
+    List<List<dynamic>> list = [];
+
+    list.add(_listHeader);
 
     for (int i = 0; i < alzheimer_questionnaire_strings.length; i++) {
       String answer = widget.model.userAnswers["a$i"]! ? "예" : "아니오";
@@ -64,23 +68,40 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
       list.add(itemlist);
     }
 
-    String testInfo =
-        "\n\n$testDate\n$totalPoint\n$result\n\n$name\n$gender\n$age\n$phone";
-
-    list.add([testInfo]);
-
     return list;
   }
 
   void generateUserCsv() {
-    final csvData = exportToFullList();
-    final String fileName = "인지케어 $testType ${widget.model.userName}";
+    String testInfo =
+        "$testDate\n$totalPoint\n$result\n\n$name\n$gender\n$age\n$phone";
 
-    exportCSV.myCSV(
-      _listHeader,
-      csvData,
-      fileName: fileName,
-    );
+    final csvData = exportToFullList();
+    String csvContent = '';
+    for (var row in csvData) {
+      for (var i = 0; i < row.length; i++) {
+        if (row[i].toString().contains(',')) {
+          csvContent += '"${row[i]}"';
+        } else {
+          csvContent += row[i];
+        }
+        // csvContent += row[i].toString();
+
+        if (i != row.length - 1) {
+          csvContent += ',';
+        }
+      }
+      csvContent += '\n';
+    }
+
+    final String fileName = "인지케어 $testType ${widget.model.userName}.csv";
+
+    final encodedUri = Uri.dataFromString(
+      "$testInfo\n\n$csvContent",
+      encoding: Encoding.getByName(encodingType()),
+    ).toString();
+    final anchor = AnchorElement(href: encodedUri)
+      ..setAttribute('download', fileName)
+      ..click();
   }
 
   @override

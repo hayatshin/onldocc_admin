@@ -7,7 +7,6 @@ import 'package:onldocc_admin/features/ca/models/quiz_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/quiz_view_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:to_csv/to_csv.dart' as exportCSV;
 
 import '../../../common/view/csv_period.dart';
 import '../../../constants/sizes.dart';
@@ -47,14 +46,14 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     DateTime.now(),
   );
 
-  List<String> exportToList(QuizModel caModel, int index) {
+  List<dynamic> exportToList(QuizModel caModel, int index) {
     return [
       (index + 1).toString(),
       secondsToStringLine(caModel.createdAt),
       caModel.correct ? "O" : "X",
       caModel.quiz,
-      caModel.quizAnswer.toString(),
-      caModel.userAnswer.toString(),
+      caModel.quizAnswer,
+      caModel.userAnswer,
     ];
   }
 
@@ -66,10 +65,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     getUserCaData();
   }
 
-  List<List<String>> exportToFullList(List<QuizModel?> caModelList) {
-    List<List<String>> list = [];
+  List<List<dynamic>> exportToFullList(List<QuizModel?> caModelList) {
+    List<List<dynamic>> list = [];
 
-    // list.add(_listHeader);
+    list.add(_listHeader);
 
     for (int i = 0; i < caModelList.length; i++) {
       final itemList = exportToList(caModelList[i]!, i);
@@ -80,13 +79,29 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList(_caDataList);
-    final String fileName = "인지케어 회원별 인지 관리 $_userName";
+    String csvContent = '';
+    for (var row in csvData) {
+      for (var i = 0; i < row.length; i++) {
+        if (row[i].toString().contains(',')) {
+          csvContent += '"${row[i]}"';
+        } else {
+          csvContent += row[i].toString();
+        }
+        // csvContent += row[i].toString();
 
-    exportCSV.myCSV(
-      _listHeader,
-      csvData,
-      fileName: fileName,
-    );
+        if (i != row.length - 1) {
+          csvContent += ',';
+        }
+      }
+      csvContent += '\n';
+    }
+    final currentDate = DateTime.now();
+    final formatDate =
+        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+    final String fileName = "인지케어 회원별 인지 관리 $_userName $formatDate.csv";
+
+    downloadCsv(csvContent, fileName);
   }
 
   Future<void> getUserCaData() async {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
@@ -11,7 +13,7 @@ import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:to_csv/to_csv.dart' as exportCSV;
+import 'package:universal_html/html.dart';
 
 import '../../users/models/user_model.dart';
 import '../../users/view_models/user_view_model.dart';
@@ -94,24 +96,24 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     });
   }
 
-  List<String> exportToList(UserModel userModel) {
+  List<dynamic> exportToList(UserModel userModel) {
     return [
-      userModel.index.toString(),
+      userModel.index,
       userModel.name,
-      userModel.userAge.toString(),
+      userModel.userAge,
       userModel.gender,
       userModel.phone,
-      userModel.totalScore.toString(),
-      userModel.stepScore.toString(),
-      userModel.diaryScore.toString(),
-      userModel.commentScore.toString(),
+      userModel.totalScore,
+      userModel.stepScore,
+      userModel.diaryScore,
+      userModel.commentScore,
     ];
   }
 
-  List<List<String>> exportToFullList(List<UserModel?> userDataList) {
-    List<List<String>> list = [];
+  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
+    List<List<dynamic>> list = [];
 
-    // list.add(_userListHeader);
+    list.add(_userListHeader);
 
     for (var item in userDataList) {
       final itemList = exportToList(item!);
@@ -122,13 +124,34 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   void generateUserCsv() {
     final csvData = exportToFullList(_userDataList);
-    const String fileName = "인지케어 전체 점수";
+    String csvContent = '';
+    for (var row in csvData) {
+      for (var i = 0; i < row.length; i++) {
+        if (row[i].toString().contains(',')) {
+          csvContent += '"${row[i]}"';
+        } else {
+          csvContent += row[i].toString();
+        }
 
-    exportCSV.myCSV(
-      _userListHeader,
-      csvData,
-      fileName: fileName,
-    );
+        if (i != row.length - 1) {
+          csvContent += ',';
+        }
+      }
+      csvContent += '\n';
+    }
+    final currentDate = DateTime.now();
+    final formatDate =
+        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+    final String fileName = "인지케어 전체 점수 $formatDate.csv";
+
+    final encodedUri = Uri.dataFromString(
+      csvContent,
+      encoding: Encoding.getByName(encodingType()),
+    ).toString();
+    final anchor = AnchorElement(href: encodedUri)
+      ..setAttribute('download', fileName)
+      ..click();
   }
 
   Future<void> resetInitialList() async {
