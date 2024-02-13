@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cp949_codec/cp949_codec.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:intl/intl.dart';
@@ -336,10 +335,8 @@ String encodingType() {
 }
 
 void downloadCsv(String csvContent, String fileName) {
-  String platform = html.window.navigator.platform!.toLowerCase();
-  final bytes = platform.contains("win")
-      ? cp949.encode(csvContent)
-      : utf8.encode(csvContent);
+  // String platform = html.window.navigator.platform!.toLowerCase();
+  final bytes = utf8.encode(csvContent);
   final blob = html.Blob([bytes]);
   final url = html.Url.createObjectUrlFromBlob(blob);
   final anchor = html.AnchorElement(href: url)
