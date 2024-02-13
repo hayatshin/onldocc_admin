@@ -111,7 +111,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     list.add(_userListHeader);
 
     for (var i = 0; i < userDataList.length; i++) {
-      final itemList = exportToList(i, userDataList[i]!);
+      final itemList = exportToList(i + 1, userDataList[i]!);
       list.add(itemList);
     }
     return list;
