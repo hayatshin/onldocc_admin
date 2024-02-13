@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
@@ -13,7 +11,6 @@ import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
 
 import '../../users/models/user_model.dart';
 import '../../users/view_models/user_view_model.dart';
@@ -145,13 +142,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
     final String fileName = "인지케어 전체 점수 $formatDate.csv";
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    downloadCsv(csvContent, fileName);
   }
 
   Future<void> resetInitialList() async {

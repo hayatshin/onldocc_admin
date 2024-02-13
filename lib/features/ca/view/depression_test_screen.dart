@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +10,6 @@ import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/cognition_test_view_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
 
 class DepressionTestScreen extends ConsumerStatefulWidget {
   static const routeURL = "/depression";
@@ -86,13 +83,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
 
     final String fileName = "노인 우울척도 단축형 검사 $formatDate.csv";
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    downloadCsv(csvContent, fileName);
   }
 
   Future<void> filterUserDataList(

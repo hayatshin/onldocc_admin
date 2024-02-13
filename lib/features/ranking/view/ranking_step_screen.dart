@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +9,6 @@ import 'package:onldocc_admin/features/ranking/models/step_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/step_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:universal_html/html.dart';
 
 class RankingStepScreen extends ConsumerStatefulWidget {
   // final String? index;
@@ -101,13 +98,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
 
     final String fileName = "인지케어 회원별 걸음수 $_userName $formatDate.csv";
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    downloadCsv(csvContent, fileName);
   }
 
   Future<void> getUserStepData() async {

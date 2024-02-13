@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +12,6 @@ import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
   static const routeURL = "/users";
@@ -89,16 +86,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     setState(() {
       _userDataList = filterList;
     });
-
-    // final newUserDataList = ref.read(userProvider.notifier).filterTableRows(
-    //       userDataList,
-    //       searchBy!,
-    //       searchKeyword,
-    //     );
-
-    // setState(() {
-    //   _userDataList = newUserDataList;
-    // });
   }
 
   List<dynamic> exportToList(UserModel userModel) {
@@ -150,15 +137,16 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
     final String fileName = "인지케어 회원관리 $formatDate.csv";
+  downloadCsv(csvContent, fileName);
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
+    // final encodedUri = Uri.dataFromString(
+    //   csvContent,
+    //   encoding: Encoding.getByName("utf-8"),
+    // ).toString();
 
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    // final anchor = AnchorElement(href: encodedUri)
+    //   ..setAttribute('download', fileName)
+    //   ..click();
   }
 
   Future<void> getUserModelList() async {

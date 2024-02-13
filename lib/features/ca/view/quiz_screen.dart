@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +7,6 @@ import 'package:onldocc_admin/features/ca/models/quiz_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/quiz_view_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:universal_html/html.dart';
 
 import '../../../common/view/csv_period.dart';
 import '../../../constants/sizes.dart';
@@ -104,13 +101,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     final String fileName = "인지케어 회원별 인지 관리 $_userName $formatDate.csv";
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    downloadCsv(csvContent, fileName);
   }
 
   Future<void> getUserCaData() async {

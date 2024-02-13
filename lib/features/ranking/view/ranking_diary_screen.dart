@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +12,6 @@ import 'package:onldocc_admin/features/ranking/view_models/diary_view_model.dart
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:universal_html/html.dart';
 
 class RankingDiaryScreen extends ConsumerStatefulWidget {
   // final String? index;
@@ -116,13 +113,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
 
     final String fileName = "인지케어 회원별 일기 $_userName $formatDate.csv";
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    downloadCsv(csvContent, fileName);
   }
 
   Future<void> getUserDiaryData() async {

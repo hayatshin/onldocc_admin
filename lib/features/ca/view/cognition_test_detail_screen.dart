@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
@@ -8,7 +6,6 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/consts/cognition_test_questionnaire.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
 
 class CognitionTestDetailScreen extends StatefulWidget {
   final CognitionTestModel model;
@@ -95,13 +92,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
 
     final String fileName = "인지케어 $testType ${widget.model.userName}.csv";
 
-    final encodedUri = Uri.dataFromString(
-      "$testInfo\n\n$csvContent",
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    downloadCsv(csvContent, fileName);
   }
 
   @override

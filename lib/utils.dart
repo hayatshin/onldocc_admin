@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:intl/intl.dart';
@@ -330,4 +332,14 @@ String encodingType() {
   String platform = html.window.navigator.platform!.toLowerCase();
   String encodingType = platform.contains("win") ? "EUC-KR" : "utf-8";
   return encodingType;
+}
+
+void downloadCsv(String csvContent, String fileName) {
+  final bytes = utf8.encode(csvContent);
+  final blob = html.Blob([bytes]);
+  final url = html.Url.createObjectUrlFromBlob(blob);
+  final anchor = html.AnchorElement(href: url)
+    ..setAttribute('download', fileName)
+    ..click();
+  html.Url.revokeObjectUrl(url);
 }
