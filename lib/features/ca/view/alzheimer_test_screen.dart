@@ -261,6 +261,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                             ),
                           ),
                           const DataColumn2(
+                            fixedWidth: 190,
                             label: Text(
                               "핸드폰 번호",
                               style: TextStyle(
