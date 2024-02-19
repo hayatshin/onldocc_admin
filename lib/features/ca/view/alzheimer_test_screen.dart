@@ -202,7 +202,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                       child: DataTable2(
                         columns: [
                           const DataColumn2(
-                            fixedWidth: 150,
+                            fixedWidth: 140,
                             label: Text(
                               "시행 날짜",
                               style: TextStyle(
@@ -222,7 +222,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                             ),
                           ),
                           const DataColumn2(
-                            fixedWidth: 100,
+                            fixedWidth: 80,
                             label: Text(
                               "점수",
                               style: TextStyle(

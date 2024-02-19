@@ -22,6 +22,7 @@ void main() async {
       url: dotenv.env["SUPABASE_URL"]!,
       anonKey: dotenv.env["SUPABASE_ANONKEY"]!,
     );
+
     await SystemChrome.setPreferredOrientations(
       [
         DeviceOrientation.portraitUp,
