@@ -106,22 +106,22 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                   height: searchHeight,
                   child: DateRangeField(
                     pickerBuilder: datePickerBuilder,
-                    decoration: InputDecoration(
-                      label: Padding(
-                        padding: const EdgeInsets.only(
-                          left: Sizes.size10,
+                    decoration: const InputDecoration(
+                        // label: Padding(
+                        //   padding: const EdgeInsets.only(
+                        //     left: Sizes.size10,
+                        //   ),
+                        //   child: Text(
+                        //     daterangeToSlashString(selectedDateRangeNotifier
+                        //             .value ??
+                        //         DateRange(getThisWeekMonday(), DateTime.now())),
+                        //     style: TextStyle(
+                        //       fontSize: Sizes.size12,
+                        //       color: Colors.grey.shade900,
+                        //     ),
+                        //   ),
+                        // ),
                         ),
-                        child: Text(
-                          daterangeToSlashString(selectedDateRangeNotifier
-                                  .value ??
-                              DateRange(getThisWeekMonday(), DateTime.now())),
-                          style: TextStyle(
-                            fontSize: Sizes.size12,
-                            color: Colors.grey.shade900,
-                          ),
-                        ),
-                      ),
-                    ),
                     onDateRangeSelected: (DateRange? value) {
                       selectedDateRangeNotifier.value = value;
                       value == null

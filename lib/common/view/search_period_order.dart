@@ -87,22 +87,22 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                             height: searchHeight,
                             child: DateRangeField(
                               pickerBuilder: datePickerBuilder,
-                              decoration: InputDecoration(
-                                label: Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: Sizes.size10,
+                              decoration: const InputDecoration(
+                                  // label: Padding(
+                                  //   padding: const EdgeInsets.only(
+                                  //     left: Sizes.size10,
+                                  //   ),
+                                  //   child: Text(
+                                  //     daterangeToSlashString(
+                                  //         selectedDateRangeNotifier.value ??
+                                  //             _selectedDateRange),
+                                  //     style: TextStyle(
+                                  //       fontSize: Sizes.size15,
+                                  //       color: Colors.grey.shade900,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   ),
-                                  child: Text(
-                                    daterangeToSlashString(
-                                        selectedDateRangeNotifier.value ??
-                                            _selectedDateRange),
-                                    style: TextStyle(
-                                      fontSize: Sizes.size15,
-                                      color: Colors.grey.shade900,
-                                    ),
-                                  ),
-                                ),
-                              ),
                               onDateRangeSelected: (DateRange? value) {
                                 selectedDateRangeNotifier.value = value;
                                 value == null

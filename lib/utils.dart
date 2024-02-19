@@ -247,7 +247,8 @@ int convertStartDateTimeToSeconds(DateTime date) {
 }
 
 int convertEndDateTimeToSeconds(DateTime date) {
-  final endDate = DateTime(date.year, date.month, date.day, 23, 59, 999);
+  final endDate = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
   int millisecondsSinceEpoch = endDate.millisecondsSinceEpoch;
   return (millisecondsSinceEpoch / 1000).round();
 }
