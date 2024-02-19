@@ -70,6 +70,7 @@ dependencies:
   cached_network_image: ^3.3.1
   skeletons: ^0.0.3
   to_csv: ^2.2.1
+  firebase_core_web: ^2.11.4
 
 dev_dependencies:
   flutter_test:
