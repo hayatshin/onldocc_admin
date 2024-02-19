@@ -453,7 +453,7 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
 
   @override
   void dispose() {
-    menuNotifier.dispose();
+    // menuNotifier.dispose();
     super.dispose();
   }
 
