@@ -300,7 +300,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                         child: DataTable2(
                           columns: [
                             DataColumn2(
-                              fixedWidth: 50,
+                              fixedWidth: 70,
                               label: Text(
                                 "#",
                                 style: TextStyle(
