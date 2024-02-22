@@ -14,3 +14,6 @@ jobs:
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /onldocc_admin/
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}

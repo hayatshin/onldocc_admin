@@ -354,7 +354,7 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                         ),
                       ),
                       const Text(
-                        "걸음수: 1000보당 10점 (최대 10,000 걸음)",
+                        "걸음수: 1000보당 10점",
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           fontSize: Sizes.size11,

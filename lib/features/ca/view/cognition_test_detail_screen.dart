@@ -23,6 +23,7 @@ class CognitionTestDetailScreen extends StatefulWidget {
 }
 
 class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
+  List<String> testQuestionnare = [];
   final List<String> _listHeader = ["문항", "답변"];
   String testDate = "";
   String totalPoint = "";
@@ -46,6 +47,9 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
 
     testType =
         widget.model.testType == "alzheimer_test" ? "치매 조기 검사" : "노인 우울척도 검사";
+    testQuestionnare = widget.model.testType == "alzheimer_test"
+        ? alzheimer_questionnaire_strings
+        : depression_questionnaire_strings;
 
     setState(() {});
   }
@@ -62,9 +66,9 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
 
     list.add(_listHeader);
 
-    for (int i = 0; i < alzheimer_questionnaire_strings.length; i++) {
+    for (int i = 0; i < testQuestionnare.length; i++) {
       String answer = widget.model.userAnswers["a$i"]! ? "예" : "아니오";
-      final itemlist = exportToList(alzheimer_questionnaire_strings[i], answer);
+      final itemlist = exportToList(testQuestionnare[i], answer);
       list.add(itemlist);
     }
 
@@ -202,9 +206,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                             ),
                           ],
                           rows: [
-                            for (int i = 0;
-                                i < alzheimer_questionnaire_strings.length;
-                                i++)
+                            for (int i = 0; i < testQuestionnare.length; i++)
                               DataRow(
                                 cells: [
                                   DataCell(
@@ -222,7 +224,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                                     Align(
                                       alignment: Alignment.center,
                                       child: Text(
-                                        alzheimer_questionnaire_strings[i],
+                                        testQuestionnare[i],
                                         style: const TextStyle(
                                           fontSize: Sizes.size13,
                                         ),

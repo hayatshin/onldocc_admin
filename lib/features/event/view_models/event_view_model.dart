@@ -17,6 +17,8 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
 
   static final pointUpFunctions = Uri.parse(
       "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-up-functions");
+  static final pointEventFunctions = Uri.parse(
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-event-functions");
 
   @override
   FutureOr<List<EventModel>> build() async {
@@ -50,8 +52,14 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
       int userStartSeconds =
           model.createdAt > startSeconds ? model.createdAt : startSeconds;
 
-      final pointData =
-          await getEventUserScore(model.userId, userStartSeconds, endSeconds);
+      final pointData = await getEventUserScore(
+          model.userId,
+          userStartSeconds,
+          endSeconds,
+          eventModel.stepPoint,
+          eventModel.diaryPoint,
+          eventModel.commentPoint,
+          eventModel.likePoint);
 
       final userPoint = pointData[0]["totalPoint"];
       final rModel = model.copyWith(
@@ -65,16 +73,27 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
   }
 
   Future<List<dynamic>> getEventUserScore(
-      String userId, int startSeconds, int endSeconds) async {
+    String userId,
+    int startSeconds,
+    int endSeconds,
+    int stepPoint,
+    int diaryPoint,
+    int commentPoint,
+    int likePoint,
+  ) async {
     Map<String, dynamic> requestBody = {
       'userId': userId,
       'startSeconds': startSeconds,
       'endSeconds': endSeconds,
+      'stepPoint': stepPoint,
+      'diaryPoint': diaryPoint,
+      'commentPoint': commentPoint,
+      'likePoint': likePoint,
     };
     String requestBodyJson = jsonEncode(requestBody);
 
     final response = await http.post(
-      pointUpFunctions,
+      pointEventFunctions,
       body: requestBodyJson,
       headers: headers,
     );

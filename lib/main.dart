@@ -10,7 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   try {
-    await dotenv.load(fileName: "env");
+    // await dotenv.load(fileName: "env");
+    await dotenv.load();
 
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -18,9 +19,16 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
+    final supabaseUrl = dotenv.env["SUPABASE_URL"];
+    final supabaseAnonKey = dotenv.env["SUPABASE_ANONKEY"];
+
+    if (supabaseUrl == null || supabaseAnonKey == null) {
+      throw Exception("Supabase URL or Anon Key is not provided");
+    }
+
     await Supabase.initialize(
-      url: dotenv.env["SUPABASE_URL"]!,
-      anonKey: dotenv.env["SUPABASE_ANONKEY"]!,
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
     );
 
     await SystemChrome.setPreferredOrientations(

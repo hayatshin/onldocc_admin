@@ -77,10 +77,15 @@ class EventRepository {
   }
 
   Future<void> editEvent(EventModel eventModel) async {
-    await _supabase
-        .from("events")
-        .update(eventModel.editToJson())
-        .match({"eventId": eventModel.eventId});
+    try {
+      await _supabase
+          .from("events")
+          .update(eventModel.editToJson())
+          .eq("eventId", eventModel.eventId);
+    } catch (e) {
+      // ignore: avoid_print
+      print("editEvent -> $e");
+    }
   }
 
   Future<void> deleteEvent(String eventId) async {

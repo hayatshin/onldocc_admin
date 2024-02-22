@@ -8,6 +8,7 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class EditEventWidget extends ConsumerStatefulWidget {
@@ -48,6 +49,11 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
 
   String _eventPrizeWinners = "";
   String _eventGoalScore = "";
+
+  int _eventStepPoint = 0;
+  int _eventDiaryPoint = 0;
+  int _eventCommentPoint = 0;
+  int _eventLikePoint = 0;
 
   final List<PlatformFile> _feedImageFile = [];
   final List<Uint8List> _feedImageArray = [];
@@ -141,20 +147,20 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
     final evnetImageUrl = await ref
         .read(eventRepo)
         .uploadSingleImageToStorage(eventId, _eventImage);
-    final eventModel = EventModel(
+    final eventModel = widget.eventModel.copyWith(
       eventId: eventId,
       title: _eventTitle,
       description: _eventDescription,
       eventImage: evnetImageUrl,
-      allUsers: false,
+      allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
       targetScore: int.parse(_eventGoalScore),
       achieversNumber: int.parse(_eventPrizeWinners),
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
-      // subdistrictId: adminProfileModel!.subdistrictId,
-      // contractCommunityId: selectContractRegion.value.contractCommunityId != ""
-      //     ? selectContractRegion.value.contractCommunityId
-      //     : null,
+      stepPoint: _eventStepPoint,
+      diaryPoint: _eventDiaryPoint,
+      commentPoint: _eventCommentPoint,
+      likePoint: _eventLikePoint,
     );
 
     await ref.read(eventRepo).editEvent(eventModel);
@@ -182,6 +188,10 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
     _eventGoalScore = widget.eventModel.targetScore.toString();
     _eventPrizeWinners = widget.eventModel.achieversNumber.toString();
     _eventImage = widget.eventModel.eventImage;
+    _eventStepPoint = widget.eventModel.stepPoint;
+    _eventDiaryPoint = widget.eventModel.diaryPoint;
+    _eventCommentPoint = widget.eventModel.commentPoint;
+    _eventLikePoint = widget.eventModel.likePoint;
     setState(() {});
 
     _titleControllder.text = widget.eventModel.title;
@@ -200,6 +210,30 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
     _goalScoreController.dispose();
     _prizewinnersControllder.dispose();
     super.dispose();
+  }
+
+  void updateStepPoint(int point) {
+    setState(() {
+      _eventStepPoint = point;
+    });
+  }
+
+  void updateDiaryPoint(int point) {
+    setState(() {
+      _eventDiaryPoint = point;
+    });
+  }
+
+  void updateCommentPoint(int point) {
+    setState(() {
+      _eventCommentPoint = point;
+    });
+  }
+
+  void updateLikePoint(int point) {
+    setState(() {
+      _eventLikePoint = point;
+    });
   }
 
   void removeDeleteOverlay() {
@@ -674,106 +708,6 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                           SizedBox(
                             width: widget.totalWidth * 0.1,
                             child: const Text(
-                              "목표 점수 설정",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          Gaps.h32,
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              SizedBox(
-                                width: 100,
-                                child: TextFormField(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  minLines: 1,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _eventGoalScore = value;
-                                    });
-                                  },
-                                  controller: _goalScoreController,
-                                  textAlignVertical: TextAlignVertical.top,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: Sizes.size14,
-                                    color: Colors.black87,
-                                  ),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    hintText: "",
-                                    hintStyle: TextStyle(
-                                      fontSize: Sizes.size14,
-                                      color: Colors.grey.shade400,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey.shade50,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                    ),
-                                    errorStyle: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: Sizes.size10,
-                                      vertical: Sizes.size10,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Gaps.h10,
-                              Text(
-                                "점",
-                                style: TextStyle(
-                                  fontSize: Sizes.size14,
-                                  color: Colors.grey.shade800,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      Gaps.v52,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: widget.totalWidth * 0.1,
-                            child: const Text(
                               "당첨자 수 제한",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -863,15 +797,188 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 ),
                               ),
                               Gaps.h40,
-                              Text(
-                                "제한이 없을 경우 '0'을 기입해주세요.",
-                                style: TextStyle(
-                                  fontSize: Sizes.size12,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.grey.shade600,
+                              const CommentTextWidget(
+                                  text: "제한이 없을 경우 '0'을 기입해주세요.")
+                            ],
+                          ),
+                        ],
+                      ),
+                      Gaps.v32,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: widget.totalWidth * 0.1,
+                            child: const Text(
+                              "목표 점수 설정",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          Gaps.h32,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                child: TextFormField(
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  minLines: 1,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _eventGoalScore = value;
+                                    });
+                                  },
+                                  controller: _goalScoreController,
+                                  textAlignVertical: TextAlignVertical.top,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size14,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    hintText: "",
+                                    hintStyle: TextStyle(
+                                      fontSize: Sizes.size14,
+                                      color: Colors.grey.shade400,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey.shade50,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                    ),
+                                    errorStyle: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.size10,
+                                      vertical: Sizes.size10,
+                                    ),
+                                  ),
                                 ),
                               ),
+                              Gaps.h10,
+                              Text(
+                                "점",
+                                style: TextStyle(
+                                  fontSize: Sizes.size14,
+                                  color: Colors.grey.shade800,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              )
                             ],
+                          ),
+                        ],
+                      ),
+                      Gaps.v40,
+                      Container(
+                        height: 1,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                        ),
+                      ),
+                      Gaps.v40,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "🥇🥈",
+                            style: TextStyle(
+                              fontSize: Sizes.size14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Gaps.h10,
+                          Text(
+                            "행사 점수 계산 설정",
+                            style: TextStyle(
+                              fontSize: Sizes.size14,
+                              fontWeight: FontWeight.w600,
+                              background: Paint()
+                                ..color = Colors.pinkAccent.withOpacity(0.2),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Gaps.v20,
+                      const Text(
+                        "- 설정을 안 하면 현재 화면에 보여지는 기본 값으로 행사의 점수 계산이 설정됩니다.",
+                        style: TextStyle(
+                          fontSize: Sizes.size13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Gaps.v52,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          DefaultPointTile(
+                            totalWidth: widget.totalWidth,
+                            updateEventPoint: updateDiaryPoint,
+                            header: "일기",
+                            defaultPoint: widget.eventModel.diaryPoint,
+                          ),
+                          DefaultPointTile(
+                            totalWidth: widget.totalWidth,
+                            updateEventPoint: updateCommentPoint,
+                            header: "댓글",
+                            defaultPoint: widget.eventModel.commentPoint,
+                          ),
+                          DefaultPointTile(
+                            totalWidth: widget.totalWidth,
+                            updateEventPoint: updateLikePoint,
+                            header: "좋아요",
+                            defaultPoint: widget.eventModel.likePoint,
+                          ),
+                        ],
+                      ),
+                      Gaps.v32,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          DefaultPointTile(
+                            totalWidth: widget.totalWidth,
+                            updateEventPoint: updateStepPoint,
+                            header: "걸음수",
+                            defaultPoint: widget.eventModel.stepPoint,
+                          ),
+                          Gaps.h32,
+                          const CommentTextWidget(
+                            text:
+                                "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
                           ),
                         ],
                       ),
@@ -884,5 +991,169 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
         ),
       );
     });
+  }
+}
+
+class DefaultPointTile extends StatefulWidget {
+  final double totalWidth;
+  final Function(int) updateEventPoint;
+  final String header;
+  final int defaultPoint;
+  const DefaultPointTile({
+    super.key,
+    required this.totalWidth,
+    required this.updateEventPoint,
+    required this.header,
+    required this.defaultPoint,
+  });
+
+  @override
+  State<DefaultPointTile> createState() => _DefaultPointTileState();
+}
+
+class _DefaultPointTileState extends State<DefaultPointTile> {
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    textController.text = "${widget.defaultPoint}";
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: widget.totalWidth * 0.1,
+          child: Text(
+            "⚬ ${widget.header}",
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        Gaps.h32,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextFormField(
+                controller: textController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                minLines: 1,
+                onChanged: (value) {
+                  final point = int.parse(value);
+                  widget.updateEventPoint(point);
+                },
+                textAlignVertical: TextAlignVertical.top,
+                style: const TextStyle(
+                  fontSize: Sizes.size14,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  hintText: "${widget.defaultPoint}",
+                  hintStyle: TextStyle(
+                    fontSize: Sizes.size14,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w300,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                  ),
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: Sizes.size10,
+                    vertical: Sizes.size10,
+                  ),
+                ),
+              ),
+            ),
+            Gaps.h10,
+            Text(
+              "점",
+              style: TextStyle(
+                fontSize: Sizes.size14,
+                color: Colors.grey.shade800,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            if (widget.header == "걸음수")
+              const Row(
+                children: [
+                  Gaps.h10,
+                  Text(
+                    "/ 1000보 당",
+                    style: TextStyle(
+                      fontSize: Sizes.size13,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class CommentTextWidget extends StatelessWidget {
+  final String text;
+  const CommentTextWidget({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: Sizes.size12,
+        fontWeight: FontWeight.w300,
+        color: Colors.grey.shade600,
+      ),
+    );
   }
 }
