@@ -20,5 +20,5 @@ jobs:
           baseHref: /onldocc_admin/
       - name: Write dev.json
         run: |
-          echo ${{ secrets.SUPABASE_URL }} | base64 -d -i > lib/secrets.dart
-          echo ${{ secrets.SUPABASE_ANONKEY }} | base64 -d -i > lib/secrets.dart
+          echo ${{ secrets.SUPABASE_URL }} | base64 -d > lib/secrets.dart
+          echo ${{ secrets.SUPABASE_ANONKEY }} | base64 -d > lib/secrets.dart
