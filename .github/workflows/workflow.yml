@@ -20,5 +20,5 @@ jobs:
           baseHref: /onldocc_admin/
       - name: Write dev.json
         run: |
-          echo "$SUPABASE_URL" | base64 -d > .env
-          echo "$SUPABASE_ANONKEY" | base64 -d > .env
+          echo ${{ secrets.SUPABASE_URL }} | base64 -d > .env
+          echo ${{ secrets.SUPABASE_ANONKEY }} | base64 -d > .env
