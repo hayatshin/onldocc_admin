@@ -9,12 +9,16 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /onldocc_admin/
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
+      - name: Write dev.json
+        run: |
+          echo ${{ secrets.SUPABASE_URL }} | base64 -d > .env
+          echo ${{ secrets.SUPABASE_ANONKEY }} | base64 -d > .env
