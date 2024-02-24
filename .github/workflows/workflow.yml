@@ -17,9 +17,11 @@ jobs:
         with:
           baseHref: /onldocc_admin/
       - name: "Create env file"
+        run: |
+          touch .env
+          echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} | base64 --decode > .env
+          echo SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} | base64 --decode > .env
+          cat .env
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
-        run: |
-          echo ${{ secrets.SUPABASE_URL }} | base64 --decode > .env
-          echo ${{ secrets.SUPABASE_ANONKEY }} | base64 --decode > .env
