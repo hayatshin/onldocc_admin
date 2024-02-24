@@ -5,9 +5,6 @@ on:
     branches: [main]
 jobs:
   build:
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,8 +12,13 @@ jobs:
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /onldocc_admin/
-      # - run: |
-      #     touch .env
-      #     echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} | base64 --decode > .env
-      #     echo SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} | base64 --decode > .env
-      #     cat .env
+      - name: Create.env
+        shell: bash
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
+        run: |
+          touch .env
+          echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} >> .env
+          echo SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} >> .env
+          cat .env
