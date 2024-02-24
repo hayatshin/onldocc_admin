@@ -19,6 +19,6 @@ jobs:
           SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
         run: |
           touch .env
-          echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} >> .env
-          echo SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} >> .env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+          echo "SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }}" >> .env
           cat .env
