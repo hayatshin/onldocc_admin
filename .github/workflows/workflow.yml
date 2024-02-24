@@ -3,25 +3,20 @@ name: gh-pages
 on:
   push:
     branches: [main]
-
-  workflow_dispatch:
-
 jobs:
   build:
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /onldocc_admin/
-      - name: "Create env file"
-        run: |
+      - run: |
           touch .env
           echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} | base64 --decode > .env
           echo SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} | base64 --decode > .env
           cat .env
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
