@@ -12,13 +12,13 @@ jobs:
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /onldocc_admin/
-      - name: Create.env
-        shell: bash
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
-        run: |
-          touch .env
-          echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} > .env
-          echo SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} > .env
-          cat .env
+      # - name: Create.env
+      #   shell: bash
+      #   env:
+      #     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      #     SUPABASE_ANONKEY: ${{ secrets.SUPABASE_ANONKEY }}
+      #   run: |
+      #     touch .env
+      #     echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} > .env
+      #     echo SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} > .env
+      #     cat .env
