@@ -878,9 +878,22 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             defaultPoint: 0,
                           ),
                           Gaps.h32,
-                          const CommentTextWidget(
-                            text:
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
                                 "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
+                                style: TextStyle(
+                                  fontSize: Sizes.size12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              Gaps.v5,
+                              const CommentTextWidget(
+                                text: "- 일일 최대 만보까지 점수 계산에 포함됩니다.",
+                              ),
+                            ],
                           ),
                         ],
                       ),
