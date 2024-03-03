@@ -86,7 +86,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
         // ignore: avoid_print
         print("로그인 에러 -> ${state.error.toString()}");
         if (!context.mounted) return null;
-        showSnackBar(context, state.error.toString());
+        showSnackBar(context, defaultErrorMessage);
       }
     }
     return null;
