@@ -9,14 +9,12 @@ import 'package:onldocc_admin/common/view/search_period_order.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
 import '../../users/models/user_model.dart';
-import '../../users/view_models/user_view_model.dart';
 
 class RankingScreen extends ConsumerStatefulWidget {
   static const routeURL = "/ranking";
@@ -29,6 +27,7 @@ class RankingScreen extends ConsumerStatefulWidget {
 
 class _RankingScreenState extends ConsumerState<RankingScreen> {
   List<UserModel?> _userDataList = [];
+  List<UserModel?> _initialPointList = [];
 
   final List<String> _userListHeader = [
     "#",
@@ -72,20 +71,14 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   Future<void> filterUserDataList(
       String? searchBy, String searchKeyword) async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    List<UserModel?> userDataList = ref.read(userProvider).value ??
-        await ref
-            .read(userProvider.notifier)
-            .initializeUserList(adminProfileModel!.subdistrictId);
-
     List<UserModel> filterList = [];
     if (searchBy == "name") {
-      filterList = userDataList
+      filterList = _initialPointList
           .where((element) => element!.name.contains(searchKeyword))
           .cast<UserModel>()
           .toList();
     } else {
-      filterList = userDataList
+      filterList = _initialPointList
           .where((element) => element!.phone.contains(searchKeyword))
           .cast<UserModel>()
           .toList();
@@ -177,6 +170,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         setState(() {
           loadingFinished = true;
           _userDataList = userList;
+          _initialPointList = userList;
         });
       }
     } else {
@@ -191,6 +185,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           setState(() {
             loadingFinished = true;
             _userDataList = filterDataList;
+            _initialPointList = userList;
           });
         }
       } else {
@@ -198,6 +193,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           setState(() {
             loadingFinished = true;
             _userDataList = userList;
+            _initialPointList = userList;
           });
         }
       }
