@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/router.dart';
@@ -10,7 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   try {
-    await dotenv.load();
+    // await dotenv.load();
     // await dotenv.load(fileName: ".env");
 
     WidgetsFlutterBinding.ensureInitialized();
