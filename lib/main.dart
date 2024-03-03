@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/router.dart';
@@ -21,8 +20,8 @@ void main() async {
     const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
     const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANONKEY');
 
-    final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
-    final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
+    // final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
+    // final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
 
     await Supabase.initialize(
       url: supabaseUrl,
