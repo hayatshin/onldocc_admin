@@ -12,7 +12,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() async {
   try {
     // await dotenv.load();
-    await dotenv.load(fileName: "env");
+    await dotenv.load(fileName: "env.json");
 
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -20,15 +20,15 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-    const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANONKEY');
+    // const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+    // const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANONKEY');
 
-    // final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
-    // final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
+    final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
+    final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
 
     await Supabase.initialize(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
+      url: supabaseUrlDebug!,
+      anonKey: supabaseAnonKeyDebug!,
     );
 
     await SystemChrome.setPreferredOrientations(
