@@ -19,15 +19,15 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    // const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-    // const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANONKEY');
+    const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+    const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANONKEY');
 
-    final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
-    final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
+    // final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
+    // final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
 
     await Supabase.initialize(
-      url: supabaseUrlDebug!,
-      anonKey: supabaseAnonKeyDebug!,
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
     );
 
     await SystemChrome.setPreferredOrientations(
