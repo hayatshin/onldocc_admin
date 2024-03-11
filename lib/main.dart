@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/router.dart';
+import 'package:onldocc_admin/utils.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -57,6 +58,10 @@ class OnldoccAdmin extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+
+    showSnackBar(context, supabaseUrl);
+
     return MaterialApp.router(
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
