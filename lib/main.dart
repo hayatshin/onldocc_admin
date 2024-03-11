@@ -58,9 +58,8 @@ class OnldoccAdmin extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-
-    showSnackBar(context, supabaseUrl);
+    final supabaseUrlDebug = dotenv.env["SUPABASE_URL"] ?? "error";
+    showSnackBar(context, supabaseUrlDebug);
 
     return MaterialApp.router(
       routerConfig: ref.watch(routerProvider),
