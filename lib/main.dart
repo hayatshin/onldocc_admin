@@ -5,14 +5,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/router.dart';
-import 'package:onldocc_admin/utils.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   try {
     // await dotenv.load();
-    await dotenv.load(fileName: "env.json");
+    await dotenv.load(fileName: "env");
 
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -58,9 +57,6 @@ class OnldoccAdmin extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final supabaseUrlDebug = dotenv.env["SUPABASE_URL"] ?? "error";
-    showSnackBar(context, supabaseUrlDebug);
-
     return MaterialApp.router(
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
