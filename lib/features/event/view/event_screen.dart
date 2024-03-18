@@ -6,8 +6,10 @@ import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
+import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
-import 'package:onldocc_admin/features/event/widgets/edit_event_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/edit_count_event_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/edit_point_event_widget.dart';
 import 'package:onldocc_admin/features/event/widgets/upload_event_widget.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 
@@ -65,13 +67,23 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         minWidth: totalWidth,
       ),
       builder: (context) {
-        return EditEventWidget(
-          context: context,
-          totalWidth: totalWidth,
-          totalHeight: totalHeight,
-          eventModel: eventModel,
-          refreshScreen: refreshScreen,
-        );
+        if (eventModel.eventType == "point") {
+          return EditPointEventWidget(
+            context: context,
+            totalWidth: totalWidth,
+            totalHeight: totalHeight,
+            eventModel: eventModel,
+            refreshScreen: refreshScreen,
+          );
+        } else {
+          return EditCountEventWidget(
+            context: context,
+            totalWidth: totalWidth,
+            totalHeight: totalHeight,
+            eventModel: eventModel,
+            refreshScreen: refreshScreen,
+          );
+        }
       },
     );
   }
@@ -320,7 +332,21 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     child: Align(
                                       alignment: Alignment.center,
                                       child: Text(
-                                        "진행 상황",
+                                        "진행\n상황",
+                                        style: TextStyle(
+                                          // color: Colors.white,
+                                          fontSize: Sizes.size12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    flex: 1,
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "공개\n여부",
                                         style: TextStyle(
                                           // color: Colors.white,
                                           fontSize: Sizes.size12,
@@ -518,6 +544,35 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                             style: const TextStyle(
                                               // color: Colors.white,
                                               fontSize: Sizes.size12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              await ref
+                                                  .read(eventRepo)
+                                                  .editEventAdminSecret(
+                                                      eventList[index].eventId,
+                                                      eventList[index]
+                                                          .adminSecret);
+                                              await getUserEvents();
+                                            },
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                eventList[index].adminSecret
+                                                    ? "비공개"
+                                                    : "공개",
+                                                style: const TextStyle(
+                                                  // color: Colors.white,
+                                                  fontSize: Sizes.size12,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),

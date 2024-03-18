@@ -62,7 +62,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       participantModel.smallRegion,
       secondsToStringLine(participantModel.createdAt),
       participantModel.totalPoint.toString(),
-      participantModel.totalPoint >= widget.eventModel!.targetScore
+      participantModel.totalPoint >= widget.eventModel!.targetScore!
           ? "달성"
           : "미달성",
     ];
@@ -606,7 +606,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       DataCell(
                                         Text(
                                           _participants[i].totalPoint >=
-                                                  widget.eventModel!.targetScore
+                                                  widget
+                                                      .eventModel!.targetScore!
                                               ? "달성"
                                               : "미달성",
                                           style: const TextStyle(

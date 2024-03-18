@@ -107,7 +107,20 @@ class NoticeRepository {
     await _supabase.from("diaries").upsert(diaryJson);
   }
 
-  Future<void> editFeedNotification(String diaryId, String todayDiary) async {
+  Future<void> editFeedNotificationDiaryId(
+      String diaryId, String newDiaryId) async {
+    try {
+      await _supabase
+          .from("diaries")
+          .update({"diaryId": newDiaryId}).match({"diaryId": diaryId});
+    } catch (e) {
+      // ignore: avoid_print
+      print("editFeedNotificationDiaryId -> $e");
+    }
+  }
+
+  Future<void> editFeedNotificationTodayDiary(
+      String diaryId, String todayDiary) async {
     await _supabase.from("images").delete().match({"diaryId": diaryId});
     await _supabase
         .from("diaries")

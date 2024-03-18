@@ -38,8 +38,10 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
         index: count,
       );
       list.add(indexUpdateUser);
-      if (userList[i].totalScore != userList[i + 1].totalScore) {
-        count++;
+      if (userList.length > i + 1) {
+        if (userList[i].totalScore != userList[i + 1].totalScore) {
+          count++;
+        }
       }
     }
 

@@ -35,7 +35,6 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
   final List<String> _listHeader = ["#", "날짜", "일기", "감정", "비밀"];
   List<DiaryModel> _diaryDataList = [];
   bool loadingFinished = false;
-  final String _periodType = "이번달";
   Map<int, bool> expandMap = {};
   bool expandclick = false;
   bool expandUpdate = false;

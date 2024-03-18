@@ -8,7 +8,7 @@ class EventModel {
   final bool allUsers;
   final String? contractRegionId;
   final String? contractCommunityId;
-  final int targetScore;
+  final int? targetScore;
   final int achieversNumber;
   final String startDate;
   final String endDate;
@@ -16,10 +16,19 @@ class EventModel {
   final int? createdAt;
   final String? orgSubdistrictId;
   final String? orgImage;
-  final int stepPoint;
-  final int diaryPoint;
-  final int commentPoint;
-  final int likePoint;
+  final int? stepPoint;
+  final int? diaryPoint;
+  final int? commentPoint;
+  final int? likePoint;
+  final bool adminSecret;
+
+  final String bannerImage;
+  final String eventType;
+  final int? invitationPoint;
+  final int? invitationCount;
+  final int? diaryCount;
+  final int? commentCount;
+  final int? likeCount;
 
   EventModel({
     required this.eventId,
@@ -29,7 +38,7 @@ class EventModel {
     required this.allUsers,
     this.contractRegionId,
     this.contractCommunityId,
-    required this.targetScore,
+    this.targetScore,
     required this.achieversNumber,
     required this.startDate,
     required this.endDate,
@@ -37,10 +46,18 @@ class EventModel {
     this.createdAt,
     this.orgSubdistrictId,
     this.orgImage,
-    required this.stepPoint,
-    required this.diaryPoint,
-    required this.commentPoint,
-    required this.likePoint,
+    this.stepPoint,
+    this.diaryPoint,
+    this.commentPoint,
+    this.likePoint,
+    required this.adminSecret,
+    required this.bannerImage,
+    required this.eventType,
+    this.invitationPoint,
+    this.invitationCount,
+    this.diaryCount,
+    this.commentCount,
+    this.likeCount,
   });
 
   EventModel.empty()
@@ -59,10 +76,18 @@ class EventModel {
         createdAt = 0,
         orgSubdistrictId = "",
         orgImage = "",
-        stepPoint = 10,
-        diaryPoint = 100,
-        commentPoint = 20,
-        likePoint = 0;
+        stepPoint = 0,
+        diaryPoint = 0,
+        commentPoint = 0,
+        likePoint = 0,
+        invitationPoint = 0,
+        adminSecret = true,
+        bannerImage = "",
+        eventType = "",
+        invitationCount = 0,
+        diaryCount = 0,
+        commentCount = 0,
+        likeCount = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -82,6 +107,14 @@ class EventModel {
       "diaryPoint": diaryPoint,
       "commentPoint": commentPoint,
       "likePoint": likePoint,
+      "invitationPoint": invitationPoint,
+      "adminSecret": adminSecret,
+      "bannerImage": bannerImage,
+      "eventType": eventType,
+      "invitationCount": invitationCount,
+      "diaryCount": diaryCount,
+      "commentCount": commentCount,
+      "likeCount": likeCount,
     };
   }
 
@@ -102,6 +135,14 @@ class EventModel {
       "diaryPoint": diaryPoint,
       "commentPoint": commentPoint,
       "likePoint": likePoint,
+      "invitationPoint": invitationPoint,
+      "adminSecret": adminSecret,
+      "bannerImage": bannerImage,
+      "eventType": eventType,
+      "invitationCount": invitationCount,
+      "diaryCount": diaryCount,
+      "commentCount": commentCount,
+      "likeCount": likeCount,
     };
   }
 
@@ -128,10 +169,18 @@ class EventModel {
         orgImage = json["contract_regions"] != null
             ? json["contract_regions"]["image"]
             : "",
-        stepPoint = json["stepPoint"] ?? 10,
-        diaryPoint = json["diaryPoint"] ?? 100,
-        commentPoint = json["commentPoint"] ?? 20,
-        likePoint = json["likePoint"] ?? 0;
+        stepPoint = json["stepPoint"] ?? 0,
+        diaryPoint = json["diaryPoint"] ?? 0,
+        commentPoint = json["commentPoint"] ?? 0,
+        likePoint = json["likePoint"] ?? 0,
+        invitationPoint = json["invitationPoint"] ?? 0,
+        adminSecret = json["adminSecret"],
+        bannerImage = json["bannerImage"] ?? "",
+        eventType = json["eventType"] ?? "",
+        invitationCount = json["invitationCount"] ?? 0,
+        diaryCount = json["diaryCount"] ?? 0,
+        likeCount = json["likeCount"] ?? 0,
+        commentCount = json["commentCount"] ?? 0;
 
   EventModel copyWith({
     final String? eventId,
@@ -153,6 +202,14 @@ class EventModel {
     final int? diaryPoint,
     final int? commentPoint,
     final int? likePoint,
+    final int? invitationPoint,
+    final bool? adminSecret,
+    final String? bannerImage,
+    final String? eventType,
+    final int? diaryCount,
+    final int? commentCount,
+    final int? likeCount,
+    final int? invitationCount,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -174,6 +231,14 @@ class EventModel {
       diaryPoint: diaryPoint ?? this.diaryPoint,
       commentPoint: commentPoint ?? this.commentPoint,
       likePoint: likePoint ?? this.likePoint,
+      invitationPoint: invitationPoint ?? this.invitationPoint,
+      adminSecret: adminSecret ?? this.adminSecret,
+      bannerImage: bannerImage ?? this.bannerImage,
+      eventType: eventType ?? this.eventType,
+      diaryCount: diaryCount ?? this.diaryCount,
+      commentCount: commentCount ?? this.commentCount,
+      likeCount: likeCount ?? this.likeCount,
+      invitationCount: invitationCount ?? this.invitationCount,
     );
   }
 }

@@ -291,6 +291,19 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                       ),
                                     ),
                                   ),
+                                  const Expanded(
+                                    flex: 2,
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "공개 여부",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   Expanded(
                                     flex: 1,
                                     child: Align(
@@ -317,6 +330,12 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 shrinkWrap: true,
                                 itemCount: _noticeList.length,
                                 itemBuilder: (context, index) {
+                                  final adminSecret = _noticeList[index]
+                                          .diaryId
+                                          .split(":")
+                                          .last ==
+                                      "true";
+
                                   return Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -416,6 +435,42 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                               style: const TextStyle(
                                                 // color: Colors.white,
                                                 fontSize: Sizes.size12,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(
+                                            Sizes.size10,
+                                          ),
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () async {
+                                                await ref
+                                                    .read(
+                                                        noticeProvider.notifier)
+                                                    .changeAdminSecretDiary(
+                                                        _noticeList[index]
+                                                            .diaryId,
+                                                        adminSecret);
+                                                await fetchAllNoticies();
+                                              },
+                                              child: Align(
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  adminSecret ? "비공개" : "공개",
+                                                  softWrap: true,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    // color: Colors.white,
+                                                    fontSize: Sizes.size12,
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ),

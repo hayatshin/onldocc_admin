@@ -48,7 +48,7 @@ class EventRepository {
   Future<String> uploadSingleImageToStorage(
       String eventId, dynamic image) async {
     if (!image.toString().startsWith("https://")) {
-      await deleteEventImageStorage(eventId);
+      // await deleteEventImageStorage(eventId);
       final uuid = const Uuid().v4();
       final fileStoragePath = "$eventId/$uuid";
 
@@ -82,6 +82,17 @@ class EventRepository {
           .from("events")
           .update(eventModel.editToJson())
           .eq("eventId", eventModel.eventId);
+    } catch (e) {
+      // ignore: avoid_print
+      print("editEvent -> $e");
+    }
+  }
+
+  Future<void> editEventAdminSecret(String eventId, bool currentSecret) async {
+    try {
+      await _supabase
+          .from("events")
+          .update({'adminSecret': !currentSecret}).eq("eventId", eventId);
     } catch (e) {
       // ignore: avoid_print
       print("editEvent -> $e");

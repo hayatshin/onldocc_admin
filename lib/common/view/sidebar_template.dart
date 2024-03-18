@@ -313,27 +313,35 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                           ),
                           SingleSidebarTile(
                             selected: menuNotifier.selectedMenu == 7,
-                            selectedIcon: Icons.notifications_active,
-                            unselectedIcon: Icons.notifications_none,
-                            title: "공지 관리",
+                            selectedIcon: Icons.mail_rounded,
+                            unselectedIcon: Icons.mail_outline_rounded,
+                            title: "친구 초대",
                             action: () =>
                                 menuNotifier.setSelectedMenu(7, context),
                           ),
                           SingleSidebarTile(
                             selected: menuNotifier.selectedMenu == 8,
-                            selectedIcon: Icons.event_available_rounded,
-                            unselectedIcon: Icons.calendar_today_rounded,
-                            title: "행사 관리",
+                            selectedIcon: Icons.notifications_active,
+                            unselectedIcon: Icons.notifications_none,
+                            title: "공지 관리",
                             action: () =>
                                 menuNotifier.setSelectedMenu(8, context),
                           ),
                           SingleSidebarTile(
                             selected: menuNotifier.selectedMenu == 9,
+                            selectedIcon: Icons.event_available_rounded,
+                            unselectedIcon: Icons.calendar_today_rounded,
+                            title: "행사 관리",
+                            action: () =>
+                                menuNotifier.setSelectedMenu(9, context),
+                          ),
+                          SingleSidebarTile(
+                            selected: menuNotifier.selectedMenu == 10,
                             selectedIcon: Icons.ondemand_video_rounded,
                             unselectedIcon: Icons.tv_rounded,
                             title: "재밌는 테레비 관리",
                             action: () =>
-                                menuNotifier.setSelectedMenu(9, context),
+                                menuNotifier.setSelectedMenu(10, context),
                           ),
                           Gaps.v40,
                         ],

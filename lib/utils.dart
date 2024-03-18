@@ -153,7 +153,7 @@ String secondsToStringDiaryTimeLine(int seconds) {
   DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
 
   String diaryHour = dateTime.hour == 24
-      ? "오전 0시"
+      ? "오전 12시"
       : dateTime.hour > 12
           ? "오후 ${dateTime.hour - 12}시"
           : "오전 ${dateTime.hour}시";

@@ -56,10 +56,10 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           model.userId,
           userStartSeconds,
           endSeconds,
-          eventModel.stepPoint,
-          eventModel.diaryPoint,
-          eventModel.commentPoint,
-          eventModel.likePoint);
+          eventModel.stepPoint!,
+          eventModel.diaryPoint!,
+          eventModel.commentPoint!,
+          eventModel.likePoint!);
 
       final userPoint = pointData[0]["totalPoint"];
       final rModel = model.copyWith(

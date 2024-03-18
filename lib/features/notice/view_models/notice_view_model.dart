@@ -32,7 +32,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
                 selectContractRegion.value.contractCommunityId == null
             ? "noti:region:${adminProfileModel.subdistrictId}"
             : "noti:community:${selectContractRegion.value.contractCommunityId}";
-    final diaryId = "${getCurrentSeconds()}_$notiUserId";
+    final diaryId = "${getCurrentSeconds()}_$notiUserId:true";
 
     DiaryModel feedNotiModel = DiaryModel(
       userId: notiUserId,
@@ -66,8 +66,27 @@ class NoticeViewModel extends AsyncNotifier<void> {
     String todayDiary,
     List<dynamic> imageList,
   ) async {
-    await ref.read(noticeRepo).editFeedNotification(diaryId, todayDiary);
+    await ref
+        .read(noticeRepo)
+        .editFeedNotificationTodayDiary(diaryId, todayDiary);
     await ref.read(noticeRepo).uploadImageFileToStorage(diaryId, imageList);
+  }
+
+  Future<void> changeAdminSecretDiary(
+    String diaryId,
+    bool currentSecret,
+  ) async {
+    try {
+      final parts = diaryId.split(':');
+      String newDiaryId =
+          "${parts.sublist(0, parts.length - 1).join(":")}:${!currentSecret}";
+      await ref
+          .read(noticeRepo)
+          .editFeedNotificationDiaryId(diaryId, newDiaryId);
+    } catch (e) {
+      // ignore: avoid_print
+      print("changeAdminSecretDiary: $e");
+    }
   }
 }
 

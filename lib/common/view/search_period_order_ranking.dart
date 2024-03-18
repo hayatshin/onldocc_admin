@@ -5,24 +5,28 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class SearchPeriodOrder extends ConsumerStatefulWidget {
+class SearchPeriodOrderRanking extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
   final void Function() generateCsv;
+  final void Function(String) updateOrderStandard;
   final void Function(DateRange?) updateOrderPeriod;
-  const SearchPeriodOrder({
+  const SearchPeriodOrderRanking({
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
     required this.generateCsv,
+    required this.updateOrderStandard,
     required this.updateOrderPeriod,
   });
 
   @override
-  ConsumerState<SearchPeriodOrder> createState() => _SearchPeriodOrderState();
+  ConsumerState<SearchPeriodOrderRanking> createState() =>
+      _SearchPeriodOrderRankingState();
 }
 
-class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
+class _SearchPeriodOrderRankingState
+    extends ConsumerState<SearchPeriodOrderRanking> {
   final TextEditingController _searchUserController = TextEditingController();
   final TextEditingController _sortbyController = TextEditingController();
   final TextEditingController _sortPeriodControllder = TextEditingController();
@@ -336,6 +340,38 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                         ),
                       ],
                     ),
+                  ),
+                ),
+                Visibility(
+                  visible: size.width > 600,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "점수 계산 방법",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: Sizes.size12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const Text(
+                        "걸음수: 1,000보당 10점 (하루 최대 만보)",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: Sizes.size11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      const Text(
+                        "일기: 1회 100점 / 댓글 1회 20점",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: Sizes.size11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ],

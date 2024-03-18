@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/view/search_period_order.dart';
+import 'package:onldocc_admin/common/view/search_period_order_ranking.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -293,7 +293,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
     return loadingFinished
         ? Column(children: [
-            SearchPeriodOrder(
+            SearchPeriodOrderRanking(
               filterUserList: filterUserDataList,
               resetInitialList: () => getScoreList(selectedDateRange),
               generateCsv: generateUserCsv,

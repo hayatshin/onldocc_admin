@@ -11,13 +11,13 @@ import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class EditEventWidget extends ConsumerStatefulWidget {
+class EditPointEventWidget extends ConsumerStatefulWidget {
   final BuildContext context;
   final double totalWidth;
   final double totalHeight;
   final EventModel eventModel;
   final Function() refreshScreen;
-  const EditEventWidget({
+  const EditPointEventWidget({
     super.key,
     required this.context,
     required this.totalWidth,
@@ -27,10 +27,11 @@ class EditEventWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<EditEventWidget> createState() => _EditEventWidgetState();
+  ConsumerState<EditPointEventWidget> createState() =>
+      _EditPointEventWidgetState();
 }
 
-class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
+class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
   final TextEditingController _titleControllder = TextEditingController();
   final TextEditingController _descriptionControllder = TextEditingController();
   final TextEditingController _goalScoreController = TextEditingController();
@@ -44,6 +45,9 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   PlatformFile? _eventImageFile;
   dynamic _eventImage;
 
+  PlatformFile? _bannerImageFile;
+  dynamic _bannerImage;
+
   DateTime? _eventStartDate;
   DateTime? _eventEndDate;
 
@@ -54,9 +58,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   int _eventDiaryPoint = 0;
   int _eventCommentPoint = 0;
   int _eventLikePoint = 0;
-
-  final List<PlatformFile> _feedImageFile = [];
-  final List<Uint8List> _feedImageArray = [];
+  int _eventInvitationPoint = 0;
 
   OverlayEntry? overlayEntry;
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -94,7 +96,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
     }
   }
 
-  Future<void> pickImageFromGallery(
+  Future<void> pickEventImageFromGallery(
       void Function(void Function()) setState) async {
     try {
       FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
@@ -115,23 +117,22 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
     }
   }
 
-  Future<void> pickMultipleImagesFromGallery(
+  Future<void> pickBannerImageFromGallery(
       void Function(void Function()) setState) async {
     try {
       FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
-      // _feedImageFile = result.files;
-      for (PlatformFile file in _feedImageFile) {
-        _feedImageArray.add(file.bytes!);
-      }
-      setState(() {});
+      setState(() {
+        _bannerImageFile = result.files.first;
+        _bannerImage = _bannerImageFile!.bytes!;
+      });
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
+        const SnackBar(
+          content: Text("오류가 발생했습니다."),
         ),
       );
     }
@@ -161,6 +162,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
       diaryPoint: _eventDiaryPoint,
       commentPoint: _eventCommentPoint,
       likePoint: _eventLikePoint,
+      invitationPoint: _eventInvitationPoint,
     );
 
     await ref.read(eventRepo).editEvent(eventModel);
@@ -188,10 +190,12 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
     _eventGoalScore = widget.eventModel.targetScore.toString();
     _eventPrizeWinners = widget.eventModel.achieversNumber.toString();
     _eventImage = widget.eventModel.eventImage;
-    _eventStepPoint = widget.eventModel.stepPoint;
-    _eventDiaryPoint = widget.eventModel.diaryPoint;
-    _eventCommentPoint = widget.eventModel.commentPoint;
-    _eventLikePoint = widget.eventModel.likePoint;
+    _eventStepPoint = widget.eventModel.stepPoint!;
+    _eventDiaryPoint = widget.eventModel.diaryPoint!;
+    _eventCommentPoint = widget.eventModel.commentPoint!;
+    _eventLikePoint = widget.eventModel.likePoint!;
+    _bannerImage = widget.eventModel.bannerImage;
+
     setState(() {});
 
     _titleControllder.text = widget.eventModel.title;
@@ -233,6 +237,12 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   void updateLikePoint(int point) {
     setState(() {
       _eventLikePoint = point;
+    });
+  }
+
+  void updateInvitationPoint(int point) {
+    setState(() {
+      _eventInvitationPoint = point;
     });
   }
 
@@ -318,6 +328,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return StatefulBuilder(builder: (context, setState) {
       return Container(
         width: widget.totalWidth,
@@ -449,67 +460,148 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                         ),
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: widget.totalWidth * 0.1,
-                            child: const Text(
-                              "행사 이미지",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          Gaps.h32,
-                          Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size5,
-                                ),
-                                border: Border.all(
-                                  color: Colors.grey.shade200,
-                                )),
-                            child: _eventImage != ""
-                                ? _eventImage is Uint8List
-                                    ? Image.memory(
-                                        _eventImage,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.network(
-                                        _eventImage,
-                                        fit: BoxFit.cover,
-                                      )
-                                : Icon(
-                                    Icons.image,
-                                    size: Sizes.size80,
-                                    color: Colors.grey.shade200,
-                                  ),
-                          ),
-                          Gaps.h52,
-                          SizedBox(
-                            height: 200,
-                            child: Align(
-                              alignment: Alignment.bottomLeft,
-                              child: ElevatedButton(
-                                onPressed: () => pickImageFromGallery(setState),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey.shade200,
-                                  surfaceTintColor: Colors.pink.shade200,
-                                ),
-                                child: Text(
-                                  '이미지 올리기',
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: widget.totalWidth * 0.1,
+                                child: const Text(
+                                  "배너 이미지",
                                   style: TextStyle(
-                                    color: Colors.grey.shade800,
-                                    fontSize: Sizes.size12,
+                                    fontWeight: FontWeight.w500,
                                   ),
+                                  textAlign: TextAlign.start,
                                 ),
                               ),
-                            ),
-                          )
+                              Gaps.h32,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                      width: 200,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            Sizes.size5,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.grey.shade200,
+                                          )),
+                                      child: _bannerImage != ""
+                                          ? _bannerImage is Uint8List
+                                              ? Image.memory(
+                                                  _bannerImage,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.network(
+                                                  _bannerImage,
+                                                  fit: BoxFit.cover,
+                                                )
+                                          : Icon(
+                                              Icons.image,
+                                              size: Sizes.size80,
+                                              color: Colors.grey.shade200,
+                                            )),
+                                  Gaps.v20,
+                                  SizedBox(
+                                    child: Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            pickBannerImageFromGallery(
+                                                setState),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey.shade200,
+                                          surfaceTintColor:
+                                              Colors.pink.shade200,
+                                        ),
+                                        child: Text(
+                                          '이미지 올리기',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade800,
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                          Gaps.h40,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: widget.totalWidth * 0.1,
+                                child: const Text(
+                                  "행사 이미지",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                              Gaps.h32,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          Sizes.size5,
+                                        ),
+                                        border: Border.all(
+                                          color: Colors.grey.shade200,
+                                        )),
+                                    child: _eventImage != ""
+                                        ? _eventImage is Uint8List
+                                            ? Image.memory(
+                                                _eventImage,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.network(
+                                                _eventImage,
+                                                fit: BoxFit.cover,
+                                              )
+                                        : Icon(
+                                            Icons.image,
+                                            size: Sizes.size80,
+                                            color: Colors.grey.shade200,
+                                          ),
+                                  ),
+                                  Gaps.v20,
+                                  SizedBox(
+                                    child: Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            pickEventImageFromGallery(setState),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey.shade200,
+                                          surfaceTintColor:
+                                              Colors.pink.shade200,
+                                        ),
+                                        child: Text(
+                                          '이미지 올리기',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade800,
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       Gaps.v52,
@@ -803,196 +895,237 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                           ),
                         ],
                       ),
-                      Gaps.v32,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      Gaps.v80,
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: widget.totalWidth * 0.1,
-                            child: const Text(
-                              "목표 점수 설정",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.start,
+                          Container(
+                            height: 1,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
                             ),
                           ),
-                          Gaps.h32,
+                          Gaps.v40,
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                width: 100,
-                                child: TextFormField(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  minLines: 1,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _eventGoalScore = value;
-                                    });
-                                  },
-                                  controller: _goalScoreController,
-                                  textAlignVertical: TextAlignVertical.top,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size14,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    hintText: "",
-                                    hintStyle: TextStyle(
-                                      fontSize: Sizes.size14,
-                                      color: Colors.grey.shade400,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey.shade50,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                    ),
-                                    errorStyle: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size3,
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: Sizes.size10,
-                                      vertical: Sizes.size10,
-                                    ),
-                                  ),
+                              const Text(
+                                "🥇🥈",
+                                style: TextStyle(
+                                  fontSize: Sizes.size14,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Gaps.h10,
                               Text(
-                                "점",
+                                "인지케어 행사 설정",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
-                                  color: Colors.grey.shade800,
-                                  fontWeight: FontWeight.w300,
+                                  fontWeight: FontWeight.w600,
+                                  background: Paint()
+                                    ..color =
+                                        Colors.pinkAccent.withOpacity(0.2),
                                 ),
-                              )
+                              ),
                             ],
                           ),
-                        ],
-                      ),
-                      Gaps.v40,
-                      Container(
-                        height: 1,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      Gaps.v40,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "🥇🥈",
-                            style: TextStyle(
-                              fontSize: Sizes.size14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Gaps.h10,
-                          Text(
-                            "행사 점수 계산 설정",
-                            style: TextStyle(
-                              fontSize: Sizes.size14,
-                              fontWeight: FontWeight.w600,
-                              background: Paint()
-                                ..color = Colors.pinkAccent.withOpacity(0.2),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Gaps.v20,
-                      const Text(
-                        "- 설정을 안 하면 현재 화면에 보여지는 기본 값으로 행사의 점수 계산이 설정됩니다.",
-                        style: TextStyle(
-                          fontSize: Sizes.size13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Gaps.v52,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          DefaultPointTile(
-                            totalWidth: widget.totalWidth,
-                            updateEventPoint: updateDiaryPoint,
-                            header: "일기",
-                            defaultPoint: widget.eventModel.diaryPoint,
-                          ),
-                          DefaultPointTile(
-                            totalWidth: widget.totalWidth,
-                            updateEventPoint: updateCommentPoint,
-                            header: "댓글",
-                            defaultPoint: widget.eventModel.commentPoint,
-                          ),
-                          DefaultPointTile(
-                            totalWidth: widget.totalWidth,
-                            updateEventPoint: updateLikePoint,
-                            header: "좋아요",
-                            defaultPoint: widget.eventModel.likePoint,
-                          ),
-                        ],
-                      ),
-                      Gaps.v32,
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          DefaultPointTile(
-                            totalWidth: widget.totalWidth,
-                            updateEventPoint: updateStepPoint,
-                            header: "걸음수",
-                            defaultPoint: widget.eventModel.stepPoint,
-                          ),
-                          Gaps.h32,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Gaps.v52,
+                          Row(
                             children: [
                               Text(
-                                "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
+                                "행사 유형 설정",
                                 style: TextStyle(
-                                  fontSize: Sizes.size12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey.shade600,
-                                ),
+                                    fontWeight: FontWeight.w500,
+                                    background: Paint()
+                                      ..color =
+                                          Colors.yellowAccent.withOpacity(0.2)),
+                                textAlign: TextAlign.start,
                               ),
-                              Gaps.v5,
-                              const CommentTextWidget(
-                                text: "- 일일 최대 만보까지 점수 계산에 포함됩니다.",
-                              ),
+                              Gaps.h80,
                             ],
                           ),
+                          Gaps.v80,
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: size.width * 0.1,
+                                    child: const Text(
+                                      "목표 점수 설정",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
+                                  Gaps.h32,
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      SizedBox(
+                                        width: 150,
+                                        child: TextFormField(
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly
+                                          ],
+                                          minLines: 1,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _eventGoalScore = value;
+                                            });
+                                          },
+                                          controller: _goalScoreController,
+                                          textAlignVertical:
+                                              TextAlignVertical.top,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size14,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            hintText: "",
+                                            hintStyle: TextStyle(
+                                              fontSize: Sizes.size14,
+                                              color: Colors.grey.shade400,
+                                              fontWeight: FontWeight.w300,
+                                            ),
+                                            filled: true,
+                                            fillColor: Colors.grey.shade50,
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                            ),
+                                            errorStyle: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                              borderSide: BorderSide(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                              borderSide: BorderSide(
+                                                color: Colors.grey.shade300,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                              borderSide: BorderSide(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                              horizontal: Sizes.size10,
+                                              vertical: Sizes.size10,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Gaps.h10,
+                                      Text(
+                                        "점",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size14,
+                                          color: Colors.grey.shade800,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Gaps.v52,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  DefaultPointTile(
+                                    totalWidth: size.width,
+                                    updateEventPoint: updateDiaryPoint,
+                                    header: "일기",
+                                    defaultPoint: _eventDiaryPoint,
+                                    editOrNot: true,
+                                  ),
+                                  DefaultPointTile(
+                                    totalWidth: size.width,
+                                    updateEventPoint: updateCommentPoint,
+                                    header: "댓글",
+                                    defaultPoint: _eventCommentPoint,
+                                    editOrNot: true,
+                                  ),
+                                  DefaultPointTile(
+                                    totalWidth: size.width,
+                                    updateEventPoint: updateLikePoint,
+                                    header: "좋아요",
+                                    defaultPoint: _eventLikePoint,
+                                    editOrNot: true,
+                                  ),
+                                ],
+                              ),
+                              Gaps.v32,
+                              DefaultPointTile(
+                                totalWidth: size.width,
+                                updateEventPoint: updateInvitationPoint,
+                                header: "친구 초대",
+                                defaultPoint: _eventInvitationPoint,
+                                editOrNot: true,
+                              ),
+                              Gaps.v32,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  DefaultPointTile(
+                                    totalWidth: size.width,
+                                    updateEventPoint: updateStepPoint,
+                                    header: "걸음수",
+                                    defaultPoint: _eventStepPoint,
+                                    editOrNot: true,
+                                  ),
+                                  Gaps.h32,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      Gaps.v5,
+                                      const CommentTextWidget(
+                                        text: "- 일일 최대 만보까지 점수 계산에 포함됩니다.",
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ],
@@ -1007,30 +1140,35 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   }
 }
 
-class DefaultPointTile extends StatefulWidget {
+class DefaultCountTile extends StatefulWidget {
   final double totalWidth;
   final Function(int) updateEventPoint;
   final String header;
   final int defaultPoint;
-  const DefaultPointTile({
+  final bool editOrNot;
+
+  const DefaultCountTile({
     super.key,
     required this.totalWidth,
     required this.updateEventPoint,
     required this.header,
     required this.defaultPoint,
+    required this.editOrNot,
   });
 
   @override
-  State<DefaultPointTile> createState() => _DefaultPointTileState();
+  State<DefaultCountTile> createState() => _DefaultCountTileState();
 }
 
-class _DefaultPointTileState extends State<DefaultPointTile> {
+class _DefaultCountTileState extends State<DefaultCountTile> {
   final TextEditingController textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    textController.text = "${widget.defaultPoint}";
+    if (widget.editOrNot) {
+      textController.text = "${widget.defaultPoint}";
+    }
   }
 
   @override
@@ -1048,7 +1186,144 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
         SizedBox(
           width: widget.totalWidth * 0.1,
           child: Text(
-            "⚬ ${widget.header}",
+            "❍   ${widget.header}",
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        Gaps.h32,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextFormField(
+                controller: textController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                minLines: 1,
+                onChanged: (value) {
+                  final point = int.parse(value);
+                  widget.updateEventPoint(point);
+                },
+                textAlignVertical: TextAlignVertical.top,
+                style: const TextStyle(
+                  fontSize: Sizes.size14,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  hintText: "${widget.defaultPoint}",
+                  hintStyle: TextStyle(
+                    fontSize: Sizes.size14,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w300,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                  ),
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: Sizes.size10,
+                    vertical: Sizes.size10,
+                  ),
+                ),
+              ),
+            ),
+            Gaps.h10,
+            Text(
+              "회",
+              style: TextStyle(
+                fontSize: Sizes.size14,
+                color: Colors.grey.shade800,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class DefaultPointTile extends StatefulWidget {
+  final double totalWidth;
+  final Function(int) updateEventPoint;
+  final String header;
+  final int defaultPoint;
+  final bool editOrNot;
+  const DefaultPointTile({
+    super.key,
+    required this.totalWidth,
+    required this.updateEventPoint,
+    required this.header,
+    required this.defaultPoint,
+    required this.editOrNot,
+  });
+
+  @override
+  State<DefaultPointTile> createState() => _DefaultPointTileState();
+}
+
+class _DefaultPointTileState extends State<DefaultPointTile> {
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.editOrNot) {
+      textController.text = "${widget.defaultPoint}";
+    }
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: widget.totalWidth * 0.1,
+          child: Text(
+            "❍   ${widget.header}",
             style: const TextStyle(
               fontWeight: FontWeight.w500,
             ),
@@ -1133,20 +1408,33 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
                 fontWeight: FontWeight.w300,
               ),
             ),
-            if (widget.header == "걸음수")
-              const Row(
-                children: [
-                  Gaps.h10,
-                  Text(
-                    "/ 1000보 당",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.red,
-                    ),
+            widget.header == "걸음수"
+                ? Row(
+                    children: [
+                      Gaps.h10,
+                      Text(
+                        "/ 1,000보 당",
+                        style: TextStyle(
+                          fontSize: Sizes.size13,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Gaps.h10,
+                      Text(
+                        "/ 1회",
+                        style: TextStyle(
+                          fontSize: Sizes.size13,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
           ],
         ),
       ],
