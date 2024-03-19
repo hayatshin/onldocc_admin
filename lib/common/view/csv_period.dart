@@ -32,10 +32,20 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
   bool _setCsvHover = false;
   bool _setBackHover = false;
 
-  final DateRange _selectedDateRange = DateRange(
+  final DateRange selectedDateRange = DateRange(
     getThisWeekMonday(),
     DateTime.now(),
   );
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDateRangeNotifier.value = DateRange(
+      getThisWeekMonday(),
+      DateTime.now(),
+    );
+  }
+
   @override
   void dispose() {
     // widget.sortPeriodControllder.dispose();
@@ -44,7 +54,6 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Container(
       height: searchHeight + Sizes.size40,
       decoration: BoxDecoration(
@@ -125,7 +134,7 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                     onDateRangeSelected: (DateRange? value) {
                       selectedDateRangeNotifier.value = value;
                       value == null
-                          ? widget.updateOrderPeriod(_selectedDateRange)
+                          ? widget.updateOrderPeriod(selectedDateRange)
                           : widget.updateOrderPeriod(value);
                     },
                     selectedDateRange: selectedDateRangeNotifier.value,

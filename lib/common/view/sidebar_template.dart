@@ -26,6 +26,9 @@ class SidebarTemplate extends ConsumerStatefulWidget {
   ConsumerState<SidebarTemplate> createState() => _SidebarTemplateState();
 }
 
+GlobalKey<_SidebarTemplateState> _sidebarKey =
+    GlobalKey<_SidebarTemplateState>();
+
 class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   final contractRegionController = TextEditingController();
   final contractCommunityController = TextEditingController();
@@ -127,6 +130,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      key: _sidebarKey,
       body: Row(
         children: [
           SizedBox(
@@ -461,7 +465,6 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
 
   @override
   void dispose() {
-    menuNotifier.dispose();
     super.dispose();
   }
 

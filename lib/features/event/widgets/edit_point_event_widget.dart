@@ -459,7 +459,9 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                           ],
                         ),
                       ),
+                      Gaps.v40,
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -481,7 +483,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                 children: [
                                   Container(
                                       width: 200,
-                                      height: 200,
+                                      height: 100,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
                                             Sizes.size5,
@@ -531,7 +533,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                               ),
                             ],
                           ),
-                          Gaps.h40,
+                          Gaps.h52,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,

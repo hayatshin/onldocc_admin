@@ -15,18 +15,20 @@ import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
-class EventDetailScreen extends ConsumerStatefulWidget {
+class EventDetailPointScreen extends ConsumerStatefulWidget {
   final EventModel? eventModel;
-  const EventDetailScreen({
+  const EventDetailPointScreen({
     super.key,
     required this.eventModel,
   });
 
   @override
-  ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
+  ConsumerState<EventDetailPointScreen> createState() =>
+      _EventDetailPointScreenState();
 }
 
-class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
+class _EventDetailPointScreenState
+    extends ConsumerState<EventDetailPointScreen> {
   List<ParticipantModel> _participants = [];
   bool _initializeParticipants = false;
   final List<String> _listHeader = [
@@ -61,10 +63,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       participantModel.phone,
       participantModel.smallRegion,
       secondsToStringLine(participantModel.createdAt),
-      participantModel.totalPoint.toString(),
-      participantModel.totalPoint >= widget.eventModel!.targetScore!
-          ? "달성"
-          : "미달성",
+      participantModel.userTotalPoint!.toString(),
+      participantModel.userAchieveOrNot! ? "달성" : "미달성",
     ];
   }
 
@@ -119,7 +119,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     final participants = await ref
         .read(eventProvider.notifier)
         .getEventParticipants(widget.eventModel!);
-    participants.sort((a, b) => b.totalPoint.compareTo(a.totalPoint));
+    participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
 
     setState(() {
       _participants = participants;
@@ -596,7 +596,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       DataCell(
                                         Text(
                                           _participants[i]
-                                              .totalPoint
+                                              .userTotalPoint
                                               .toString(),
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
@@ -605,9 +605,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ),
                                       DataCell(
                                         Text(
-                                          _participants[i].totalPoint >=
-                                                  widget
-                                                      .eventModel!.targetScore!
+                                          _participants[i].userAchieveOrNot!
                                               ? "달성"
                                               : "미달성",
                                           style: const TextStyle(

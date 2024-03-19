@@ -412,6 +412,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       ),
                       Gaps.v40,
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -433,7 +434,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 children: [
                                   Container(
                                     width: 200,
-                                    height: 200,
+                                    height: 100,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(
                                           Sizes.size5,
@@ -479,7 +480,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               ),
                             ],
                           ),
-                          Gaps.h40,
+                          Gaps.h52,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,

@@ -93,7 +93,9 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   }
 
   Future<void> getUserModelList() async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
     final userList = adminProfileModel!.master
         ? await ref
             .read(userProvider.notifier)

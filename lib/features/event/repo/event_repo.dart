@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,6 +12,83 @@ import 'package:uuid/uuid.dart';
 
 class EventRepository {
   final _supabase = Supabase.instance.client;
+
+  static final eventUserPointFunctions = Uri.parse(
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-point-functions");
+  static final eventUserCountFunctions = Uri.parse(
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions");
+
+  Future<Map<String, dynamic>> getEventUserPoint(
+    String userId,
+    int startSeconds,
+    int endSeconds,
+    int stepPoint,
+    int invitationPoint,
+    int diaryPoint,
+    int commentPoint,
+    int likePoint,
+    int targetScore,
+  ) async {
+    Map<String, dynamic> requestBody = {
+      'userId': userId,
+      'startSeconds': startSeconds,
+      'endSeconds': endSeconds,
+      'stepPoint': stepPoint,
+      'invitationPoint': invitationPoint,
+      'diaryPoint': diaryPoint,
+      'commentPoint': commentPoint,
+      'likePoint': likePoint,
+      'targetScore': targetScore,
+    };
+    String requestBodyJson = jsonEncode(requestBody);
+
+    final response = await http.post(
+      eventUserPointFunctions,
+      body: requestBodyJson,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      return data["data"];
+    }
+
+    return {};
+  }
+
+  Future<Map<String, dynamic>> getEventUserCount(
+    String userId,
+    int startSeconds,
+    int endSeconds,
+    int invitationCount,
+    int diaryCount,
+    int commentCount,
+    int likeCount,
+  ) async {
+    Map<String, dynamic> requestBody = {
+      'userId': userId,
+      'startSeconds': startSeconds,
+      'endSeconds': endSeconds,
+      'invitationCount': invitationCount,
+      'diaryCount': diaryCount,
+      'commentCount': commentCount,
+      'likeCount': likeCount,
+    };
+    String requestBodyJson = jsonEncode(requestBody);
+
+    final response = await http.post(
+      eventUserCountFunctions,
+      body: requestBodyJson,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      return data["data"];
+    }
+
+    return {};
+  }
 
   Future<List<Map<String, dynamic>>> getUserEvents(
       AdminProfileModel model, String contractRegionId) async {

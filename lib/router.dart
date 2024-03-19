@@ -9,7 +9,8 @@ import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
-import 'package:onldocc_admin/features/event/view/event_detail_screen.dart';
+import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
+import 'package:onldocc_admin/features/event/view/event_detail_point_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
@@ -286,11 +287,14 @@ final routerProvider = Provider(
                 GoRoute(
                   path: ":eventId",
                   pageBuilder: (context, state) {
+                    final eventModel = state.extra as EventModel;
                     return MaterialPage(
                       key: state.pageKey,
-                      child: EventDetailScreen(
-                        eventModel: state.extra as EventModel,
-                      ),
+                      child: eventModel.eventType == "point"
+                          ? EventDetailPointScreen(
+                              eventModel: eventModel,
+                            )
+                          : EventDetailCountScreen(eventModel: eventModel),
                     );
                   },
                 ),

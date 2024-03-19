@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
-import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/models/participant_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
@@ -52,59 +49,87 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
       int userStartSeconds =
           model.createdAt > startSeconds ? model.createdAt : startSeconds;
 
-      final pointData = await getEventUserScore(
+      if (eventModel.eventType == "point") {
+        final data = await _eventRepository.getEventUserPoint(
           model.userId,
           userStartSeconds,
           endSeconds,
           eventModel.stepPoint!,
+          eventModel.invitationPoint!,
           eventModel.diaryPoint!,
           eventModel.commentPoint!,
-          eventModel.likePoint!);
-
-      final userPoint = pointData[0]["totalPoint"];
-      final rModel = model.copyWith(
-        smallRegion: userRegion,
-        totalPoint: userPoint,
-      );
-      return rModel;
+          eventModel.likePoint!,
+          eventModel.targetScore!,
+        );
+        final scorePointModel = model.copyWith(
+          smallRegion: userRegion,
+          userStepPoint: data["userStepPoint"],
+          userInvitationPoint: data["userInvitationPoint"],
+          userDiaryPoint: data["userDiaryPoint"],
+          userCommentPoint: data["userCommentPoint"],
+          userLikePoint: data["userLikePoint"],
+          userTotalPoint: data["userTotalPoint"],
+          userAchieveOrNot: data["userAchieveOrNot"],
+        );
+        return scorePointModel;
+      } else {
+        final data = await _eventRepository.getEventUserCount(
+          model.userId,
+          userStartSeconds,
+          endSeconds,
+          eventModel.invitationCount!,
+          eventModel.diaryCount!,
+          eventModel.commentCount!,
+          eventModel.likeCount!,
+        );
+        final scorePointModel = model.copyWith(
+          smallRegion: userRegion,
+          userInvitationCount: data["userInvitationCount"],
+          userDiaryCount: data["userDiaryCount"],
+          userCommentCount: data["userCommentCount"],
+          userLikeCount: data["userLikeCount"],
+          userAchieveOrNot: data["userAchieveOrNot"],
+        );
+        return scorePointModel;
+      }
     }).toList());
 
     return modelList;
   }
 
-  Future<List<dynamic>> getEventUserScore(
-    String userId,
-    int startSeconds,
-    int endSeconds,
-    int stepPoint,
-    int diaryPoint,
-    int commentPoint,
-    int likePoint,
-  ) async {
-    Map<String, dynamic> requestBody = {
-      'userId': userId,
-      'startSeconds': startSeconds,
-      'endSeconds': endSeconds,
-      'stepPoint': stepPoint,
-      'diaryPoint': diaryPoint,
-      'commentPoint': commentPoint,
-      'likePoint': likePoint,
-    };
-    String requestBodyJson = jsonEncode(requestBody);
+  // Future<List<dynamic>> getEventUserScore(
+  //   String userId,
+  //   int startSeconds,
+  //   int endSeconds,
+  //   int stepPoint,
+  //   int diaryPoint,
+  //   int commentPoint,
+  //   int likePoint,
+  // ) async {
+  //   Map<String, dynamic> requestBody = {
+  //     'userId': userId,
+  //     'startSeconds': startSeconds,
+  //     'endSeconds': endSeconds,
+  //     'stepPoint': stepPoint,
+  //     'diaryPoint': diaryPoint,
+  //     'commentPoint': commentPoint,
+  //     'likePoint': likePoint,
+  //   };
+  //   String requestBodyJson = jsonEncode(requestBody);
 
-    final response = await http.post(
-      pointEventFunctions,
-      body: requestBodyJson,
-      headers: headers,
-    );
+  //   final response = await http.post(
+  //     pointEventFunctions,
+  //     body: requestBodyJson,
+  //     headers: headers,
+  //   );
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-      return data["data"];
-    }
+  //   if (response.statusCode == 200) {
+  //     Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+  //     return data["data"];
+  //   }
 
-    return [];
-  }
+  //   return [];
+  // }
 }
 
 final eventProvider = AsyncNotifierProvider<EventViewModel, List<EventModel>>(

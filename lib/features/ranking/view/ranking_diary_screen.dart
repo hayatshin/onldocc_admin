@@ -214,7 +214,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
         CsvPeriod(
           generateCsv: generateUserCsv,
           rankingType: widget.rankingType!,
-          userName: widget.userName ?? "",
+          userName: widget.userName!,
           updateOrderPeriod: updateOrderPeriod,
           sortPeriodControllder: sortPeriodControllder,
         ),
@@ -235,6 +235,10 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                               width: chartWidth,
                               child: SfCalendar(
                                 view: CalendarView.month,
+                                initialDisplayDate: DateTime(
+                                    _selectedDateRange.start.year,
+                                    _selectedDateRange.start.month,
+                                    _selectedDateRange.start.day),
                                 dataSource:
                                     DiaryDataSource(_diaryDataList, context),
                                 todayHighlightColor: Colors.grey.shade500,

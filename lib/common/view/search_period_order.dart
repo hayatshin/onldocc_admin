@@ -44,6 +44,15 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    selectedDateRangeNotifier.value = DateRange(
+      getThisWeekMonday(),
+      DateTime.now(),
+    );
+  }
+
+  @override
   void dispose() {
     _searchUserController.dispose();
     _sortbyController.dispose();
