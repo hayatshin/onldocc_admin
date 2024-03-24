@@ -145,14 +145,18 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
 
     // AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final eventId = widget.eventModel.eventId;
-    final evnetImageUrl = await ref
+    final eventImageUrl = await ref
         .read(eventRepo)
         .uploadSingleImageToStorage(eventId, _eventImage);
+    final bannerImageUrl = await ref
+        .read(eventRepo)
+        .uploadSingleImageToStorage(eventId, _bannerImage);
     final eventModel = widget.eventModel.copyWith(
       eventId: eventId,
       title: _eventTitle,
       description: _eventDescription,
-      eventImage: evnetImageUrl,
+      eventImage: eventImageUrl,
+      bannerImage: bannerImageUrl,
       allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
       targetScore: int.parse(_eventGoalScore),
       achieversNumber: int.parse(_eventPrizeWinners),
@@ -475,8 +479,8 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                      width: 200,
-                                      height: 100,
+                                      width: 150,
+                                      height: 150,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
                                             Sizes.size5,
@@ -526,7 +530,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                               ),
                             ],
                           ),
-                          Gaps.h52,
+                          Gaps.h60,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -546,7 +550,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    width: 200,
+                                    width: 150,
                                     height: 200,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(

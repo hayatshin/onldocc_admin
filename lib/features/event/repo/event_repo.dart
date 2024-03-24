@@ -122,7 +122,9 @@ class EventRepository {
     final data = await _supabase
         .from("event_participants")
         .select('*, users(*)')
-        .eq('eventId', eventId);
+        .eq('eventId', eventId)
+        .order('gift', ascending: true)
+        .order('createdAt', ascending: true);
     return data;
   }
 

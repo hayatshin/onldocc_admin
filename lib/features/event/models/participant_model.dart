@@ -9,6 +9,7 @@ class ParticipantModel {
   final String subdistrictId;
   final String smallRegion;
   final int createdAt;
+  final bool gift;
 
   final int? stepPoint;
   final int? diaryPoint;
@@ -43,6 +44,7 @@ class ParticipantModel {
     required this.subdistrictId,
     required this.smallRegion,
     required this.createdAt,
+    required this.gift,
     this.stepPoint,
     this.diaryPoint,
     this.commentPoint,
@@ -75,6 +77,7 @@ class ParticipantModel {
         subdistrictId = json["users"]["subdistrictId"],
         smallRegion = "",
         createdAt = json["createdAt"] ?? 0,
+        gift = json["gift"] ?? false,
         stepPoint = json["stepPoint"] ?? 0,
         diaryPoint = json["diaryPoint"] ?? 0,
         commentPoint = json["commentPoint"] ?? 0,
@@ -128,6 +131,7 @@ class ParticipantModel {
       subdistrictId: subdistrictId,
       smallRegion: smallRegion ?? this.smallRegion,
       createdAt: createdAt,
+      gift: gift,
       stepPoint: stepPoint ?? this.stepPoint,
       diaryPoint: diaryPoint ?? this.diaryPoint,
       commentPoint: commentPoint ?? this.commentPoint,

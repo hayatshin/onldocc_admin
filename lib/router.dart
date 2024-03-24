@@ -287,10 +287,10 @@ final routerProvider = Provider(
                 GoRoute(
                   path: ":eventId",
                   pageBuilder: (context, state) {
-                    final eventModel = state.extra as EventModel;
+                    final eventModel = state.extra as EventModel?;
                     return MaterialPage(
                       key: state.pageKey,
-                      child: eventModel.eventType == "point"
+                      child: eventModel!.eventType == "point"
                           ? EventDetailPointScreen(
                               eventModel: eventModel,
                             )

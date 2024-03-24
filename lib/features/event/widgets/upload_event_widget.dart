@@ -167,7 +167,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
 
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final eventId = const Uuid().v4();
-    final evnetImageUrl = await ref
+    final eventImageUrl = await ref
         .read(eventRepo)
         .uploadSingleImageToStorage(eventId, _eventImageBytes);
     final bannerImageUrl = await ref
@@ -178,7 +178,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       eventId: eventId,
       title: _eventTitle,
       description: _eventDescription,
-      eventImage: evnetImageUrl,
+      eventImage: eventImageUrl,
       bannerImage: bannerImageUrl,
       allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
       targetScore: _eventGoalScore,
@@ -433,8 +433,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    width: 200,
-                                    height: 100,
+                                    width: 150,
+                                    height: 150,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(
                                           Sizes.size5,
@@ -480,7 +480,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               ),
                             ],
                           ),
-                          Gaps.h52,
+                          Gaps.h60,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,7 +500,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    width: 200,
+                                    width: 150,
                                     height: 200,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(

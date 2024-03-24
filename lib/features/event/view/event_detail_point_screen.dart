@@ -531,6 +531,14 @@ class _EventDetailPointScreenState
                                     ),
                                   ),
                                 ),
+                                DataColumn(
+                                  label: Text(
+                                    "선물 신청",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size12,
+                                    ),
+                                  ),
+                                ),
                               ],
                               rows: [
                                 for (var i = 0; i < _participants.length; i++)
@@ -608,6 +616,14 @@ class _EventDetailPointScreenState
                                           _participants[i].userAchieveOrNot!
                                               ? "달성"
                                               : "미달성",
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _participants[i].gift ? "✔️" : "",
                                           style: const TextStyle(
                                             fontSize: Sizes.size12,
                                           ),

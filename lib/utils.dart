@@ -152,7 +152,7 @@ String secondsToStringDiaryTimeLine(int seconds) {
   final milliseconds = seconds * 1000;
   DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
 
-  String diaryHour = dateTime.hour == 24
+  String diaryHour = dateTime.hour == 24 || dateTime.hour == 0
       ? "오전 12시"
       : dateTime.hour > 12
           ? "오후 ${dateTime.hour - 12}시"
@@ -196,9 +196,11 @@ List<String> spreadDiaryImages(List data) {
 
 int convertStartDateStringToSeconds(String startDate) {
   if (startDate.contains('.')) {
-    String timeString = "00:00:00.000";
-    String combineString = "${startDate.replaceAll('.', '-')} $timeString";
-    DateTime dateTime = DateTime.parse(combineString);
+    List<String> dateParts = startDate.split('.');
+    int year = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int day = int.parse(dateParts[2]);
+    final dateTime = DateTime(year, month, day, 0, 0, 0);
     int seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
     return seconds;
   } else {
@@ -208,9 +210,11 @@ int convertStartDateStringToSeconds(String startDate) {
 
 int convertEndDateStringToSeconds(String endDate) {
   if (endDate.contains('.')) {
-    String timeString = "23:59:99.999";
-    String combineString = "${endDate.replaceAll('.', '-')} $timeString";
-    DateTime dateTime = DateTime.parse(combineString);
+    List<String> dateParts = endDate.split('.');
+    int year = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int day = int.parse(dateParts[2]);
+    final dateTime = DateTime(year, month, day, 23, 59, 59);
     int seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
     return seconds;
   } else {
@@ -220,10 +224,12 @@ int convertEndDateStringToSeconds(String endDate) {
 
 DateTime convertStartDateStringToDateTime(String startDate) {
   if (startDate.contains('.')) {
-    String timeString = "00:00:00.000";
-    String combineString = "${startDate.replaceAll('.', '-')} $timeString";
-    DateTime dateTime = DateTime.parse(combineString);
-    return dateTime;
+    List<String> dateParts = startDate.split('.');
+    int year = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int day = int.parse(dateParts[2]);
+
+    return DateTime(year, month, day, 0, 0, 0);
   } else {
     return DateTime(2024);
   }
@@ -231,10 +237,12 @@ DateTime convertStartDateStringToDateTime(String startDate) {
 
 DateTime convertEndDateStringToDateTime(String endDate) {
   if (endDate.contains('.')) {
-    String timeString = "23:59:99.999";
-    String combineString = "${endDate.replaceAll('.', '-')} $timeString";
-    DateTime dateTime = DateTime.parse(combineString);
-    return dateTime;
+    List<String> dateParts = endDate.split('.');
+    int year = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int day = int.parse(dateParts[2]);
+
+    return DateTime(year, month, day, 23, 59, 59);
   } else {
     return DateTime(2024);
   }
