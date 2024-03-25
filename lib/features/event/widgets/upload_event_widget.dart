@@ -569,7 +569,6 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               width: widget.totalWidth * 0.6,
                               height: 200,
                               child: TextFormField(
-                                maxLength: 200,
                                 expands: true,
                                 maxLines: null,
                                 minLines: null,
