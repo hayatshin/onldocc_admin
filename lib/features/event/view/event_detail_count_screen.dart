@@ -330,40 +330,40 @@ class _EventDetailCountScreenState
                                     ),
                                   ],
                                 ),
-                                Gaps.v10,
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.check_circle_outline_rounded,
-                                      color: Theme.of(context).primaryColor,
-                                      size: Sizes.size20,
-                                    ),
-                                    Gaps.h16,
-                                    RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(
-                                        text: "목표 점수:  ",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: Sizes.size15,
-                                          color: Colors.grey.shade800,
-                                        ),
-                                        children: [
-                                          TextSpan(
-                                            text:
-                                                "${widget.eventModel!.targetScore}점",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: Sizes.size15,
-                                              color: Colors.grey.shade800,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                // Gaps.v10,
+                                // Row(
+                                //   crossAxisAlignment: CrossAxisAlignment.center,
+                                //   children: [
+                                //     Icon(
+                                //       Icons.check_circle_outline_rounded,
+                                //       color: Theme.of(context).primaryColor,
+                                //       size: Sizes.size20,
+                                //     ),
+                                //     Gaps.h16,
+                                //     RichText(
+                                //       textAlign: TextAlign.center,
+                                //       text: TextSpan(
+                                //         text: "목표 점수:  ",
+                                //         style: TextStyle(
+                                //           fontWeight: FontWeight.w500,
+                                //           fontSize: Sizes.size15,
+                                //           color: Colors.grey.shade800,
+                                //         ),
+                                //         children: [
+                                //           TextSpan(
+                                //             text:
+                                //                 "${widget.eventModel!.targetScore}점",
+                                //             style: TextStyle(
+                                //               fontWeight: FontWeight.w400,
+                                //               fontSize: Sizes.size15,
+                                //               color: Colors.grey.shade800,
+                                //             ),
+                                //           )
+                                //         ],
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
                                 Gaps.v10,
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,

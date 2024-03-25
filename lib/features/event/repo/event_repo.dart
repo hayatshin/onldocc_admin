@@ -123,7 +123,7 @@ class EventRepository {
         .from("event_participants")
         .select('*, users(*)')
         .eq('eventId', eventId)
-        .order('gift', ascending: true)
+        .order('gift', ascending: false)
         .order('createdAt', ascending: true);
     return data;
   }
