@@ -8,7 +8,6 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/repo/tv_repo.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:uuid/uuid.dart';
 
 class UploadTvWidget extends ConsumerStatefulWidget {
   final BuildContext context;
@@ -57,7 +56,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       title: _title,
       link: _link,
       allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
-      videoId: const Uuid().v4(),
+      videoId: videoId,
       createdAt: getCurrentSeconds(),
       contractRegionId: adminProfileModel!.contractRegionId != ""
           ? adminProfileModel.contractRegionId
