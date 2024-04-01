@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
@@ -358,22 +356,14 @@ void downloadCsv(String csvContent, String fileName) {
   html.Url.revokeObjectUrl(url);
 }
 
-Future<Uint8List?> generateThumbnailFromBytes(Uint8List? videoBytes) async {
-  if (videoBytes == null) {
-    return null;
-  }
-
-  final tempDir = await getTemporaryDirectory();
-  final videoFilePath = '${tempDir.path}/video.mp4';
-
-  await File(videoFilePath).writeAsBytes(videoBytes);
-
-  final thumbnailBytes = await VideoThumbnail.thumbnailData(
-    video: videoFilePath,
-    imageFormat: ImageFormat.JPEG,
-    maxHeight: 100, // Adjust as needed
-    quality: 50, // Adjust as needed
+Future<String> fetchVideoUrlThumbnail(String videoUrl) async {
+  final fileName = await VideoThumbnail.thumbnailFile(
+    video: videoUrl,
+    thumbnailPath: (await getTemporaryDirectory()).path,
+    imageFormat: ImageFormat.WEBP,
+    maxHeight:
+        64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+    quality: 75,
   );
-
-  return thumbnailBytes;
+  return fileName ?? "";
 }

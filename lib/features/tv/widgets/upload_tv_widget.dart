@@ -12,7 +12,7 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
-import 'package:onldocc_admin/features/tv/repo/tv_repo.dart';
+import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class UploadTvWidget extends ConsumerStatefulWidget {
@@ -64,6 +64,8 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
         _tvVideoFile = result.files.first;
         _tvVideoBytes = _tvVideoFile!.bytes!;
         _tvTitle = _tvVideoFile!.name;
+
+        _enabledUploadVideoButton = _title.isNotEmpty && _tvVideoFile != null;
       });
     } catch (e) {
       if (!mounted) return;
@@ -100,7 +102,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
           : null,
     );
 
-    await ref.read(tvRepo).addTv(tvModel);
+    await ref.read(tvProvider.notifier).addTv(tvModel, _tvVideoBytes);
     if (!mounted) return;
     resultBottomModal(context, "성공적으로 영상이 올라갔습니다.", widget.refreshScreen);
   }
@@ -187,8 +189,10 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                           _title = value;
 
                                           _enabledUploadVideoButton =
-                                              _title.isNotEmpty &&
-                                                  _link.isNotEmpty;
+                                              (_title.isNotEmpty &&
+                                                      _link.isNotEmpty) ||
+                                                  (_title.isNotEmpty &&
+                                                      _tvVideoFile != null);
                                         },
                                       );
                                     },

@@ -85,6 +85,8 @@ class TvModel {
       videoId: videoId ?? this.videoId,
       createdAt: createdAt ?? this.createdAt,
       videoType: videoType ?? this.videoType,
+      contractRegionId: contractRegionId,
+      contractCommunityId: contractCommunityId,
     );
   }
 }

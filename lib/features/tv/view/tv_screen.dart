@@ -7,6 +7,7 @@ import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
 import 'package:onldocc_admin/features/tv/widgets/edit_tv_widget.dart';
 import 'package:onldocc_admin/features/tv/widgets/upload_tv_widget.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../common/view/search_below.dart';
 import '../../../constants/gaps.dart';
@@ -252,6 +253,12 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                           shrinkWrap: true,
                           itemCount: _tvList.length,
                           itemBuilder: (context, index) {
+                            final uri = UriData.fromString(_tvList[index].link);
+                            print("uri -> $uri");
+                            VideoPlayerController videoPlayercontrollder =
+                                VideoPlayerController.networkUrl(uri.uri)
+                                  ..initialize();
+
                             return Row(
                               children: [
                                 Expanded(
@@ -289,10 +296,17 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                           borderRadius: BorderRadius.circular(
                                             Sizes.size5,
                                           ),
-                                          child: Image.network(
-                                            _tvList[index].thumbnail,
-                                            fit: BoxFit.cover,
-                                          ),
+                                          child: _tvList[index].videoType ==
+                                                  "youtube"
+                                              ? Image.network(
+                                                  _tvList[index].thumbnail,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : videoPlayercontrollder
+                                                      .value.isInitialized
+                                                  ? VideoPlayer(
+                                                      videoPlayercontrollder)
+                                                  : const Text("no"),
                                         ),
                                       ),
                                     ),

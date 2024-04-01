@@ -58,15 +58,12 @@ class TvRepository {
     XFile xFile = XFile.fromData(videoFile);
     final imageBytes = await xFile.readAsBytes();
 
-    await _supabase.storage
-        .from("images")
-        .uploadBinary(fileStoragePath, imageBytes,
-            fileOptions: const FileOptions(
-              upsert: true,
-            ));
+    await _supabase.storage.from("tv").uploadBinary(fileStoragePath, imageBytes,
+        fileOptions: const FileOptions(
+          upsert: true,
+        ));
 
-    final fileUrl =
-        _supabase.storage.from("images").getPublicUrl(fileStoragePath);
+    final fileUrl = _supabase.storage.from("tv").getPublicUrl(fileStoragePath);
 
     return fileUrl;
   }
