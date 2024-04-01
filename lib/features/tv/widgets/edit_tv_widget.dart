@@ -103,7 +103,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                 ElevatedButton(
                   onPressed: () async {
                     await ref.read(tvRepo).deleteTv(videoId);
-                    if (!mounted) return;
+                    if (!context.mounted) return;
                     resultBottomModal(
                         context, "성공적으로 영상을 삭제하였습니다.", widget.refreshScreen);
                   },

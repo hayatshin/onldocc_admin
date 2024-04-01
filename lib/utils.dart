@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:path_provider/path_provider.dart';
 // import 'dart:html' as html;
 import 'package:universal_html/html.dart' as html;
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 void showSnackBar(BuildContext context, String error) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -352,4 +356,24 @@ void downloadCsv(String csvContent, String fileName) {
     ..setAttribute('download', fileName)
     ..click();
   html.Url.revokeObjectUrl(url);
+}
+
+Future<Uint8List?> generateThumbnailFromBytes(Uint8List? videoBytes) async {
+  if (videoBytes == null) {
+    return null;
+  }
+
+  final tempDir = await getTemporaryDirectory();
+  final videoFilePath = '${tempDir.path}/video.mp4';
+
+  await File(videoFilePath).writeAsBytes(videoBytes);
+
+  final thumbnailBytes = await VideoThumbnail.thumbnailData(
+    video: videoFilePath,
+    imageFormat: ImageFormat.JPEG,
+    maxHeight: 100, // Adjust as needed
+    quality: 50, // Adjust as needed
+  );
+
+  return thumbnailBytes;
 }

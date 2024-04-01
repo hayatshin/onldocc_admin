@@ -1,3 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:file_picker/_internal/file_picker_web.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/widgets/bottom_modal_button.dart';
@@ -39,8 +45,35 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
   String _title = "";
   String _link = "";
+  String videoType = "유투브";
+  PlatformFile? _tvVideoFile;
+  Uint8List? _tvVideoBytes;
+  String? _tvTitle;
 
   bool tapUploadTv = false;
+
+  Future<void> pickVideoFile() async {
+    try {
+      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+        type: FileType.video,
+      );
+
+      if (result == null) return;
+
+      setState(() {
+        _tvVideoFile = result.files.first;
+        _tvVideoBytes = _tvVideoFile!.bytes!;
+        _tvTitle = _tvVideoFile!.name;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("오류가 발생했습니다."),
+        ),
+      );
+    }
+  }
 
   void _submitTv() async {
     setState(() {
@@ -58,6 +91,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
       videoId: videoId,
       createdAt: getCurrentSeconds(),
+      videoType: videoType == "유투브" ? "youtube" : "file",
       contractRegionId: adminProfileModel!.contractRegionId != ""
           ? adminProfileModel.contractRegionId
           : null,
@@ -69,6 +103,11 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
     await ref.read(tvRepo).addTv(tvModel);
     if (!mounted) return;
     resultBottomModal(context, "성공적으로 영상이 올라갔습니다.", widget.refreshScreen);
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -84,7 +123,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       builder: (context, setState) {
         return Container(
             width: widget.totalWidth,
-            height: widget.totalHeight * 0.6,
+            height: widget.totalHeight * 0.8,
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
@@ -209,14 +248,21 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                 ),
                               ],
                             ),
-                            Gaps.v32,
+                            Gaps.v40,
+                            Container(
+                              height: 1,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                              ),
+                            ),
+                            Gaps.v40,
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
                                   width: widget.totalWidth * 0.1,
                                   child: const Text(
-                                    "영상 링크",
+                                    "영상 타입",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -225,89 +271,232 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                 ),
                                 Gaps.h32,
                                 SizedBox(
-                                  width: widget.totalWidth * 0.6,
-                                  child: TextFormField(
-                                    controller: _linkControllder,
-                                    validator: (value) {
-                                      if (value != null && value.isEmpty) {
-                                        return "영상 링크를 적어주세요.";
-                                      } else if (!(value
-                                              .toString()
-                                              .contains("youtu.be/") ||
-                                          value
-                                              .toString()
-                                              .contains("youtube.com"))) {
-                                        return "유투브 영상을 올려주세요.";
-                                      }
-                                      return null;
-                                    },
+                                  width: 200,
+                                  child: CustomDropdown(
                                     onChanged: (value) {
-                                      setState(
-                                        () {
-                                          _link = value;
-
-                                          _enabledUploadVideoButton =
-                                              _title.isNotEmpty &&
-                                                  _link.isNotEmpty;
-                                        },
-                                      );
+                                      setState(() {
+                                        videoType = value;
+                                      });
                                     },
-                                    textAlignVertical: TextAlignVertical.center,
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size14,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "",
-                                      hintStyle: TextStyle(
-                                        fontSize: Sizes.size14,
-                                        color: Colors.grey.shade400,
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey.shade50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                      ),
-                                      errorStyle: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey.shade300,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size3,
-                                        ),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: Sizes.size20,
+                                    decoration: const CustomDropdownDecoration(
+                                      listItemStyle: TextStyle(
+                                        fontSize: Sizes.size12,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                     ),
+                                    items: const ["유투브", "파일"],
+                                    initialItem: "유투브",
+                                    // controller: contractCommunityController,
+                                    excludeSelected: false,
                                   ),
                                 ),
                               ],
                             ),
+                            Gaps.v40,
+                            videoType == "유투브"
+                                ? Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: widget.totalWidth * 0.1,
+                                        child: const Text(
+                                          "영상 링크",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.start,
+                                        ),
+                                      ),
+                                      Gaps.h32,
+                                      SizedBox(
+                                        width: widget.totalWidth * 0.6,
+                                        child: TextFormField(
+                                          controller: _linkControllder,
+                                          validator: (value) {
+                                            if (value != null &&
+                                                value.isEmpty) {
+                                              return "영상 링크를 적어주세요.";
+                                            } else if (!(value
+                                                    .toString()
+                                                    .contains("youtu.be/") ||
+                                                value
+                                                    .toString()
+                                                    .contains("youtube.com"))) {
+                                              return "유투브 영상을 올려주세요.";
+                                            }
+                                            return null;
+                                          },
+                                          onChanged: (value) {
+                                            setState(
+                                              () {
+                                                _link = value;
+
+                                                _enabledUploadVideoButton =
+                                                    _title.isNotEmpty &&
+                                                        _link.isNotEmpty;
+                                              },
+                                            );
+                                          },
+                                          textAlignVertical:
+                                              TextAlignVertical.center,
+                                          style: const TextStyle(
+                                            fontSize: Sizes.size14,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          decoration: InputDecoration(
+                                            hintText: "",
+                                            hintStyle: TextStyle(
+                                              fontSize: Sizes.size14,
+                                              color: Colors.grey.shade400,
+                                              fontWeight: FontWeight.w300,
+                                            ),
+                                            filled: true,
+                                            fillColor: Colors.grey.shade50,
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                            ),
+                                            errorStyle: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                              borderSide: BorderSide(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                              borderSide: BorderSide(
+                                                color: Colors.grey.shade300,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Sizes.size3,
+                                              ),
+                                              borderSide: BorderSide(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                              horizontal: Sizes.size20,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: widget.totalWidth * 0.1,
+                                        child: const Text(
+                                          "",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.start,
+                                        ),
+                                      ),
+                                      Gaps.h32,
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            width: widget.totalWidth * 0.3,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  Sizes.size5,
+                                                ),
+                                                border: Border.all(
+                                                  color: Colors.grey.shade200,
+                                                )),
+                                            child: _tvVideoFile == null
+                                                ? const Text(
+                                                    "",
+                                                    style: TextStyle(
+                                                      fontSize: Sizes.size14,
+                                                      color: Colors.black87,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  )
+                                                : Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 20,
+                                                          vertical: 10,
+                                                        ),
+                                                        child: Text(
+                                                          _tvTitle ?? "",
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                Sizes.size14,
+                                                            color: Colors
+                                                                .grey.shade700,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                          ),
+                                          Gaps.h32,
+                                          SizedBox(
+                                            child: Align(
+                                              alignment: Alignment.bottomLeft,
+                                              child: ElevatedButton(
+                                                onPressed: pickVideoFile,
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.grey.shade200,
+                                                  surfaceTintColor:
+                                                      Colors.pink.shade200,
+                                                ),
+                                                child: Text(
+                                                  '파일 올리기',
+                                                  style: TextStyle(
+                                                    color: Colors.grey.shade800,
+                                                    fontSize: Sizes.size12,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                           ],
                         ),
                       ),

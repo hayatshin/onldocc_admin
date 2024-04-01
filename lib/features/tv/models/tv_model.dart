@@ -5,6 +5,7 @@ class TvModel {
   final bool allUsers;
   final String videoId;
   final int createdAt;
+  final String videoType;
   final String? contractRegionId;
   final String? contractCommunityId;
 
@@ -15,6 +16,7 @@ class TvModel {
     required this.allUsers,
     required this.videoId,
     required this.createdAt,
+    required this.videoType,
     this.contractRegionId,
     this.contractCommunityId,
   });
@@ -26,6 +28,7 @@ class TvModel {
         allUsers = false,
         videoId = "",
         createdAt = 0,
+        videoType = "",
         contractRegionId = "",
         contractCommunityId = "";
 
@@ -37,6 +40,7 @@ class TvModel {
       "allUsers": allUsers,
       "videoId": videoId,
       "createdAt": createdAt,
+      "videoType": videoType,
       "contractRegionId": contractRegionId,
       "contractCommunityId": contractCommunityId,
     };
@@ -49,6 +53,7 @@ class TvModel {
       "link": link,
       "allUsers": allUsers,
       "videoId": videoId,
+      "videoType": videoType,
     };
   }
 
@@ -59,6 +64,7 @@ class TvModel {
         allUsers = json["allUsers"],
         videoId = json["videoId"],
         createdAt = json["createdAt"],
+        videoType = json["videoType"],
         contractRegionId = json["contractRegionId"] ?? "",
         contractCommunityId = json["contractCommunityId"] ?? "";
 
@@ -69,6 +75,7 @@ class TvModel {
     final bool? allUsers,
     final String? videoId,
     final int? createdAt,
+    final String? videoType,
   }) {
     return TvModel(
       thumbnail: thumbnail ?? this.thumbnail,
@@ -77,6 +84,7 @@ class TvModel {
       allUsers: allUsers ?? this.allUsers,
       videoId: videoId ?? this.videoId,
       createdAt: createdAt ?? this.createdAt,
+      videoType: videoType ?? this.videoType,
     );
   }
 }

@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -45,6 +48,27 @@ class TvRepository {
     await _supabase
         .from("videos")
         .update({"title": tvTitle}).match({"videoId": videoId});
+  }
+
+  Future<String> uplaodTvToSupabase(Uint8List videoFile) async {
+    final milliseconds = DateTime.now().millisecondsSinceEpoch;
+
+    final fileStoragePath = '$milliseconds';
+
+    XFile xFile = XFile.fromData(videoFile);
+    final imageBytes = await xFile.readAsBytes();
+
+    await _supabase.storage
+        .from("images")
+        .uploadBinary(fileStoragePath, imageBytes,
+            fileOptions: const FileOptions(
+              upsert: true,
+            ));
+
+    final fileUrl =
+        _supabase.storage.from("images").getPublicUrl(fileStoragePath);
+
+    return fileUrl;
   }
 }
 

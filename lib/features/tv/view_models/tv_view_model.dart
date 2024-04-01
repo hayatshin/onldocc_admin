@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
@@ -16,6 +17,18 @@ class TvViewModel extends AsyncNotifier<void> {
     final tvList = await ref.read(tvRepo).getUserTvs(
         adminProfileModel!, selectContractRegion.value.contractRegionId!);
     return tvList.map((e) => TvModel.fromJson(e)).toList();
+  }
+
+  Future<void> addTv(TvModel model, Uint8List videoFile) async {
+    if (model.videoType == "youtube") {
+      await ref.read(tvRepo).addTv(model);
+    } else {
+      final link = await ref.read(tvRepo).uplaodTvToSupabase(videoFile);
+      final newModel = model.copyWith(
+        link: link,
+      );
+      await ref.read(tvRepo).addTv(newModel);
+    }
   }
 }
 
