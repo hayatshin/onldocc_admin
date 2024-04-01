@@ -7,7 +7,7 @@ import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
 import 'package:onldocc_admin/features/tv/widgets/edit_tv_widget.dart';
 import 'package:onldocc_admin/features/tv/widgets/upload_tv_widget.dart';
-import 'package:video_player/video_player.dart';
+import 'package:onldocc_admin/utils.dart';
 
 import '../../../common/view/search_below.dart';
 import '../../../constants/gaps.dart';
@@ -253,11 +253,11 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                           shrinkWrap: true,
                           itemCount: _tvList.length,
                           itemBuilder: (context, index) {
-                            final uri = UriData.fromString(_tvList[index].link);
-                            print("uri -> $uri");
-                            VideoPlayerController videoPlayercontrollder =
-                                VideoPlayerController.networkUrl(uri.uri)
-                                  ..initialize();
+                            // final uri = UriData.fromString(_tvList[index].link);
+                            // print("uri -> $uri");
+                            // VideoPlayerController videoPlayercontrollder =
+                            //     VideoPlayerController.networkUrl(uri.uri)
+                            //       ..initialize();
 
                             return Row(
                               children: [
@@ -289,26 +289,45 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                     ),
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: SizedBox(
-                                        width: 150,
-                                        height: 100,
-                                        child: ClipRRect(
+                                      child: ClipRRect(
                                           borderRadius: BorderRadius.circular(
                                             Sizes.size5,
                                           ),
                                           child: _tvList[index].videoType ==
                                                   "youtube"
-                                              ? Image.network(
-                                                  _tvList[index].thumbnail,
-                                                  fit: BoxFit.cover,
+                                              ? SizedBox(
+                                                  width: 150,
+                                                  height: 100,
+                                                  child: Image.network(
+                                                    _tvList[index].thumbnail,
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 )
-                                              : videoPlayercontrollder
-                                                      .value.isInitialized
-                                                  ? VideoPlayer(
-                                                      videoPlayercontrollder)
-                                                  : const Text("no"),
-                                        ),
-                                      ),
+                                              : FutureBuilder(
+                                                  future:
+                                                      fetchVideoUrlThumbnail(
+                                                          _tvList[index].link),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      return Image.network(
+                                                          snapshot.data!.path);
+                                                    }
+                                                    return const Flexible(
+                                                      child: Center(
+                                                        child: Text(
+                                                          "파일 형식은 썸네일이 제공되지 않습니다.",
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                            // color: Colors.white,
+                                                            fontSize:
+                                                                Sizes.size12,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                )),
                                     ),
                                   ),
                                 ),

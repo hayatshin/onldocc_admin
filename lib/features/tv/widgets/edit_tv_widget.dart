@@ -314,7 +314,9 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                                 SizedBox(
                                   width: widget.totalWidth * 0.6,
                                   child: Text(
-                                    widget.tvModel.link,
+                                    widget.tvModel.videoType == "youtube"
+                                        ? widget.tvModel.link
+                                        : "파일 형식의 영상",
                                     style: const TextStyle(
                                       fontSize: Sizes.size14,
                                       color: Colors.black87,

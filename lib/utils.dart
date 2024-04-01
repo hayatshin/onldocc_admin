@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:get_thumbnail_video/index.dart';
+import 'package:get_thumbnail_video/video_thumbnail.dart';
 import 'package:intl/intl.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'dart:html' as html;
 import 'package:universal_html/html.dart' as html;
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 void showSnackBar(BuildContext context, String error) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -356,14 +357,21 @@ void downloadCsv(String csvContent, String fileName) {
   html.Url.revokeObjectUrl(url);
 }
 
-Future<String> fetchVideoUrlThumbnail(String videoUrl) async {
-  final fileName = await VideoThumbnail.thumbnailFile(
-    video: videoUrl,
-    thumbnailPath: (await getTemporaryDirectory()).path,
-    imageFormat: ImageFormat.WEBP,
-    maxHeight:
-        64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-    quality: 75,
-  );
-  return fileName ?? "";
+Future<XFile?> fetchVideoUrlThumbnail(String videoUrl) async {
+  try {
+    final fileName = await VideoThumbnail.thumbnailFile(
+      video: videoUrl,
+      thumbnailPath: (await getTemporaryDirectory()).path,
+      imageFormat: ImageFormat.WEBP,
+      maxHeight:
+          64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+      quality: 75,
+    );
+
+    return fileName;
+  } catch (e) {
+    // ignore: avoid_print
+    print("fetchVideoUrlThumbnail -> $e");
+  }
+  return null;
 }

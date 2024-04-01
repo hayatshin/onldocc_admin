@@ -60,6 +60,7 @@ class TvRepository {
 
     await _supabase.storage.from("tv").uploadBinary(fileStoragePath, imageBytes,
         fileOptions: const FileOptions(
+          contentType: 'video/mp4',
           upsert: true,
         ));
 

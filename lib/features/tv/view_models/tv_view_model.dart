@@ -28,6 +28,7 @@ class TvViewModel extends AsyncNotifier<void> {
         await ref.read(tvRepo).addTv(model);
       } else {
         final link = await ref.read(tvRepo).uplaodTvToSupabase(videoFile!);
+
         final newModel = model.copyWith(
           videoId: const Uuid().v4(),
           link: link,
