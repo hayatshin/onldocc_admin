@@ -64,7 +64,7 @@ dependencies:
   url_strategy: ^0.2.0
   supabase_flutter: ^2.3.0
   data_table_2: ^2.5.10
-  http: ^1.2.1
+  http: ^1.1.2
   uuid: ^4.3.3
   cp949_codec: ^1.0.2
   cached_network_image: ^3.3.1
