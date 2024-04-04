@@ -20,6 +20,7 @@ class EventModel {
   final int? diaryPoint;
   final int? commentPoint;
   final int? likePoint;
+  final int? quizPoint;
   final bool adminSecret;
 
   final String bannerImage;
@@ -29,6 +30,7 @@ class EventModel {
   final int? diaryCount;
   final int? commentCount;
   final int? likeCount;
+  final int? quizCount;
 
   EventModel({
     required this.eventId,
@@ -50,6 +52,7 @@ class EventModel {
     this.diaryPoint,
     this.commentPoint,
     this.likePoint,
+    this.quizPoint,
     required this.adminSecret,
     required this.bannerImage,
     required this.eventType,
@@ -58,6 +61,7 @@ class EventModel {
     this.diaryCount,
     this.commentCount,
     this.likeCount,
+    this.quizCount,
   });
 
   EventModel.empty()
@@ -81,13 +85,15 @@ class EventModel {
         commentPoint = 0,
         likePoint = 0,
         invitationPoint = 0,
+        quizPoint = 0,
         adminSecret = true,
         bannerImage = "",
         eventType = "",
         invitationCount = 0,
         diaryCount = 0,
         commentCount = 0,
-        likeCount = 0;
+        likeCount = 0,
+        quizCount = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -108,6 +114,7 @@ class EventModel {
       "commentPoint": commentPoint,
       "likePoint": likePoint,
       "invitationPoint": invitationPoint,
+      "quizPoint": quizPoint,
       "adminSecret": adminSecret,
       "bannerImage": bannerImage,
       "eventType": eventType,
@@ -115,6 +122,7 @@ class EventModel {
       "diaryCount": diaryCount,
       "commentCount": commentCount,
       "likeCount": likeCount,
+      "quizCount": quizCount,
     };
   }
 
@@ -136,6 +144,7 @@ class EventModel {
       "commentPoint": commentPoint,
       "likePoint": likePoint,
       "invitationPoint": invitationPoint,
+      "quizPoint": quizPoint,
       "adminSecret": adminSecret,
       "bannerImage": bannerImage,
       "eventType": eventType,
@@ -143,6 +152,7 @@ class EventModel {
       "diaryCount": diaryCount,
       "commentCount": commentCount,
       "likeCount": likeCount,
+      "quizCount": quizCount,
     };
   }
 
@@ -174,13 +184,15 @@ class EventModel {
         commentPoint = json["commentPoint"] ?? 0,
         likePoint = json["likePoint"] ?? 0,
         invitationPoint = json["invitationPoint"] ?? 0,
+        quizPoint = json["quizPoint"] ?? 0,
         adminSecret = json["adminSecret"],
         bannerImage = json["bannerImage"] ?? "",
         eventType = json["eventType"] ?? "",
         invitationCount = json["invitationCount"] ?? 0,
         diaryCount = json["diaryCount"] ?? 0,
         likeCount = json["likeCount"] ?? 0,
-        commentCount = json["commentCount"] ?? 0;
+        commentCount = json["commentCount"] ?? 0,
+        quizCount = json["quizCount"] ?? 0;
 
   EventModel copyWith({
     final String? eventId,
@@ -203,6 +215,7 @@ class EventModel {
     final int? commentPoint,
     final int? likePoint,
     final int? invitationPoint,
+    final int? quizPoint,
     final bool? adminSecret,
     final String? bannerImage,
     final String? eventType,
@@ -210,6 +223,7 @@ class EventModel {
     final int? commentCount,
     final int? likeCount,
     final int? invitationCount,
+    final int? quizCount,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -232,6 +246,7 @@ class EventModel {
       commentPoint: commentPoint ?? this.commentPoint,
       likePoint: likePoint ?? this.likePoint,
       invitationPoint: invitationPoint ?? this.invitationPoint,
+      quizPoint: quizPoint ?? this.quizPoint,
       adminSecret: adminSecret ?? this.adminSecret,
       bannerImage: bannerImage ?? this.bannerImage,
       eventType: eventType ?? this.eventType,
@@ -239,6 +254,7 @@ class EventModel {
       commentCount: commentCount ?? this.commentCount,
       likeCount: likeCount ?? this.likeCount,
       invitationCount: invitationCount ?? this.invitationCount,
+      quizCount: quizCount ?? this.quizCount,
     );
   }
 }

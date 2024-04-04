@@ -11,6 +11,7 @@ class UploadPointWidget extends StatefulWidget {
   final Function(int) updateLikePoint;
   final Function(int) updateStepPoint;
   final Function(int) updateInvitationPoint;
+  final Function(int) updateQuizPoint;
 
   const UploadPointWidget({
     super.key,
@@ -20,6 +21,7 @@ class UploadPointWidget extends StatefulWidget {
     required this.updateLikePoint,
     required this.updateStepPoint,
     required this.updateInvitationPoint,
+    required this.updateQuizPoint,
   });
 
   @override
@@ -132,38 +134,64 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
         ),
         Gaps.v52,
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            DefaultPointTile(
-              totalWidth: size.width,
-              updateEventPoint: widget.updateDiaryPoint,
-              header: "일기",
-              defaultPoint: 0,
-              editOrNot: false,
+            Expanded(
+              flex: 1,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateDiaryPoint,
+                header: "일기",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
             ),
-            DefaultPointTile(
-              totalWidth: size.width,
-              updateEventPoint: widget.updateCommentPoint,
-              header: "댓글",
-              defaultPoint: 0,
-              editOrNot: false,
+            Expanded(
+              flex: 1,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateCommentPoint,
+                header: "댓글",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
             ),
-            DefaultPointTile(
-              totalWidth: size.width,
-              updateEventPoint: widget.updateLikePoint,
-              header: "좋아요",
-              defaultPoint: 0,
-              editOrNot: false,
+            Expanded(
+              flex: 1,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateLikePoint,
+                header: "좋아요",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
             ),
           ],
         ),
         Gaps.v32,
-        DefaultPointTile(
-          totalWidth: size.width,
-          updateEventPoint: widget.updateInvitationPoint,
-          header: "친구 초대",
-          defaultPoint: 0,
-          editOrNot: false,
+        Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateQuizPoint,
+                header: "문제 풀기",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateInvitationPoint,
+                header: "친구 초대",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
+            ),
+          ],
         ),
         Gaps.v32,
         Row(
