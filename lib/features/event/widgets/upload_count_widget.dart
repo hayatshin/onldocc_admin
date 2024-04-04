@@ -67,16 +67,16 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
         Gaps.v32,
         Row(
           children: [
-            Expanded(
-              flex: 1,
-              child: DefaultCountTile(
-                totalWidth: size.width,
-                updateEventPoint: widget.updateQuizCount,
-                header: "문제 풀기",
-                defaultPoint: 0,
-                editOrNot: false,
-              ),
-            ),
+            // Expanded(
+            //   flex: 1,
+            //   child: DefaultCountTile(
+            //     totalWidth: size.width,
+            //     updateEventPoint: widget.updateQuizCount,
+            //     header: "문제 풀기",
+            //     defaultPoint: 0,
+            //     editOrNot: false,
+            //   ),
+            // ),
             Expanded(
               flex: 2,
               child: DefaultCountTile(
@@ -85,6 +85,32 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
                 header: "친구 초대",
                 defaultPoint: 0,
                 editOrNot: false,
+              ),
+            ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateQuizCount,
+                header: "문제 풀기",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
+            ),
+            const Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommentTextWidget(
+                    text: "- 일일 최대 1회",
+                  ),
+                ],
               ),
             ),
           ],

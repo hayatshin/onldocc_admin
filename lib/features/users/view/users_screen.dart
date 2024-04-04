@@ -66,10 +66,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   Future<void> filterUserDataList(
       String? searchBy, String searchKeyword) async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    List<UserModel?> userDataList = ref.read(userProvider).value ??
-        await ref
-            .read(userProvider.notifier)
-            .initializeUserList(adminProfileModel!.subdistrictId);
+    List<UserModel?> userDataList = await ref
+        .read(userProvider.notifier)
+        .initializeUserList(adminProfileModel!.subdistrictId);
 
     List<UserModel> filterList = [];
     if (searchBy == "name") {

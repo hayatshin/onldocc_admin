@@ -375,3 +375,14 @@ Future<XFile?> fetchVideoUrlThumbnail(String videoUrl) async {
   }
   return null;
 }
+
+List<String> interatePreviousDays(int days) {
+  List<String> dates = [];
+  DateTime currentDate = DateTime.now();
+  for (int i = 0; i < days; i++) {
+    DateTime previousDate = currentDate.subtract(Duration(days: i));
+    String formattedDate = DateFormat('yyyy-MM-dd').format(previousDate);
+    dates.add(formattedDate);
+  }
+  return dates.reversed.toList();
+}

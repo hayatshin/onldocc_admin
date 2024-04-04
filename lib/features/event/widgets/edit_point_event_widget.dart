@@ -59,6 +59,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
   int _eventCommentPoint = 0;
   int _eventLikePoint = 0;
   int _eventInvitationPoint = 0;
+  int _eventQuizPoint = 0;
 
   OverlayEntry? overlayEntry;
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -167,6 +168,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
       commentPoint: _eventCommentPoint,
       likePoint: _eventLikePoint,
       invitationPoint: _eventInvitationPoint,
+      quizPoint: _eventQuizPoint,
     );
 
     await ref.read(eventRepo).editEvent(eventModel);
@@ -198,6 +200,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
     _eventDiaryPoint = widget.eventModel.diaryPoint!;
     _eventCommentPoint = widget.eventModel.commentPoint!;
     _eventLikePoint = widget.eventModel.likePoint!;
+    _eventQuizPoint = widget.eventModel.quizPoint!;
     _bannerImage = widget.eventModel.bannerImage;
 
     setState(() {});
@@ -247,6 +250,12 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
   void updateInvitationPoint(int point) {
     setState(() {
       _eventInvitationPoint = point;
+    });
+  }
+
+  void updateQuizPoint(int point) {
+    setState(() {
+      _eventQuizPoint = point;
     });
   }
 
@@ -1066,66 +1075,115 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  DefaultPointTile(
-                                    totalWidth: size.width,
-                                    updateEventPoint: updateDiaryPoint,
-                                    header: "일기",
-                                    defaultPoint: _eventDiaryPoint,
-                                    editOrNot: true,
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateDiaryPoint,
+                                      header: "일기",
+                                      defaultPoint: _eventDiaryPoint,
+                                      editOrNot: true,
+                                    ),
                                   ),
-                                  DefaultPointTile(
-                                    totalWidth: size.width,
-                                    updateEventPoint: updateCommentPoint,
-                                    header: "댓글",
-                                    defaultPoint: _eventCommentPoint,
-                                    editOrNot: true,
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateCommentPoint,
+                                      header: "댓글",
+                                      defaultPoint: _eventCommentPoint,
+                                      editOrNot: true,
+                                    ),
                                   ),
-                                  DefaultPointTile(
-                                    totalWidth: size.width,
-                                    updateEventPoint: updateLikePoint,
-                                    header: "좋아요",
-                                    defaultPoint: _eventLikePoint,
-                                    editOrNot: true,
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateLikePoint,
+                                      header: "좋아요",
+                                      defaultPoint: _eventLikePoint,
+                                      editOrNot: true,
+                                    ),
                                   ),
                                 ],
                               ),
                               Gaps.v32,
-                              DefaultPointTile(
-                                totalWidth: size.width,
-                                updateEventPoint: updateInvitationPoint,
-                                header: "친구 초대",
-                                defaultPoint: _eventInvitationPoint,
-                                editOrNot: true,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateInvitationPoint,
+                                      header: "친구 초대",
+                                      defaultPoint: _eventInvitationPoint,
+                                      editOrNot: true,
+                                    ),
+                                  ),
+                                ],
                               ),
                               Gaps.v32,
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  DefaultPointTile(
-                                    totalWidth: size.width,
-                                    updateEventPoint: updateStepPoint,
-                                    header: "걸음수",
-                                    defaultPoint: _eventStepPoint,
-                                    editOrNot: true,
+                                  Expanded(
+                                    flex: 2,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateQuizPoint,
+                                      header: "문제 풀기",
+                                      defaultPoint: _eventQuizPoint,
+                                      editOrNot: true,
+                                    ),
                                   ),
-                                  Gaps.h32,
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade600,
+                                  const Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CommentTextWidget(
+                                          text: "- 일일 최대 1회",
                                         ),
-                                      ),
-                                      Gaps.v5,
-                                      const CommentTextWidget(
-                                        text: "- 일일 최대 만보까지 점수 계산에 포함됩니다.",
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Gaps.v32,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateStepPoint,
+                                      header: "걸음수",
+                                      defaultPoint: _eventStepPoint,
+                                      editOrNot: true,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const CommentTextWidget(
+                                          text: "- 일일 최대 만보",
+                                        ),
+                                        Gaps.v5,
+                                        Text(
+                                          "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
+                                          style: TextStyle(
+                                            fontSize: Sizes.size12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),

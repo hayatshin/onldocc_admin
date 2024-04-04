@@ -341,11 +341,28 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                           ),
                           SingleSidebarTile(
                             selected: menuNotifier.selectedMenu == 10,
+                            selectedIcon: Icons.volunteer_activism_rounded,
+                            unselectedIcon: Icons.volunteer_activism_outlined,
+                            title: "보호자 지정 관리",
+                            action: () =>
+                                menuNotifier.setSelectedMenu(10, context),
+                          ),
+                          SingleSidebarTile(
+                            selected: menuNotifier.selectedMenu == 11,
+                            selectedIcon: Icons.local_fire_department_rounded,
+                            unselectedIcon:
+                                Icons.local_fire_department_outlined,
+                            title: "화풀기 관리",
+                            action: () =>
+                                menuNotifier.setSelectedMenu(11, context),
+                          ),
+                          SingleSidebarTile(
+                            selected: menuNotifier.selectedMenu == 12,
                             selectedIcon: Icons.ondemand_video_rounded,
                             unselectedIcon: Icons.tv_rounded,
                             title: "재밌는 테레비 관리",
                             action: () =>
-                                menuNotifier.setSelectedMenu(10, context),
+                                menuNotifier.setSelectedMenu(12, context),
                           ),
                           Gaps.v40,
                         ],

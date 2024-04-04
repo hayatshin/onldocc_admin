@@ -13,6 +13,7 @@ class UserModel {
   final String contractCommunityId;
   final int createdAt;
   final int? lastVisit;
+  final int? partnerDates;
   final int? totalScore;
   final int? stepScore;
   final int? diaryScore;
@@ -31,6 +32,7 @@ class UserModel {
     required this.contractCommunityId,
     required this.createdAt,
     required this.lastVisit,
+    required this.partnerDates,
     required this.totalScore,
     required this.stepScore,
     required this.diaryScore,
@@ -50,6 +52,7 @@ class UserModel {
         contractCommunityId = "",
         createdAt = 0,
         lastVisit = 0,
+        partnerDates = 0,
         totalScore = 0,
         stepScore = 0,
         diaryScore = 0,
@@ -67,6 +70,7 @@ class UserModel {
       "contractCommunityId": contractCommunityId,
       "createdAt": createdAt,
       "lastVisit": lastVisit,
+      "partnerDates": partnerDates,
       "totalScore": totalScore,
       "stepScore": stepScore,
       "diaryScore": diaryScore,
@@ -92,6 +96,10 @@ class UserModel {
         lastVisit = json.containsKey("lastVisit") && json["lastVisit"] != null
             ? json["lastVisit"]
             : 0,
+        partnerDates =
+            json.containsKey("partnerDates") && json["partnerDates"] != null
+                ? json["partnerDates"]
+                : 0,
         totalScore = json.containsKey("totalPoint") ? json["totalPoint"] : 0,
         stepScore = json.containsKey("stepPoint") ? json["stepPoint"] : 0,
         diaryScore = json.containsKey("diaryPoint") ? json["diaryPoint"] : 0,
@@ -111,6 +119,7 @@ class UserModel {
     final String? contractCommunityId,
     final int? createdAt,
     final int? lastVisit,
+    final int? partnerDates,
     final int? totalScore,
     final int? stepScore,
     final int? diaryScore,
@@ -129,6 +138,7 @@ class UserModel {
       contractCommunityId: contractCommunityId ?? this.contractCommunityId,
       createdAt: createdAt ?? this.createdAt,
       lastVisit: lastVisit ?? this.lastVisit,
+      partnerDates: partnerDates ?? this.partnerDates,
       totalScore: totalScore ?? this.totalScore,
       stepScore: stepScore ?? this.stepScore,
       diaryScore: diaryScore ?? this.diaryScore,

@@ -171,18 +171,18 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
         Gaps.v32,
         Row(
           children: [
+            // Expanded(
+            //   flex: 1,
+            //   child: DefaultPointTile(
+            //     totalWidth: size.width,
+            //     updateEventPoint: widget.updateQuizPoint,
+            //     header: "문제 풀기",
+            //     defaultPoint: 0,
+            //     editOrNot: false,
+            //   ),
+            // ),
             Expanded(
               flex: 1,
-              child: DefaultPointTile(
-                totalWidth: size.width,
-                updateEventPoint: widget.updateQuizPoint,
-                header: "문제 풀기",
-                defaultPoint: 0,
-                editOrNot: false,
-              ),
-            ),
-            Expanded(
-              flex: 2,
               child: DefaultPointTile(
                 totalWidth: size.width,
                 updateEventPoint: widget.updateInvitationPoint,
@@ -197,30 +197,62 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            DefaultPointTile(
-              totalWidth: size.width,
-              updateEventPoint: widget.updateStepPoint,
-              header: "걸음수",
-              defaultPoint: 0,
-              editOrNot: false,
+            Expanded(
+              flex: 2,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateQuizPoint,
+                header: "문제 풀기",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
             ),
-            Gaps.h32,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
-                  style: TextStyle(
-                    fontSize: Sizes.size12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600,
+            const Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommentTextWidget(
+                    text: "- 일일 최대 1회",
                   ),
-                ),
-                Gaps.v5,
-                const CommentTextWidget(
-                  text: "- 일일 최대 만보까지 점수 계산에 포함됩니다.",
-                ),
-              ],
+                ],
+              ),
+            ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              flex: 2,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateStepPoint,
+                header: "걸음수",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CommentTextWidget(
+                    text: "- 일일 최대 만보",
+                  ),
+                  Gaps.v5,
+                  Text(
+                    "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
+                    style: TextStyle(
+                      fontSize: Sizes.size12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

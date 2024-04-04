@@ -59,6 +59,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
   int _eventCommentCount = 0;
   int _eventLikeCount = 0;
   int _eventInvitationCount = 0;
+  int _eventQuizCount = 0;
 
   OverlayEntry? overlayEntry;
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -166,6 +167,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
       commentCount: _eventCommentCount,
       likeCount: _eventLikeCount,
       invitationCount: _eventInvitationCount,
+      quizCount: _eventQuizCount,
     );
 
     await ref.read(eventRepo).editEvent(eventModel);
@@ -197,6 +199,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
     _eventDiaryCount = widget.eventModel.diaryCount!;
     _eventCommentCount = widget.eventModel.commentCount!;
     _eventLikeCount = widget.eventModel.likeCount!;
+    _eventQuizCount = widget.eventModel.quizCount!;
     _bannerImage = widget.eventModel.bannerImage;
 
     setState(() {});
@@ -240,6 +243,12 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
   void updateInvitationCount(int count) {
     setState(() {
       _eventInvitationCount = count;
+    });
+  }
+
+  void updateQuizCount(int count) {
+    setState(() {
+      _eventQuizCount = count;
     });
   }
 
@@ -949,36 +958,80 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  DefaultCountTile(
-                                    totalWidth: size.width,
-                                    updateEventPoint: updateDiaryCount,
-                                    header: "일기",
-                                    defaultPoint: _eventDiaryCount,
-                                    editOrNot: true,
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultCountTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateDiaryCount,
+                                      header: "일기",
+                                      defaultPoint: _eventDiaryCount,
+                                      editOrNot: true,
+                                    ),
                                   ),
-                                  DefaultCountTile(
-                                    totalWidth: size.width,
-                                    updateEventPoint: updateCommentCount,
-                                    header: "댓글",
-                                    defaultPoint: _eventCommentCount,
-                                    editOrNot: true,
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultCountTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateCommentCount,
+                                      header: "댓글",
+                                      defaultPoint: _eventCommentCount,
+                                      editOrNot: true,
+                                    ),
                                   ),
-                                  DefaultCountTile(
-                                    totalWidth: size.width,
-                                    updateEventPoint: updateLikeCount,
-                                    header: "좋아요",
-                                    defaultPoint: _eventLikeCount,
-                                    editOrNot: true,
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultCountTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateLikeCount,
+                                      header: "좋아요",
+                                      defaultPoint: _eventLikeCount,
+                                      editOrNot: true,
+                                    ),
                                   ),
                                 ],
                               ),
                               Gaps.v32,
-                              DefaultCountTile(
-                                totalWidth: size.width,
-                                updateEventPoint: updateInvitationCount,
-                                header: "친구 초대",
-                                defaultPoint: _eventInvitationCount,
-                                editOrNot: true,
+                              Gaps.v32,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: DefaultCountTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateInvitationCount,
+                                      header: "친구 초대",
+                                      defaultPoint: _eventInvitationCount,
+                                      editOrNot: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Gaps.v32,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateQuizCount,
+                                      header: "문제 풀기",
+                                      defaultPoint: _eventQuizCount,
+                                      editOrNot: true,
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CommentTextWidget(
+                                          text: "- 일일 최대 1회",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

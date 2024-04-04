@@ -8,6 +8,7 @@ import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
+import 'package:onldocc_admin/features/care/view/care_screen.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_point_screen.dart';
@@ -104,12 +105,16 @@ final routerProvider = Provider(
                 return SidebarTemplate(selectedMenuURL: 9, child: child);
 
               case "${EventScreen.routeURL}/:eventId":
+                () => menuNotifier.setSelectedMenu(9, context);
+                return SidebarTemplate(selectedMenuURL: 9, child: child);
+
+              case CareScreen.routeURL:
                 () => menuNotifier.setSelectedMenu(10, context);
                 return SidebarTemplate(selectedMenuURL: 10, child: child);
 
               case TvScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(11, context);
-                return SidebarTemplate(selectedMenuURL: 11, child: child);
+                () => menuNotifier.setSelectedMenu(12, context);
+                return SidebarTemplate(selectedMenuURL: 12, child: child);
             }
             return child;
           },
@@ -299,6 +304,14 @@ final routerProvider = Provider(
                   },
                 ),
               ],
+            ),
+            GoRoute(
+              name: CareScreen.routeName,
+              path: CareScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const CareScreen(),
+              ),
             ),
             GoRoute(
               name: TvScreen.routeName,
