@@ -56,17 +56,20 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
 
   String _eventPrizeWinners = "";
   int _eventGoalScore = 0;
-  String _eventType = "점수";
+  String _eventType = "point";
 
   int _eventStepPoint = 0;
   int _eventDiaryPoint = 0;
   int _eventCommentPoint = 0;
   int _eventLikePoint = 0;
   int _eventInvitationPoint = 0;
+  int _eventQuizPoint = 0;
+
   int _eventDiaryCount = 0;
   int _eventCommentCount = 0;
   int _eventLikeCount = 0;
   int _eventInvitationCount = 0;
+  int _eventQuizCount = 0;
 
   bool tapUploadEvent = false;
 
@@ -197,10 +200,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       commentPoint: _eventCommentPoint,
       likePoint: _eventLikePoint,
       invitationPoint: _eventInvitationPoint,
+      quizPoint: _eventQuizPoint,
       diaryCount: _eventDiaryCount,
       commentCount: _eventCommentCount,
       likeCount: _eventLikeCount,
       invitationCount: _eventInvitationCount,
+      quizCount: _eventQuizCount,
       adminSecret: true,
       eventType: _eventType,
     );
@@ -257,6 +262,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     });
   }
 
+  void updateQuizPoint(int point) {
+    setState(() {
+      _eventQuizPoint = point;
+    });
+  }
+
   void updateDiaryCount(int count) {
     setState(() {
       _eventDiaryCount = count;
@@ -278,6 +289,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   void updateInvitationCount(int count) {
     setState(() {
       _eventInvitationCount = count;
+    });
+  }
+
+  void updateQuizCount(int count) {
+    setState(() {
+      _eventQuizCount = count;
     });
   }
 
@@ -913,7 +930,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             ],
                           ),
                           Gaps.v40,
-                          _eventType == "점수"
+                          _eventType == "point"
                               ? UploadPointWidget(
                                   updateGoalScore: updateGoalScore,
                                   updateDiaryPoint: updateDiaryPoint,
@@ -921,13 +938,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   updateLikePoint: updateLikePoint,
                                   updateStepPoint: updateStepPoint,
                                   updateInvitationPoint: updateInvitationPoint,
+                                  updateQuizPoint: updateQuizPoint,
                                 )
                               : UploadCountWidget(
                                   updateDiaryCount: updateDiaryCount,
                                   updateCommentCount: updateCommentCount,
                                   updateLikeCount: updateLikeCount,
                                   updateInvitationCount: updateInvitationCount,
-                                ),
+                                  updateQuizCount: updateQuizCount),
                         ],
                       ),
                     ],
