@@ -8,65 +8,62 @@ import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/care/models/care_model.dart';
-import 'package:onldocc_admin/features/care/repo/care_repo.dart';
+import 'package:onldocc_admin/features/decibel/models/decibel_model.dart';
+import 'package:onldocc_admin/features/decibel/view_models/decibel_view_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
-import 'package:onldocc_admin/features/users/models/user_model.dart';
-import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class CareScreen extends ConsumerStatefulWidget {
-  static const routeURL = "/care";
-  static const routeName = "care";
-  const CareScreen({super.key});
+class DecibelScreen extends ConsumerStatefulWidget {
+  static const routeURL = "/decibel";
+  static const routeName = "decibel";
+  const DecibelScreen({super.key});
 
   @override
-  ConsumerState<CareScreen> createState() => _CareScreenState();
+  ConsumerState<DecibelScreen> createState() => _DecibelScreenState();
 }
 
-class _CareScreenState extends ConsumerState<CareScreen> {
-  List<CareModel?> _userDataList = [];
-  List<CareModel?> _initialList = [];
+class _DecibelScreenState extends ConsumerState<DecibelScreen> {
+  List<DecibelModel> _userDataList = [];
+  List<DecibelModel> _initialList = [];
   bool loadingFinished = false;
 
   final List<String> _userListHeader = [
-    "일수 지정",
+    "날짜",
+    "데시벨",
     "이름",
     "나이",
     "성별",
     "핸드폰 번호",
-    "마지막 방문일",
-    "연락 필요",
   ];
 
   @override
   void initState() {
     super.initState();
-    _initializeUserCare();
+    _initializeUserDecibels();
 
     selectContractRegion.addListener(() async {
       if (mounted) {
         setState(() {
           loadingFinished = false;
         });
-        await _initializeUserCare();
+        await _initializeUserDecibels();
       }
     });
   }
 
   Future<void> filterUserDataList(
       String? searchBy, String searchKeyword) async {
-    List<CareModel> filterList = [];
+    List<DecibelModel> filterList = [];
     if (searchBy == "name") {
       filterList = _initialList
-          .where((element) => element!.name.contains(searchKeyword))
-          .cast<CareModel>()
+          .where((element) => element.name.contains(searchKeyword))
+          .cast<DecibelModel>()
           .toList();
     } else {
       filterList = _initialList
-          .where((element) => element!.phone.contains(searchKeyword))
-          .cast<CareModel>()
+          .where((element) => element.phone.contains(searchKeyword))
+          .cast<DecibelModel>()
           .toList();
     }
 
@@ -75,19 +72,18 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     });
   }
 
-  List<dynamic> exportToList(CareModel userModel) {
+  List<dynamic> exportToList(DecibelModel userModel) {
     return [
-      userModel.partnerDates,
+      secondsToStringDiaryTimeLine(userModel.createdAt),
+      userModel.decibel,
       userModel.name,
       userModel.age,
       userModel.gender,
       userModel.phone,
-      secondsToStringLine(userModel.lastVisit),
-      userModel.partnerContact ? "🚨" : "X",
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<CareModel?> userDataList) {
+  List<List<dynamic>> exportToFullList(List<DecibelModel?> userDataList) {
     List<List<dynamic>> list = [];
 
     list.add(_userListHeader);
@@ -137,80 +133,33 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     });
   }
 
-  Future<void> _initializeUserCare() async {
-    List<CareModel?> careList = [];
+  Future<void> _initializeUserDecibels() async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    final subdistrictId = adminProfileModel!.master
+    final userSubdistrictId = adminProfileModel!.master
         ? selectContractRegion.value.subdistrictId
         : adminProfileModel.subdistrictId;
-
-    final userList = ref.read(userProvider).value ??
-        await ref.read(userProvider.notifier).initializeUserList(subdistrictId);
-
-    for (UserModel? user in userList) {
-      if (user != null && user.partnerDates! > 0) {
-        final now = DateTime.now();
-        final previousDay = now.subtract(Duration(days: user.partnerDates!));
-        final previousDateTime = DateTime(
-            previousDay.year, previousDay.month, previousDay.day, 0, 0, 0);
-
-        int startSeconds = previousDateTime.millisecondsSinceEpoch ~/ 1000;
-        final lastVisitCheck =
-            (user.lastVisit ?? 0) > startSeconds ? true : false;
-
-        final iterateDays = interatePreviousDays(user.partnerDates! + 1);
-
-        final stepCheck = await ref
-            .read(careRepo)
-            .checkUserStepExists(user.userId, iterateDays);
-        bool partnerContact = !lastVisitCheck && !stepCheck;
-
-        final newModel = CareModel(
-          partnerDates: user.partnerDates ?? 0,
-          name: user.name,
-          age: user.userAge!,
-          gender: user.gender,
-          phone: user.phone,
-          lastVisit: user.lastVisit!,
-          partnerContact: partnerContact,
-        );
-        careList.add(newModel);
-      }
-    }
-
+    final decibelList = await ref
+        .read(decibelProvider.notifier)
+        .fetchUserDecibels(userSubdistrictId);
     setState(() {
       loadingFinished = true;
-      _userDataList = careList;
-      _initialList = careList;
+      _userDataList = decibelList;
+      _initialList = decibelList;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return loadingFinished
-        ? Column(
+    return !loadingFinished
+        ? const SkeletonLoadingScreen()
+        : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SearchCsv(
                 filterUserList: filterUserDataList,
-                resetInitialList: _initializeUserCare,
+                resetInitialList: resetInitialList,
                 generateCsv: generateUserCsv,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Text(
-                  "보호자 지정을 설정한 사용자",
-                  style: TextStyle(
-                    background: Paint()
-                      ..color = Theme.of(context).primaryColor.withOpacity(0.1),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
               ),
               SearchBelow(
                 size: size,
@@ -221,15 +170,24 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                   child: DataTable2(
                     columns: const [
                       DataColumn2(
-                        fixedWidth: 140,
                         label: Text(
-                          "일수 지정",
+                          "날짜",
                           style: TextStyle(
                             fontSize: Sizes.size13,
                           ),
                         ),
                       ),
                       DataColumn2(
+                        fixedWidth: 200,
+                        label: Text(
+                          "데시벨",
+                          style: TextStyle(
+                            fontSize: Sizes.size13,
+                          ),
+                        ),
+                      ),
+                      DataColumn2(
+                        fixedWidth: 140,
                         label: Text(
                           "이름",
                           style: TextStyle(
@@ -263,23 +221,6 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                           ),
                         ),
                       ),
-                      DataColumn2(
-                        label: Text(
-                          "마지막 방문일",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
-                          ),
-                        ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 180,
-                        label: Text(
-                          "연락 필요",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
-                          ),
-                        ),
-                      ),
                     ],
                     rows: [
                       for (var i = 0; i < _userDataList.length; i++)
@@ -287,7 +228,8 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                           cells: [
                             DataCell(
                               Text(
-                                "${_userDataList[i]!.partnerDates}일",
+                                secondsToYearMonthDayHourMinute(
+                                    _userDataList[i].createdAt),
                                 style: const TextStyle(
                                   fontSize: Sizes.size13,
                                 ),
@@ -295,9 +237,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                             ),
                             DataCell(
                               Text(
-                                _userDataList[i]!.name.length > 8
-                                    ? "${_userDataList[i]!.name.substring(0, 8)}.."
-                                    : _userDataList[i]!.name,
+                                _userDataList[i].decibel,
                                 style: const TextStyle(
                                   fontSize: Sizes.size13,
                                 ),
@@ -305,7 +245,9 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                             ),
                             DataCell(
                               Text(
-                                _userDataList[i]!.age,
+                                _userDataList[i].name.length > 8
+                                    ? "${_userDataList[i].name.substring(0, 8)}.."
+                                    : _userDataList[i].name,
                                 style: const TextStyle(
                                   fontSize: Sizes.size13,
                                 ),
@@ -313,7 +255,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                             ),
                             DataCell(
                               Text(
-                                _userDataList[i]!.gender,
+                                _userDataList[i].age,
                                 style: const TextStyle(
                                   fontSize: Sizes.size13,
                                 ),
@@ -321,7 +263,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                             ),
                             DataCell(
                               Text(
-                                _userDataList[i]!.phone,
+                                _userDataList[i].gender,
                                 style: const TextStyle(
                                   fontSize: Sizes.size13,
                                 ),
@@ -329,22 +271,9 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                             ),
                             DataCell(
                               Text(
-                                _userDataList[i]!.lastVisit != 0
-                                    ? secondsToStringLine(
-                                        _userDataList[i]!.lastVisit)
-                                    : "-",
+                                _userDataList[i].phone,
                                 style: const TextStyle(
                                   fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.partnerContact ? "🚨" : "X",
-                                style: TextStyle(
-                                  fontSize: _userDataList[i]!.partnerContact
-                                      ? Sizes.size20
-                                      : Sizes.size14,
                                 ),
                               ),
                             ),
@@ -355,7 +284,6 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                 ),
               )
             ],
-          )
-        : const SkeletonLoadingScreen();
+          );
   }
 }

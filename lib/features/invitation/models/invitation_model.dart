@@ -33,7 +33,7 @@ class InvitationModel {
         userContractCommunityId = json["contractCommunityId"],
         invitationCount = json["invitationCount"],
         invitationDates = json["invitationDate"]
-            .map((dynamic item) => secondsToStringDiaryTimeLine(item))
+            .map((dynamic item) => secondsToYearMonthDayHourMinute(item))
             .toList();
 
   InvitationModel copyWith({

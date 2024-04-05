@@ -53,9 +53,10 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   Future<void> filterUserDataList(
       String? searchBy, String searchKeyword) async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    List<UserModel?> userDataList = await ref
-        .read(userProvider.notifier)
-        .initializeUserList(adminProfileModel!.subdistrictId);
+    List<UserModel?> userDataList = ref.read(userProvider).value ??
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(adminProfileModel!.subdistrictId);
 
     List<UserModel> filterList = [];
     if (searchBy == "name") {
@@ -96,9 +97,10 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
         ref.read(adminProfileProvider).value ??
             await ref.read(adminProfileProvider.notifier).getAdminProfile();
     final userList = adminProfileModel!.master
-        ? await ref
-            .read(userProvider.notifier)
-            .initializeUserList(selectContractRegion.value.subdistrictId)
+        ? ref.read(userProvider).value ??
+            await ref
+                .read(userProvider.notifier)
+                .initializeUserList(selectContractRegion.value.subdistrictId)
         : await ref
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value.subdistrictId);

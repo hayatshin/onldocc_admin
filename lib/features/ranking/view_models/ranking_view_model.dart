@@ -15,9 +15,10 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
   }
 
   Future<List<UserModel>> getUserPoints(DateRange range) async {
-    List<UserModel?> userDataList = await ref
-        .read(userProvider.notifier)
-        .initializeUserList(selectContractRegion.value.subdistrictId);
+    List<UserModel?> userDataList = ref.read(userProvider).value ??
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value.subdistrictId);
 
     List<UserModel> nonNullUserList =
         userDataList.where((e) => e != null).cast<UserModel>().toList();

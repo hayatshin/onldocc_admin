@@ -9,6 +9,7 @@ import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
 import 'package:onldocc_admin/features/care/view/care_screen.dart';
+import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_point_screen.dart';
@@ -111,6 +112,10 @@ final routerProvider = Provider(
               case CareScreen.routeURL:
                 () => menuNotifier.setSelectedMenu(10, context);
                 return SidebarTemplate(selectedMenuURL: 10, child: child);
+
+              case DecibelScreen.routeURL:
+                () => menuNotifier.setSelectedMenu(11, context);
+                return SidebarTemplate(selectedMenuURL: 11, child: child);
 
               case TvScreen.routeURL:
                 () => menuNotifier.setSelectedMenu(12, context);
@@ -311,6 +316,14 @@ final routerProvider = Provider(
               pageBuilder: (context, state) => NoTransitionPage(
                 key: state.pageKey,
                 child: const CareScreen(),
+              ),
+            ),
+            GoRoute(
+              name: DecibelScreen.routeName,
+              path: DecibelScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const DecibelScreen(),
               ),
             ),
             GoRoute(

@@ -386,3 +386,18 @@ List<String> interatePreviousDays(int days) {
   }
   return dates.reversed.toList();
 }
+
+String secondsToYearMonthDayHourMinute(int seconds) {
+  final milliseconds = seconds * 1000;
+  DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+
+  String diaryHour = dateTime.hour == 24 || dateTime.hour == 0
+      ? "오전 12시"
+      : dateTime.hour > 12
+          ? "오후 ${dateTime.hour - 12}시"
+          : "오전 ${dateTime.hour}시";
+
+  String formattedDate =
+      '${dateTime.year.toString().substring(3)}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')} $diaryHour ${dateTime.minute}분';
+  return formattedDate;
+}

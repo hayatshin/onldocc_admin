@@ -4,6 +4,7 @@ import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
 import 'package:onldocc_admin/features/care/view/care_screen.dart';
+import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
@@ -31,7 +32,7 @@ class MenuNotifier extends ChangeNotifier {
     if (menu == 8) context.goNamed(NoticeScreen.routeName);
     if (menu == 9) context.goNamed(EventScreen.routeName);
     if (menu == 10) context.goNamed(CareScreen.routeName);
-    if (menu == 11) context.goNamed(TvScreen.routeName);
+    if (menu == 11) context.goNamed(DecibelScreen.routeName);
     if (menu == 12) context.goNamed(TvScreen.routeName);
 
     notifyListeners();
