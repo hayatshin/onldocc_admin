@@ -40,6 +40,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   final TextEditingController _goalScoreController = TextEditingController();
   final TextEditingController _prizewinnersControllder =
       TextEditingController();
+  final TextEditingController _ageLimitControllder = TextEditingController();
 
   // 행사 추가하기
   String _eventTitle = "";
@@ -54,9 +55,10 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   DateTime? _eventStartDate;
   DateTime? _eventEndDate;
 
-  String _eventPrizeWinners = "";
+  int _eventPrizeWinners = 0;
   int _eventGoalScore = 0;
   String _eventType = "point";
+  int _eventAgeLimit = 0;
 
   int _eventStepPoint = 0;
   int _eventDiaryPoint = 0;
@@ -157,7 +159,6 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
           _eventImageBytes != null &&
           _bannerImageBytes != null &&
           _bannerImageBytes != null &&
-          _eventPrizeWinners.isNotEmpty &&
           _eventStartDate != null &&
           _eventEndDate != null;
     });
@@ -185,7 +186,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       bannerImage: bannerImageUrl,
       allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
       targetScore: _eventGoalScore,
-      achieversNumber: int.parse(_eventPrizeWinners),
+      achieversNumber: _eventPrizeWinners,
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
       createdAt: getCurrentSeconds(),
@@ -208,6 +209,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       quizCount: _eventQuizCount,
       adminSecret: true,
       eventType: _eventType,
+      ageLimit: _eventAgeLimit,
     );
 
     await ref.read(eventRepo).addEvent(eventModel);
@@ -221,6 +223,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     _descriptionControllder.dispose();
     _goalScoreController.dispose();
     _prizewinnersControllder.dispose();
+    _ageLimitControllder.dispose();
     super.dispose();
   }
 
@@ -781,9 +784,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   minLines: 1,
                                   onChanged: (value) {
                                     setState(() {
-                                      _eventPrizeWinners = value;
+                                      _eventPrizeWinners = int.parse(value);
                                     });
-                                    checkEnabledEventButton();
                                   },
                                   controller: _prizewinnersControllder,
                                   textAlignVertical: TextAlignVertical.top,
@@ -844,6 +846,110 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               Gaps.h10,
                               Text(
                                 "명",
+                                style: TextStyle(
+                                  fontSize: Sizes.size14,
+                                  color: Colors.grey.shade800,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              Gaps.h40,
+                              const CommentTextWidget(
+                                text: "제한이 없을 경우 '0'을 기입해주세요.",
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Gaps.v60,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: widget.totalWidth * 0.1,
+                            child: const Text(
+                              "연령 제한",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          Gaps.h32,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                child: TextFormField(
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  minLines: 1,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _eventAgeLimit = int.parse(value);
+                                    });
+                                  },
+                                  controller: _ageLimitControllder,
+                                  textAlignVertical: TextAlignVertical.top,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: Sizes.size14,
+                                    color: Colors.black87,
+                                  ),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    hintText: "",
+                                    hintStyle: TextStyle(
+                                      fontSize: Sizes.size14,
+                                      color: Colors.grey.shade400,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey.shade50,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                    ),
+                                    errorStyle: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.size10,
+                                      vertical: Sizes.size10,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Gaps.h10,
+                              Text(
+                                "세",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   color: Colors.grey.shade800,

@@ -25,6 +25,8 @@ class EventModel {
 
   final String bannerImage;
   final String eventType;
+  final int? ageLimit;
+
   final int? invitationPoint;
   final int? invitationCount;
   final int? diaryCount;
@@ -56,6 +58,7 @@ class EventModel {
     required this.adminSecret,
     required this.bannerImage,
     required this.eventType,
+    this.ageLimit,
     this.invitationPoint,
     this.invitationCount,
     this.diaryCount,
@@ -89,6 +92,7 @@ class EventModel {
         adminSecret = true,
         bannerImage = "",
         eventType = "",
+        ageLimit = 0,
         invitationCount = 0,
         diaryCount = 0,
         commentCount = 0,
@@ -118,6 +122,7 @@ class EventModel {
       "adminSecret": adminSecret,
       "bannerImage": bannerImage,
       "eventType": eventType,
+      "ageLimit": ageLimit,
       "invitationCount": invitationCount,
       "diaryCount": diaryCount,
       "commentCount": commentCount,
@@ -148,6 +153,7 @@ class EventModel {
       "adminSecret": adminSecret,
       "bannerImage": bannerImage,
       "eventType": eventType,
+      "ageLimit": ageLimit,
       "invitationCount": invitationCount,
       "diaryCount": diaryCount,
       "commentCount": commentCount,
@@ -188,6 +194,7 @@ class EventModel {
         adminSecret = json["adminSecret"],
         bannerImage = json["bannerImage"] ?? "",
         eventType = json["eventType"] ?? "",
+        ageLimit = json["ageLimit"] ?? 0,
         invitationCount = json["invitationCount"] ?? 0,
         diaryCount = json["diaryCount"] ?? 0,
         likeCount = json["likeCount"] ?? 0,
@@ -219,6 +226,7 @@ class EventModel {
     final bool? adminSecret,
     final String? bannerImage,
     final String? eventType,
+    final int? ageLimit,
     final int? diaryCount,
     final int? commentCount,
     final int? likeCount,
@@ -250,6 +258,7 @@ class EventModel {
       adminSecret: adminSecret ?? this.adminSecret,
       bannerImage: bannerImage ?? this.bannerImage,
       eventType: eventType ?? this.eventType,
+      ageLimit: ageLimit ?? this.ageLimit,
       diaryCount: diaryCount ?? this.diaryCount,
       commentCount: commentCount ?? this.commentCount,
       likeCount: likeCount ?? this.likeCount,

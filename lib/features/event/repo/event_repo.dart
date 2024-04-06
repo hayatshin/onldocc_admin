@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
+import 'package:onldocc_admin/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,9 +15,9 @@ class EventRepository {
   final _supabase = Supabase.instance.client;
 
   static final eventUserPointFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-point-functions");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-point-functions-2");
   static final eventUserCountFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions-2");
 
   Future<Map<String, dynamic>> getEventUserPoint(
     String userId,
@@ -27,6 +28,7 @@ class EventRepository {
     int diaryPoint,
     int commentPoint,
     int likePoint,
+    int quizPoint,
     int targetScore,
   ) async {
     Map<String, dynamic> requestBody = {
@@ -38,6 +40,7 @@ class EventRepository {
       'diaryPoint': diaryPoint,
       'commentPoint': commentPoint,
       'likePoint': likePoint,
+      'quizPoint': quizPoint,
       'targetScore': targetScore,
     };
     String requestBodyJson = jsonEncode(requestBody);
@@ -63,6 +66,7 @@ class EventRepository {
     int invitationCount,
     int diaryCount,
     int commentCount,
+    int quizCount,
     int likeCount,
   ) async {
     Map<String, dynamic> requestBody = {
@@ -73,6 +77,7 @@ class EventRepository {
       'diaryCount': diaryCount,
       'commentCount': commentCount,
       'likeCount': likeCount,
+      'quizCount': quizCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
 
@@ -173,9 +178,10 @@ class EventRepository {
 
   Future<void> editEventAdminSecret(String eventId, bool currentSecret) async {
     try {
-      await _supabase
-          .from("events")
-          .update({'adminSecret': !currentSecret}).eq("eventId", eventId);
+      await _supabase.from("events").update({
+        'adminSecret': !currentSecret,
+        'createdAt': getCurrentSeconds()
+      }).eq("eventId", eventId);
     } catch (e) {
       // ignore: avoid_print
       print("editEvent -> $e");

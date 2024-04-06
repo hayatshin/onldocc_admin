@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:onldocc_admin/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NoticeRepository {
@@ -110,9 +111,10 @@ class NoticeRepository {
   Future<void> editFeedNotificationDiaryId(
       String diaryId, String newDiaryId) async {
     try {
-      await _supabase
-          .from("diaries")
-          .update({"diaryId": newDiaryId}).match({"diaryId": diaryId});
+      await _supabase.from("diaries").update({
+        "diaryId": newDiaryId,
+        "createdAt": getCurrentSeconds()
+      }).match({"diaryId": diaryId});
     } catch (e) {
       // ignore: avoid_print
       print("editFeedNotificationDiaryId -> $e");

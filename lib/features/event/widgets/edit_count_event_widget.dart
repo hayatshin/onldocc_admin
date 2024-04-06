@@ -38,6 +38,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
   final TextEditingController _goalScoreController = TextEditingController();
   final TextEditingController _prizewinnersControllder =
       TextEditingController();
+  final TextEditingController _ageLimitControllder = TextEditingController();
 
   // 행사 추가하기
   String _eventTitle = "";
@@ -52,7 +53,9 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
   DateTime? _eventStartDate;
   DateTime? _eventEndDate;
 
-  String _eventPrizeWinners = "";
+  int _eventPrizeWinners = 0;
+  int _eventAgeLimit = 0;
+
   String _eventGoalScore = "";
 
   int _eventDiaryCount = 0;
@@ -160,7 +163,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
       bannerImage: bannerImageUrl,
       allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
       targetScore: int.parse(_eventGoalScore),
-      achieversNumber: int.parse(_eventPrizeWinners),
+      achieversNumber: _eventPrizeWinners,
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
       diaryCount: _eventDiaryCount,
@@ -168,6 +171,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
       likeCount: _eventLikeCount,
       invitationCount: _eventInvitationCount,
       quizCount: _eventQuizCount,
+      ageLimit: _eventAgeLimit,
     );
 
     await ref.read(eventRepo).editEvent(eventModel);
@@ -193,7 +197,8 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
         convertStartDateStringToDateTime(widget.eventModel.startDate);
     _eventEndDate = convertEndDateStringToDateTime(widget.eventModel.endDate);
     _eventGoalScore = widget.eventModel.targetScore.toString();
-    _eventPrizeWinners = widget.eventModel.achieversNumber.toString();
+    _eventPrizeWinners = widget.eventModel.achieversNumber;
+    _eventAgeLimit = widget.eventModel.ageLimit ?? 0;
     _eventImage = widget.eventModel.eventImage;
     _eventInvitationCount = widget.eventModel.invitationCount!;
     _eventDiaryCount = widget.eventModel.diaryCount!;
@@ -209,6 +214,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
     _goalScoreController.text = widget.eventModel.targetScore.toString();
     _prizewinnersControllder.text =
         widget.eventModel.achieversNumber.toString();
+    _ageLimitControllder.text = widget.eventModel.ageLimit.toString();
   }
 
   @override
@@ -219,6 +225,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
     _descriptionControllder.dispose();
     _goalScoreController.dispose();
     _prizewinnersControllder.dispose();
+    _ageLimitControllder.dispose();
     super.dispose();
   }
 
@@ -827,7 +834,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                   minLines: 1,
                                   onChanged: (value) {
                                     setState(() {
-                                      _eventPrizeWinners = value;
+                                      _eventPrizeWinners = int.parse(value);
                                     });
                                   },
                                   controller: _prizewinnersControllder,
@@ -889,6 +896,109 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                               Gaps.h10,
                               Text(
                                 "명",
+                                style: TextStyle(
+                                  fontSize: Sizes.size14,
+                                  color: Colors.grey.shade800,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              Gaps.h40,
+                              const CommentTextWidget(
+                                  text: "제한이 없을 경우 '0'을 기입해주세요.")
+                            ],
+                          ),
+                        ],
+                      ),
+                      Gaps.v60,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: widget.totalWidth * 0.1,
+                            child: const Text(
+                              "연령 제한",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          Gaps.h32,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                child: TextFormField(
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  minLines: 1,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _eventAgeLimit = int.parse(value);
+                                    });
+                                  },
+                                  controller: _ageLimitControllder,
+                                  textAlignVertical: TextAlignVertical.top,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: Sizes.size14,
+                                    color: Colors.black87,
+                                  ),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    hintText: "",
+                                    hintStyle: TextStyle(
+                                      fontSize: Sizes.size14,
+                                      color: Colors.grey.shade400,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey.shade50,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                    ),
+                                    errorStyle: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        Sizes.size3,
+                                      ),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.size10,
+                                      vertical: Sizes.size10,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Gaps.h10,
+                              Text(
+                                "세",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   color: Colors.grey.shade800,

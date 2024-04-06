@@ -6,7 +6,7 @@ class QuizRepository {
   Future<List<Map<String, dynamic>>> getUserCertainDateCaData(
       String userId, int startSeconds, int endSeconds) async {
     final query = await _supabase
-        .from("quizzes")
+        .from("quizzes_math")
         .select('*, users(*)')
         .eq('userId', userId)
         .gte('createdAt', startSeconds)

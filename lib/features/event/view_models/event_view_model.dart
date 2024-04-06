@@ -59,8 +59,10 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           eventModel.diaryPoint!,
           eventModel.commentPoint!,
           eventModel.likePoint!,
+          eventModel.quizPoint!,
           eventModel.targetScore!,
         );
+
         final scorePointModel = model.copyWith(
           smallRegion: userRegion,
           userStepPoint: data["userStepPoint"],
@@ -68,6 +70,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           userDiaryPoint: data["userDiaryPoint"],
           userCommentPoint: data["userCommentPoint"],
           userLikePoint: data["userLikePoint"],
+          userQuizPoint: data["userQuizPoint"],
           userTotalPoint: data["userTotalPoint"],
           userAchieveOrNot: data["userAchieveOrNot"],
         );
@@ -81,6 +84,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           eventModel.diaryCount!,
           eventModel.commentCount!,
           eventModel.likeCount!,
+          eventModel.quizCount!,
         );
         final scorePointModel = model.copyWith(
           smallRegion: userRegion,
@@ -88,6 +92,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           userDiaryCount: data["userDiaryCount"],
           userCommentCount: data["userCommentCount"],
           userLikeCount: data["userLikeCount"],
+          userQuizCount: data["userQuizCount"],
           userAchieveOrNot: data["userAchieveOrNot"],
         );
         return scorePointModel;

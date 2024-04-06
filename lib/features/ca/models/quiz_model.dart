@@ -1,6 +1,6 @@
 class QuizModel {
   final String userId;
-  final String diaryId;
+  final String quizId;
   final int createdAt;
   final bool correct;
   final String quiz;
@@ -11,7 +11,7 @@ class QuizModel {
 
   QuizModel({
     required this.userId,
-    required this.diaryId,
+    required this.quizId,
     required this.createdAt,
     required this.correct,
     required this.quiz,
@@ -23,7 +23,7 @@ class QuizModel {
 
   QuizModel.empty()
       : userId = "",
-        diaryId = "",
+        quizId = "",
         createdAt = 0,
         correct = false,
         quiz = "",
@@ -35,7 +35,7 @@ class QuizModel {
   Map<String, dynamic> toJson() {
     return {
       "userId": userId,
-      "diaryId": diaryId,
+      "quizId": quizId,
       "createdAt": createdAt,
       "correct": correct,
       "quiz": quiz,
@@ -46,7 +46,7 @@ class QuizModel {
 
   QuizModel.fromJson(Map<String, dynamic> json)
       : userId = json["userId"] ?? "",
-        diaryId = json["diaryId"] ?? "",
+        quizId = json["quizId"] ?? "",
         createdAt = json["createdAt"] ?? 0,
         correct = json["correct"] ?? false,
         quiz = json["quiz"] ?? "",

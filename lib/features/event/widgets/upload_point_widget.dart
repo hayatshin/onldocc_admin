@@ -58,10 +58,8 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     minLines: 1,
                     onChanged: (value) {
-                      // setState(() {
-                      //   _eventGoalScore = value;
-                      // });
-                      // checkEnabledEventButton();
+                      final goalScore = int.parse(value);
+                      widget.updateGoalScore(goalScore);
                     },
                     // controller: _goalScoreController,
                     textAlignVertical: TextAlignVertical.top,
