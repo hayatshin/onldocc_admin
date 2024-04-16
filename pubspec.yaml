@@ -71,7 +71,7 @@ dependencies:
   skeletons: ^0.0.3
   to_csv: ^2.2.1
   path_provider: ^2.1.2
-  video_player: ^2.8.3
+  # video_player: ^2.8.3
   get_thumbnail_video: ^0.6.1
   # firebase_auth_web: ^5.9.8
   # firebase_core: ^2.27.0
