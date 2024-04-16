@@ -94,7 +94,7 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
           children: [
             Expanded(
               flex: 2,
-              child: DefaultPointTile(
+              child: DefaultCountTile(
                 totalWidth: size.width,
                 updateEventPoint: widget.updateQuizCount,
                 header: "문제 풀기",
@@ -107,8 +107,8 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CommentTextWidget(
-                    text: "- 일일 최대 1회",
+                  MaxPointTextWidget(
+                    text: "( 일일 최대:     1회 )",
                   ),
                 ],
               ),

@@ -34,6 +34,8 @@ class EventModel {
   final int? likeCount;
   final int? quizCount;
 
+  final int? maxStepCount;
+
   EventModel({
     required this.eventId,
     required this.title,
@@ -65,6 +67,7 @@ class EventModel {
     this.commentCount,
     this.likeCount,
     this.quizCount,
+    this.maxStepCount,
   });
 
   EventModel.empty()
@@ -97,7 +100,8 @@ class EventModel {
         diaryCount = 0,
         commentCount = 0,
         likeCount = 0,
-        quizCount = 0;
+        quizCount = 0,
+        maxStepCount = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -128,6 +132,7 @@ class EventModel {
       "commentCount": commentCount,
       "likeCount": likeCount,
       "quizCount": quizCount,
+      "maxStepCount": maxStepCount,
     };
   }
 
@@ -159,6 +164,7 @@ class EventModel {
       "commentCount": commentCount,
       "likeCount": likeCount,
       "quizCount": quizCount,
+      "maxStepCount": maxStepCount,
     };
   }
 
@@ -199,7 +205,8 @@ class EventModel {
         diaryCount = json["diaryCount"] ?? 0,
         likeCount = json["likeCount"] ?? 0,
         commentCount = json["commentCount"] ?? 0,
-        quizCount = json["quizCount"] ?? 0;
+        quizCount = json["quizCount"] ?? 0,
+        maxStepCount = json["maxStepCount"] ?? 10000;
 
   EventModel copyWith({
     final String? eventId,
@@ -232,6 +239,8 @@ class EventModel {
     final int? likeCount,
     final int? invitationCount,
     final int? quizCount,
+    final int? maxQuizCount,
+    final int? maxStepCount,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -264,6 +273,7 @@ class EventModel {
       likeCount: likeCount ?? this.likeCount,
       invitationCount: invitationCount ?? this.invitationCount,
       quizCount: quizCount ?? this.quizCount,
+      maxStepCount: maxStepCount ?? this.maxStepCount,
     );
   }
 }

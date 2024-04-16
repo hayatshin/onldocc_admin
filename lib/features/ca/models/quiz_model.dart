@@ -52,6 +52,6 @@ class QuizModel {
         quiz = json["quiz"] ?? "",
         quizAnswer = json["quizAnswer"] ?? 0,
         userAnswer = json["userAnswer"] ?? 0,
-        userSubdistrictId = json["users"]["subdistrictId"],
-        userContractCommunityId = json["users"]["contactCommunityId"];
+        userSubdistrictId = json["users"]["subdistrictId"] ?? "",
+        userContractCommunityId = json["users"]["contactCommunityId"] ?? "";
 }

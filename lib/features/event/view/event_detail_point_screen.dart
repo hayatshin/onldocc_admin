@@ -119,7 +119,6 @@ class _EventDetailPointScreenState
     final participants = await ref
         .read(eventProvider.notifier)
         .getEventParticipants(widget.eventModel!);
-    print("$participants");
     participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
 
     setState(() {

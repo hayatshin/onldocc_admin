@@ -73,6 +73,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   int _eventInvitationCount = 0;
   int _eventQuizCount = 0;
 
+  int _eventMaxStepCount = 10000;
+
   bool tapUploadEvent = false;
 
   void selectStartPeriod(void Function(void Function()) setState) async {
@@ -210,6 +212,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       adminSecret: true,
       eventType: _eventType,
       ageLimit: _eventAgeLimit,
+      maxStepCount: _eventMaxStepCount,
     );
 
     await ref.read(eventRepo).addEvent(eventModel);
@@ -298,6 +301,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   void updateQuizCount(int count) {
     setState(() {
       _eventQuizCount = count;
+    });
+  }
+
+  void updateMaxStepCount(int maxCount) {
+    setState(() {
+      _eventMaxStepCount = maxCount;
     });
   }
 
@@ -949,7 +958,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               ),
                               Gaps.h10,
                               Text(
-                                "세",
+                                "세 이상",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   color: Colors.grey.shade800,
@@ -1045,13 +1054,15 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   updateStepPoint: updateStepPoint,
                                   updateInvitationPoint: updateInvitationPoint,
                                   updateQuizPoint: updateQuizPoint,
+                                  updateMaxStepCount: updateMaxStepCount,
                                 )
                               : UploadCountWidget(
                                   updateDiaryCount: updateDiaryCount,
                                   updateCommentCount: updateCommentCount,
                                   updateLikeCount: updateLikeCount,
                                   updateInvitationCount: updateInvitationCount,
-                                  updateQuizCount: updateQuizCount),
+                                  updateQuizCount: updateQuizCount,
+                                ),
                         ],
                       ),
                     ],

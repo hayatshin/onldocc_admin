@@ -63,6 +63,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
   int _eventLikePoint = 0;
   int _eventInvitationPoint = 0;
   int _eventQuizPoint = 0;
+  int _eventMaxStepCount = 10000;
 
   OverlayEntry? overlayEntry;
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -207,6 +208,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
     _eventLikePoint = widget.eventModel.likePoint!;
     _eventQuizPoint = widget.eventModel.quizPoint!;
     _bannerImage = widget.eventModel.bannerImage;
+    _eventMaxStepCount = widget.eventModel.maxStepCount ?? 10000;
 
     setState(() {});
 
@@ -263,6 +265,12 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
   void updateQuizPoint(int point) {
     setState(() {
       _eventQuizPoint = point;
+    });
+  }
+
+  void updateMaxStepCount(int maxCount) {
+    setState(() {
+      _eventMaxStepCount = maxCount;
     });
   }
 
@@ -1005,7 +1013,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                               ),
                               Gaps.h10,
                               Text(
-                                "세",
+                                "세 이상",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   color: Colors.grey.shade800,
@@ -1252,8 +1260,8 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        CommentTextWidget(
-                                          text: "- 일일 최대 1회",
+                                        MaxPointTextWidget(
+                                          text: "( 일일 최대:     1회 )",
                                         ),
                                       ],
                                     ),
@@ -1276,23 +1284,12 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                   ),
                                   Expanded(
                                     flex: 3,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const CommentTextWidget(
-                                          text: "- 일일 최대 만보",
-                                        ),
-                                        Gaps.v5,
-                                        Text(
-                                          "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
-                                          style: TextStyle(
-                                            fontSize: Sizes.size12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ],
+                                    child: MaxStepPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateMaxStepCount,
+                                      header: "일일 최대: ",
+                                      defaultPoint: _eventMaxStepCount,
+                                      editOrNot: false,
                                     ),
                                   ),
                                 ],
@@ -1611,6 +1608,297 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
           ],
         ),
       ],
+    );
+  }
+}
+
+class MaxQuizPointTile extends StatefulWidget {
+  final double totalWidth;
+  final Function(int) updateEventPoint;
+  final String header;
+  final int defaultPoint;
+  final bool editOrNot;
+  const MaxQuizPointTile({
+    super.key,
+    required this.totalWidth,
+    required this.updateEventPoint,
+    required this.header,
+    required this.defaultPoint,
+    required this.editOrNot,
+  });
+
+  @override
+  State<MaxQuizPointTile> createState() => _MaxQuizPointTileState();
+}
+
+class _MaxQuizPointTileState extends State<MaxQuizPointTile> {
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    textController.text = "${widget.defaultPoint}";
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        SizedBox(
+          width: widget.totalWidth * 0.1,
+          child: Text(
+            "( ${widget.header}",
+            style: TextStyle(
+              fontSize: Sizes.size14,
+              color: Colors.grey.shade700,
+              fontWeight: FontWeight.w300,
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        Gaps.h32,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextFormField(
+                controller: textController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                minLines: 1,
+                onChanged: (value) {
+                  final point = int.parse(value);
+                  widget.updateEventPoint(point);
+                },
+                textAlignVertical: TextAlignVertical.top,
+                style: TextStyle(
+                  fontSize: Sizes.size14,
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  // hintText: "${}",
+                  // hintStyle: TextStyle(
+                  //   fontSize: Sizes.size14,
+                  //   color: Colors.grey.shade400,
+                  //   fontWeight: FontWeight.w300,
+                  // ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                  ),
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: Sizes.size10,
+                    vertical: Sizes.size10,
+                  ),
+                ),
+              ),
+            ),
+            Gaps.h10,
+            Text(
+              "회 )",
+              style: TextStyle(
+                fontSize: Sizes.size14,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class MaxStepPointTile extends StatefulWidget {
+  final double totalWidth;
+  final Function(int) updateEventPoint;
+  final String header;
+  final int defaultPoint;
+  final bool editOrNot;
+  const MaxStepPointTile({
+    super.key,
+    required this.totalWidth,
+    required this.updateEventPoint,
+    required this.header,
+    required this.defaultPoint,
+    required this.editOrNot,
+  });
+
+  @override
+  State<MaxStepPointTile> createState() => _MaxStepPointTileState();
+}
+
+class _MaxStepPointTileState extends State<MaxStepPointTile> {
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    textController.text = "${widget.defaultPoint}";
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        SizedBox(
+          // width: widget.totalWidth * 0.1,
+          child: Text(
+            "( ${widget.header}",
+            style: TextStyle(
+              fontSize: Sizes.size14,
+              color: Colors.grey.shade700,
+              fontWeight: FontWeight.w300,
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        Gaps.h10,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextFormField(
+                controller: textController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                minLines: 1,
+                onChanged: (value) {
+                  final point = int.parse(value);
+                  widget.updateEventPoint(point);
+                },
+                textAlignVertical: TextAlignVertical.top,
+                style: TextStyle(
+                  fontSize: Sizes.size14,
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  // hintText: "${}",
+                  // hintStyle: TextStyle(
+                  //   fontSize: Sizes.size14,
+                  //   color: Colors.grey.shade400,
+                  //   fontWeight: FontWeight.w300,
+                  // ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                  ),
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: Sizes.size10,
+                    vertical: Sizes.size10,
+                  ),
+                ),
+              ),
+            ),
+            Gaps.h10,
+            Text(
+              "보 )",
+              style: TextStyle(
+                fontSize: Sizes.size14,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class MaxPointTextWidget extends StatelessWidget {
+  final String text;
+  const MaxPointTextWidget({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: Sizes.size14,
+        color: Colors.grey.shade700,
+        fontWeight: FontWeight.w300,
+      ),
     );
   }
 }

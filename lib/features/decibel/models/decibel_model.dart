@@ -22,13 +22,16 @@ class DecibelModel {
   });
 
   DecibelModel.fromJson(Map<String, dynamic> json)
-      : decibelId = json["decibelId"],
-        userId = json["userId"],
-        decibel = json["decibel"],
-        createdAt = json["createdAt"],
-        name = json["users"]["name"],
-        age = userAgeCalculation(
-            json["users"]["birthYear"], json["users"]["birthDay"]),
-        gender = json["users"]["gender"],
-        phone = json["users"]["phone"];
+      : decibelId = json["decibelId"] ?? "",
+        userId = json["userId"] ?? "",
+        decibel = json["decibel"] ?? "",
+        createdAt = json["createdAt"] ?? 0,
+        name = json["users"]["name"] ?? "",
+        age = json["users"]["birthYear"] != null &&
+                json["users"]["birthDay"] != null
+            ? userAgeCalculation(
+                json["users"]["birthYear"], json["users"]["birthDay"])
+            : "0",
+        gender = json["users"]["gender"] ?? "",
+        phone = json["users"]["phone"] ?? "";
 }

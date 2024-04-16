@@ -998,7 +998,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                               ),
                               Gaps.h10,
                               Text(
-                                "세",
+                                "세 이상",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   color: Colors.grey.shade800,
@@ -1135,8 +1135,8 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        CommentTextWidget(
-                                          text: "- 일일 최대 1회",
+                                        MaxPointTextWidget(
+                                          text: "( 일일 최대:     1회 )",
                                         ),
                                       ],
                                     ),

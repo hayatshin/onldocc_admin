@@ -360,7 +360,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                             selected: menuNotifier.selectedMenu == 12,
                             selectedIcon: Icons.ondemand_video_rounded,
                             unselectedIcon: Icons.tv_rounded,
-                            title: "재밌는 테레비 관리",
+                            title: "재밌는 영상 관리",
                             action: () =>
                                 menuNotifier.setSelectedMenu(12, context),
                           ),

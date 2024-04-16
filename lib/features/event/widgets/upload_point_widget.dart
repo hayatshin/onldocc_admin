@@ -12,6 +12,7 @@ class UploadPointWidget extends StatefulWidget {
   final Function(int) updateStepPoint;
   final Function(int) updateInvitationPoint;
   final Function(int) updateQuizPoint;
+  final Function(int) updateMaxStepCount;
 
   const UploadPointWidget({
     super.key,
@@ -22,6 +23,7 @@ class UploadPointWidget extends StatefulWidget {
     required this.updateStepPoint,
     required this.updateInvitationPoint,
     required this.updateQuizPoint,
+    required this.updateMaxStepCount,
   });
 
   @override
@@ -210,8 +212,8 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CommentTextWidget(
-                    text: "- 일일 최대 1회",
+                  MaxPointTextWidget(
+                    text: "( 일일 최대:     1회 )",
                   ),
                 ],
               ),
@@ -219,38 +221,53 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
           ],
         ),
         Gaps.v32,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 2,
-              child: DefaultPointTile(
-                totalWidth: size.width,
-                updateEventPoint: widget.updateStepPoint,
-                header: "걸음수",
-                defaultPoint: 0,
-                editOrNot: false,
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CommentTextWidget(
-                    text: "- 일일 최대 만보",
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: DefaultPointTile(
+                    totalWidth: size.width,
+                    updateEventPoint: widget.updateStepPoint,
+                    header: "걸음수",
+                    defaultPoint: 0,
+                    editOrNot: false,
                   ),
-                  Gaps.v5,
-                  Text(
+                ),
+                Expanded(
+                  flex: 3,
+                  child: MaxStepPointTile(
+                    totalWidth: size.width,
+                    updateEventPoint: widget.updateMaxStepCount,
+                    header: "일일 최대: ",
+                    defaultPoint: 10000,
+                    editOrNot: false,
+                  ),
+                ),
+              ],
+            ),
+            Gaps.v20,
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
                     "※ 걸음수는 신체 활동 권한 설정을 허용하지 않은 사용자들이 많아 사용을 권장하지 않습니다.",
                     style: TextStyle(
                       fontSize: Sizes.size12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w300,
+                      color: Colors.grey.shade500,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

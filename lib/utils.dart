@@ -398,6 +398,6 @@ String secondsToYearMonthDayHourMinute(int seconds) {
           : "오전 ${dateTime.hour}시";
 
   String formattedDate =
-      '${dateTime.year.toString().substring(3)}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')} $diaryHour ${dateTime.minute}분';
+      '${dateTime.year.toString().substring(2)}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')} $diaryHour ${dateTime.minute}분';
   return formattedDate;
 }
