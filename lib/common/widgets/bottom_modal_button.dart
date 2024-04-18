@@ -22,11 +22,7 @@ class BottomModalButton extends StatelessWidget {
       width: 200,
       height: 40,
       child: ElevatedButton(
-        onPressed: () async {
-          if (hoverBottomButton) {
-            submitFunction();
-          }
-        },
+        onPressed: submitFunction,
         style: ButtonStyle(
           side: MaterialStateProperty.resolveWith<BorderSide>(
             (states) {

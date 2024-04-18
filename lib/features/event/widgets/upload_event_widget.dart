@@ -155,21 +155,27 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   }
 
   void checkEnabledEventButton() {
-    setState(() {
-      _enabledEventButton = _eventTitle.isNotEmpty &&
-          _eventDescription.isNotEmpty &&
-          _eventImageBytes != null &&
-          _bannerImageBytes != null &&
-          _bannerImageBytes != null &&
-          _eventStartDate != null &&
-          _eventEndDate != null;
-    });
+    bool enabledEventButton = _eventTitle.isNotEmpty &&
+        _eventDescription.isNotEmpty &&
+        _eventImageBytes != null &&
+        _bannerImageBytes != null &&
+        _eventStartDate != null &&
+        _eventEndDate != null;
+    if (enabledEventButton) {
+      tapUploadEvent = false;
+      _enabledEventButton = enabledEventButton;
+    } else {
+      _enabledEventButton = enabledEventButton;
+    }
+    setState(() {});
   }
 
   Future<void> _submitEvent() async {
     setState(() {
       tapUploadEvent = true;
     });
+
+    if (!_enabledEventButton) return;
 
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final eventId = const Uuid().v4();
@@ -343,7 +349,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       text: "행사 추가하기",
                       submitFunction: _submitEvent,
                       hoverBottomButton: _enabledEventButton,
-                      loading: tapUploadEvent,
+                      loading: _enabledEventButton && tapUploadEvent,
                     ),
                   ),
                 ],
@@ -362,12 +368,20 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             Align(
                               alignment: Alignment.topLeft,
                               child: SizedBox(
-                                width: widget.totalWidth * 0.1,
-                                child: const Text(
-                                  "행사 타이틀",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                width: widget.totalWidth * 0.12,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "행사 타이틀",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    if (tapUploadEvent && _eventTitle.isEmpty)
+                                      const InsufficientField(
+                                          text: "행사 타이틀을 입력해주세요.")
+                                  ],
                                 ),
                               ),
                             ),
@@ -443,68 +457,84 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Column(
                             children: [
-                              SizedBox(
-                                width: widget.totalWidth * 0.1,
-                                child: const Text(
-                                  "배너 이미지",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              Gaps.h32,
-                              Column(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    width: 150,
-                                    height: 150,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
-                                        border: Border.all(
-                                          color: Colors.grey.shade200,
-                                        )),
-                                    child: _bannerImageFile == null
-                                        ? Icon(
-                                            Icons.image,
-                                            size: Sizes.size80,
-                                            color: Colors.grey.shade200,
-                                          )
-                                        : Image.memory(
-                                            _bannerImageBytes!,
-                                            fit: BoxFit.cover,
-                                          ),
-                                  ),
-                                  Gaps.v20,
                                   SizedBox(
-                                    child: Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: ElevatedButton(
-                                        onPressed: () =>
-                                            pickBannerImageFromGallery(
-                                                setState),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey.shade200,
-                                          surfaceTintColor:
-                                              Colors.pink.shade200,
-                                        ),
-                                        child: Text(
-                                          '이미지 올리기',
+                                    width: widget.totalWidth * 0.12,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "배너 이미지",
                                           style: TextStyle(
-                                            color: Colors.grey.shade800,
-                                            fontSize: Sizes.size12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.start,
+                                        ),
+                                        if (tapUploadEvent &&
+                                            _bannerImageBytes == null)
+                                          const InsufficientField(
+                                              text: "배너 이미지를 추가해주세요.")
+                                      ],
+                                    ),
+                                  ),
+                                  Gaps.h32,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 150,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              Sizes.size5,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.grey.shade200,
+                                            )),
+                                        child: _bannerImageFile == null
+                                            ? Icon(
+                                                Icons.image,
+                                                size: Sizes.size80,
+                                                color: Colors.grey.shade200,
+                                              )
+                                            : Image.memory(
+                                                _bannerImageBytes!,
+                                                fit: BoxFit.cover,
+                                              ),
+                                      ),
+                                      Gaps.v20,
+                                      SizedBox(
+                                        child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: ElevatedButton(
+                                            onPressed: () =>
+                                                pickBannerImageFromGallery(
+                                                    setState),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.grey.shade200,
+                                              surfaceTintColor:
+                                                  Colors.pink.shade200,
+                                            ),
+                                            child: Text(
+                                              '이미지 올리기',
+                                              style: TextStyle(
+                                                color: Colors.grey.shade800,
+                                                fontSize: Sizes.size12,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  )
+                                    ],
+                                  ),
                                 ],
                               ),
                             ],
@@ -515,13 +545,22 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: widget.totalWidth * 0.1,
-                                child: const Text(
-                                  "행사 이미지",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
+                                width: widget.totalWidth * 0.12,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "행사 이미지",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                    if (tapUploadEvent &&
+                                        _eventImageBytes == null)
+                                      const InsufficientField(
+                                          text: "행사 이미지를 추가해주세요.")
+                                  ],
                                 ),
                               ),
                               Gaps.h32,
@@ -584,13 +623,22 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             SizedBox(
-                              width: widget.totalWidth * 0.1,
-                              child: const Text(
-                                "행사 설명",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.start,
+                              width: widget.totalWidth * 0.12,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "행사 설명",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  if (tapUploadEvent &&
+                                      _eventDescription.isEmpty)
+                                    const InsufficientField(
+                                        text: "행사 설명을 입력해주세요.")
+                                ],
                               ),
                             ),
                             Gaps.h32,
@@ -676,90 +724,123 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
-                                  child: const Text(
-                                    "시작일",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    textAlign: TextAlign.start,
+                                  width: widget.totalWidth * 0.12,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "시작일",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.start,
+                                      ),
+                                      if (tapUploadEvent &&
+                                          _eventStartDate == null)
+                                        const InsufficientField(
+                                            text: "시작일을 입력해주세요.")
+                                    ],
                                   ),
                                 ),
                                 Gaps.h32,
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: ElevatedButton(
-                                    onPressed: () =>
-                                        selectStartPeriod(setState),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey.shade200,
-                                      surfaceTintColor: Colors.pink.shade200,
-                                    ),
-                                    child: Text(
-                                      '날짜 선택하기',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade800,
-                                        fontSize: Sizes.size12,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            selectStartPeriod(setState),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey.shade200,
+                                          surfaceTintColor:
+                                              Colors.pink.shade200,
+                                        ),
+                                        child: Text(
+                                          '날짜 선택하기',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade800,
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                Gaps.h20,
-                                if (_eventStartDate != null)
-                                  Text(
-                                    "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade800,
-                                      fontSize: Sizes.size14,
-                                    ),
-                                  ),
+                                    Gaps.h20,
+                                    if (_eventStartDate != null)
+                                      Text(
+                                        "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey.shade800,
+                                          fontSize: Sizes.size14,
+                                        ),
+                                      ),
+                                  ],
+                                )
                               ],
                             ),
                           ),
                           Expanded(
                             flex: 1,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
-                                  child: const Text(
-                                    "종료일",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    textAlign: TextAlign.start,
+                                  width: widget.totalWidth * 0.12,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "종료일",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.start,
+                                      ),
+                                      if (tapUploadEvent &&
+                                          _eventEndDate == null)
+                                        const InsufficientField(
+                                            text: "종료일을 입력해주세요.")
+                                    ],
                                   ),
                                 ),
                                 Gaps.h32,
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: ElevatedButton(
-                                    onPressed: () => selectEndPeriod(setState),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey.shade200,
-                                      surfaceTintColor: Colors.pink.shade200,
-                                    ),
-                                    child: Text(
-                                      '날짜 선택하기',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade800,
-                                        fontSize: Sizes.size12,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            selectEndPeriod(setState),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey.shade200,
+                                          surfaceTintColor:
+                                              Colors.pink.shade200,
+                                        ),
+                                        child: Text(
+                                          '날짜 선택하기',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade800,
+                                            fontSize: Sizes.size12,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                Gaps.h20,
-                                if (_eventEndDate != null)
-                                  Text(
-                                    "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade800,
-                                      fontSize: Sizes.size14,
-                                    ),
-                                  ),
+                                    Gaps.h20,
+                                    if (_eventEndDate != null)
+                                      Text(
+                                        "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey.shade800,
+                                          fontSize: Sizes.size14,
+                                        ),
+                                      ),
+                                  ],
+                                )
                               ],
                             ),
                           ),
@@ -771,13 +852,18 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: widget.totalWidth * 0.1,
-                            child: const Text(
-                              "당첨자 수 제한",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.start,
+                            width: widget.totalWidth * 0.12,
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "당첨자 수 제한",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.start,
+                                ),
+                              ],
                             ),
                           ),
                           Gaps.h32,
@@ -875,13 +961,18 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: widget.totalWidth * 0.1,
-                            child: const Text(
-                              "연령 제한",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.start,
+                            width: widget.totalWidth * 0.12,
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "연령 제한",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.start,
+                                ),
+                              ],
                             ),
                           ),
                           Gaps.h32,
@@ -1217,6 +1308,40 @@ class CommentTextWidget extends StatelessWidget {
         fontWeight: FontWeight.w300,
         color: Colors.grey.shade600,
       ),
+    );
+  }
+}
+
+class InsufficientField extends StatelessWidget {
+  final String text;
+  const InsufficientField({
+    super.key,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Gaps.v20,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                  fontSize: Sizes.size12,
+                ),
+                overflow: TextOverflow.visible,
+                softWrap: true,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
