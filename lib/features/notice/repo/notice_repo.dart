@@ -122,11 +122,17 @@ class NoticeRepository {
   }
 
   Future<void> editFeedNotificationTodayDiary(
-      String diaryId, String todayDiary) async {
+    String diaryId,
+    String todayDiary,
+    bool noticeTopFixed,
+    int noticeFixedAt,
+  ) async {
     await _supabase.from("images").delete().match({"diaryId": diaryId});
-    await _supabase
-        .from("diaries")
-        .update({"todayDiary": todayDiary}).match({"diaryId": diaryId});
+    await _supabase.from("diaries").update({
+      "todayDiary": todayDiary,
+      "noticeTopFixed": noticeTopFixed,
+      "noticeFixedAt": noticeFixedAt,
+    }).match({"diaryId": diaryId});
   }
 
   Future<void> deleteFeedNotification(String diaryId) async {

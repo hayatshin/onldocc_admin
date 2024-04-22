@@ -27,7 +27,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
 
     final events = await _eventRepository.getUserEvents(
-        adminProfileModel!, selectContractRegion.value.contractRegionId!);
+        adminProfileModel!, selectContractRegion.value!.contractRegionId!);
 
     final list = events.map((e) => EventModel.fromJson(e)).toList();
     return list;
@@ -49,8 +49,8 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
       int userStartSeconds =
           model.createdAt > startSeconds ? model.createdAt : startSeconds;
 
-      if (eventModel.eventType == "point") {
-        final data = await _eventRepository.getEventUserPoint(
+      if (eventModel.eventType == EventType.targetScore.name) {
+        final data = await _eventRepository.getEventUserTargetScore(
           model.userId,
           userStartSeconds,
           endSeconds,
@@ -61,6 +61,37 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           eventModel.likePoint!,
           eventModel.quizPoint!,
           eventModel.targetScore!,
+          eventModel.maxStepCount!,
+        );
+
+        final scorePointModel = model.copyWith(
+          smallRegion: userRegion,
+          userStepPoint: data["userStepPoint"],
+          userInvitationPoint: data["userInvitationPoint"],
+          userDiaryPoint: data["userDiaryPoint"],
+          userCommentPoint: data["userCommentPoint"],
+          userLikePoint: data["userLikePoint"],
+          userQuizPoint: data["userQuizPoint"],
+          userTotalPoint: data["userTotalPoint"],
+          userAchieveOrNot: data["userAchieveOrNot"],
+        );
+        return scorePointModel;
+      } else if (eventModel.eventType == EventType.multipleScores.name) {
+        final data = await _eventRepository.getEventUserMultipleScores(
+          model.userId,
+          userStartSeconds,
+          endSeconds,
+          eventModel.stepPoint!,
+          eventModel.invitationPoint!,
+          eventModel.diaryPoint!,
+          eventModel.commentPoint!,
+          eventModel.likePoint!,
+          eventModel.quizPoint!,
+          eventModel.targetScore!,
+          eventModel.maxStepCount!,
+          eventModel.maxCommentCount!,
+          eventModel.maxLikeCount!,
+          eventModel.maxInvitationCount!,
         );
 
         final scorePointModel = model.copyWith(

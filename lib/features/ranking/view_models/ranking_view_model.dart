@@ -18,7 +18,7 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
     List<UserModel?> userDataList = ref.read(userProvider).value ??
         await ref
             .read(userProvider.notifier)
-            .initializeUserList(selectContractRegion.value.subdistrictId);
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
 
     List<UserModel> nonNullUserList =
         userDataList.where((e) => e != null).cast<UserModel>().toList();

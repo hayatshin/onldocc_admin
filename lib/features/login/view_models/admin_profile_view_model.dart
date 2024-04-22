@@ -110,5 +110,4 @@ final adminProfileProvider =
   () => AdminProfileViewModel(),
 );
 
-final selectContractRegion =
-    ValueNotifier<ContractRegionModel>(ContractRegionModel.empty());
+final selectContractRegion = ValueNotifier<ContractRegionModel?>(null);

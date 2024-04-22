@@ -121,7 +121,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           result: "틀림", count: wrongCounts, color: Colors.grey.shade500),
     ];
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -129,12 +129,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = caDataList
             .where((e) =>
                 e.userContractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {
@@ -156,7 +156,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    getUserCaData();
+    if (selectContractRegion.value != null) {
+      getUserCaData();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {

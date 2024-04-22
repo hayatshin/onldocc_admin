@@ -90,15 +90,15 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       thumbnail: thumbnail,
       title: _title,
       link: _link,
-      allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
+      allUsers: selectContractRegion.value!.subdistrictId != "" ? false : true,
       videoId: videoId,
       createdAt: getCurrentSeconds(),
       videoType: videoType == "유투브" ? "youtube" : "file",
       contractRegionId: adminProfileModel!.contractRegionId != ""
           ? adminProfileModel.contractRegionId
           : null,
-      contractCommunityId: selectContractRegion.value.contractCommunityId != ""
-          ? selectContractRegion.value.contractCommunityId
+      contractCommunityId: selectContractRegion.value!.contractCommunityId != ""
+          ? selectContractRegion.value!.contractCommunityId
           : null,
     );
 
@@ -162,7 +162,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
+                                  width: widget.totalWidth * 0.12,
                                   child: const Text(
                                     "영상 제목",
                                     style: TextStyle(
@@ -264,7 +264,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
+                                  width: widget.totalWidth * 0.12,
                                   child: const Text(
                                     "영상 타입",
                                     style: TextStyle(
@@ -303,7 +303,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(
-                                        width: widget.totalWidth * 0.1,
+                                        width: widget.totalWidth * 0.12,
                                         child: const Text(
                                           "영상 링크",
                                           style: TextStyle(
@@ -411,7 +411,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(
-                                        width: widget.totalWidth * 0.1,
+                                        width: widget.totalWidth * 0.12,
                                         child: const Text(
                                           "",
                                           style: TextStyle(

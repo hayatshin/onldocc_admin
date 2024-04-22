@@ -151,7 +151,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                   getThisWeekMonday(),
                   DateTime.now(),
                 ),
-            selectContractRegion.value.subdistrictId);
+            selectContractRegion.value!.subdistrictId);
     setState(() {
       _userDataList = userList;
     });
@@ -169,9 +169,9 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
   Future<void> getInvitationList(DateRange? range) async {
     final userList = await ref
         .read(invitationProvider.notifier)
-        .fetchInvitations(range!, selectContractRegion.value.subdistrictId);
+        .fetchInvitations(range!, selectContractRegion.value!.subdistrictId);
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -180,12 +180,12 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = userList
             .where((e) =>
                 e.userContractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {

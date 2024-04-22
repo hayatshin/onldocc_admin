@@ -35,6 +35,8 @@ class EditNotificationWidget extends ConsumerStatefulWidget {
 class _EditNotificationWidgetState
     extends ConsumerState<EditNotificationWidget> {
   String _feedDescription = "";
+  bool _noticeTopFixed = false;
+  DateTime _noticeFixedAt = DateTime.now();
 
   final List<dynamic> _feedImageArray = [];
 
@@ -86,7 +88,12 @@ class _EditNotificationWidgetState
         tapEditNotification = true;
       });
       await ref.read(noticeProvider.notifier).editFeedNotification(
-          widget.diaryModel.diaryId, _feedDescription, _feedImageArray);
+            widget.diaryModel.diaryId,
+            _feedDescription,
+            _feedImageArray,
+            _noticeTopFixed,
+            convertEndDateTimeToSeconds(_noticeFixedAt),
+          );
       if (!mounted) return;
       resultBottomModal(context, "성공적으로 공지가 수정되었습니다.", widget.refreshScreen);
     } catch (e) {
@@ -178,6 +185,10 @@ class _EditNotificationWidgetState
   void initState() {
     super.initState();
     _descriptionControllder.text = widget.diaryModel.todayDiary;
+    _noticeTopFixed = widget.diaryModel.noticeTopFixed ?? false;
+    _noticeFixedAt = widget.diaryModel.noticeFixedAt != null
+        ? secondsToDatetime(widget.diaryModel.noticeFixedAt!)
+        : DateTime.now();
 
     _descriptionControllder.addListener(() {
       setState(() {
@@ -196,6 +207,22 @@ class _EditNotificationWidgetState
     _descriptionControllder.dispose();
     removeDeleteOverlay();
     super.dispose();
+  }
+
+  void selectNoticeFixedAt(void Function(void Function()) setState) async {
+    DateTime now = DateTime.now();
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year, now.month, 1),
+      lastDate: DateTime(2030),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _noticeFixedAt = picked;
+      });
+    }
   }
 
   @override
@@ -239,6 +266,62 @@ class _EditNotificationWidgetState
                   ],
                 ),
                 Gaps.v52,
+                Row(
+                  children: [
+                    SizedBox(
+                      width: widget.totalWidth * 0.12,
+                      height: 50,
+                      child: const Text(
+                        "지역 보기\n상단 고정 여부",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    Gaps.h32,
+                    Checkbox(
+                      value: _noticeTopFixed,
+                      onChanged: (value) {
+                        setState(
+                          () {
+                            _noticeTopFixed = !_noticeTopFixed;
+                          },
+                        );
+                      },
+                    ),
+                    Gaps.h52,
+                    if (_noticeTopFixed)
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => selectNoticeFixedAt(setState),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey.shade200,
+                              surfaceTintColor: Colors.pink.shade200,
+                            ),
+                            child: Text(
+                              '고정 날짜 기한 선택하기',
+                              style: TextStyle(
+                                color: Colors.grey.shade800,
+                                fontSize: Sizes.size12,
+                              ),
+                            ),
+                          ),
+                          Gaps.h20,
+                          Text(
+                            "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade800,
+                              fontSize: Sizes.size14,
+                            ),
+                          ),
+                        ],
+                      )
+                  ],
+                ),
+                Gaps.v52,
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -247,7 +330,7 @@ class _EditNotificationWidgetState
                         Row(
                           children: [
                             SizedBox(
-                              width: widget.totalWidth * 0.1,
+                              width: widget.totalWidth * 0.12,
                               height: 200,
                               child: const Text(
                                 "공지 내용",
@@ -330,7 +413,7 @@ class _EditNotificationWidgetState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: widget.totalWidth * 0.1,
+                                width: widget.totalWidth * 0.12,
                                 child: const Text(
                                   "이미지 (선택)",
                                   style: TextStyle(

@@ -75,7 +75,9 @@ class _TvScreenState extends ConsumerState<TvScreen> {
   @override
   void initState() {
     super.initState();
-    getUserTvs();
+    if (selectContractRegion.value != null) {
+      getUserTvs();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
@@ -91,7 +93,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
   Future<void> getUserTvs() async {
     final tvList = await ref.read(tvProvider.notifier).getUserTvs();
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -99,12 +101,12 @@ class _TvScreenState extends ConsumerState<TvScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = tvList
             .where((e) =>
                 e.contractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {

@@ -10,7 +10,8 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/widgets/upload_count_widget.dart';
-import 'package:onldocc_admin/features/event/widgets/upload_point_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/upload_multiple_scores_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/upload_target_score_widget.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -57,7 +58,10 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
 
   int _eventPrizeWinners = 0;
   int _eventGoalScore = 0;
-  String _eventType = "point";
+
+  final List<String> _eventList = ["목표 점수 달성", "다득점 점수", "횟수 달성"];
+  EventType _eventType = EventType.targetScore;
+
   int _eventAgeLimit = 0;
 
   int _eventStepPoint = 0;
@@ -74,6 +78,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   int _eventQuizCount = 0;
 
   int _eventMaxStepCount = 10000;
+  int _eventMaxCommentCount = 0;
+  int _eventMaxLikeCount = 0;
+  int _eventMaxInvitationCount = 0;
 
   bool tapUploadEvent = false;
 
@@ -192,7 +199,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       description: _eventDescription,
       eventImage: eventImageUrl,
       bannerImage: bannerImageUrl,
-      allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
+      allUsers: selectContractRegion.value!.subdistrictId != "" ? false : true,
       targetScore: _eventGoalScore,
       achieversNumber: _eventPrizeWinners,
       startDate: convertTimettampToStringDot(_eventStartDate!),
@@ -201,8 +208,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       contractRegionId: adminProfileModel!.contractRegionId != ""
           ? adminProfileModel.contractRegionId
           : null,
-      contractCommunityId: selectContractRegion.value.contractCommunityId != ""
-          ? selectContractRegion.value.contractCommunityId
+      contractCommunityId: selectContractRegion.value!.contractCommunityId != ""
+          ? selectContractRegion.value!.contractCommunityId
           : null,
       stepPoint: _eventStepPoint,
       diaryPoint: _eventDiaryPoint,
@@ -216,9 +223,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       invitationCount: _eventInvitationCount,
       quizCount: _eventQuizCount,
       adminSecret: true,
-      eventType: _eventType,
+      eventType: _eventType.name,
       ageLimit: _eventAgeLimit,
       maxStepCount: _eventMaxStepCount,
+      maxCommentCount: _eventMaxCommentCount,
+      maxLikeCount: _eventMaxLikeCount,
+      maxInvitationCount: _eventMaxInvitationCount,
     );
 
     await ref.read(eventRepo).addEvent(eventModel);
@@ -313,6 +323,24 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   void updateMaxStepCount(int maxCount) {
     setState(() {
       _eventMaxStepCount = maxCount;
+    });
+  }
+
+  void updateMaxCommentCount(int maxCount) {
+    setState(() {
+      _eventMaxCommentCount = maxCount;
+    });
+  }
+
+  void updateMaxLikeCount(int maxCount) {
+    setState(() {
+      _eventMaxLikeCount = maxCount;
+    });
+  }
+
+  void updateMaxInvitationCount(int maxCount) {
+    setState(() {
+      _eventMaxInvitationCount = maxCount;
     });
   }
 
@@ -1101,22 +1129,28 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                           Gaps.v52,
                           Row(
                             children: [
-                              Text(
-                                "행사 유형 설정",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    background: Paint()
-                                      ..color =
-                                          Colors.yellowAccent.withOpacity(0.2)),
-                                textAlign: TextAlign.start,
+                              SizedBox(
+                                width: widget.totalWidth * 0.12,
+                                child: Text(
+                                  "행사 유형 설정",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      background: Paint()
+                                        ..color = Colors.yellowAccent
+                                            .withOpacity(0.2)),
+                                  textAlign: TextAlign.start,
+                                ),
                               ),
                               Gaps.h80,
                               SizedBox(
-                                width: 100,
+                                width: 300,
                                 child: CustomDropdown(
                                   onChanged: (value) {
-                                    final type =
-                                        value == "점수" ? "point" : "count";
+                                    final type = value == "목표 점수 달성"
+                                        ? EventType.targetScore
+                                        : value == "다득점 점수"
+                                            ? EventType.multipleScores
+                                            : EventType.count;
                                     setState(() {
                                       _eventType = type;
                                     });
@@ -1127,8 +1161,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
-                                  items: const ["점수", "횟수"],
-                                  initialItem: "점수",
+                                  items: _eventList,
+                                  initialItem: _eventList[0],
                                   // controller: contractCommunityController,
                                   excludeSelected: false,
                                 ),
@@ -1136,8 +1170,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             ],
                           ),
                           Gaps.v40,
-                          _eventType == "point"
-                              ? UploadPointWidget(
+                          _eventType == EventType.targetScore
+                              ? UploadTargetScoreWidget(
                                   updateGoalScore: updateGoalScore,
                                   updateDiaryPoint: updateDiaryPoint,
                                   updateCommentPoint: updateCommentPoint,
@@ -1147,13 +1181,31 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   updateQuizPoint: updateQuizPoint,
                                   updateMaxStepCount: updateMaxStepCount,
                                 )
-                              : UploadCountWidget(
-                                  updateDiaryCount: updateDiaryCount,
-                                  updateCommentCount: updateCommentCount,
-                                  updateLikeCount: updateLikeCount,
-                                  updateInvitationCount: updateInvitationCount,
-                                  updateQuizCount: updateQuizCount,
-                                ),
+                              : _eventType == EventType.multipleScores
+                                  ? UploadMultipleScoresWidget(
+                                      updateGoalScore: updateGoalScore,
+                                      updateDiaryPoint: updateDiaryPoint,
+                                      updateCommentPoint: updateCommentPoint,
+                                      updateLikePoint: updateLikePoint,
+                                      updateStepPoint: updateStepPoint,
+                                      updateInvitationPoint:
+                                          updateInvitationPoint,
+                                      updateQuizPoint: updateQuizPoint,
+                                      updateMaxStepCount: updateMaxStepCount,
+                                      updateMaxCommentCount:
+                                          updateMaxCommentCount,
+                                      updateMaxLikeCount: updateMaxLikeCount,
+                                      updateInvitationCount:
+                                          updateMaxInvitationCount,
+                                    )
+                                  : UploadCountWidget(
+                                      updateDiaryCount: updateDiaryCount,
+                                      updateCommentCount: updateCommentCount,
+                                      updateLikeCount: updateLikeCount,
+                                      updateInvitationCount:
+                                          updateInvitationCount,
+                                      updateQuizCount: updateQuizCount,
+                                    ),
                         ],
                       ),
                     ],

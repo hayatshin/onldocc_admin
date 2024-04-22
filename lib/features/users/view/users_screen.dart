@@ -50,7 +50,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   void initState() {
     super.initState();
 
-    getUserModelList();
+    if (selectContractRegion.value != null) {
+      getUserModelList();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
@@ -156,9 +158,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     List<UserModel?> userDataList = ref.read(userProvider).value ??
         await ref
             .read(userProvider.notifier)
-            .initializeUserList(selectContractRegion.value.subdistrictId);
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -166,12 +168,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = userDataList
             .where((e) =>
                 e!.contractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {

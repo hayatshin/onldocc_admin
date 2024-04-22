@@ -20,18 +20,23 @@ class NoticeViewModel extends AsyncNotifier<void> {
   Future<List<DiaryModel>> fetchAllNotices() async {
     final notices = await ref
         .read(noticeRepo)
-        .fetchAllNotices(selectContractRegion.value.subdistrictId);
+        .fetchAllNotices(selectContractRegion.value!.subdistrictId);
     return notices.map((e) => DiaryModel.fromJson(e)).toList();
   }
 
-  Future<void> addFeedNotification(AdminProfileModel adminProfileModel,
-      String todayDiary, List<dynamic> imageList) async {
+  Future<void> addFeedNotification(
+    AdminProfileModel adminProfileModel,
+    String todayDiary,
+    List<dynamic> imageList,
+    bool noticeTopFixed,
+    int noticeFixedAt,
+  ) async {
     final notiUserId = adminProfileModel.master
         ? "noti:injicare"
-        : selectContractRegion.value.contractCommunityId == "" ||
-                selectContractRegion.value.contractCommunityId == null
+        : selectContractRegion.value!.contractCommunityId == "" ||
+                selectContractRegion.value!.contractCommunityId == null
             ? "noti:region:${adminProfileModel.subdistrictId}"
-            : "noti:community:${selectContractRegion.value.contractCommunityId}";
+            : "noti:community:${selectContractRegion.value!.contractCommunityId}";
     final diaryId = "${getCurrentSeconds()}_$notiUserId:true";
 
     DiaryModel feedNotiModel = DiaryModel(
@@ -44,6 +49,8 @@ class NoticeViewModel extends AsyncNotifier<void> {
       numComments: 0,
       todayDiary: todayDiary,
       notice: true,
+      noticeTopFixed: noticeTopFixed,
+      noticeFixedAt: noticeFixedAt,
     );
 
     final isUserExist = await ref.read(userRepo).checkUserExists(notiUserId);
@@ -51,7 +58,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
     if (!isUserExist) {
       await ref
           .read(userProvider.notifier)
-          .saveAdminUser(notiUserId, selectContractRegion.value);
+          .saveAdminUser(notiUserId, selectContractRegion.value!);
     }
 
     await ref.read(noticeRepo).addFeedNotification(feedNotiModel.toJson());
@@ -65,10 +72,11 @@ class NoticeViewModel extends AsyncNotifier<void> {
     String diaryId,
     String todayDiary,
     List<dynamic> imageList,
+    bool noticeTopFixed,
+    int noticeFixedAt,
   ) async {
-    await ref
-        .read(noticeRepo)
-        .editFeedNotificationTodayDiary(diaryId, todayDiary);
+    await ref.read(noticeRepo).editFeedNotificationTodayDiary(
+        diaryId, todayDiary, noticeTopFixed, noticeFixedAt);
     await ref.read(noticeRepo).uploadImageFileToStorage(diaryId, imageList);
   }
 

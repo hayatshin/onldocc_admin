@@ -1,3 +1,4 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +12,13 @@ import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class EditPointEventWidget extends ConsumerStatefulWidget {
+class EditTargetScoreEventWidget extends ConsumerStatefulWidget {
   final BuildContext context;
   final double totalWidth;
   final double totalHeight;
   final EventModel eventModel;
   final Function() refreshScreen;
-  const EditPointEventWidget({
+  const EditTargetScoreEventWidget({
     super.key,
     required this.context,
     required this.totalWidth,
@@ -27,11 +28,12 @@ class EditPointEventWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<EditPointEventWidget> createState() =>
+  ConsumerState<EditTargetScoreEventWidget> createState() =>
       _EditPointEventWidgetState();
 }
 
-class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
+class _EditPointEventWidgetState
+    extends ConsumerState<EditTargetScoreEventWidget> {
   final TextEditingController _titleControllder = TextEditingController();
   final TextEditingController _descriptionControllder = TextEditingController();
   final TextEditingController _goalScoreController = TextEditingController();
@@ -56,6 +58,9 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
   int _eventAgeLimit = 0;
 
   String _eventGoalScore = "";
+
+  final List<String> _eventList = ["목표 점수 달성", "다득점 점수", "횟수 달성"];
+  EventType _eventType = EventType.targetScore;
 
   int _eventStepPoint = 0;
   int _eventDiaryPoint = 0;
@@ -162,7 +167,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
       description: _eventDescription,
       eventImage: eventImageUrl,
       bannerImage: bannerImageUrl,
-      allUsers: selectContractRegion.value.subdistrictId != "" ? false : true,
+      allUsers: selectContractRegion.value!.subdistrictId != "" ? false : true,
       targetScore: int.parse(_eventGoalScore),
       achieversNumber: _eventPrizeWinners,
       startDate: convertTimettampToStringDot(_eventStartDate!),
@@ -174,6 +179,8 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
       invitationPoint: _eventInvitationPoint,
       quizPoint: _eventQuizPoint,
       ageLimit: _eventAgeLimit,
+      maxStepCount: _eventMaxStepCount,
+      eventType: _eventType.name,
     );
 
     await ref.read(eventRepo).editEvent(eventModel);
@@ -209,6 +216,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
     _eventQuizPoint = widget.eventModel.quizPoint!;
     _bannerImage = widget.eventModel.bannerImage;
     _eventMaxStepCount = widget.eventModel.maxStepCount ?? 10000;
+    _eventType = stringToEventType(widget.eventModel.eventType);
 
     setState(() {});
 
@@ -411,7 +419,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                             Align(
                               alignment: Alignment.topLeft,
                               child: SizedBox(
-                                width: widget.totalWidth * 0.1,
+                                width: widget.totalWidth * 0.12,
                                 child: const Text(
                                   "행사 타이틀",
                                   style: TextStyle(
@@ -496,7 +504,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: widget.totalWidth * 0.1,
+                                width: widget.totalWidth * 0.12,
                                 child: const Text(
                                   "배너 이미지",
                                   style: TextStyle(
@@ -567,7 +575,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: widget.totalWidth * 0.1,
+                                width: widget.totalWidth * 0.12,
                                 child: const Text(
                                   "행사 이미지",
                                   style: TextStyle(
@@ -641,7 +649,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             SizedBox(
-                              width: widget.totalWidth * 0.1,
+                              width: widget.totalWidth * 0.12,
                               child: const Text(
                                 "행사 설명",
                                 style: TextStyle(
@@ -732,7 +740,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
+                                  width: widget.totalWidth * 0.12,
                                   child: const Text(
                                     "시작일",
                                     style: TextStyle(
@@ -779,7 +787,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
+                                  width: widget.totalWidth * 0.12,
                                   child: const Text(
                                     "종료일",
                                     style: TextStyle(
@@ -827,7 +835,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: widget.totalWidth * 0.1,
+                            width: widget.totalWidth * 0.12,
                             child: const Text(
                               "당첨자 수 제한",
                               style: TextStyle(
@@ -930,7 +938,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: widget.totalWidth * 0.1,
+                            width: widget.totalWidth * 0.12,
                             child: const Text(
                               "연령 제한",
                               style: TextStyle(
@@ -1064,16 +1072,45 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                           Gaps.v52,
                           Row(
                             children: [
-                              Text(
-                                "행사 유형 설정",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    background: Paint()
-                                      ..color =
-                                          Colors.yellowAccent.withOpacity(0.2)),
-                                textAlign: TextAlign.start,
+                              SizedBox(
+                                width: widget.totalWidth * 0.12,
+                                child: Text(
+                                  "행사 유형 설정",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      background: Paint()
+                                        ..color = Colors.yellowAccent
+                                            .withOpacity(0.2)),
+                                  textAlign: TextAlign.start,
+                                ),
                               ),
                               Gaps.h80,
+                              SizedBox(
+                                width: 300,
+                                child: CustomDropdown(
+                                  onChanged: (value) {
+                                    final type = value == "목표 점수 달성"
+                                        ? EventType.targetScore
+                                        : value == "다득점 점수"
+                                            ? EventType.multipleScores
+                                            : EventType.count;
+                                    setState(() {
+                                      _eventType = type;
+                                    });
+                                  },
+                                  decoration: const CustomDropdownDecoration(
+                                    listItemStyle: TextStyle(
+                                      fontSize: Sizes.size12,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  items: _eventList,
+                                  initialItem: _eventList[
+                                      EventType.values.indexOf(_eventType)],
+                                  // controller: contractCommunityController,
+                                  excludeSelected: false,
+                                ),
+                              ),
                             ],
                           ),
                           Gaps.v80,
@@ -1084,7 +1121,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(
-                                    width: size.width * 0.1,
+                                    width: widget.totalWidth * 0.12,
                                     child: const Text(
                                       "목표 점수 설정",
                                       style: TextStyle(
@@ -1194,7 +1231,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
-                                    flex: 1,
+                                    flex: 2,
                                     child: DefaultPointTile(
                                       totalWidth: size.width,
                                       updateEventPoint: updateDiaryPoint,
@@ -1203,39 +1240,16 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                       editOrNot: true,
                                     ),
                                   ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: DefaultPointTile(
-                                      totalWidth: size.width,
-                                      updateEventPoint: updateCommentPoint,
-                                      header: "댓글",
-                                      defaultPoint: _eventCommentPoint,
-                                      editOrNot: true,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: DefaultPointTile(
-                                      totalWidth: size.width,
-                                      updateEventPoint: updateLikePoint,
-                                      header: "좋아요",
-                                      defaultPoint: _eventLikePoint,
-                                      editOrNot: true,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Gaps.v32,
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: DefaultPointTile(
-                                      totalWidth: size.width,
-                                      updateEventPoint: updateInvitationPoint,
-                                      header: "친구 초대",
-                                      defaultPoint: _eventInvitationPoint,
-                                      editOrNot: true,
+                                  const Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        MaxPointTextWidget(
+                                          text: "( 일일 최대:     1회 )",
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -1270,6 +1284,50 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                               ),
                               Gaps.v32,
                               Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateCommentPoint,
+                                      header: "댓글",
+                                      defaultPoint: _eventCommentPoint,
+                                      editOrNot: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Gaps.v32,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateLikePoint,
+                                      header: "좋아요",
+                                      defaultPoint: _eventLikePoint,
+                                      editOrNot: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: DefaultPointTile(
+                                      totalWidth: size.width,
+                                      updateEventPoint: updateInvitationPoint,
+                                      header: "친구 초대",
+                                      defaultPoint: _eventInvitationPoint,
+                                      editOrNot: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Gaps.v32,
+                              Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Expanded(
@@ -1289,7 +1347,7 @@ class _EditPointEventWidgetState extends ConsumerState<EditPointEventWidget> {
                                       updateEventPoint: updateMaxStepCount,
                                       header: "일일 최대: ",
                                       defaultPoint: _eventMaxStepCount,
-                                      editOrNot: false,
+                                      editOrNot: true,
                                     ),
                                   ),
                                 ],
@@ -1354,7 +1412,7 @@ class _DefaultCountTileState extends State<DefaultCountTile> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width: widget.totalWidth * 0.1,
+          width: widget.totalWidth * 0.12,
           child: Text(
             "❍   ${widget.header}",
             style: const TextStyle(
@@ -1491,7 +1549,7 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width: widget.totalWidth * 0.1,
+          width: widget.totalWidth * 0.12,
           child: Text(
             "❍   ${widget.header}",
             style: const TextStyle(
@@ -1612,143 +1670,6 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
   }
 }
 
-class MaxQuizPointTile extends StatefulWidget {
-  final double totalWidth;
-  final Function(int) updateEventPoint;
-  final String header;
-  final int defaultPoint;
-  final bool editOrNot;
-  const MaxQuizPointTile({
-    super.key,
-    required this.totalWidth,
-    required this.updateEventPoint,
-    required this.header,
-    required this.defaultPoint,
-    required this.editOrNot,
-  });
-
-  @override
-  State<MaxQuizPointTile> createState() => _MaxQuizPointTileState();
-}
-
-class _MaxQuizPointTileState extends State<MaxQuizPointTile> {
-  final TextEditingController textController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    textController.text = "${widget.defaultPoint}";
-  }
-
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        SizedBox(
-          width: widget.totalWidth * 0.1,
-          child: Text(
-            "( ${widget.header}",
-            style: TextStyle(
-              fontSize: Sizes.size14,
-              color: Colors.grey.shade700,
-              fontWeight: FontWeight.w300,
-            ),
-            textAlign: TextAlign.start,
-          ),
-        ),
-        Gaps.h32,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            SizedBox(
-              width: 100,
-              child: TextFormField(
-                controller: textController,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                minLines: 1,
-                onChanged: (value) {
-                  final point = int.parse(value);
-                  widget.updateEventPoint(point);
-                },
-                textAlignVertical: TextAlignVertical.top,
-                style: TextStyle(
-                  fontSize: Sizes.size14,
-                  color: Colors.grey.shade700,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  isDense: true,
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                  // hintText: "${}",
-                  // hintStyle: TextStyle(
-                  //   fontSize: Sizes.size14,
-                  //   color: Colors.grey.shade400,
-                  //   fontWeight: FontWeight.w300,
-                  // ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                  ),
-                  errorStyle: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: Sizes.size10,
-                    vertical: Sizes.size10,
-                  ),
-                ),
-              ),
-            ),
-            Gaps.h10,
-            Text(
-              "회 )",
-              style: TextStyle(
-                fontSize: Sizes.size14,
-                color: Colors.grey.shade700,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 class MaxStepPointTile extends StatefulWidget {
   final double totalWidth;
   final Function(int) updateEventPoint;
@@ -1774,7 +1695,9 @@ class _MaxStepPointTileState extends State<MaxStepPointTile> {
   @override
   void initState() {
     super.initState();
-    textController.text = "${widget.defaultPoint}";
+    if (widget.editOrNot) {
+      textController.text = "${widget.defaultPoint}";
+    }
   }
 
   @override
@@ -1825,12 +1748,12 @@ class _MaxStepPointTileState extends State<MaxStepPointTile> {
                   isDense: true,
                   filled: true,
                   fillColor: Colors.grey.shade50,
-                  // hintText: "${}",
-                  // hintStyle: TextStyle(
-                  //   fontSize: Sizes.size14,
-                  //   color: Colors.grey.shade400,
-                  //   fontWeight: FontWeight.w300,
-                  // ),
+                  hintText: "${widget.defaultPoint}",
+                  hintStyle: TextStyle(
+                    fontSize: Sizes.size14,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w300,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(
                       Sizes.size3,
@@ -1878,6 +1801,149 @@ class _MaxStepPointTileState extends State<MaxStepPointTile> {
                 color: Colors.grey.shade700,
                 fontWeight: FontWeight.w300,
               ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class MaxPointTile extends StatefulWidget {
+  final double totalWidth;
+  final Function(int) updateEventPoint;
+  final String header;
+  final int defaultPoint;
+  final bool editOrNot;
+  const MaxPointTile({
+    super.key,
+    required this.totalWidth,
+    required this.updateEventPoint,
+    required this.header,
+    required this.defaultPoint,
+    required this.editOrNot,
+  });
+
+  @override
+  State<MaxPointTile> createState() => _MaxPointTileState();
+}
+
+class _MaxPointTileState extends State<MaxPointTile> {
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.editOrNot) {
+      textController.text = "${widget.defaultPoint}";
+    }
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        SizedBox(
+          // width: widget.totalWidth * 0.1,
+          child: Text(
+            "( ${widget.header}",
+            style: TextStyle(
+              fontSize: Sizes.size14,
+              color: Colors.grey.shade700,
+              fontWeight: FontWeight.w300,
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        Gaps.h10,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextFormField(
+                controller: textController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                minLines: 1,
+                onChanged: (value) {
+                  final point = int.parse(value);
+                  widget.updateEventPoint(point);
+                },
+                textAlignVertical: TextAlignVertical.top,
+                style: TextStyle(
+                  fontSize: Sizes.size14,
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  hintText: "${widget.defaultPoint}",
+                  hintStyle: TextStyle(
+                    fontSize: Sizes.size14,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w300,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                  ),
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      Sizes.size3,
+                    ),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: Sizes.size10,
+                    vertical: Sizes.size10,
+                  ),
+                ),
+              ),
+            ),
+            Gaps.h10,
+            Text(
+              "회 )",
+              style: TextStyle(
+                fontSize: Sizes.size14,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            Gaps.h40,
+            const CommentTextWidget(
+              text: "제한이 없을 경우 '0'을 기입해주세요.",
             ),
           ],
         ),

@@ -1,5 +1,20 @@
 import 'package:onldocc_admin/utils.dart';
 
+enum EventType {
+  targetScore,
+  multipleScores,
+  count,
+}
+
+EventType stringToEventType(String value) {
+  for (EventType type in EventType.values) {
+    if (type.toString().split('.').last == value) {
+      return type;
+    }
+  }
+  return EventType.targetScore;
+}
+
 class EventModel {
   final String eventId;
   final String title;
@@ -35,6 +50,9 @@ class EventModel {
   final int? quizCount;
 
   final int? maxStepCount;
+  final int? maxCommentCount;
+  final int? maxLikeCount;
+  final int? maxInvitationCount;
 
   EventModel({
     required this.eventId,
@@ -68,6 +86,9 @@ class EventModel {
     this.likeCount,
     this.quizCount,
     this.maxStepCount,
+    this.maxCommentCount,
+    this.maxLikeCount,
+    this.maxInvitationCount,
   });
 
   EventModel.empty()
@@ -101,7 +122,10 @@ class EventModel {
         commentCount = 0,
         likeCount = 0,
         quizCount = 0,
-        maxStepCount = 0;
+        maxStepCount = 0,
+        maxCommentCount = 0,
+        maxLikeCount = 0,
+        maxInvitationCount = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -133,6 +157,9 @@ class EventModel {
       "likeCount": likeCount,
       "quizCount": quizCount,
       "maxStepCount": maxStepCount,
+      "maxCommentCount": maxCommentCount,
+      "maxLikeCount": maxLikeCount,
+      "maxInvitationCount": maxInvitationCount,
     };
   }
 
@@ -165,6 +192,9 @@ class EventModel {
       "likeCount": likeCount,
       "quizCount": quizCount,
       "maxStepCount": maxStepCount,
+      "maxCommentCount": maxCommentCount,
+      "maxLikeCount": maxLikeCount,
+      "maxInvitationCount": maxInvitationCount,
     };
   }
 
@@ -206,7 +236,10 @@ class EventModel {
         likeCount = json["likeCount"] ?? 0,
         commentCount = json["commentCount"] ?? 0,
         quizCount = json["quizCount"] ?? 0,
-        maxStepCount = json["maxStepCount"] ?? 10000;
+        maxStepCount = json["maxStepCount"] ?? 10000,
+        maxCommentCount = json["maxCommentCount"] ?? 0,
+        maxLikeCount = json["maxLikeCount"] ?? 0,
+        maxInvitationCount = json["maxInvitationCount"] ?? 0;
 
   EventModel copyWith({
     final String? eventId,
@@ -241,6 +274,9 @@ class EventModel {
     final int? quizCount,
     final int? maxQuizCount,
     final int? maxStepCount,
+    final int? maxCommentCount,
+    final int? maxLikeCount,
+    final int? maxInvitationCount,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -274,6 +310,9 @@ class EventModel {
       invitationCount: invitationCount ?? this.invitationCount,
       quizCount: quizCount ?? this.quizCount,
       maxStepCount: maxStepCount ?? this.maxStepCount,
+      maxCommentCount: maxCommentCount ?? this.maxCommentCount,
+      maxLikeCount: maxLikeCount ?? this.maxLikeCount,
+      maxInvitationCount: maxInvitationCount ?? this.maxInvitationCount,
     );
   }
 }

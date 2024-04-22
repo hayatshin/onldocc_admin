@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/event/widgets/edit_point_event_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/edit_target_score_event_widget.dart';
 
-class UploadPointWidget extends StatefulWidget {
+class UploadTargetScoreWidget extends StatefulWidget {
   final Function(int) updateGoalScore;
   final Function(int) updateDiaryPoint;
   final Function(int) updateCommentPoint;
@@ -14,7 +14,7 @@ class UploadPointWidget extends StatefulWidget {
   final Function(int) updateQuizPoint;
   final Function(int) updateMaxStepCount;
 
-  const UploadPointWidget({
+  const UploadTargetScoreWidget({
     super.key,
     required this.updateGoalScore,
     required this.updateDiaryPoint,
@@ -27,10 +27,11 @@ class UploadPointWidget extends StatefulWidget {
   });
 
   @override
-  State<UploadPointWidget> createState() => _UploadPointWidgetState();
+  State<UploadTargetScoreWidget> createState() =>
+      _UploadTargetScoreWidgetState();
 }
 
-class _UploadPointWidgetState extends State<UploadPointWidget> {
+class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -41,7 +42,7 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: size.width * 0.1,
+              width: size.width * 0.12,
               child: const Text(
                 "목표 점수 설정",
                 style: TextStyle(
@@ -137,7 +138,7 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              flex: 1,
+              flex: 2,
               child: DefaultPointTile(
                 totalWidth: size.width,
                 updateEventPoint: widget.updateDiaryPoint,
@@ -146,49 +147,15 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
                 editOrNot: false,
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: DefaultPointTile(
-                totalWidth: size.width,
-                updateEventPoint: widget.updateCommentPoint,
-                header: "댓글",
-                defaultPoint: 0,
-                editOrNot: false,
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: DefaultPointTile(
-                totalWidth: size.width,
-                updateEventPoint: widget.updateLikePoint,
-                header: "좋아요",
-                defaultPoint: 0,
-                editOrNot: false,
-              ),
-            ),
-          ],
-        ),
-        Gaps.v32,
-        Row(
-          children: [
-            // Expanded(
-            //   flex: 1,
-            //   child: DefaultPointTile(
-            //     totalWidth: size.width,
-            //     updateEventPoint: widget.updateQuizPoint,
-            //     header: "문제 풀기",
-            //     defaultPoint: 0,
-            //     editOrNot: false,
-            //   ),
-            // ),
-            Expanded(
-              flex: 1,
-              child: DefaultPointTile(
-                totalWidth: size.width,
-                updateEventPoint: widget.updateInvitationPoint,
-                header: "친구 초대",
-                defaultPoint: 0,
-                editOrNot: false,
+            const Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MaxPointTextWidget(
+                    text: "( 일일 최대:     1회 )",
+                  ),
+                ],
               ),
             ),
           ],
@@ -216,6 +183,51 @@ class _UploadPointWidgetState extends State<UploadPointWidget> {
                     text: "( 일일 최대:     1회 )",
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateCommentPoint,
+                header: "댓글",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
+            ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateLikePoint,
+                header: "좋아요",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
+            ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: DefaultPointTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateInvitationPoint,
+                header: "친구 초대",
+                defaultPoint: 0,
+                editOrNot: false,
               ),
             ),
           ],

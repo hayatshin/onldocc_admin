@@ -15,20 +15,20 @@ import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
-class EventDetailPointScreen extends ConsumerStatefulWidget {
+class EventDetailMultipleScoresScreen extends ConsumerStatefulWidget {
   final EventModel? eventModel;
-  const EventDetailPointScreen({
+  const EventDetailMultipleScoresScreen({
     super.key,
     required this.eventModel,
   });
 
   @override
-  ConsumerState<EventDetailPointScreen> createState() =>
+  ConsumerState<EventDetailMultipleScoresScreen> createState() =>
       _EventDetailPointScreenState();
 }
 
 class _EventDetailPointScreenState
-    extends ConsumerState<EventDetailPointScreen> {
+    extends ConsumerState<EventDetailMultipleScoresScreen> {
   List<ParticipantModel> _participants = [];
   bool _initializeParticipants = false;
   final List<String> _listHeader = [
@@ -40,7 +40,7 @@ class _EventDetailPointScreenState
     "거주 지역",
     "참여일",
     "점수",
-    "달성 여부"
+    "달성 여부",
   ];
 
   @override
@@ -540,14 +540,6 @@ class _EventDetailPointScreenState
                                       ),
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      "선물 신청",
-                                      style: TextStyle(
-                                        fontSize: Sizes.size12,
-                                      ),
-                                    ),
-                                  ),
                                 ],
                                 rows: [
                                   for (var i = 0; i < _participants.length; i++)
@@ -625,14 +617,6 @@ class _EventDetailPointScreenState
                                             _participants[i].userAchieveOrNot!
                                                 ? "달성"
                                                 : "미달성",
-                                            style: const TextStyle(
-                                              fontSize: Sizes.size12,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            _participants[i].gift ? "✔️" : "",
                                             style: const TextStyle(
                                               fontSize: Sizes.size12,
                                             ),

@@ -213,7 +213,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
+                                  width: widget.totalWidth * 0.12,
                                   child: const Text(
                                     "영상 제목",
                                     style: TextStyle(
@@ -301,7 +301,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.1,
+                                  width: widget.totalWidth * 0.12,
                                   child: const Text(
                                     "영상 링크",
                                     style: TextStyle(

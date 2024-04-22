@@ -40,7 +40,9 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeUserDecibels();
+    if (selectContractRegion.value != null) {
+      _initializeUserDecibels();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
@@ -136,7 +138,7 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   Future<void> _initializeUserDecibels() async {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final userSubdistrictId = adminProfileModel!.master
-        ? selectContractRegion.value.subdistrictId
+        ? selectContractRegion.value!.subdistrictId
         : adminProfileModel.subdistrictId;
     final decibelList = await ref
         .read(decibelProvider.notifier)

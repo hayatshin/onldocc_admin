@@ -56,7 +56,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   void initState() {
     super.initState();
 
-    getScoreList(selectedDateRange);
+    if (selectContractRegion.value != null) {
+      getScoreList(selectedDateRange);
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
@@ -165,7 +167,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     final userList =
         await ref.read(rankingProvider.notifier).getUserPoints(range!);
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -174,12 +176,12 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = userList
             .where((e) =>
                 e.contractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {

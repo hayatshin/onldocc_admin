@@ -132,7 +132,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
         .read(cognitionTestProvider.notifier)
         .getCognitionTestData(alzheimer_test);
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -140,12 +140,12 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = testList
             .where((e) =>
                 e.userContractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {
@@ -167,7 +167,9 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeTableList();
+    if (selectContractRegion.value != null) {
+      _initializeTableList();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {

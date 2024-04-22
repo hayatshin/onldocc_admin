@@ -14,7 +14,7 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
   @override
   FutureOr<List<UserModel?>> build() async {
     _userRepo = UserRepository();
-    return await initializeUserList(selectContractRegion.value.subdistrictId);
+    return await initializeUserList(selectContractRegion.value!.subdistrictId);
   }
 
   Future<void> saveAdminUser(

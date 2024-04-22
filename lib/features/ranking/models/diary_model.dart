@@ -13,6 +13,8 @@ class DiaryModel {
   final bool? notice;
   final String? userSubdistrictId;
   final String? userContractCommunityId;
+  final bool? noticeTopFixed;
+  final int? noticeFixedAt;
 
   DiaryModel({
     required this.userId,
@@ -27,6 +29,8 @@ class DiaryModel {
     this.notice,
     this.userSubdistrictId,
     this.userContractCommunityId,
+    this.noticeTopFixed,
+    this.noticeFixedAt,
   });
 
   DiaryModel.empty()
@@ -41,7 +45,9 @@ class DiaryModel {
         images = [],
         notice = false,
         userSubdistrictId = "",
-        userContractCommunityId = "";
+        userContractCommunityId = "",
+        noticeTopFixed = false,
+        noticeFixedAt = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -54,6 +60,8 @@ class DiaryModel {
       "numComments": numComments,
       "todayDiary": todayDiary,
       "notice": notice,
+      "noticeTopFixed": noticeTopFixed,
+      "noticeFixedAt": noticeFixedAt,
     };
   }
 
@@ -70,7 +78,11 @@ class DiaryModel {
             json.containsKey("images") ? spreadDiaryImages(json["images"]) : [],
         notice = json.containsKey("notice") ? json["notice"] : false,
         userSubdistrictId = json["users"]["subdistrictId"],
-        userContractCommunityId = json["users"]["contractCommunityId"];
+        userContractCommunityId = json["users"]["contractCommunityId"],
+        noticeTopFixed =
+            json.containsKey("noticeTopFixed") ? json["noticeTopFixed"] : false,
+        noticeFixedAt =
+            json.containsKey("noticeFixedAt") ? json["noticeFixedAt"] : false;
 
   DiaryModel copyWith({
     final String? userId,
@@ -86,6 +98,8 @@ class DiaryModel {
     final bool? notice,
     final String? userSubdistrictId,
     final String? userContractCommunityId,
+    final bool? noticeTopFixed,
+    final int? noticeFixedAt,
   }) {
     return DiaryModel(
       userId: userId ?? this.userId,
@@ -101,6 +115,8 @@ class DiaryModel {
       userSubdistrictId: userSubdistrictId ?? this.userSubdistrictId,
       userContractCommunityId:
           userContractCommunityId ?? this.userContractCommunityId,
+      noticeTopFixed: noticeTopFixed ?? this.noticeTopFixed,
+      noticeFixedAt: noticeFixedAt ?? this.noticeFixedAt,
     );
   }
 }

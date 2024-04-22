@@ -117,7 +117,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
         .read(cognitionTestProvider.notifier)
         .getCognitionTestData(depression_test);
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -125,12 +125,12 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = testList
             .where((e) =>
                 e.userContractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {
@@ -152,7 +152,9 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeTableList();
+    if (selectContractRegion.value != null) {
+      _initializeTableList();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {

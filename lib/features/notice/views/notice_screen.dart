@@ -82,7 +82,9 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
   @override
   void initState() {
     super.initState();
-    fetchAllNoticies();
+    if (selectContractRegion.value != null) {
+      fetchAllNoticies();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
@@ -100,7 +102,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
     final noticeList =
         await ref.read(noticeProvider.notifier).fetchAllNotices();
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       // 마스터
       if (mounted) {
         setState(() {
@@ -110,12 +112,12 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
       }
     } else {
       // 지역 기관
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = noticeList
             .where((e) =>
                 e.userContractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {

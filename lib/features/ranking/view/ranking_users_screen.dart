@@ -37,7 +37,9 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   @override
   void initState() {
     super.initState();
-    getUserModelList();
+    if (selectContractRegion.value != null) {
+      getUserModelList();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
@@ -100,12 +102,12 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
         ? ref.read(userProvider).value ??
             await ref
                 .read(userProvider.notifier)
-                .initializeUserList(selectContractRegion.value.subdistrictId)
+                .initializeUserList(selectContractRegion.value!.subdistrictId)
         : await ref
             .read(userProvider.notifier)
-            .initializeUserList(selectContractRegion.value.subdistrictId);
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -113,12 +115,12 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = userList
             .where((e) =>
                 e!.contractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {

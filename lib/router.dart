@@ -12,7 +12,8 @@ import 'package:onldocc_admin/features/care/view/care_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
-import 'package:onldocc_admin/features/event/view/event_detail_point_screen.dart';
+import 'package:onldocc_admin/features/event/view/event_detail_multiple_scores_screen.dart';
+import 'package:onldocc_admin/features/event/view/event_detail_target_score_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
@@ -300,11 +301,16 @@ final routerProvider = Provider(
                     final eventModel = state.extra as EventModel?;
                     return MaterialPage(
                       key: state.pageKey,
-                      child: eventModel!.eventType == "point"
-                          ? EventDetailPointScreen(
+                      child: eventModel!.eventType == EventType.targetScore.name
+                          ? EventDetailTargetScoreScreen(
                               eventModel: eventModel,
                             )
-                          : EventDetailCountScreen(eventModel: eventModel),
+                          : eventModel.eventType ==
+                                  EventType.multipleScores.name
+                              ? EventDetailMultipleScoresScreen(
+                                  eventModel: eventModel,
+                                )
+                              : EventDetailCountScreen(eventModel: eventModel),
                     );
                   },
                 ),

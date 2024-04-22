@@ -43,7 +43,10 @@ class _CareScreenState extends ConsumerState<CareScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeUserCare();
+
+    if (selectContractRegion.value != null) {
+      _initializeUserCare();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
@@ -141,7 +144,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     List<CareModel?> careList = [];
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
     final subdistrictId = adminProfileModel!.master
-        ? selectContractRegion.value.subdistrictId
+        ? selectContractRegion.value!.subdistrictId
         : adminProfileModel.subdistrictId;
 
     final userList = ref.read(userProvider).value ??

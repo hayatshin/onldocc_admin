@@ -32,6 +32,8 @@ class UploadNotificationWidget extends ConsumerStatefulWidget {
 
 class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
   String _feedDescription = "";
+  bool _noticeTopFixed = false;
+  DateTime _noticeFixedAt = DateTime.now();
 
   List<PlatformFile> _feedImageFile = [];
   final List<Uint8List> _feedImageArray = [];
@@ -70,7 +72,12 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
     AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
 
     await ref.read(noticeProvider.notifier).addFeedNotification(
-        adminProfileModel!, _feedDescription, _feedImageArray);
+          adminProfileModel!,
+          _feedDescription,
+          _feedImageArray,
+          _noticeTopFixed,
+          convertEndDateTimeToSeconds(_noticeFixedAt),
+        );
     if (!mounted) return;
 
     resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen);
@@ -92,6 +99,22 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
   void dispose() {
     _descriptionControllder.dispose();
     super.dispose();
+  }
+
+  void selectNoticeFixedAt(void Function(void Function()) setState) async {
+    DateTime now = DateTime.now();
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year, now.month, 1),
+      lastDate: DateTime(2030),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _noticeFixedAt = picked;
+      });
+    }
   }
 
   @override
@@ -135,7 +158,64 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                         Row(
                           children: [
                             SizedBox(
-                              width: widget.totalWidth * 0.1,
+                              width: widget.totalWidth * 0.12,
+                              height: 50,
+                              child: const Text(
+                                "지역 보기\n상단 고정 여부",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                            Gaps.h32,
+                            Checkbox(
+                              value: _noticeTopFixed,
+                              onChanged: (value) {
+                                setState(
+                                  () {
+                                    _noticeTopFixed = !_noticeTopFixed;
+                                  },
+                                );
+                              },
+                            ),
+                            Gaps.h52,
+                            if (_noticeTopFixed)
+                              Row(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        selectNoticeFixedAt(setState),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey.shade200,
+                                      surfaceTintColor: Colors.pink.shade200,
+                                    ),
+                                    child: Text(
+                                      '고정 날짜 기한 선택하기',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade800,
+                                        fontSize: Sizes.size12,
+                                      ),
+                                    ),
+                                  ),
+                                  Gaps.h20,
+                                  Text(
+                                    "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade800,
+                                      fontSize: Sizes.size14,
+                                    ),
+                                  ),
+                                ],
+                              )
+                          ],
+                        ),
+                        Gaps.v52,
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: widget.totalWidth * 0.12,
                               height: 200,
                               child: const Text(
                                 "공지 내용",
@@ -218,7 +298,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: widget.totalWidth * 0.1,
+                                width: widget.totalWidth * 0.12,
                                 child: const Text(
                                   "이미지 (선택)",
                                   style: TextStyle(

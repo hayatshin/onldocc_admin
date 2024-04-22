@@ -14,12 +14,17 @@ import 'package:uuid/uuid.dart';
 class EventRepository {
   final _supabase = Supabase.instance.client;
 
-  static final eventUserPointFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-point-functions-2");
+  // static final eventUserPointFunctions = Uri.parse(
+  //     "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-point-functions-2");
+
+  static final eventUserTargetScoreFunctions = Uri.parse(
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-targetscore-functions");
+  static final eventUserMultipleScoresFunctions = Uri.parse(
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-multiplescores-functions");
   static final eventUserCountFunctions = Uri.parse(
       "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions-2");
 
-  Future<Map<String, dynamic>> getEventUserPoint(
+  Future<Map<String, dynamic>> getEventUserTargetScore(
     String userId,
     int startSeconds,
     int endSeconds,
@@ -30,6 +35,7 @@ class EventRepository {
     int likePoint,
     int quizPoint,
     int targetScore,
+    int maxStepCount,
   ) async {
     Map<String, dynamic> requestBody = {
       'userId': userId,
@@ -42,11 +48,60 @@ class EventRepository {
       'likePoint': likePoint,
       'quizPoint': quizPoint,
       'targetScore': targetScore,
+      'maxStepCount': maxStepCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
 
     final response = await http.post(
-      eventUserPointFunctions,
+      eventUserTargetScoreFunctions,
+      body: requestBodyJson,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      return data["data"];
+    }
+
+    return {};
+  }
+
+  Future<Map<String, dynamic>> getEventUserMultipleScores(
+    String userId,
+    int startSeconds,
+    int endSeconds,
+    int stepPoint,
+    int invitationPoint,
+    int diaryPoint,
+    int commentPoint,
+    int likePoint,
+    int quizPoint,
+    int targetScore,
+    int maxStepCount,
+    int maxCommentCount,
+    int maxLikeCount,
+    int maxInvitationCount,
+  ) async {
+    Map<String, dynamic> requestBody = {
+      'userId': userId,
+      'startSeconds': startSeconds,
+      'endSeconds': endSeconds,
+      'stepPoint': stepPoint,
+      'invitationPoint': invitationPoint,
+      'diaryPoint': diaryPoint,
+      'commentPoint': commentPoint,
+      'likePoint': likePoint,
+      'quizPoint': quizPoint,
+      'targetScore': targetScore,
+      'maxStepCount': maxStepCount,
+      'maxCommentCount': maxCommentCount,
+      'maxLikeCount': maxLikeCount,
+      'maxInvitationCount': maxInvitationCount,
+    };
+    String requestBodyJson = jsonEncode(requestBody);
+
+    final response = await http.post(
+      eventUserMultipleScoresFunctions,
       body: requestBodyJson,
       headers: headers,
     );

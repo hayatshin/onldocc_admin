@@ -9,7 +9,8 @@ import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/features/event/widgets/edit_count_event_widget.dart';
-import 'package:onldocc_admin/features/event/widgets/edit_point_event_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/edit_multiple_scores_event_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/edit_target_score_event_widget.dart';
 import 'package:onldocc_admin/features/event/widgets/upload_event_widget.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 
@@ -67,8 +68,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         minWidth: totalWidth,
       ),
       builder: (context) {
-        if (eventModel.eventType == "point") {
-          return EditPointEventWidget(
+        if (eventModel.eventType == EventType.targetScore.name) {
+          return EditTargetScoreEventWidget(
+            context: context,
+            totalWidth: totalWidth,
+            totalHeight: totalHeight,
+            eventModel: eventModel,
+            refreshScreen: refreshScreen,
+          );
+        } else if (eventModel.eventType == EventType.multipleScores.name) {
+          return EditMultipleScoresEventWidget(
             context: context,
             totalWidth: totalWidth,
             totalHeight: totalHeight,
@@ -92,7 +101,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     List<EventModel> dbeventList =
         await ref.read(eventProvider.notifier).getUserEvents();
 
-    if (selectContractRegion.value.subdistrictId == "") {
+    if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
           loadingFinished = true;
@@ -100,12 +109,12 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value.contractCommunityId != "" &&
-          selectContractRegion.value.contractCommunityId != null) {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
         final filterDataList = dbeventList
             .where((e) =>
                 e.contractCommunityId ==
-                selectContractRegion.value.contractCommunityId)
+                selectContractRegion.value!.contractCommunityId)
             .toList();
         if (mounted) {
           setState(() {
@@ -135,7 +144,9 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   @override
   void initState() {
     super.initState();
-    getUserEvents();
+    if (selectContractRegion.value != null) {
+      getUserEvents();
+    }
 
     selectContractRegion.addListener(() async {
       if (mounted) {

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
-import 'package:onldocc_admin/features/event/widgets/edit_point_event_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/edit_target_score_event_widget.dart';
 
 class UploadCountWidget extends StatefulWidget {
   final Function(int) updateDiaryCount;
@@ -33,7 +33,7 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
         Row(
           children: [
             Expanded(
-              flex: 1,
+              flex: 2,
               child: DefaultCountTile(
                 totalWidth: size.width,
                 updateEventPoint: widget.updateDiaryCount,
@@ -42,6 +42,48 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
                 editOrNot: false,
               ),
             ),
+            const Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MaxPointTextWidget(
+                    text: "( 일일 최대:     1회 )",
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: DefaultCountTile(
+                totalWidth: size.width,
+                updateEventPoint: widget.updateQuizCount,
+                header: "문제 풀기",
+                defaultPoint: 0,
+                editOrNot: false,
+              ),
+            ),
+            const Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MaxPointTextWidget(
+                    text: "( 일일 최대:     1회 )",
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          children: [
             Expanded(
               flex: 1,
               child: DefaultCountTile(
@@ -52,6 +94,11 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
                 editOrNot: false,
               ),
             ),
+          ],
+        ),
+        Gaps.v32,
+        Row(
+          children: [
             Expanded(
               flex: 1,
               child: DefaultCountTile(
@@ -85,32 +132,6 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
                 header: "친구 초대",
                 defaultPoint: 0,
                 editOrNot: false,
-              ),
-            ),
-          ],
-        ),
-        Gaps.v32,
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: DefaultCountTile(
-                totalWidth: size.width,
-                updateEventPoint: widget.updateQuizCount,
-                header: "문제 풀기",
-                defaultPoint: 0,
-                editOrNot: false,
-              ),
-            ),
-            const Expanded(
-              flex: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MaxPointTextWidget(
-                    text: "( 일일 최대:     1회 )",
-                  ),
-                ],
               ),
             ),
           ],
