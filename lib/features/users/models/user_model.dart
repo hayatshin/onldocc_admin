@@ -18,6 +18,7 @@ class UserModel {
   final int? stepScore;
   final int? diaryScore;
   final int? commentScore;
+  final int? likeScore;
 
   UserModel({
     required this.index,
@@ -37,6 +38,7 @@ class UserModel {
     required this.stepScore,
     required this.diaryScore,
     required this.commentScore,
+    required this.likeScore,
   });
 
   UserModel.empty()
@@ -56,7 +58,8 @@ class UserModel {
         totalScore = 0,
         stepScore = 0,
         diaryScore = 0,
-        commentScore = 0;
+        commentScore = 0,
+        likeScore = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -75,6 +78,7 @@ class UserModel {
       "stepScore": stepScore,
       "diaryScore": diaryScore,
       "commentScore": commentScore,
+      "likeScore": likeScore,
     };
   }
 
@@ -104,7 +108,8 @@ class UserModel {
         stepScore = json.containsKey("stepPoint") ? json["stepPoint"] : 0,
         diaryScore = json.containsKey("diaryPoint") ? json["diaryPoint"] : 0,
         commentScore =
-            json.containsKey("commentPoint") ? json["commentPoint"] : 0;
+            json.containsKey("commentPoint") ? json["commentPoint"] : 0,
+        likeScore = json.containsKey("likeScore") ? json["likePoint"] : 0;
 
   UserModel copyWith({
     final int? index,
@@ -124,6 +129,7 @@ class UserModel {
     final int? stepScore,
     final int? diaryScore,
     final int? commentScore,
+    final int? likeScore,
   }) {
     return UserModel(
       index: index ?? this.index,
@@ -143,6 +149,7 @@ class UserModel {
       stepScore: stepScore ?? this.stepScore,
       diaryScore: diaryScore ?? this.diaryScore,
       commentScore: commentScore ?? this.commentScore,
+      likeScore: likeScore ?? this.likeScore,
     );
   }
 }

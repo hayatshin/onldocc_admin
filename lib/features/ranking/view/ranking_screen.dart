@@ -273,6 +273,22 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           }
         }
         break;
+      case "likePoint":
+        copiedUserDataList
+            .sort((a, b) => b!.likeScore!.compareTo(a!.likeScore!));
+
+        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+          UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
+            index: count,
+          );
+          list.add(indexUpdateUser);
+
+          if (copiedUserDataList[i]!.commentScore !=
+              copiedUserDataList[i + 1]!.commentScore) {
+            count++;
+          }
+        }
+        break;
     }
     setState(() {
       sortOder = value;
@@ -305,8 +321,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
             SearchBelow(
               size: size,
               child: Padding(
-                padding: const EdgeInsets.all(
-                  Sizes.size10,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Sizes.size5,
+                  vertical: Sizes.size10,
                 ),
                 child: DataTable2(
                   sortColumnIndex: _currentSortColumn,
@@ -317,24 +334,27 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                       label: Text(
                         "#",
                         style: TextStyle(
-                          fontSize: Sizes.size13,
+                          fontSize: Sizes.size12,
                         ),
                       ),
                     ),
                     const DataColumn2(
+                      fixedWidth: 160,
                       label: Text(
                         "이름",
                         style: TextStyle(
-                          fontSize: Sizes.size13,
+                          fontSize: Sizes.size12,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const DataColumn2(
-                      fixedWidth: 80,
+                      fixedWidth: 100,
                       label: Text(
                         "나이",
                         style: TextStyle(
-                          fontSize: Sizes.size13,
+                          fontSize: Sizes.size12,
                         ),
                       ),
                     ),
@@ -343,7 +363,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                       label: Text(
                         "성별",
                         style: TextStyle(
-                          fontSize: Sizes.size13,
+                          fontSize: Sizes.size12,
                         ),
                       ),
                     ),
@@ -352,18 +372,18 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                       label: Text(
                         "핸드폰 번호",
                         style: TextStyle(
-                          fontSize: Sizes.size13,
+                          fontSize: Sizes.size12,
                         ),
                       ),
                     ),
                     DataColumn2(
-                      fixedWidth: 150,
                       label: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
-                            "종합 점수",
+                            "종합",
                             style: TextStyle(
-                              fontSize: Sizes.size13,
+                              fontSize: Sizes.size12,
                             ),
                           ),
                           Gaps.h3,
@@ -371,7 +391,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             sortOder == "totalPoint"
                                 ? Icons.expand_more_rounded
                                 : Icons.expand_less_rounded,
-                            size: 14,
+                            size: Sizes.size12,
                             color: Colors.grey.shade600,
                           )
                         ],
@@ -380,13 +400,13 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           updateOrderStandard("totalPoint"),
                     ),
                     DataColumn2(
-                      fixedWidth: 140,
                       label: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
                             "걸음수",
                             style: TextStyle(
-                              fontSize: Sizes.size13,
+                              fontSize: Sizes.size12,
                             ),
                           ),
                           Gaps.h3,
@@ -394,7 +414,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             sortOder == "stepPoint"
                                 ? Icons.expand_more_rounded
                                 : Icons.expand_less_rounded,
-                            size: 14,
+                            size: Sizes.size12,
                             color: Colors.grey.shade600,
                           )
                         ],
@@ -403,13 +423,13 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           updateOrderStandard("stepPoint"),
                     ),
                     DataColumn2(
-                      fixedWidth: 140,
                       label: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
                             "일기",
                             style: TextStyle(
-                              fontSize: Sizes.size13,
+                              fontSize: Sizes.size12,
                             ),
                           ),
                           Gaps.h3,
@@ -417,7 +437,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             sortOder == "diaryPoint"
                                 ? Icons.expand_more_rounded
                                 : Icons.expand_less_rounded,
-                            size: 14,
+                            size: Sizes.size12,
                             color: Colors.grey.shade600,
                           )
                         ],
@@ -426,13 +446,13 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           updateOrderStandard("diaryPoint"),
                     ),
                     DataColumn2(
-                      fixedWidth: 140,
                       label: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
                             "댓글",
                             style: TextStyle(
-                              fontSize: Sizes.size13,
+                              fontSize: Sizes.size12,
                             ),
                           ),
                           Gaps.h3,
@@ -440,13 +460,37 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             sortOder == "commentPoint"
                                 ? Icons.expand_more_rounded
                                 : Icons.expand_less_rounded,
-                            size: 14,
+                            size: Sizes.size12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ],
+                      ),
+                      onSort: (columnIndex, ascending) =>
+                          updateOrderStandard("commentPoint"),
+                    ),
+                    DataColumn2(
+                      fixedWidth: 90,
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            "좋아요",
+                            style: TextStyle(
+                              fontSize: Sizes.size12,
+                            ),
+                          ),
+                          Gaps.h3,
+                          Icon(
+                            sortOder == "likePoint"
+                                ? Icons.expand_more_rounded
+                                : Icons.expand_less_rounded,
+                            size: Sizes.size12,
                             color: Colors.grey.shade600,
                           )
                         ],
                       ),
                       onSort: (columnIndex, ascending) =>
-                          updateOrderStandard("commentPoint"),
+                          updateOrderStandard("likePoint"),
                     ),
                   ],
                   rows: [
@@ -539,6 +583,18 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               child: Text(
                                 numberDecimalCommans(
                                     _userDataList[i]!.commentScore!),
+                                style: const TextStyle(
+                                  fontSize: Sizes.size13,
+                                ),
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                numberDecimalCommans(
+                                    _userDataList[i]!.likeScore!),
                                 style: const TextStyle(
                                   fontSize: Sizes.size13,
                                 ),
