@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/palette.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   static const routeURL = "/";
@@ -69,14 +70,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       body: Stack(
         children: [
           Positioned(
+            left: 0,
             right: 0,
+            top: 0,
             bottom: 0,
             child: Opacity(
-              opacity: 0.3,
+              opacity: 0.2,
               child: Image.asset(
-                "assets/images/splash_light.png",
-                width: size.width * 0.5,
-                height: size.height * 0.8,
+                "assets/images/gradient-back.png",
               ),
             ),
           ),
@@ -85,7 +86,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: size.width * 0.5,
+                  width: size.width * 0.8,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: Sizes.size96,
@@ -97,25 +98,78 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            "인지케어 관리자페이지",
-                            style: TextStyle(
-                              fontSize: Sizes.size32,
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Gaps.v20,
+                                  Text(
+                                    "시니어들의 빅데이터",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size28,
+                                      fontWeight: FontWeight.w800,
+                                      color: Palette().darkGray,
+                                    ),
+                                  ),
+                                  Text(
+                                    "인지케어 관리자페이지",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size28,
+                                      fontWeight: FontWeight.w800,
+                                      color: Palette().darkGray,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Gaps.h20,
+                              Image.asset(
+                                "assets/images/icon_line.png",
+                                width: 65,
+                              ),
+                            ],
                           ),
                           Gaps.v40,
-                          Text(
-                            "회원 관리, 활동 관리, 행사 관리를 한번에!\n오늘도 시니어분들의 건강을 위해 한걸음 더 나아갑니다.",
-                            style: TextStyle(
-                              fontSize: Sizes.size20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey.shade700,
-                              height: 1.7,
-                            ),
+                          RichText(
+                            text: TextSpan(
+                                text: "인지 검사, AI 대화, 일기, 걸음수 등 시니어들의 활동 ",
+                                style: TextStyle(
+                                  fontSize: Sizes.size16,
+                                  fontWeight: FontWeight.w300,
+                                  color: Palette().normalGray,
+                                  height: 1.7,
+                                ),
+                                children: const [
+                                  TextSpan(
+                                    text: "빅데이터 ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "제공부터\n지자체의 ",
+                                  ),
+                                  TextSpan(
+                                    text: "월별 리포트 발행",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "과 다양한 ",
+                                  ),
+                                  TextSpan(
+                                    text: "행사 주관",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "까지!\n인지케어에서 한번에 관리하세요.",
+                                  ),
+                                ]),
                           ),
-                          Gaps.v80,
                           SizedBox(
                             width: formWidth,
                             child: TextFormField(
