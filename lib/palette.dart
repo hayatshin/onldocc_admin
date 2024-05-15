@@ -20,8 +20,8 @@ class Palette {
   final lightPurple = const Color(0xffF2F6FE);
   final darkBlue = const Color(0xff1975F0);
   final lightBlue = const Color(0xffACD9FF);
-  final bgLightBlue = const Color(0xffF9FCFE);
-  final darkGray = const Color(0xff333333);
+  final bgLightBlue = const Color(0xffF2F6FE);
+  final darkGray = const Color(0xff4B4453);
   final normalGray = const Color(0xff968E9F);
   final lightGray = const Color(0xffdddddd);
   final darkGreen = const Color(0xff005B3D);

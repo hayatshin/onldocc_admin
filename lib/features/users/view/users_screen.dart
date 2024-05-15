@@ -11,6 +11,7 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
@@ -291,6 +292,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             initialEntries: [
               OverlayEntry(
                 builder: (context) => Scaffold(
+                  backgroundColor: Palette().bgLightBlue,
                   body: Column(
                     children: [
                       SearchCsv(
