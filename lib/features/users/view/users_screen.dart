@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/common/view_a/default_screen.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
@@ -11,7 +13,6 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
-import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {
@@ -50,6 +51,11 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     if (selectContractRegion.value != null) {
       getUserModelList();
@@ -60,7 +66,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         setState(() {
           loadingFinished = false;
         });
-
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
         await getUserModelList();
       }
     });
@@ -144,15 +152,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     final String fileName = "인지케어 회원관리 $formatDate.csv";
 
     downloadCsv(csvContent, fileName);
-
-    // final encodedUri = Uri.dataFromString(
-    //   csvContent,
-    //   encoding: Encoding.getByName("utf-8"),
-    // ).toString();
-
-    // final anchor = AnchorElement(href: encodedUri)
-    //   ..setAttribute('download', fileName)
-    //   ..click();
   }
 
   Future<void> getUserModelList() async {
@@ -287,20 +286,22 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return loadingFinished
-        ? Overlay(
-            initialEntries: [
-              OverlayEntry(
-                builder: (context) => Scaffold(
-                  backgroundColor: Palette().bgLightBlue,
-                  body: Column(
-                    children: [
-                      SearchCsv(
-                        filterUserList: filterUserDataList,
-                        resetInitialList: getUserModelList,
-                        generateCsv: generateUserCsv,
-                      ),
-                      SearchBelow(
+    return Overlay(initialEntries: [
+      OverlayEntry(
+        builder: (context) => DefaultScreen(
+          menu: menuList[1],
+          child: SizedBox(
+            width: size.width,
+            height: size.height,
+            child: Column(
+              children: [
+                SearchCsv(
+                  filterUserList: filterUserDataList,
+                  resetInitialList: getUserModelList,
+                  generateCsv: generateUserCsv,
+                ),
+                loadingFinished
+                    ? SearchBelow(
                         size: size,
                         child: DataTable2(
                           columns: [
@@ -549,12 +550,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                           ],
                         ),
                       )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          )
-        : const SkeletonLoadingScreen();
+                    : const SkeletonLoadingScreen()
+              ],
+            ),
+          ),
+        ),
+      ),
+    ]);
   }
 }

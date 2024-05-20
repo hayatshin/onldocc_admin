@@ -51,7 +51,7 @@ class AdminProfileModel {
             : "",
         mail = json["contract_regions"] != null
             ? json["contract_regions"]["mail"]
-            : "";
+            : "help@hayat.kr";
 
   Map<String, dynamic> toJson() {
     return {

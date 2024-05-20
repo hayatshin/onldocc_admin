@@ -2,6 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
@@ -41,6 +42,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   List<ContractRegionModel> _contractCommunityItems = [
     ContractRegionModel.empty()
   ];
+  String _selectRegion = "전체";
+  String _selectCommunity = "전체";
 
   Future<void> _initializeAdminMasterSetting() async {
     AdminProfileModel? adminProfileModel =
@@ -88,28 +91,35 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   }
 
   void setContractRegion(String? value) async {
-    final selectRegion =
-        _contractRegionItems.firstWhere((element) => element.name == value);
+    if (value != null) {
+      final selectRegion =
+          _contractRegionItems.firstWhere((element) => element.name == value);
 
-    final communityItems = await ref
-        .read(contractConfigProvider.notifier)
-        .getCommunityItems(selectRegion.subdistrictId);
+      final communityItems = await ref
+          .read(contractConfigProvider.notifier)
+          .getCommunityItems(selectRegion.subdistrictId);
 
-    selectContractRegion.value = selectRegion;
+      selectContractRegion.value = selectRegion;
 
-    setState(() {
-      _contractCommunityItems = [
-        ContractRegionModel.total(
-            selectRegion.contractRegionId!, selectRegion.subdistrictId),
-        ...communityItems
-      ];
-    });
+      setState(() {
+        _contractCommunityItems = [
+          ContractRegionModel.total(
+              selectRegion.contractRegionId!, selectRegion.subdistrictId),
+          ...communityItems
+        ];
+        _selectRegion = value;
+      });
+    }
   }
 
   void setContractCommunity(String? value) async {
     if (value != null) {
       selectContractRegion.value = _contractCommunityItems
           .firstWhere((element) => element.name == value);
+
+      setState(() {
+        _selectCommunity = value;
+      });
     }
   }
 
@@ -189,38 +199,14 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                         children: [
                                           CustomDropdownMenu(
                                             type: "지역",
-                                            items: _contractRegionItems
-                                                .map((ContractRegionModel
-                                                        item) =>
-                                                    DropdownMenuItem<String>(
-                                                      value: item.name,
-                                                      child: Text(
-                                                        item.name,
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: Palette()
-                                                              .normalGray,
-                                                        ),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ))
-                                                .toList(),
-                                            value: "전체",
-                                            onChangedFunction:
-                                                setContractRegion,
-                                          ),
-                                          Gaps.v10,
-                                        ],
-                                      ),
-                                    CustomDropdownMenu(
-                                      type: "기관",
-                                      items: _contractCommunityItems
-                                          .map((ContractRegionModel item) =>
-                                              DropdownMenuItem<String>(
+                                            items: _contractRegionItems.map(
+                                                (ContractRegionModel item) {
+                                              final lastName =
+                                                  item.name.split(' ').last;
+                                              return DropdownMenuItem<String>(
                                                 value: item.name,
                                                 child: Text(
-                                                  item.name,
+                                                  lastName,
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Palette().normalGray,
@@ -228,10 +214,36 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
-                                              ))
-                                          .toList(),
-                                      value: "전체",
-                                      onChangedFunction: setContractCommunity,
+                                              );
+                                            }).toList(),
+                                            value: _selectRegion,
+                                            onChangedFunction: (value) =>
+                                                setContractRegion(value),
+                                          ),
+                                          Gaps.v10,
+                                        ],
+                                      ),
+                                    CustomDropdownMenu(
+                                      type: "기관",
+                                      items: _contractCommunityItems
+                                          .map((ContractRegionModel item) {
+                                        final lastName =
+                                            item.name.split(' ').last;
+                                        return DropdownMenuItem<String>(
+                                          value: item.name,
+                                          child: Text(
+                                            lastName,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Palette().normalGray,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      value: _selectCommunity,
+                                      onChangedFunction: (value) =>
+                                          setContractCommunity,
                                     ),
                                   ],
                                 ),
@@ -241,41 +253,35 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                         ),
                       ),
                       Gaps.v10,
-                      SingleSidebarTile(
+                      const SingleSidebarTile(
                         index: 0,
                         assetPath: "assets/svg/pie-chart.svg",
                         title: "대시보드",
-                        action: () => menuNotifier.setSelectedMenu(0, context),
                       ),
-                      SingleSidebarTile(
+                      const SingleSidebarTile(
                         index: 1,
                         assetPath: "assets/svg/people.svg",
                         title: "회원 관리",
-                        action: () => menuNotifier.setSelectedMenu(0, context),
                       ),
-                      SingleSidebarTile(
+                      const SingleSidebarTile(
                         index: 2,
                         assetPath: "assets/svg/user.svg",
                         title: "회원별 데이터",
-                        action: () => menuNotifier.setSelectedMenu(0, context),
                       ),
-                      SingleSidebarTile(
+                      const SingleSidebarTile(
                         index: 3,
                         assetPath: "assets/svg/medal-solid.svg",
                         title: "점수 관리",
-                        action: () => menuNotifier.setSelectedMenu(0, context),
                       ),
-                      SingleSidebarTile(
+                      const SingleSidebarTile(
                         index: 4,
                         assetPath: "assets/svg/bell.svg",
                         title: "공지 관리",
-                        action: () => menuNotifier.setSelectedMenu(8, context),
                       ),
-                      SingleSidebarTile(
+                      const SingleSidebarTile(
                         index: 5,
                         assetPath: "assets/svg/gift-box-with-a-bow.svg",
                         title: "행사 관리",
-                        action: () => menuNotifier.setSelectedMenu(9, context),
                       ),
                       ParentSidebarTile(
                         assetPath: "assets/svg/brain.svg",
@@ -292,7 +298,6 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                             tileColor: const Color(0xffF8ACFF),
                           ),
                         ],
-                        standardIndex: 1,
                       ),
                       ParentSidebarTile(
                         assetPath: "assets/svg/heart.svg",
@@ -314,13 +319,11 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                             tileColor: const Color(0xffEF5B5B),
                           ),
                         ],
-                        standardIndex: 1,
                       ),
-                      SingleSidebarTile(
+                      const SingleSidebarTile(
                         index: 11,
                         assetPath: "assets/svg/paper-plane.svg",
                         title: "친구 초대 관리",
-                        action: () => menuNotifier.setSelectedMenu(7, context),
                       ),
                       Gaps.v20,
                     ],
@@ -372,8 +375,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
             ),
           ),
           Expanded(
-            child: widget.child,
-          ),
+            child: menuList[menuNotifier.selectedMenu].child,
+          )
         ],
       ),
     );
@@ -384,23 +387,21 @@ class SingleSidebarTile extends StatelessWidget {
   final int index;
   final String assetPath;
   final String title;
-  final void Function() action;
   const SingleSidebarTile({
     super.key,
     required this.index,
     required this.assetPath,
     required this.title,
-    required this.action,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: menuNotifier,
+    return AnimatedBuilder(
+      animation: menuNotifier,
       builder: (context, child) => MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: () => menuNotifier.setSelectedMenu(index, context),
+          onTap: () => context.goNamed(menuList[index].routeName),
           child: Padding(
             padding: const EdgeInsets.only(
               left: 10,
@@ -459,14 +460,12 @@ class ParentSidebarTile extends StatefulWidget {
   final String assetPath;
   final String title;
   final List<ChildTileModel> children;
-  final int standardIndex;
 
   const ParentSidebarTile({
     super.key,
     required this.assetPath,
     required this.title,
     required this.children,
-    required this.standardIndex,
   });
 
   @override
@@ -519,8 +518,6 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
         for (int i = 0; i < widget.children.length; i++)
           ChildSidebarTile(
             model: widget.children[i],
-            action: () =>
-                menuNotifier.setSelectedMenu(i + widget.standardIndex, context),
           ),
       ],
     );
@@ -529,21 +526,19 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
 
 class ChildSidebarTile extends StatelessWidget {
   final ChildTileModel model;
-  final void Function() action;
   const ChildSidebarTile({
     super.key,
     required this.model,
-    required this.action,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: menuNotifier,
+    return AnimatedBuilder(
+      animation: menuNotifier,
       builder: (context, child) => MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: () => menuNotifier.setSelectedMenu(model.index, context),
+          onTap: () => context.goNamed(menuList[model.index].routeName),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -637,6 +632,10 @@ class CustomDropdownMenu extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
+                  border: Border.all(
+                    color: Palette().lightGray,
+                    width: 0.5,
+                  ),
                 ),
               ),
               iconStyleData: IconStyleData(

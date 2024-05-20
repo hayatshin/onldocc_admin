@@ -28,4 +28,9 @@ class Palette {
   final normalGreen = const Color(0xff47BEA5);
   final lightGreen = const Color(0xffCCFCF3);
   final bgLightGreen = const Color(0xffF8FFFE);
+
+  final dashPink = const Color(0xffEB7CAB);
+  final dashBlue = const Color(0xff86B9E8);
+  final dashGreen = const Color(0xff70D3AA);
+  final dashYellow = const Color(0xffffd670);
 }

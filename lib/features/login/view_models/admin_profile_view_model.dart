@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
+import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
-import 'package:onldocc_admin/features/users/view/users_screen.dart';
+import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
+class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
   late final AuthenticationRepository _authRepository;
   final String emailFirebaseError = "auth/invalid-email";
   final String passwordFirebaseError = "auth/wrong-password";
@@ -59,6 +60,9 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
         Map<String, dynamic>? adminProfile =
             await _authRepository.getAdminProfile(_authRepository.user!.uid);
         final adminProfileModel = AdminProfileModel.fromJson(adminProfile!);
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(adminProfileModel.subdistrictId);
 
         selectContractRegion.value = ContractRegionModel(
           name: adminProfileModel.name,
@@ -72,7 +76,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
 
     if (!state.hasError) {
       if (!context.mounted) return null;
-      context.goNamed(UsersScreen.routeName);
+      context.goNamed(DashboardScreen.routeName);
     } else {
       if (state.error.toString().contains(emailFirebaseError)) {
         if (!context.mounted) return null;
@@ -106,7 +110,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
 }
 
 final adminProfileProvider =
-    AsyncNotifierProvider<AdminProfileViewModel, AdminProfileModel?>(
+    AsyncNotifierProvider<AdminProfileViewModel, AdminProfileModel>(
   () => AdminProfileViewModel(),
 );
 

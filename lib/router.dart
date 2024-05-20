@@ -9,6 +9,7 @@ import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
 import 'package:onldocc_admin/features/care/view/care_screen.dart';
+import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
@@ -46,80 +47,84 @@ final routerProvider = Provider(
               case "/":
                 return child;
 
-              case UsersScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(0, context);
+              case DashboardScreen.routeURL:
+                menuNotifier.setSelectedMenu(0, context);
                 return SidebarTemplate(selectedMenuURL: 0, child: child);
 
+              case UsersScreen.routeURL:
+                menuNotifier.setSelectedMenu(1, context);
+                return SidebarTemplate(selectedMenuURL: 1, child: child);
+
               case RankingScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(1, context);
+                menuNotifier.setSelectedMenu(1, context);
                 return SidebarTemplate(selectedMenuURL: 1, child: child);
 
               case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}":
-                () => menuNotifier.setSelectedMenu(2, context);
+                menuNotifier.setSelectedMenu(2, context);
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
 
               case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}/:userId":
-                () => menuNotifier.setSelectedMenu(2, context);
+                menuNotifier.setSelectedMenu(2, context);
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
 
               case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}":
-                () => menuNotifier.setSelectedMenu(3, context);
+                menuNotifier.setSelectedMenu(3, context);
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
 
               case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}/:userId":
-                () => menuNotifier.setSelectedMenu(3, context);
+                menuNotifier.setSelectedMenu(3, context);
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
 
               case QuizScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(4, context);
+                menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
 
               case "${QuizScreen.routeURL}/:userId":
-                () => menuNotifier.setSelectedMenu(4, context);
+                menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
 
               case AlzheimerTestScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(5, context);
+                menuNotifier.setSelectedMenu(5, context);
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
 
               case "${AlzheimerTestScreen.routeURL}/:testId":
-                () => menuNotifier.setSelectedMenu(5, context);
+                menuNotifier.setSelectedMenu(5, context);
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
 
               case DepressionTestScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(6, context);
+                menuNotifier.setSelectedMenu(6, context);
                 return SidebarTemplate(selectedMenuURL: 6, child: child);
 
               case "${DepressionTestScreen.routeURL}/:testId":
-                () => menuNotifier.setSelectedMenu(6, context);
+                menuNotifier.setSelectedMenu(6, context);
                 return SidebarTemplate(selectedMenuURL: 6, child: child);
 
               case InvitationScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(7, context);
+                menuNotifier.setSelectedMenu(7, context);
                 return SidebarTemplate(selectedMenuURL: 7, child: child);
 
               case NoticeScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(8, context);
+                menuNotifier.setSelectedMenu(8, context);
                 return SidebarTemplate(selectedMenuURL: 8, child: child);
 
               case EventScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(9, context);
+                menuNotifier.setSelectedMenu(9, context);
                 return SidebarTemplate(selectedMenuURL: 9, child: child);
 
               case "${EventScreen.routeURL}/:eventId":
-                () => menuNotifier.setSelectedMenu(9, context);
+                menuNotifier.setSelectedMenu(9, context);
                 return SidebarTemplate(selectedMenuURL: 9, child: child);
 
               case CareScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(10, context);
+                menuNotifier.setSelectedMenu(10, context);
                 return SidebarTemplate(selectedMenuURL: 10, child: child);
 
               case DecibelScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(11, context);
+                menuNotifier.setSelectedMenu(11, context);
                 return SidebarTemplate(selectedMenuURL: 11, child: child);
 
               case TvScreen.routeURL:
-                () => menuNotifier.setSelectedMenu(12, context);
+                menuNotifier.setSelectedMenu(12, context);
                 return SidebarTemplate(selectedMenuURL: 12, child: child);
             }
             return child;
@@ -131,6 +136,14 @@ final routerProvider = Provider(
               pageBuilder: (context, state) => NoTransitionPage(
                 key: state.pageKey,
                 child: const LoginScreen(),
+              ),
+            ),
+            GoRoute(
+              name: DashboardScreen.routeName,
+              path: DashboardScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const DashboardScreen(),
               ),
             ),
             GoRoute(
