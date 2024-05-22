@@ -780,6 +780,199 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ],
               )
             ],
+          ),
+          const DashType(type: "보호자 지정 알림"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "사용자가 설정한 '설정일'을 기준으로 사용자의 활동이 없을 경우 상태에 빨간불 표시가 되어있습니다.",
+                style: TextStyle(
+                  fontSize: Sizes.size12,
+                  color: Palette().normalGray,
+                ),
+              ),
+            ],
+          ),
+          Gaps.v16,
+          Row(
+            children: [
+              Expanded(
+                child: WhiteBox(
+                  boxTitle: "",
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              "#",
+                              style: TextStyle(
+                                color: Palette().darkGray,
+                                fontWeight: FontWeight.w700,
+                                fontSize: Sizes.size14,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              "사진",
+                              style: TextStyle(
+                                color: Palette().darkGray,
+                                fontWeight: FontWeight.w700,
+                                fontSize: Sizes.size14,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "이름",
+                              style: TextStyle(
+                                color: Palette().darkGray,
+                                fontWeight: FontWeight.w700,
+                                fontSize: Sizes.size14,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "설정일",
+                                  style: TextStyle(
+                                    color: Palette().darkGray,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: Sizes.size14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "상태",
+                                  style: TextStyle(
+                                    color: Palette().darkGray,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: Sizes.size14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Gaps.v10,
+                      SizedBox(
+                        height: 150,
+                        child: Expanded(
+                          child: ListView.separated(
+                            itemCount: 5,
+                            padding: const EdgeInsets.only(top: 10),
+                            separatorBuilder: (context, index) => Gaps.v10,
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      "${index + 1}",
+                                      style: TextStyle(
+                                        color: Palette().darkGray,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: Sizes.size14,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            color: Palette().lightGray,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      "김영자",
+                                      style: TextStyle(
+                                        color: Palette().darkGray,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: Sizes.size14,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "7일",
+                                          style: TextStyle(
+                                            color: Palette().darkGray,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: Sizes.size14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "🚨",
+                                          style: TextStyle(
+                                            color: Palette().darkGray,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: Sizes.size14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Gaps.h20,
+              Expanded(
+                child: Container(),
+              ),
+            ],
           )
         ],
       ),
