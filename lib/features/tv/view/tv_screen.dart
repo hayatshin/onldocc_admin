@@ -330,25 +330,21 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                                             const EdgeInsets
                                                                 .all(3),
                                                         child: Center(
-                                                          child: Flexible(
-                                                            child: Text(
-                                                              "파일 형식은 썸네일이 제공되지 않습니다.",
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .visible,
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade500,
-                                                                fontSize: Sizes
-                                                                    .size12,
-                                                              ),
-                                                              maxLines: null,
-                                                              softWrap: true,
+                                                          child: Text(
+                                                            "파일 형식은 썸네일이 제공되지 않습니다.",
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .visible,
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                                  .shade500,
+                                                              fontSize:
+                                                                  Sizes.size12,
                                                             ),
+                                                            maxLines: null,
+                                                            softWrap: true,
                                                           ),
                                                         ),
                                                       ),
