@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/router.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -70,6 +71,16 @@ class OnldoccAdmin extends ConsumerWidget {
           backgroundColor: Colors.white,
         ),
         dividerColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        scrollbarTheme: ScrollbarThemeData(
+          thumbColor: MaterialStateProperty.all<Color>(
+              Palette().darkPurple.withOpacity(0.2)),
+          thickness: MaterialStateProperty.all<double>(8.0),
+          radius: const Radius.circular(10),
+        ),
       ),
     );
   }

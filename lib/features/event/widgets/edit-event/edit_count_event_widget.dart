@@ -9,33 +9,29 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
-import 'package:onldocc_admin/features/event/widgets/upload_count_widget.dart';
-import 'package:onldocc_admin/features/event/widgets/upload_multiple_scores_widget.dart';
-import 'package:onldocc_admin/features/event/widgets/upload_target_score_widget.dart';
-import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
+import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:uuid/uuid.dart';
 
-class UploadEventWidget extends ConsumerStatefulWidget {
+class EditCountEventWidget extends ConsumerStatefulWidget {
   final BuildContext context;
-  final double totalWidth;
-  final double totalHeight;
+  final Size size;
+  final EventModel eventModel;
   final Function() refreshScreen;
-  const UploadEventWidget({
+  const EditCountEventWidget({
     super.key,
     required this.context,
-    required this.totalWidth,
-    required this.totalHeight,
+    required this.size,
+    required this.eventModel,
     required this.refreshScreen,
   });
 
   @override
-  ConsumerState<UploadEventWidget> createState() => _UploadEventWidgetState();
+  ConsumerState<EditCountEventWidget> createState() =>
+      _EditCountEventWidgetState();
 }
 
-class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
-  bool _enabledEventButton = false;
+class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
   final TextEditingController _titleControllder = TextEditingController();
   final TextEditingController _descriptionControllder = TextEditingController();
   final TextEditingController _goalScoreController = TextEditingController();
@@ -48,28 +44,21 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   String _eventDescription = "";
 
   PlatformFile? _eventImageFile;
-  Uint8List? _eventImageBytes;
+  dynamic _eventImage;
 
   PlatformFile? _bannerImageFile;
-  Uint8List? _bannerImageBytes;
+  dynamic _bannerImage;
 
   DateTime? _eventStartDate;
   DateTime? _eventEndDate;
 
   int _eventPrizeWinners = 0;
-  int _eventGoalScore = 0;
+  int _eventAgeLimit = 0;
+
+  String _eventGoalScore = "";
 
   final List<String> _eventList = ["목표 점수 달성", "다득점 점수", "횟수 달성"];
   EventType _eventType = EventType.targetScore;
-
-  int _eventAgeLimit = 0;
-
-  int _eventStepPoint = 0;
-  int _eventDiaryPoint = 0;
-  int _eventCommentPoint = 0;
-  int _eventLikePoint = 0;
-  int _eventInvitationPoint = 0;
-  int _eventQuizPoint = 0;
 
   int _eventDiaryCount = 0;
   int _eventCommentCount = 0;
@@ -77,19 +66,17 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   int _eventInvitationCount = 0;
   int _eventQuizCount = 0;
 
-  int _eventMaxStepCount = 10000;
-  int _eventMaxCommentCount = 0;
-  int _eventMaxLikeCount = 0;
-  int _eventMaxInvitationCount = 0;
+  OverlayEntry? overlayEntry;
+  GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
 
-  bool tapUploadEvent = false;
+  bool tapEditEvent = false;
 
   void selectStartPeriod(void Function(void Function()) setState) async {
     DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now,
-      firstDate: DateTime(now.year, now.month, 1),
+      initialDate: _eventStartDate,
+      firstDate: DateTime(now.year),
       lastDate: DateTime(2030),
     );
 
@@ -97,7 +84,6 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       setState(() {
         _eventStartDate = picked;
       });
-      checkEnabledEventButton();
     }
   }
 
@@ -105,15 +91,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now,
-      firstDate: DateTime(now.year, now.month, 1),
+      initialDate: _eventEndDate,
+      firstDate: DateTime(now.year),
       lastDate: DateTime(2030),
     );
     if (picked != null) {
       setState(() {
         _eventEndDate = picked;
       });
-      checkEnabledEventButton();
     }
   }
 
@@ -126,9 +111,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       if (result == null) return;
       setState(() {
         _eventImageFile = result.files.first;
-        _eventImageBytes = _eventImageFile!.bytes!;
+        _eventImage = _eventImageFile!.bytes!;
       });
-      checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -148,9 +132,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       if (result == null) return;
       setState(() {
         _bannerImageFile = result.files.first;
-        _bannerImageBytes = _bannerImageFile!.bytes!;
+        _bannerImage = _bannerImageFile!.bytes!;
       });
-      checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -161,133 +144,93 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     }
   }
 
-  void checkEnabledEventButton() {
-    bool enabledEventButton = _eventTitle.isNotEmpty &&
-        _eventDescription.isNotEmpty &&
-        _eventImageBytes != null &&
-        _bannerImageBytes != null &&
-        _eventStartDate != null &&
-        _eventEndDate != null;
-    if (enabledEventButton) {
-      tapUploadEvent = false;
-      _enabledEventButton = enabledEventButton;
-    } else {
-      _enabledEventButton = enabledEventButton;
-    }
-    setState(() {});
-  }
-
   Future<void> _submitEvent() async {
     setState(() {
-      tapUploadEvent = true;
+      tapEditEvent = true;
     });
 
-    if (!_enabledEventButton) return;
-
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    final eventId = const Uuid().v4();
+    // AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    final eventId = widget.eventModel.eventId;
     final eventImageUrl = await ref
         .read(eventRepo)
-        .uploadSingleImageToStorage(eventId, _eventImageBytes);
+        .uploadSingleImageToStorage(eventId, _eventImage);
     final bannerImageUrl = await ref
         .read(eventRepo)
-        .uploadSingleImageToStorage(eventId, _bannerImageBytes);
-
-    final eventModel = EventModel(
+        .uploadSingleImageToStorage(eventId, _bannerImage);
+    final eventModel = widget.eventModel.copyWith(
       eventId: eventId,
       title: _eventTitle,
       description: _eventDescription,
       eventImage: eventImageUrl,
       bannerImage: bannerImageUrl,
       allUsers: selectContractRegion.value!.subdistrictId != "" ? false : true,
-      targetScore: _eventGoalScore,
+      targetScore: int.parse(_eventGoalScore),
       achieversNumber: _eventPrizeWinners,
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
-      createdAt: getCurrentSeconds(),
-      contractRegionId: adminProfileModel!.contractRegionId != ""
-          ? adminProfileModel.contractRegionId
-          : null,
-      contractCommunityId: selectContractRegion.value!.contractCommunityId != ""
-          ? selectContractRegion.value!.contractCommunityId
-          : null,
-      stepPoint: _eventStepPoint,
-      diaryPoint: _eventDiaryPoint,
-      commentPoint: _eventCommentPoint,
-      likePoint: _eventLikePoint,
-      invitationPoint: _eventInvitationPoint,
-      quizPoint: _eventQuizPoint,
       diaryCount: _eventDiaryCount,
       commentCount: _eventCommentCount,
       likeCount: _eventLikeCount,
       invitationCount: _eventInvitationCount,
       quizCount: _eventQuizCount,
-      adminSecret: true,
-      eventType: _eventType.name,
       ageLimit: _eventAgeLimit,
-      maxStepCount: _eventMaxStepCount,
-      maxCommentCount: _eventMaxCommentCount,
-      maxLikeCount: _eventMaxLikeCount,
-      maxInvitationCount: _eventMaxInvitationCount,
+      eventType: _eventType.name,
     );
 
-    await ref.read(eventRepo).addEvent(eventModel);
+    await ref.read(eventRepo).editEvent(eventModel);
     if (!mounted) return;
-    resultBottomModal(context, "성공적으로 행사가 올라갔습니다.", widget.refreshScreen);
+    resultBottomModal(context, "성공적으로 행사가 수정되었습니다.", widget.refreshScreen);
+  }
+
+  Future<void> deleteEvent(String eventId) async {
+    await ref.read(eventRepo).deleteEvent(eventId);
+    await ref.read(eventRepo).deleteEventImageStorage(eventId);
+
+    if (!mounted) return;
+    resultBottomModal(context, "성공적으로 행사가 삭제되었습니다.", widget.refreshScreen);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _eventTitle = widget.eventModel.title;
+    _eventDescription = widget.eventModel.description;
+    _eventStartDate =
+        convertStartDateStringToDateTime(widget.eventModel.startDate);
+    _eventEndDate = convertEndDateStringToDateTime(widget.eventModel.endDate);
+    _eventGoalScore = widget.eventModel.targetScore.toString();
+    _eventPrizeWinners = widget.eventModel.achieversNumber;
+    _eventAgeLimit = widget.eventModel.ageLimit ?? 0;
+    _eventImage = widget.eventModel.eventImage;
+    _eventInvitationCount = widget.eventModel.invitationCount!;
+    _eventDiaryCount = widget.eventModel.diaryCount!;
+    _eventCommentCount = widget.eventModel.commentCount!;
+    _eventLikeCount = widget.eventModel.likeCount!;
+    _eventQuizCount = widget.eventModel.quizCount!;
+    _bannerImage = widget.eventModel.bannerImage;
+    _eventType = stringToEventType(widget.eventModel.eventType);
+
+    setState(() {});
+
+    _titleControllder.text = widget.eventModel.title;
+    _descriptionControllder.text = widget.eventModel.description;
+    _goalScoreController.text = widget.eventModel.targetScore.toString();
+    _prizewinnersControllder.text =
+        widget.eventModel.achieversNumber.toString();
+    _ageLimitControllder.text = widget.eventModel.ageLimit.toString();
   }
 
   @override
   void dispose() {
+    removeDeleteOverlay();
+
     _titleControllder.dispose();
     _descriptionControllder.dispose();
     _goalScoreController.dispose();
     _prizewinnersControllder.dispose();
     _ageLimitControllder.dispose();
     super.dispose();
-  }
-
-  void updateGoalScore(int goalScore) {
-    setState(() {
-      _eventGoalScore = goalScore;
-    });
-
-    checkEnabledEventButton();
-  }
-
-  void updateStepPoint(int point) {
-    setState(() {
-      _eventStepPoint = point;
-    });
-  }
-
-  void updateDiaryPoint(int point) {
-    setState(() {
-      _eventDiaryPoint = point;
-    });
-  }
-
-  void updateCommentPoint(int point) {
-    setState(() {
-      _eventCommentPoint = point;
-    });
-  }
-
-  void updateLikePoint(int point) {
-    setState(() {
-      _eventLikePoint = point;
-    });
-  }
-
-  void updateInvitationPoint(int point) {
-    setState(() {
-      _eventInvitationPoint = point;
-    });
-  }
-
-  void updateQuizPoint(int point) {
-    setState(() {
-      _eventQuizPoint = point;
-    });
   }
 
   void updateDiaryCount(int count) {
@@ -320,36 +263,93 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     });
   }
 
-  void updateMaxStepCount(int maxCount) {
-    setState(() {
-      _eventMaxStepCount = maxCount;
-    });
+  void removeDeleteOverlay() {
+    overlayEntry?.remove();
+    overlayEntry = null;
   }
 
-  void updateMaxCommentCount(int maxCount) {
-    setState(() {
-      _eventMaxCommentCount = maxCount;
-    });
-  }
+  void showDeleteOverlay(
+      BuildContext context, String eventId, String eventName) async {
+    removeDeleteOverlay();
 
-  void updateMaxLikeCount(int maxCount) {
-    setState(() {
-      _eventMaxLikeCount = maxCount;
-    });
-  }
-
-  void updateMaxInvitationCount(int maxCount) {
-    setState(() {
-      _eventMaxInvitationCount = maxCount;
-    });
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned.fill(
+        child: Material(
+          color: Colors.black54,
+          child: Center(
+            child: AlertDialog(
+              title: Text(
+                eventName.length > 10
+                    ? "${eventName.substring(0, 11)}.."
+                    : eventName,
+                style: const TextStyle(
+                  fontSize: Sizes.size20,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              backgroundColor: Colors.white,
+              content: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "정말로 삭제하시겠습니까?",
+                    style: TextStyle(
+                      fontSize: Sizes.size13,
+                    ),
+                  ),
+                  Text(
+                    "삭제하면 다시 되돌릴 수 없습니다.",
+                    style: TextStyle(
+                      fontSize: Sizes.size13,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: removeDeleteOverlay,
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.pink.shade100),
+                  ),
+                  child: Text(
+                    "취소",
+                    style: TextStyle(
+                      fontSize: Sizes.size13,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => deleteEvent(eventId),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).primaryColor),
+                  ),
+                  child: const Text(
+                    "삭제",
+                    style: TextStyle(
+                      fontSize: Sizes.size13,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return StatefulBuilder(builder: (context, setState) {
       return Container(
-        width: widget.totalWidth,
-        height: widget.totalHeight * 0.9,
+        width: widget.size.width,
+        height: widget.size.height * 0.8,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -370,15 +370,19 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  SizedBox(
-                    width: 200,
-                    height: 40,
-                    child: BottomModalButton(
-                      text: "행사 추가하기",
-                      submitFunction: _submitEvent,
-                      hoverBottomButton: _enabledEventButton,
-                      loading: _enabledEventButton && tapUploadEvent,
-                    ),
+                  BottomModalButton(
+                    text: "행사 삭제하기",
+                    submitFunction: () => showDeleteOverlay(context,
+                        widget.eventModel.eventId, widget.eventModel.title),
+                    hoverBottomButton: true,
+                    loading: false,
+                  ),
+                  Gaps.h20,
+                  BottomModalButton(
+                    text: "행사 수정하기",
+                    submitFunction: _submitEvent,
+                    hoverBottomButton: true,
+                    loading: tapEditEvent,
                   ),
                 ],
               ),
@@ -396,40 +400,31 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             Align(
                               alignment: Alignment.topLeft,
                               child: SizedBox(
-                                width: widget.totalWidth * 0.12,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "행사 타이틀",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    if (tapUploadEvent && _eventTitle.isEmpty)
-                                      const InsufficientField(
-                                          text: "행사 타이틀을 입력해주세요.")
-                                  ],
+                                width: widget.size.width * 0.12,
+                                child: const Text(
+                                  "행사 타이틀",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ),
                             Gaps.h32,
                             SizedBox(
-                              width: widget.totalWidth * 0.6,
+                              width: widget.size.width * 0.6,
                               child: TextFormField(
                                 maxLength: 50,
                                 onChanged: (value) {
                                   setState(() {
                                     _eventTitle = value;
                                   });
-                                  checkEnabledEventButton();
                                 },
                                 controller: _titleControllder,
                                 textAlignVertical: TextAlignVertical.center,
                                 style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
                                 ),
                                 decoration: InputDecoration(
                                   hintText: "",
@@ -485,84 +480,72 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                              SizedBox(
+                                width: widget.size.width * 0.12,
+                                child: const Text(
+                                  "배너 이미지",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                              Gaps.h32,
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(
-                                    width: widget.totalWidth * 0.12,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          "배너 이미지",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
+                                  Container(
+                                      width: 150,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            Sizes.size5,
                                           ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        if (tapUploadEvent &&
-                                            _bannerImageBytes == null)
-                                          const InsufficientField(
-                                              text: "배너 이미지를 추가해주세요.")
-                                      ],
-                                    ),
-                                  ),
-                                  Gaps.h32,
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: 150,
-                                        height: 150,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              Sizes.size5,
-                                            ),
-                                            border: Border.all(
+                                          border: Border.all(
+                                            color: Colors.grey.shade200,
+                                          )),
+                                      child: _bannerImage != ""
+                                          ? _bannerImage is Uint8List
+                                              ? Image.memory(
+                                                  _bannerImage,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.network(
+                                                  _bannerImage,
+                                                  fit: BoxFit.cover,
+                                                )
+                                          : Icon(
+                                              Icons.image,
+                                              size: Sizes.size80,
                                               color: Colors.grey.shade200,
                                             )),
-                                        child: _bannerImageFile == null
-                                            ? Icon(
-                                                Icons.image,
-                                                size: Sizes.size80,
-                                                color: Colors.grey.shade200,
-                                              )
-                                            : Image.memory(
-                                                _bannerImageBytes!,
-                                                fit: BoxFit.cover,
-                                              ),
-                                      ),
-                                      Gaps.v20,
-                                      SizedBox(
-                                        child: Align(
-                                          alignment: Alignment.bottomLeft,
-                                          child: ElevatedButton(
-                                            onPressed: () =>
-                                                pickBannerImageFromGallery(
-                                                    setState),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.grey.shade200,
-                                              surfaceTintColor:
-                                                  Colors.pink.shade200,
-                                            ),
-                                            child: Text(
-                                              '이미지 올리기',
-                                              style: TextStyle(
-                                                color: Colors.grey.shade800,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
+                                  Gaps.v20,
+                                  SizedBox(
+                                    child: Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            pickBannerImageFromGallery(
+                                                setState),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey.shade200,
+                                          surfaceTintColor:
+                                              Colors.pink.shade200,
+                                        ),
+                                        child: Text(
+                                          '이미지 올리기',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade800,
+                                            fontSize: Sizes.size12,
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  )
                                 ],
                               ),
                             ],
@@ -573,22 +556,13 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: widget.totalWidth * 0.12,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "행사 이미지",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                    if (tapUploadEvent &&
-                                        _eventImageBytes == null)
-                                      const InsufficientField(
-                                          text: "행사 이미지를 추가해주세요.")
-                                  ],
+                                width: widget.size.width * 0.12,
+                                child: const Text(
+                                  "행사 이미지",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.start,
                                 ),
                               ),
                               Gaps.h32,
@@ -605,15 +579,20 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                         border: Border.all(
                                           color: Colors.grey.shade200,
                                         )),
-                                    child: _eventImageFile == null
-                                        ? Icon(
+                                    child: _eventImage != ""
+                                        ? _eventImage is Uint8List
+                                            ? Image.memory(
+                                                _eventImage,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.network(
+                                                _eventImage,
+                                                fit: BoxFit.cover,
+                                              )
+                                        : Icon(
                                             Icons.image,
                                             size: Sizes.size80,
                                             color: Colors.grey.shade200,
-                                          )
-                                        : Image.memory(
-                                            _eventImageBytes!,
-                                            fit: BoxFit.cover,
                                           ),
                                   ),
                                   Gaps.v20,
@@ -651,27 +630,18 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             SizedBox(
-                              width: widget.totalWidth * 0.12,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "행사 설명",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    textAlign: TextAlign.start,
-                                  ),
-                                  if (tapUploadEvent &&
-                                      _eventDescription.isEmpty)
-                                    const InsufficientField(
-                                        text: "행사 설명을 입력해주세요.")
-                                ],
+                              width: widget.size.width * 0.12,
+                              child: const Text(
+                                "행사 설명",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.start,
                               ),
                             ),
                             Gaps.h32,
                             SizedBox(
-                              width: widget.totalWidth * 0.6,
+                              width: widget.size.width * 0.6,
                               height: 200,
                               child: TextFormField(
                                 expands: true,
@@ -681,14 +651,13 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   setState(() {
                                     _eventDescription = value;
                                   });
-                                  checkEnabledEventButton();
                                 },
                                 controller: _descriptionControllder,
                                 textAlignVertical: TextAlignVertical.top,
                                 style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                   fontSize: Sizes.size14,
                                   color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
                                 ),
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -752,123 +721,90 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.12,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "시작일",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                      if (tapUploadEvent &&
-                                          _eventStartDate == null)
-                                        const InsufficientField(
-                                            text: "시작일을 입력해주세요.")
-                                    ],
+                                  width: widget.size.width * 0.12,
+                                  child: const Text(
+                                    "시작일",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    textAlign: TextAlign.start,
                                   ),
                                 ),
                                 Gaps.h32,
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: ElevatedButton(
-                                        onPressed: () =>
-                                            selectStartPeriod(setState),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey.shade200,
-                                          surfaceTintColor:
-                                              Colors.pink.shade200,
-                                        ),
-                                        child: Text(
-                                          '날짜 선택하기',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade800,
-                                            fontSize: Sizes.size12,
-                                          ),
-                                        ),
+                                Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: ElevatedButton(
+                                    onPressed: () =>
+                                        selectStartPeriod(setState),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey.shade200,
+                                      surfaceTintColor: Colors.pink.shade200,
+                                    ),
+                                    child: Text(
+                                      '날짜 선택하기',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade800,
+                                        fontSize: Sizes.size12,
                                       ),
                                     ),
-                                    Gaps.h20,
-                                    if (_eventStartDate != null)
-                                      Text(
-                                        "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade800,
-                                          fontSize: Sizes.size14,
-                                        ),
-                                      ),
-                                  ],
-                                )
+                                  ),
+                                ),
+                                Gaps.h20,
+                                if (_eventStartDate != null)
+                                  Text(
+                                    "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade800,
+                                      fontSize: Sizes.size14,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
                           Expanded(
                             flex: 1,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(
-                                  width: widget.totalWidth * 0.12,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "종료일",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                      if (tapUploadEvent &&
-                                          _eventEndDate == null)
-                                        const InsufficientField(
-                                            text: "종료일을 입력해주세요.")
-                                    ],
+                                  width: widget.size.width * 0.12,
+                                  child: const Text(
+                                    "종료일",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    textAlign: TextAlign.start,
                                   ),
                                 ),
                                 Gaps.h32,
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: ElevatedButton(
-                                        onPressed: () =>
-                                            selectEndPeriod(setState),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey.shade200,
-                                          surfaceTintColor:
-                                              Colors.pink.shade200,
-                                        ),
-                                        child: Text(
-                                          '날짜 선택하기',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade800,
-                                            fontSize: Sizes.size12,
-                                          ),
-                                        ),
+                                Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: ElevatedButton(
+                                    onPressed: () => selectEndPeriod(setState),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey.shade200,
+                                      surfaceTintColor: Colors.pink.shade200,
+                                    ),
+                                    child: Text(
+                                      '날짜 선택하기',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade800,
+                                        fontSize: Sizes.size12,
                                       ),
                                     ),
-                                    Gaps.h20,
-                                    if (_eventEndDate != null)
-                                      Text(
-                                        "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade800,
-                                          fontSize: Sizes.size14,
-                                        ),
-                                      ),
-                                  ],
-                                )
+                                  ),
+                                ),
+                                Gaps.h20,
+                                if (_eventEndDate != null)
+                                  Text(
+                                    "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade800,
+                                      fontSize: Sizes.size14,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -880,18 +816,13 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: widget.totalWidth * 0.12,
-                            child: const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "당첨자 수 제한",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ],
+                            width: widget.size.width * 0.12,
+                            child: const Text(
+                              "당첨자 수 제한",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.start,
                             ),
                           ),
                           Gaps.h32,
@@ -976,9 +907,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 ),
                               ),
                               Gaps.h40,
-                              const CommentTextWidget(
-                                text: "제한이 없을 경우 '0'을 기입해주세요.",
-                              ),
+                              Text(
+                                "제한이 없을 경우 '0'을 기입해주세요.",
+                                style: TextStyle(
+                                  fontSize: Sizes.size14,
+                                  color: Colors.grey.shade800,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              )
                             ],
                           ),
                         ],
@@ -989,18 +925,13 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: widget.totalWidth * 0.12,
-                            child: const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "연령 제한",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ],
+                            width: widget.size.width * 0.12,
+                            child: const Text(
+                              "연령 제한",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.start,
                             ),
                           ),
                           Gaps.h32,
@@ -1085,8 +1016,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 ),
                               ),
                               Gaps.h40,
-                              const CommentTextWidget(
-                                text: "제한이 없을 경우 '0'을 기입해주세요.",
+                              Text(
+                                "제한이 없을 경우 '0'을 기입해주세요.",
+                                style: headerInfoTextStyle,
                               ),
                             ],
                           ),
@@ -1130,7 +1062,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                           Row(
                             children: [
                               SizedBox(
-                                width: widget.totalWidth * 0.12,
+                                width: widget.size.width * 0.12,
                                 child: Text(
                                   "행사 유형 설정",
                                   style: TextStyle(
@@ -1141,6 +1073,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   textAlign: TextAlign.start,
                                 ),
                               ),
+                              Gaps.h80,
                               Gaps.h80,
                               SizedBox(
                                 width: 300,
@@ -1162,50 +1095,119 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     ),
                                   ),
                                   items: _eventList,
-                                  initialItem: _eventList[0],
+                                  initialItem: _eventList[
+                                      EventType.values.indexOf(_eventType)],
                                   // controller: contractCommunityController,
                                   excludeSelected: false,
                                 ),
                               ),
                             ],
                           ),
-                          Gaps.v40,
-                          _eventType == EventType.targetScore
-                              ? UploadTargetScoreWidget(
-                                  updateGoalScore: updateGoalScore,
-                                  updateDiaryPoint: updateDiaryPoint,
-                                  updateCommentPoint: updateCommentPoint,
-                                  updateLikePoint: updateLikePoint,
-                                  updateStepPoint: updateStepPoint,
-                                  updateInvitationPoint: updateInvitationPoint,
-                                  updateQuizPoint: updateQuizPoint,
-                                  updateMaxStepCount: updateMaxStepCount,
-                                )
-                              : _eventType == EventType.multipleScores
-                                  ? UploadMultipleScoresWidget(
-                                      updateGoalScore: updateGoalScore,
-                                      updateDiaryPoint: updateDiaryPoint,
-                                      updateCommentPoint: updateCommentPoint,
-                                      updateLikePoint: updateLikePoint,
-                                      updateStepPoint: updateStepPoint,
-                                      updateInvitationPoint:
-                                          updateInvitationPoint,
-                                      updateQuizPoint: updateQuizPoint,
-                                      updateMaxStepCount: updateMaxStepCount,
-                                      updateMaxCommentCount:
-                                          updateMaxCommentCount,
-                                      updateMaxLikeCount: updateMaxLikeCount,
-                                      updateInvitationCount:
-                                          updateMaxInvitationCount,
-                                    )
-                                  : UploadCountWidget(
-                                      updateDiaryCount: updateDiaryCount,
-                                      updateCommentCount: updateCommentCount,
-                                      updateLikeCount: updateLikeCount,
-                                      updateInvitationCount:
-                                          updateInvitationCount,
-                                      updateQuizCount: updateQuizCount,
-                                    ),
+                          Gaps.v80,
+                          const Column(
+                            children: [
+                              // Row(
+                              //   mainAxisAlignment:
+                              //       MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     Expanded(
+                              //       flex: 2,
+                              //       child: DefaultCountTile(
+                              //         totalWidth: size.width,
+                              //         updateEventPoint: updateDiaryCount,
+                              //         header: "일기",
+                              //         defaultPoint: _eventDiaryCount,
+                              //         editOrNot: true,
+                              //       ),
+                              //     ),
+                              //     const Expanded(
+                              //       flex: 3,
+                              //       child: Column(
+                              //         crossAxisAlignment:
+                              //             CrossAxisAlignment.start,
+                              //         children: [
+                              //           MaxPointTextWidget(
+                              //             text: "( 일일 최대:     1회 )",
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // Gaps.v32,
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //       flex: 2,
+                              //       child: DefaultPointTile(
+                              //         totalWidth: size.width,
+                              //         updateEventPoint: updateQuizCount,
+                              //         header: "문제 풀기",
+                              //         defaultPoint: _eventQuizCount,
+                              //         editOrNot: true,
+                              //       ),
+                              //     ),
+                              //     const Expanded(
+                              //       flex: 3,
+                              //       child: Column(
+                              //         crossAxisAlignment:
+                              //             CrossAxisAlignment.start,
+                              //         children: [
+                              //           MaxPointTextWidget(
+                              //             text: "( 일일 최대:     1회 )",
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // Gaps.v32,
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //       flex: 1,
+                              //       child: DefaultCountTile(
+                              //         totalWidth: size.width,
+                              //         updateEventPoint: updateCommentCount,
+                              //         header: "댓글",
+                              //         defaultPoint: _eventCommentCount,
+                              //         editOrNot: true,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // Gaps.v32,
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //       flex: 1,
+                              //       child: DefaultCountTile(
+                              //         totalWidth: size.width,
+                              //         updateEventPoint: updateLikeCount,
+                              //         header: "좋아요",
+                              //         defaultPoint: _eventLikeCount,
+                              //         editOrNot: true,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // Gaps.v32,
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //       flex: 2,
+                              //       child: DefaultCountTile(
+                              //         totalWidth: size.width,
+                              //         updateEventPoint: updateInvitationCount,
+                              //         header: "친구 초대",
+                              //         defaultPoint: _eventInvitationCount,
+                              //         editOrNot: true,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                            ],
+                          ),
                         ],
                       ),
                     ],
@@ -1217,183 +1219,5 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
         ),
       );
     });
-  }
-}
-
-class DefaultPointTile extends StatelessWidget {
-  final double totalWidth;
-  final Function(int) updateEventPoint;
-  final String header;
-  final int defaultPoint;
-  const DefaultPointTile({
-    super.key,
-    required this.totalWidth,
-    required this.updateEventPoint,
-    required this.header,
-    required this.defaultPoint,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: totalWidth * 0.1,
-          child: Text(
-            "⚬ $header",
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.start,
-          ),
-        ),
-        Gaps.h32,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            SizedBox(
-              width: 100,
-              child: TextFormField(
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                minLines: 1,
-                onChanged: (value) {
-                  final point = int.parse(value);
-                  updateEventPoint(point);
-                },
-                textAlignVertical: TextAlignVertical.top,
-                style: const TextStyle(
-                  fontSize: Sizes.size14,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  isDense: true,
-                  hintText: "$defaultPoint",
-                  hintStyle: TextStyle(
-                    fontSize: Sizes.size14,
-                    color: Colors.grey.shade400,
-                    fontWeight: FontWeight.w300,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                  ),
-                  errorStyle: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: Sizes.size10,
-                    vertical: Sizes.size10,
-                  ),
-                ),
-              ),
-            ),
-            Gaps.h10,
-            Text(
-              "점",
-              style: TextStyle(
-                fontSize: Sizes.size14,
-                color: Colors.grey.shade800,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-            if (header == "걸음수")
-              const Row(
-                children: [
-                  Gaps.h10,
-                  Text(
-                    "/ 1000보 당",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.red,
-                    ),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class CommentTextWidget extends StatelessWidget {
-  final String text;
-  const CommentTextWidget({super.key, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: Sizes.size12,
-        fontWeight: FontWeight.w300,
-        color: Colors.grey.shade600,
-      ),
-    );
-  }
-}
-
-class InsufficientField extends StatelessWidget {
-  final String text;
-  const InsufficientField({
-    super.key,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Gaps.v20,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.w600,
-                  fontSize: Sizes.size12,
-                ),
-                overflow: TextOverflow.visible,
-                softWrap: true,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
   }
 }

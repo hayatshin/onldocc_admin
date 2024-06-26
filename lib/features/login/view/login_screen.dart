@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model_2.dart';
 import 'package:onldocc_admin/palette.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -42,7 +42,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         try {
           _formKey.currentState!.save();
           await ref
-              .read(adminProfileProvider.notifier)
+              .read(adminProfileProvider2.notifier)
               .login(formData["email"]!, formData["password"]!, context);
         } catch (e) {
           // ignore: avoid_print

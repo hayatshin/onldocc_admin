@@ -30,6 +30,7 @@ class EventModel {
   final String? state;
   final int? createdAt;
   final String? orgSubdistrictId;
+  final String? orgName;
   final String? orgImage;
   final int? stepPoint;
   final int? diaryPoint;
@@ -69,6 +70,7 @@ class EventModel {
     this.state,
     this.createdAt,
     this.orgSubdistrictId,
+    this.orgName,
     this.orgImage,
     this.stepPoint,
     this.diaryPoint,
@@ -106,6 +108,7 @@ class EventModel {
         state = "진행",
         createdAt = 0,
         orgSubdistrictId = "",
+        orgName = "",
         orgImage = "",
         stepPoint = 0,
         diaryPoint = 0,
@@ -218,6 +221,9 @@ class EventModel {
         orgSubdistrictId = json["contract_regions"] != null
             ? json["contract_regions"]["subdistrictId"]
             : "",
+        orgName = json["contract_regions"] != null
+            ? json["contract_regions"]["name"]
+            : "인지케어",
         orgImage = json["contract_regions"] != null
             ? json["contract_regions"]["image"]
             : "",
@@ -256,6 +262,7 @@ class EventModel {
     final String? state,
     final int? createdAt,
     final String? orgSubdistrictId,
+    final String? orgName,
     final String? orgImage,
     final int? stepPoint,
     final int? diaryPoint,
@@ -293,6 +300,7 @@ class EventModel {
       state: state ?? this.state,
       createdAt: createdAt ?? this.createdAt,
       orgSubdistrictId: orgSubdistrictId ?? this.orgSubdistrictId,
+      orgName: orgName ?? this.orgName,
       orgImage: orgImage ?? this.orgImage,
       stepPoint: stepPoint ?? this.stepPoint,
       diaryPoint: diaryPoint ?? this.diaryPoint,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:onldocc_admin/common/models/path_extra.dart';
 import 'package:onldocc_admin/common/view/sidebar_template.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
@@ -20,11 +21,10 @@ import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
-import 'package:onldocc_admin/features/ranking/view/ranking_diary_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
-import 'package:onldocc_admin/features/ranking/view/ranking_step_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
+import 'package:onldocc_admin/features/user-dashboard/view/user_dashboard_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 
 import 'features/ranking/models/ranking_extra.dart';
@@ -55,33 +55,33 @@ final routerProvider = Provider(
                 menuNotifier.setSelectedMenu(1, context);
                 return SidebarTemplate(selectedMenuURL: 1, child: child);
 
-              case RankingScreen.routeURL:
+              case "${UsersScreen.routeURL}/:userId":
                 menuNotifier.setSelectedMenu(1, context);
                 return SidebarTemplate(selectedMenuURL: 1, child: child);
 
-              case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}":
+              case RankingScreen.routeURL:
                 menuNotifier.setSelectedMenu(2, context);
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
 
-              case "${RankingScreen.routeURL}/${RankingUsersScreen.stepRouteURL}/:userId":
-                menuNotifier.setSelectedMenu(2, context);
-                return SidebarTemplate(selectedMenuURL: 2, child: child);
-
-              case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}":
+              case NoticeScreen.routeURL:
                 menuNotifier.setSelectedMenu(3, context);
                 return SidebarTemplate(selectedMenuURL: 3, child: child);
 
-              case "${RankingScreen.routeURL}/${RankingUsersScreen.diaryRouteURL}/:userId":
-                menuNotifier.setSelectedMenu(3, context);
-                return SidebarTemplate(selectedMenuURL: 3, child: child);
-
-              case QuizScreen.routeURL:
+              case EventScreen.routeURL:
                 menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
 
-              case "${QuizScreen.routeURL}/:userId":
+              case "${EventScreen.routeURL}/:eventId":
                 menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
+
+              // case QuizScreen.routeURL:
+              //   menuNotifier.setSelectedMenu(4, context);
+              //   return SidebarTemplate(selectedMenuURL: 4, child: child);
+
+              // case "${QuizScreen.routeURL}/:userId":
+              //   menuNotifier.setSelectedMenu(4, context);
+              //   return SidebarTemplate(selectedMenuURL: 4, child: child);
 
               case AlzheimerTestScreen.routeURL:
                 menuNotifier.setSelectedMenu(5, context);
@@ -102,18 +102,6 @@ final routerProvider = Provider(
               case InvitationScreen.routeURL:
                 menuNotifier.setSelectedMenu(7, context);
                 return SidebarTemplate(selectedMenuURL: 7, child: child);
-
-              case NoticeScreen.routeURL:
-                menuNotifier.setSelectedMenu(8, context);
-                return SidebarTemplate(selectedMenuURL: 8, child: child);
-
-              case EventScreen.routeURL:
-                menuNotifier.setSelectedMenu(9, context);
-                return SidebarTemplate(selectedMenuURL: 9, child: child);
-
-              case "${EventScreen.routeURL}/:eventId":
-                menuNotifier.setSelectedMenu(9, context);
-                return SidebarTemplate(selectedMenuURL: 9, child: child);
 
               case CareScreen.routeURL:
                 menuNotifier.setSelectedMenu(10, context);
@@ -147,14 +135,26 @@ final routerProvider = Provider(
               ),
             ),
             GoRoute(
-              name: UsersScreen.routeName,
-              path: UsersScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const UsersScreen(),
-              ),
-            ),
-            // ranking
+                name: UsersScreen.routeName,
+                path: UsersScreen.routeURL,
+                pageBuilder: (context, state) => NoTransitionPage(
+                      key: state.pageKey,
+                      child: const UsersScreen(),
+                    ),
+                routes: [
+                  GoRoute(
+                    path: ":userId",
+                    pageBuilder: (context, state) => MaterialPage(
+                      key: state.pageKey,
+                      child: UserDashboardScreen(
+                        userId: state.pathParameters["userId"],
+                        userName: state.extra != null
+                            ? (state.extra as PathExtra).userName
+                            : "",
+                      ),
+                    ),
+                  )
+                ]),
             GoRoute(
               name: RankingScreen.routeName,
               path: RankingScreen.routeURL,
@@ -162,61 +162,41 @@ final routerProvider = Provider(
                 key: state.pageKey,
                 child: const RankingScreen(),
               ),
+            ),
+            GoRoute(
+              name: NoticeScreen.routeName,
+              path: NoticeScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const NoticeScreen(),
+              ),
+            ),
+            GoRoute(
+              name: EventScreen.routeName,
+              path: EventScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const EventScreen(),
+              ),
               routes: [
-                // ranking/step
                 GoRoute(
-                  name: RankingUsersScreen.stepRouteName,
-                  path: RankingUsersScreen.stepRouteURL,
-                  pageBuilder: (context, state) => NoTransitionPage(
-                    key: state.pageKey,
-                    child: const RankingUsersScreen(
-                      rankingType: "step",
-                    ),
-                  ),
-                  routes: [
-                    // ranking/step/:index
-                    GoRoute(
-                      path: ":userId",
-                      pageBuilder: (context, state) => MaterialPage(
-                        key: state.pageKey,
-                        child: RankingStepScreen(
-                          // index: state.pathParameters["index"],
-                          userId: state.pathParameters["userId"],
-                          userName: state.extra != null
-                              ? (state.extra as RankingExtra).userName
-                              : "",
-                          rankingType: "걸음수",
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                // ranking/diary
-                GoRoute(
-                  name: RankingUsersScreen.diaryRouteName,
-                  path: RankingUsersScreen.diaryRouteURL,
-                  pageBuilder: (context, state) => NoTransitionPage(
-                    key: state.pageKey,
-                    child: const RankingUsersScreen(
-                      rankingType: "diary",
-                    ),
-                  ),
-                  routes: [
-                    GoRoute(
-                      path: ":userId",
-                      pageBuilder: (context, state) => MaterialPage(
-                        key: state.pageKey,
-                        child: RankingDiaryScreen(
-                          // index: state.pathParameters["index"],
-                          userId: state.pathParameters["userId"],
-                          userName: state.extra != null
-                              ? (state.extra as RankingExtra).userName
-                              : "",
-                          rankingType: "일기",
-                        ),
-                      ),
-                    )
-                  ],
+                  path: ":eventId",
+                  pageBuilder: (context, state) {
+                    final eventModel = state.extra as EventModel?;
+                    return MaterialPage(
+                      key: state.pageKey,
+                      child: eventModel!.eventType == EventType.targetScore.name
+                          ? EventDetailTargetScoreScreen(
+                              eventModel: eventModel,
+                            )
+                          : eventModel.eventType ==
+                                  EventType.multipleScores.name
+                              ? EventDetailMultipleScoresScreen(
+                                  eventModel: eventModel,
+                                )
+                              : EventDetailCountScreen(eventModel: eventModel),
+                    );
+                  },
                 ),
               ],
             ),
@@ -291,43 +271,6 @@ final routerProvider = Provider(
                 key: state.pageKey,
                 child: const InvitationScreen(),
               ),
-            ),
-            GoRoute(
-              name: NoticeScreen.routeName,
-              path: NoticeScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const NoticeScreen(),
-              ),
-            ),
-            GoRoute(
-              name: EventScreen.routeName,
-              path: EventScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const EventScreen(),
-              ),
-              routes: [
-                GoRoute(
-                  path: ":eventId",
-                  pageBuilder: (context, state) {
-                    final eventModel = state.extra as EventModel?;
-                    return MaterialPage(
-                      key: state.pageKey,
-                      child: eventModel!.eventType == EventType.targetScore.name
-                          ? EventDetailTargetScoreScreen(
-                              eventModel: eventModel,
-                            )
-                          : eventModel.eventType ==
-                                  EventType.multipleScores.name
-                              ? EventDetailMultipleScoresScreen(
-                                  eventModel: eventModel,
-                                )
-                              : EventDetailCountScreen(eventModel: eventModel),
-                    );
-                  },
-                ),
-              ],
             ),
             GoRoute(
               name: CareScreen.routeName,

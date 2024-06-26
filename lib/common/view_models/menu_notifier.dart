@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
+import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 
@@ -54,14 +56,6 @@ final menuList = [
   ),
   Menu(
     index: 2,
-    name: "회원별 데이터",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
-    backButton: false,
-    colorButton: null,
-  ),
-  Menu(
-    index: 3,
     name: "점수 관리",
     routeName: RankingScreen.routeName,
     child: const RankingScreen(),
@@ -69,23 +63,23 @@ final menuList = [
     colorButton: null,
   ),
   Menu(
-    index: 4,
+    index: 3,
     name: "공지 관리",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
+    routeName: NoticeScreen.routeName,
+    child: const NoticeScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 4,
+    name: "행사 관리",
+    routeName: EventScreen.routeName,
+    child: const EventScreen(),
     backButton: false,
     colorButton: null,
   ),
   Menu(
     index: 5,
-    name: "행사 관리",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
-    backButton: false,
-    colorButton: null,
-  ),
-  Menu(
-    index: 6,
     name: "온라인 치매 검사",
     routeName: UsersScreen.routeName,
     child: const UsersScreen(),
@@ -93,7 +87,7 @@ final menuList = [
     colorButton: const Color(0xff696EFF),
   ),
   Menu(
-    index: 7,
+    index: 6,
     name: "노인 우울척도 검사",
     routeName: UsersScreen.routeName,
     child: const UsersScreen(),
@@ -101,7 +95,7 @@ final menuList = [
     colorButton: const Color(0xffF8ACFF),
   ),
   Menu(
-    index: 8,
+    index: 7,
     name: "영상 관리",
     routeName: UsersScreen.routeName,
     child: const UsersScreen(),
@@ -109,7 +103,7 @@ final menuList = [
     colorButton: const Color(0xffFFBA49),
   ),
   Menu(
-    index: 9,
+    index: 8,
     name: "보호자 지정",
     routeName: UsersScreen.routeName,
     child: const UsersScreen(),
@@ -117,7 +111,7 @@ final menuList = [
     colorButton: const Color(0xff20A39E),
   ),
   Menu(
-    index: 10,
+    index: 9,
     name: "화풀기",
     routeName: UsersScreen.routeName,
     child: const UsersScreen(),
@@ -125,7 +119,7 @@ final menuList = [
     colorButton: const Color(0xffEF5B5B),
   ),
   Menu(
-    index: 11,
+    index: 10,
     name: "친구 초대 관리",
     routeName: UsersScreen.routeName,
     child: const UsersScreen(),

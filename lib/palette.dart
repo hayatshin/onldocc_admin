@@ -21,13 +21,15 @@ class Palette {
   final darkBlue = const Color(0xff1975F0);
   final lightBlue = const Color(0xffACD9FF);
   final bgLightBlue = const Color(0xffF2F6FE);
-  final darkGray = const Color(0xff4B4453);
-  final normalGray = const Color(0xff968E9F);
+  final darkGray = const Color(0xff333333);
+  final normalGray = const Color(0xff666666);
+  final mLightGray = const Color(0xff999999);
   final lightGray = const Color(0xffdddddd);
   final darkGreen = const Color(0xff005B3D);
   final normalGreen = const Color(0xff47BEA5);
   final lightGreen = const Color(0xffCCFCF3);
   final bgLightGreen = const Color(0xffF8FFFE);
+  final modalBgLightGreen = const Color(0xffF9FCFE);
 
   final dashPink = const Color(0xffEB7CAB);
   final dashBlue = const Color(0xff86B9E8);

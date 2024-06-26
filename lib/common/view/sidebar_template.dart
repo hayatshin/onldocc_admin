@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
+import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
@@ -199,23 +200,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                         children: [
                                           CustomDropdownMenu(
                                             type: "지역",
-                                            items: _contractRegionItems.map(
-                                                (ContractRegionModel item) {
-                                              final lastName =
-                                                  item.name.split(' ').last;
-                                              return DropdownMenuItem<String>(
-                                                value: item.name,
-                                                child: Text(
-                                                  lastName,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Palette().normalGray,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              );
-                                            }).toList(),
+                                            items: _contractRegionItems,
                                             value: _selectRegion,
                                             onChangedFunction: (value) =>
                                                 setContractRegion(value),
@@ -225,22 +210,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                       ),
                                     CustomDropdownMenu(
                                       type: "기관",
-                                      items: _contractCommunityItems
-                                          .map((ContractRegionModel item) {
-                                        final lastName =
-                                            item.name.split(' ').last;
-                                        return DropdownMenuItem<String>(
-                                          value: item.name,
-                                          child: Text(
-                                            lastName,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Palette().normalGray,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        );
-                                      }).toList(),
+                                      items: _contractCommunityItems,
                                       value: _selectCommunity,
                                       onChangedFunction: (value) =>
                                           setContractCommunity,
@@ -265,21 +235,16 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                       ),
                       const SingleSidebarTile(
                         index: 2,
-                        assetPath: "assets/svg/user.svg",
-                        title: "회원별 데이터",
-                      ),
-                      const SingleSidebarTile(
-                        index: 3,
                         assetPath: "assets/svg/medal-solid.svg",
                         title: "점수 관리",
                       ),
                       const SingleSidebarTile(
-                        index: 4,
+                        index: 3,
                         assetPath: "assets/svg/bell.svg",
                         title: "공지 관리",
                       ),
                       const SingleSidebarTile(
-                        index: 5,
+                        index: 4,
                         assetPath: "assets/svg/gift-box-with-a-bow.svg",
                         title: "행사 관리",
                       ),
@@ -288,12 +253,12 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                         title: "인지 검사 관리",
                         children: [
                           ChildTileModel(
-                            index: 6,
+                            index: 5,
                             tileText: "온라인 치매 검사",
                             tileColor: const Color(0xff696EFF),
                           ),
                           ChildTileModel(
-                            index: 7,
+                            index: 6,
                             tileText: "노인 우울척도 검사",
                             tileColor: const Color(0xffF8ACFF),
                           ),
@@ -304,17 +269,17 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                         title: "일상 관리",
                         children: [
                           ChildTileModel(
-                            index: 8,
+                            index: 7,
                             tileText: "영상 관리",
                             tileColor: const Color(0xffFFBA49),
                           ),
                           ChildTileModel(
-                            index: 9,
+                            index: 8,
                             tileText: "보호자 지정",
                             tileColor: const Color(0xff20A39E),
                           ),
                           ChildTileModel(
-                            index: 10,
+                            index: 9,
                             tileText: "화풀기",
                             tileColor: const Color(0xffEF5B5B),
                           ),
@@ -375,7 +340,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
             ),
           ),
           Expanded(
-            child: menuList[menuNotifier.selectedMenu].child,
+            child: widget.child,
           )
         ],
       ),
@@ -593,7 +558,7 @@ final communityListValueNotifier = ValueNotifier<List<ContractRegionModel>>([]);
 
 class CustomDropdownMenu extends StatelessWidget {
   final String type;
-  final List<DropdownMenuItem<String>> items;
+  final List<ContractRegionModel> items;
   final String value;
   final Function(String?) onChangedFunction;
   const CustomDropdownMenu({
@@ -620,11 +585,24 @@ class CustomDropdownMenu extends StatelessWidget {
         ),
         SizedBox(
           width: size.width * 0.1,
-          height: 35,
+          height: buttonHeight,
           child: DropdownButtonHideUnderline(
             child: DropdownButton2<String>(
               isExpanded: true,
-              items: items,
+              items: items.map((ContractRegionModel item) {
+                final lastName = item.name.split(' ').last;
+                return DropdownMenuItem<String>(
+                  value: item.name,
+                  child: Text(
+                    lastName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Palette().normalGray,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
               value: value,
               onChanged: (value) => onChangedFunction(value),
               buttonStyleData: ButtonStyleData(

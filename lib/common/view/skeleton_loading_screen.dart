@@ -15,7 +15,7 @@ class SkeletonLoadingScreen extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            height: searchHeight,
+            height: buttonHeight,
           ),
           SkeletonParagraph(
             style: SkeletonParagraphStyle(

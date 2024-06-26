@@ -3,24 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
-import 'package:onldocc_admin/common/widgets/period_button.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class DashboardScreen extends ConsumerStatefulWidget {
-  static const routeURL = "/dashboard";
-  static const routeName = "dashboard";
-  const DashboardScreen({super.key});
+class UserDashboardScreen extends ConsumerStatefulWidget {
+  final String? userId;
+  final String? userName;
+  const UserDashboardScreen({
+    super.key,
+    required this.userId,
+    required this.userName,
+  });
 
   @override
-  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+  ConsumerState<UserDashboardScreen> createState() =>
+      _UserDashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  final String _selectedPeriod = "이번달";
+class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
+  final _periodList = ["이번달", "지난달", "이번주", "지난주"];
+  String _selectedPeriod = "이번달";
   GlobalKey diaryColumnKey = GlobalKey();
   double? diaryWidgetHeight = 300;
   GlobalKey aiColumnKey = GlobalKey();
@@ -77,13 +82,75 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultScreen(
-      menu: menuList[0],
+      menu: Menu(
+        index: 1,
+        name: "회원별 데이터: ${widget.userName}",
+        routeName: "user-dashboard",
+        child: Container(),
+        backButton: true,
+        colorButton: Palette().darkBlue,
+      ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const PeriodButton(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "기간 선택:",
+                        style: TextStyle(
+                          fontSize: Sizes.size14,
+                          color: Palette().darkPurple,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Gaps.h10,
+                      PeriodDropdownMenu(
+                        items: _periodList.map((String item) {
+                          return DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Palette().normalGray,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        }).toList(),
+                        value: _selectedPeriod,
+                        onChangedFunction: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedPeriod = value;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  Gaps.h12,
+                  Column(
+                    children: [
+                      Text(
+                        "2024/05/01 ~ 2024/05/03",
+                        style: TextStyle(
+                          color: Palette().darkBlue,
+                          fontWeight: FontWeight.w300,
+                          fontSize: Sizes.size12,
+                        ),
+                      ),
+                      Gaps.v2,
+                    ],
+                  ),
+                ],
+              ),
               ReportButton(
                 iconExists: true,
                 buttonText: "리포트 출력하기",

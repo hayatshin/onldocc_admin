@@ -63,113 +63,116 @@ class DefaultTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Container(
-      width: size.width,
-      height: size.height,
-      color: Palette().bgLightBlue,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 25,
-          vertical: 20,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (menu.backButton)
-                        Row(
-                          children: [
-                            MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: FaIcon(
-                                  FontAwesomeIcons.solidCircleLeft,
-                                  color: Palette().darkPurple,
-                                  size: 35,
+    return SingleChildScrollView(
+      child: Container(
+        width: size.width,
+        color: Palette().bgLightBlue,
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 25,
+            right: 25,
+            top: 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (menu.backButton)
+                          Row(
+                            children: [
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: FaIcon(
+                                    FontAwesomeIcons.solidCircleLeft,
+                                    color: Palette().darkPurple,
+                                    size: 35,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Gaps.h20,
-                          ],
+                              Gaps.h20,
+                            ],
+                          ),
+                        if (menu.colorButton != null)
+                          Row(
+                            children: [
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: menu.colorButton,
+                                ),
+                              ),
+                              Gaps.h10,
+                            ],
+                          ),
+                        Text(
+                          menu.name,
+                          style: TextStyle(
+                            color: Palette().darkPurple,
+                            fontWeight: FontWeight.w700,
+                            fontSize: Sizes.size20,
+                          ),
                         ),
-                      if (menu.colorButton != null)
-                        Row(
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                          child: Image.network(
+                            adminModel.image,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Gaps.h14,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: menu.colorButton,
+                            Text(
+                              adminModel.name,
+                              style: TextStyle(
+                                fontSize: Sizes.size14,
+                                fontWeight: FontWeight.w700,
+                                color: Palette().darkGray,
                               ),
                             ),
-                            Gaps.h10,
+                            Gaps.v2,
+                            Text(
+                              adminModel.mail,
+                              style: TextStyle(
+                                fontSize: Sizes.size10,
+                                fontWeight: FontWeight.w600,
+                                color: Palette().normalGray,
+                              ),
+                            ),
                           ],
-                        ),
-                      Text(
-                        menu.name,
-                        style: TextStyle(
-                          color: Palette().darkPurple,
-                          fontWeight: FontWeight.w700,
-                          fontSize: Sizes.size20,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        clipBehavior: Clip.hardEdge,
-                        child: Image.network(
-                          adminModel.image,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Gaps.h14,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            adminModel.name,
-                            style: TextStyle(
-                              fontSize: Sizes.size14,
-                              fontWeight: FontWeight.w700,
-                              color: Palette().darkGray,
-                            ),
-                          ),
-                          Gaps.v2,
-                          Text(
-                            adminModel.mail,
-                            style: TextStyle(
-                              fontSize: Sizes.size10,
-                              fontWeight: FontWeight.w600,
-                              color: Palette().normalGray,
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Gaps.v32,
-              // child
-              child,
-            ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                Gaps.v32,
+                // child
+                child,
+                Gaps.v20,
+              ],
+            ),
           ),
         ),
       ),

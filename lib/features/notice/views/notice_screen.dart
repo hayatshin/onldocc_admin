@@ -1,16 +1,19 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/common/view_a/default_screen.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
-import 'package:onldocc_admin/constants/const.dart';
+import 'package:onldocc_admin/common/widgets/report_button.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/notice/view_models/notice_view_model.dart';
 import 'package:onldocc_admin/features/notice/widgets/edit_notification_widget.dart';
 import 'package:onldocc_admin/features/notice/widgets/upload_notification_widget.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
-import '../../../constants/gaps.dart';
 import '../../../constants/sizes.dart';
 
 class NoticeScreen extends ConsumerStatefulWidget {
@@ -23,7 +26,7 @@ class NoticeScreen extends ConsumerStatefulWidget {
 }
 
 class _NoticeScreenState extends ConsumerState<NoticeScreen> {
-  bool _feedHover = false;
+  final bool _feedHover = false;
 
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -31,6 +34,18 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
 
   List<DiaryModel> _noticeList = [];
   bool loadingFinished = false;
+
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size11,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
 
   void uploadNotification(
       BuildContext context, double totalWidth, double totalHeight) {
@@ -43,8 +58,6 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
       builder: (context) {
         return UploadNotificationWidget(
           context: context,
-          totalWidth: totalWidth,
-          totalHeight: totalHeight,
           refreshScreen: refreshScreen,
         );
       },
@@ -53,21 +66,19 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
 
   void editNotification(
     BuildContext context,
-    double totalWidth,
-    double totalHeight,
+    Size size,
     DiaryModel diaryModel,
   ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       constraints: BoxConstraints(
-        minWidth: totalWidth,
+        minWidth: size.width,
       ),
       builder: (context) {
         return EditNotificationWidget(
           context: context,
-          totalWidth: totalWidth,
-          totalHeight: totalHeight,
+          size: size,
           diaryModel: diaryModel,
           refreshScreen: refreshScreen,
         );
@@ -145,86 +156,28 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return loadingFinished
-        ? Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey.shade200,
-                    ),
-                  ),
-                ),
-                child: SizedBox(
-                  height: searchHeight + Sizes.size40,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: Sizes.size10,
-                      horizontal: Sizes.size32,
-                    ),
-                    child: Row(
+    return DefaultScreen(
+        menu: menuList[3],
+        child: SizedBox(
+          width: size.width,
+          height: size.height,
+          child: loadingFinished
+              ? Column(
+                  children: [
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Visibility(
-                          visible: size.width > 700,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            onHover: (event) {
-                              setState(() {
-                                _feedHover = true;
-                              });
-                            },
-                            onExit: (event) {
-                              setState(() {
-                                _feedHover = false;
-                              });
-                            },
-                            child: GestureDetector(
-                              onTap: () => uploadNotification(
-                                  context, size.width, size.height),
-                              child: Container(
-                                width: 150,
-                                height: searchHeight,
-                                decoration: BoxDecoration(
-                                  color: _feedHover
-                                      ? Colors.grey.shade200
-                                      : Colors.white,
-                                  border: Border.all(
-                                    color: Colors.grey.shade800,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    Sizes.size10,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "피드 공지 올리기",
-                                    style: TextStyle(
-                                      color: Colors.grey.shade800,
-                                      fontSize: Sizes.size14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                        ReportButton(
+                          iconExists: false,
+                          buttonText: "공지 올리기",
+                          buttonColor: Palette().darkPurple,
+                          action: () => uploadNotification(
+                              context, size.width, size.height),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-              SearchBelow(
-                size: size,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: Sizes.size40,
-                        horizontal: Sizes.size20,
-                      ),
+                    Gaps.v40,
+                    Expanded(
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -232,296 +185,187 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                             Sizes.size10,
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: Sizes.size16,
+                        child: DataTable2(
+                          isVerticalScrollBarVisible: false,
+                          isHorizontalScrollBarVisible: false,
+                          dataRowHeight: 80,
+                          lmRatio: 3,
+                          dividerThickness: 0.1,
+                          horizontalMargin: 5,
+                          headingRowDecoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Palette().lightGray,
+                                width: 0.1,
                               ),
-                              child: Row(
-                                children: [
-                                  const Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
+                            ),
+                          ),
+                          columns: [
+                            DataColumn2(
+                              fixedWidth: 80,
+                              label: Center(
+                                child: Text(
+                                  "#",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                            ),
+                            DataColumn2(
+                              size: ColumnSize.L,
+                              label: Center(
+                                child: Text(
+                                  "공지",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                            ),
+                            DataColumn2(
+                              label: Center(
+                                child: Text(
+                                  "이미지",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                            ),
+                            DataColumn2(
+                              label: Center(
+                                child: Text(
+                                  "작성일",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                            ),
+                            DataColumn2(
+                              label: Center(
+                                child: Text(
+                                  "공개 여부",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                            ),
+                            DataColumn2(
+                              fixedWidth: 100,
+                              label: Center(
+                                child: Text(
+                                  "수정",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                            ),
+                          ],
+                          rows: [
+                            for (var i = 0; i < _noticeList.length; i++)
+                              DataRow2(
+                                cells: [
+                                  DataCell(
+                                    Center(
                                       child: Text(
-                                        "#",
-                                        style: TextStyle(
-                                          // color: Colors.white,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
+                                        "${i + 1}",
+                                        style: _contentTextStyle,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      _noticeList[i]
+                                          .todayDiary
+                                          .trim()
+                                          .replaceAll("\n\n", "\n"),
+                                      style: _contentTextStyle,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                  DataCell(
+                                    _noticeList[i].images!.isEmpty
+                                        ? Center(
+                                            child: Text(
+                                              "-",
+                                              style: _contentTextStyle,
+                                            ),
+                                          )
+                                        : Center(
+                                            child: SizedBox(
+                                              width: 100,
+                                              height: 100,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  Sizes.size5,
+                                                ),
+                                                clipBehavior: Clip.hardEdge,
+                                                child: Image.network(
+                                                  _noticeList[i].images![0],
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        secondsToStringLine(
+                                            _noticeList[i].createdAt),
+                                        style: _contentTextStyle,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: MouseRegion(
+                                        cursor: SystemMouseCursors.click,
+                                        child: GestureDetector(
+                                          onTap: () {},
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Palette().darkBlue,
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 15,
+                                                vertical: 5,
+                                              ),
+                                              child: Text(
+                                                "공개",
+                                                style: TextStyle(
+                                                  fontSize: Sizes.size11,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                  const Expanded(
-                                    flex: 5,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "공지",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "이미지",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "작성일",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "공개 여부",
-                                        style: TextStyle(
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "수정",
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w500,
+                                  DataCell(
+                                    Center(
+                                      child: MouseRegion(
+                                        cursor: SystemMouseCursors.click,
+                                        child: GestureDetector(
+                                          onTap: () => editNotification(
+                                              context, size, _noticeList[i]),
+                                          child: Icon(
+                                            Icons.create,
+                                            size: Sizes.size16,
+                                            color: Palette().darkGray,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            Divider(
-                              color: Colors.grey.shade200,
-                            ),
-                            Gaps.v16,
-                            Expanded(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: _noticeList.length,
-                                itemBuilder: (context, index) {
-                                  final adminSecret = _noticeList[index]
-                                          .diaryId
-                                          .split(":")
-                                          .last ==
-                                      "true";
-
-                                  return Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              (index + 1).toString(),
-                                              style: const TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              _noticeList[index].todayDiary,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                fontSize: Sizes.size12,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: _noticeList[index]
-                                                    .images!
-                                                    .isEmpty
-                                                ? const Text(
-                                                    "-",
-                                                    softWrap: true,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      // color: Colors.white,
-                                                      fontSize: Sizes.size12,
-                                                    ),
-                                                  )
-                                                : SizedBox(
-                                                    width: 100,
-                                                    height: 100,
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        Sizes.size5,
-                                                      ),
-                                                      clipBehavior:
-                                                          Clip.hardEdge,
-                                                      child: Image.network(
-                                                        _noticeList[index]
-                                                            .images![0],
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              secondsToStringLine(
-                                                  _noticeList[index].createdAt),
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: Sizes.size12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size10,
-                                          ),
-                                          child: MouseRegion(
-                                            cursor: SystemMouseCursors.click,
-                                            child: GestureDetector(
-                                              onTap: () async {
-                                                await ref
-                                                    .read(
-                                                        noticeProvider.notifier)
-                                                    .changeAdminSecretDiary(
-                                                        _noticeList[index]
-                                                            .diaryId,
-                                                        adminSecret);
-                                                await fetchAllNoticies();
-                                              },
-                                              child: Align(
-                                                alignment: Alignment.center,
-                                                child: Text(
-                                                  adminSecret ? "비공개" : "공개",
-                                                  softWrap: true,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                    // color: Colors.white,
-                                                    fontSize: Sizes.size12,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: MouseRegion(
-                                          cursor: SystemMouseCursors.click,
-                                          child: GestureDetector(
-                                            onTap: () => editNotification(
-                                                context,
-                                                size.width,
-                                                size.height,
-                                                _noticeList[index]),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                vertical: Sizes.size10,
-                                              ),
-                                              child: CircleAvatar(
-                                                backgroundColor:
-                                                    Colors.grey.shade200,
-                                                child: Icon(
-                                                  Icons.chevron_right,
-                                                  size: Sizes.size16,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                            Gaps.v16,
                           ],
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          )
-        : loadingWidget(context);
+                    ),
+                  ],
+                )
+              : loadingWidget(context),
+        ));
   }
 }

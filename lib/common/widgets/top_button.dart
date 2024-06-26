@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/constants/const.dart';
+import 'package:onldocc_admin/constants/sizes.dart';
 
 class TopButton extends StatefulWidget {
   final String text;
@@ -36,7 +36,7 @@ class _TopButtonState extends State<TopButton> {
         onTap: widget.actionFunction,
         child: Container(
           width: 150,
-          height: searchHeight,
+          height: buttonHeight,
           decoration: BoxDecoration(
             color: _feedHover ? Colors.grey.shade200 : Colors.white,
             border: Border.all(

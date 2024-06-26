@@ -4,24 +4,22 @@ import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/widgets/bottom_modal_button.dart';
+import 'package:onldocc_admin/common/view_a/modal_screen.dart';
+import 'package:onldocc_admin/common/widgets/modal_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/notice/view_models/notice_view_model.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class UploadNotificationWidget extends ConsumerStatefulWidget {
   final BuildContext context;
-  final double totalWidth;
-  final double totalHeight;
   final Function() refreshScreen;
   const UploadNotificationWidget({
     super.key,
     required this.context,
-    required this.totalWidth,
-    required this.totalHeight,
     required this.refreshScreen,
   });
 
@@ -41,6 +39,18 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
   final TextEditingController _descriptionControllder = TextEditingController();
   bool uploadHoverBottmoButton = false;
   bool tapUploadNotification = false;
+
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size14,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
 
   Future<void> pickMultipleImagesFromGallery(
       void Function(void Function()) setState) async {
@@ -119,273 +129,219 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return StatefulBuilder(
       builder: (context, setState) {
-        return Container(
-          height: widget.totalHeight * 0.8,
-          width: widget.totalWidth,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(Sizes.size10),
-              topRight: Radius.circular(Sizes.size10),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(
-              Sizes.size40,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    BottomModalButton(
-                      text: "피드 공지 올리기",
-                      submitFunction: _submitFeedNotification,
-                      hoverBottomButton: uploadHoverBottmoButton,
-                      loading: tapUploadNotification,
+        return ModalScreen(
+          size: size,
+          modalTitle: "공지 올리기",
+          modalButtonOneText: "확인",
+          modalButtonOneFunction: () {},
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Gaps.v20,
+              Row(
+                children: [
+                  SizedBox(
+                    width: size.width * 0.12,
+                    height: 50,
+                    child: Text(
+                      "📌\n지역 보기\n상단 고정",
+                      style: _headerTextStyle,
+                      textAlign: TextAlign.start,
                     ),
-                  ],
-                ),
-                Gaps.v52,
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                  ),
+                  Gaps.h32,
+                  Transform.scale(
+                    scale: 1.3,
+                    child: Checkbox(
+                      value: _noticeTopFixed,
+                      activeColor: Palette().darkGreen,
+                      overlayColor: MaterialStateProperty.all(
+                          Palette().normalGreen.withOpacity(0.1)),
+                      onChanged: (value) {
+                        setState(
+                          () {
+                            _noticeTopFixed = !_noticeTopFixed;
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Gaps.h52,
+                  if (_noticeTopFixed)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Row(
+                        ModalButton(
+                          modalText: "고정 기한 선택하기",
+                          modalAction: () => selectNoticeFixedAt(setState),
+                        ),
+                        Gaps.h20,
+                        Column(
                           children: [
-                            SizedBox(
-                              width: widget.totalWidth * 0.12,
-                              height: 50,
-                              child: const Text(
-                                "지역 보기\n상단 고정 여부",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.start,
+                            Text(
+                              "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Palette().normalGray,
+                                fontSize: Sizes.size13,
                               ),
                             ),
-                            Gaps.h32,
-                            Checkbox(
-                              value: _noticeTopFixed,
-                              onChanged: (value) {
-                                setState(
-                                  () {
-                                    _noticeTopFixed = !_noticeTopFixed;
-                                  },
-                                );
-                              },
+                            Gaps.v2,
+                          ],
+                        ),
+                      ],
+                    )
+                ],
+              ),
+              Gaps.v52,
+              Row(
+                children: [
+                  SizedBox(
+                    width: size.width * 0.12,
+                    height: 200,
+                    child: Text(
+                      "공지 내용",
+                      style: _headerTextStyle,
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                  Gaps.h32,
+                  Expanded(
+                    child: SizedBox(
+                      height: 200,
+                      child: TextFormField(
+                        expands: true,
+                        maxLines: null,
+                        minLines: null,
+                        controller: _descriptionControllder,
+                        textAlignVertical: TextAlignVertical.top,
+                        style: _contentTextStyle,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          filled: true,
+                          fillColor: Palette().lightGreen.withOpacity(0.1),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              Sizes.size20,
                             ),
-                            Gaps.h52,
-                            if (_noticeTopFixed)
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () =>
-                                        selectNoticeFixedAt(setState),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey.shade200,
-                                      surfaceTintColor: Colors.pink.shade200,
-                                    ),
-                                    child: Text(
-                                      '고정 날짜 기한 선택하기',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade800,
-                                        fontSize: Sizes.size12,
+                          ),
+                          errorStyle: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              Sizes.size20,
+                            ),
+                            borderSide: BorderSide(
+                              width: 1.5,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              Sizes.size20,
+                            ),
+                            borderSide: BorderSide(
+                              width: 1.5,
+                              color: Palette().normalGreen.withOpacity(0.7),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              Sizes.size20,
+                            ),
+                            borderSide: BorderSide(
+                              width: 1.5,
+                              color: Palette().darkGreen.withOpacity(0.7),
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: Sizes.size20,
+                            vertical: Sizes.size20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Gaps.v52,
+              SizedBox(
+                height: 200,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: size.width * 0.12,
+                      child: Text(
+                        "이미지\n(선택)",
+                        style: _headerTextStyle,
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    Gaps.h32,
+                    ModalButton(
+                      modalText: "이미지 올리기",
+                      modalAction: () =>
+                          pickMultipleImagesFromGallery(setState),
+                    ),
+                    Gaps.h32,
+                    Expanded(
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _feedImageArray.length,
+                        itemBuilder: (context, index) {
+                          return Stack(
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                height: 200,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    Sizes.size5,
+                                  ),
+                                  child: Image.memory(
+                                    _feedImageArray[index],
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 10,
+                                right: 10,
+                                child: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _feedImageArray.removeAt(index);
+                                      });
+                                    },
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.grey.shade100,
+                                      child: const Icon(
+                                        Icons.close_rounded,
+                                        color: Colors.black87,
                                       ),
                                     ),
                                   ),
-                                  Gaps.h20,
-                                  Text(
-                                    "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade800,
-                                      fontSize: Sizes.size14,
-                                    ),
-                                  ),
-                                ],
-                              )
-                          ],
-                        ),
-                        Gaps.v52,
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: widget.totalWidth * 0.12,
-                              height: 200,
-                              child: const Text(
-                                "공지 내용",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                            ),
-                            Gaps.h32,
-                            SizedBox(
-                              width: widget.totalWidth * 0.6,
-                              height: 200,
-                              child: TextFormField(
-                                expands: true,
-                                maxLines: null,
-                                minLines: null,
-                                controller: _descriptionControllder,
-                                textAlignVertical: TextAlignVertical.top,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: Sizes.size14,
-                                  color: Colors.black87,
-                                ),
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                  hintText: "",
-                                  hintStyle: TextStyle(
-                                    fontSize: Sizes.size14,
-                                    color: Colors.grey.shade400,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey.shade50,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      Sizes.size3,
-                                    ),
-                                  ),
-                                  errorStyle: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      Sizes.size3,
-                                    ),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      Sizes.size3,
-                                    ),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey.shade300,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      Sizes.size3,
-                                    ),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: Sizes.size20,
-                                    vertical: Sizes.size20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Gaps.v52,
-                        SizedBox(
-                          height: 200,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: widget.totalWidth * 0.12,
-                                child: const Text(
-                                  "이미지 (선택)",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              Gaps.h32,
-                              SizedBox(
-                                child: ElevatedButton(
-                                  onPressed: () =>
-                                      pickMultipleImagesFromGallery(setState),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey.shade200,
-                                    surfaceTintColor: Colors.pink.shade200,
-                                  ),
-                                  child: Text(
-                                    '이미지 올리기',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade800,
-                                      fontSize: Sizes.size12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Gaps.h32,
-                              Expanded(
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: _feedImageArray.length,
-                                  itemBuilder: (context, index) {
-                                    return Stack(
-                                      children: [
-                                        SizedBox(
-                                          width: 200,
-                                          height: 200,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              Sizes.size5,
-                                            ),
-                                            child: Image.memory(
-                                              _feedImageArray[index],
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 10,
-                                          right: 10,
-                                          child: MouseRegion(
-                                            cursor: SystemMouseCursors.click,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  _feedImageArray
-                                                      .removeAt(index);
-                                                });
-                                              },
-                                              child: CircleAvatar(
-                                                backgroundColor:
-                                                    Colors.grey.shade100,
-                                                child: const Icon(
-                                                  Icons.close_rounded,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return Gaps.h10;
-                                  },
                                 ),
                               )
                             ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return Gaps.h10;
+                        },
+                      ),
+                    )
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

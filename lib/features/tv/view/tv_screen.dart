@@ -144,7 +144,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
             ),
           ),
           child: SizedBox(
-            height: searchHeight + Sizes.size40,
+            height: buttonHeight + Sizes.size40,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: Sizes.size10,
