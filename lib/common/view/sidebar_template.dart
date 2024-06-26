@@ -1,6 +1,7 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
@@ -8,7 +9,6 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
-import 'package:skeletons/skeletons.dart';
 
 const unselectedColor = Colors.black54;
 
@@ -232,7 +232,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                         Gaps.v5,
                                         CustomDropdown(
                                           onChanged: (value) =>
-                                              setContractRegion(value),
+                                              setContractRegion(value!),
                                           hintText: "지역 선택",
                                           decoration: CustomDropdownDecoration(
                                             hintStyle: TextStyle(
@@ -271,7 +271,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   Gaps.v5,
                                   CustomDropdown(
                                     onChanged: (value) =>
-                                        setContractCommunity(value),
+                                        setContractCommunity(value!),
                                     decoration: CustomDropdownDecoration(
                                       listItemStyle: TextStyle(
                                         fontSize: menuFontSize,

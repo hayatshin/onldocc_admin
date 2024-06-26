@@ -35,7 +35,7 @@ final routerProvider = Provider(
       redirect: (context, state) {
         final isLoggedIn = ref.watch(authRepo).isLoggedIn;
         if (!isLoggedIn) {
-          if (state.location != LoginScreen.routeURL) return "/";
+          if (state.matchedLocation != LoginScreen.routeURL) return "/";
         }
         return null;
       },

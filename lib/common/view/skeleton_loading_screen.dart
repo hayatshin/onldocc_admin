@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:skeletons/skeletons.dart';
 
 class SkeletonLoadingScreen extends StatelessWidget {
   const SkeletonLoadingScreen({super.key});
