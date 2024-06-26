@@ -7,6 +7,7 @@ import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
 import 'package:onldocc_admin/features/tv/widgets/edit_tv_widget.dart';
 import 'package:onldocc_admin/features/tv/widgets/upload_tv_widget.dart';
+import 'package:onldocc_admin/utils.dart';
 
 import '../../../common/view/search_below.dart';
 import '../../../constants/gaps.dart';
@@ -291,55 +292,69 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                     child: Align(
                                       alignment: Alignment.center,
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
-                                        child: _tvList[index].videoType ==
-                                                "youtube"
-                                            ? SizedBox(
-                                                width: 150,
-                                                height: 100,
-                                                child: Image.network(
-                                                  _tvList[index].thumbnail,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              )
-                                            : Container(
-                                                width: 150,
-                                                height: 100,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    border: Border.all(
-                                                      color:
-                                                          Colors.grey.shade200,
-                                                    )),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(3),
-                                                  child: Center(
-                                                    child: Flexible(
-                                                      child: Text(
-                                                        "파일 형식은 썸네일이 제공되지 않습니다.",
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        overflow: TextOverflow
-                                                            .visible,
-                                                        style: TextStyle(
-                                                          color: Colors
-                                                              .grey.shade500,
-                                                          fontSize:
-                                                              Sizes.size12,
-                                                        ),
-                                                        maxLines: null,
-                                                        softWrap: true,
-                                                      ),
-                                                    ),
+                                          borderRadius: BorderRadius.circular(
+                                            Sizes.size5,
+                                          ),
+                                          child: _tvList[index].videoType ==
+                                                  "youtube"
+                                              ? SizedBox(
+                                                  width: 150,
+                                                  height: 100,
+                                                  child: Image.network(
+                                                    _tvList[index].thumbnail,
+                                                    fit: BoxFit.cover,
                                                   ),
-                                                ),
-                                              ),
-                                      ),
+                                                )
+                                              : FutureBuilder(
+                                                  future:
+                                                      fetchVideoUrlThumbnail(
+                                                          _tvList[index].link),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      return Image.network(
+                                                          snapshot.data!.path);
+                                                    }
+                                                    return Container(
+                                                      width: 150,
+                                                      height: 100,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          border: Border.all(
+                                                            color: Colors
+                                                                .grey.shade200,
+                                                          )),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(3),
+                                                        child: Center(
+                                                          child: Flexible(
+                                                            child: Text(
+                                                              "파일 형식은 썸네일이 제공되지 않습니다.",
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .visible,
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade500,
+                                                                fontSize: Sizes
+                                                                    .size12,
+                                                              ),
+                                                              maxLines: null,
+                                                              softWrap: true,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                )),
                                     ),
                                   ),
                                 ),
