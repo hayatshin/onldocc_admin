@@ -19,7 +19,7 @@ class StepRepository {
           .eq('userId', userId)
           .eq('date', dateString);
 
-      if (query.length == 1) {
+      if (query.isNotEmpty) {
         stepList.add(query[0]);
       }
     });
