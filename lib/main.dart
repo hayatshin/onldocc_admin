@@ -56,13 +56,17 @@ class OnldoccAdmin extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
+      localizationsDelegates: const [],
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+      ],
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
       title: '인지케어 관리자페이지',
       scrollBehavior:
           ScrollConfiguration.of(context).copyWith(scrollbars: false),
       theme: ThemeData(
-        fontFamily: "NanumSquare",
+        fontFamily: "Pretendard",
         primaryColor: const Color(0xFFFF2D78),
         canvasColor: Colors.blueGrey.shade500,
         useMaterial3: true,
@@ -76,9 +80,9 @@ class OnldoccAdmin extends ConsumerWidget {
         focusColor: Colors.transparent,
         hoverColor: Colors.transparent,
         scrollbarTheme: ScrollbarThemeData(
-          thumbColor: MaterialStateProperty.all<Color>(
+          thumbColor: WidgetStateProperty.all<Color>(
               Palette().darkPurple.withOpacity(0.2)),
-          thickness: MaterialStateProperty.all<double>(8.0),
+          thickness: WidgetStateProperty.all<double>(8.0),
           radius: const Radius.circular(10),
         ),
       ),

@@ -36,7 +36,7 @@ final routerProvider = Provider(
       redirect: (context, state) {
         final isLoggedIn = ref.watch(authRepo).isLoggedIn;
         if (!isLoggedIn) {
-          if (state.location != LoginScreen.routeURL) return "/";
+          if (state.matchedLocation != LoginScreen.routeURL) return "/";
         }
         return null;
       },
@@ -99,9 +99,12 @@ final routerProvider = Provider(
                 menuNotifier.setSelectedMenu(6, context);
                 return SidebarTemplate(selectedMenuURL: 6, child: child);
 
-              case InvitationScreen.routeURL:
+              case TvScreen.routeURL:
                 menuNotifier.setSelectedMenu(7, context);
                 return SidebarTemplate(selectedMenuURL: 7, child: child);
+              // case InvitationScreen.routeURL:
+              //   menuNotifier.setSelectedMenu(7, context);
+              //   return SidebarTemplate(selectedMenuURL: 7, child: child);
 
               case CareScreen.routeURL:
                 menuNotifier.setSelectedMenu(10, context);
@@ -110,10 +113,6 @@ final routerProvider = Provider(
               case DecibelScreen.routeURL:
                 menuNotifier.setSelectedMenu(11, context);
                 return SidebarTemplate(selectedMenuURL: 11, child: child);
-
-              case TvScreen.routeURL:
-                menuNotifier.setSelectedMenu(12, context);
-                return SidebarTemplate(selectedMenuURL: 12, child: child);
             }
             return child;
           },
@@ -201,6 +200,25 @@ final routerProvider = Provider(
               ],
             ),
             GoRoute(
+              name: AlzheimerTestScreen.routeName,
+              path: AlzheimerTestScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const AlzheimerTestScreen(),
+              ),
+              routes: [
+                GoRoute(
+                  path: ":testId",
+                  pageBuilder: (context, state) => MaterialPage(
+                    key: state.pageKey,
+                    child: CognitionTestDetailScreen(
+                      model: state.extra as CognitionTestModel,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            GoRoute(
               name: QuizScreen.routeName,
               path: QuizScreen.routeURL,
               pageBuilder: (context, state) => NoTransitionPage(
@@ -227,25 +245,6 @@ final routerProvider = Provider(
               ],
             ),
             GoRoute(
-              name: AlzheimerTestScreen.routeName,
-              path: AlzheimerTestScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const AlzheimerTestScreen(),
-              ),
-              routes: [
-                GoRoute(
-                  path: ":testId",
-                  pageBuilder: (context, state) => MaterialPage(
-                    key: state.pageKey,
-                    child: CognitionTestDetailScreen(
-                      model: state.extra as CognitionTestModel,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            GoRoute(
               name: DepressionTestScreen.routeName,
               path: DepressionTestScreen.routeURL,
               pageBuilder: (context, state) => NoTransitionPage(
@@ -263,6 +262,14 @@ final routerProvider = Provider(
                   ),
                 )
               ],
+            ),
+            GoRoute(
+              name: TvScreen.routeName,
+              path: TvScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const TvScreen(),
+              ),
             ),
             GoRoute(
               name: InvitationScreen.routeName,
@@ -286,14 +293,6 @@ final routerProvider = Provider(
               pageBuilder: (context, state) => NoTransitionPage(
                 key: state.pageKey,
                 child: const DecibelScreen(),
-              ),
-            ),
-            GoRoute(
-              name: TvScreen.routeName,
-              path: TvScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const TvScreen(),
               ),
             ),
           ],

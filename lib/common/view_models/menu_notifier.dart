@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
+import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
+import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 
 class MenuNotifier extends ChangeNotifier {
@@ -81,24 +84,24 @@ final menuList = [
   Menu(
     index: 5,
     name: "온라인 치매 검사",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
+    routeName: AlzheimerTestScreen.routeName,
+    child: const AlzheimerTestScreen(),
     backButton: false,
     colorButton: const Color(0xff696EFF),
   ),
   Menu(
     index: 6,
     name: "노인 우울척도 검사",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
+    routeName: DepressionTestScreen.routeName,
+    child: const DepressionTestScreen(),
     backButton: false,
     colorButton: const Color(0xffF8ACFF),
   ),
   Menu(
     index: 7,
     name: "영상 관리",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
+    routeName: TvScreen.routeName,
+    child: const TvScreen(),
     backButton: false,
     colorButton: const Color(0xffFFBA49),
   ),

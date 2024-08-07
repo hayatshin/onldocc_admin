@@ -279,7 +279,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                                   child: CustomDropdown(
                                     onChanged: (value) {
                                       setState(() {
-                                        videoType = value;
+                                        videoType = value!;
                                       });
                                     },
                                     decoration: const CustomDropdownDecoration(

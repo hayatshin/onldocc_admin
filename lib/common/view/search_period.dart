@@ -82,7 +82,7 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                     // borderRadius: BorderRadius.circular(
                     //   Sizes.size4,
                     // ),
-                    onChanged: (value) => widget.updateOrderPeriod(value),
+                    onChanged: (value) => widget.updateOrderPeriod(value!),
                     hintText: "기간 선택",
                     // hintStyle: TextStyle(
                     //   color: Colors.grey.shade800,

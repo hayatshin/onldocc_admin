@@ -54,13 +54,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   AdminProfileModel _adminProfile = AdminProfileModel.empty();
 
   final TextStyle _headerTextStyle = TextStyle(
-    fontSize: Sizes.size12,
+    fontSize: Sizes.size13,
     fontWeight: FontWeight.w600,
     color: Palette().darkGray,
   );
 
   final TextStyle _contentTextStyle = TextStyle(
-    fontSize: Sizes.size11,
+    fontSize: Sizes.size12,
     fontWeight: FontWeight.w500,
     color: Palette().darkGray,
   );
@@ -267,7 +267,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   onPressed: removeDeleteOverlay,
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
+                        WidgetStateProperty.all(Colors.pink.shade100),
                   ),
                   child: Text(
                     "취소",
@@ -285,8 +285,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     setState(() {});
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
+                    backgroundColor:
+                        WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
                   child: const Text(
                     "삭제",

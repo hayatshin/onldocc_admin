@@ -42,7 +42,8 @@ String userAgeCalculation(String birthYear, String birthDay) {
     return returnAge.toString();
   } catch (e) {
     // ignore: avoid_print
-    return "";
+    print("userAgeCalculation: error -> $e");
+    return "0";
   }
 }
 

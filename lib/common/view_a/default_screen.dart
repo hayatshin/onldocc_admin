@@ -1,13 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/palette.dart';
 
 class DefaultScreen extends ConsumerWidget {
@@ -135,9 +138,20 @@ class DefaultTemplate extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15),
                           ),
                           clipBehavior: Clip.hardEdge,
-                          child: Image.network(
-                            adminModel.image,
-                            fit: BoxFit.cover,
+                          child: CachedNetworkImage(
+                            imageUrl: adminModel.image,
+                            errorWidget: (context, url, error) {
+                              return ColorFiltered(
+                                colorFilter: ColorFilter.mode(
+                                  InjicareColor().secondary20,
+                                  BlendMode.srcIn,
+                                ),
+                                child: SvgPicture.asset(
+                                  "assets/svg/profile-user.svg",
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
                           ),
                         ),
                         Gaps.h14,

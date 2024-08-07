@@ -24,6 +24,7 @@ class CognitionViewModel extends AsyncNotifier<List<CognitionTestModel>> {
     final list =
         await _cognitionTestRepo.getTestData(testType, adminProfileModel!);
     final modelList = list.map((e) => CognitionTestModel.fromJson(e)).toList();
+
     state = AsyncData(modelList);
     return modelList;
   }
