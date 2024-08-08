@@ -286,7 +286,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                         ],
                       ),
                       const SingleSidebarTile(
-                        index: 11,
+                        index: 10,
                         assetPath: "assets/svg/paper-plane.svg",
                         title: "친구 초대 관리",
                       ),
@@ -366,7 +366,9 @@ class SingleSidebarTile extends StatelessWidget {
       builder: (context, child) => MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: () => context.goNamed(menuList[index].routeName),
+          onTap: () {
+            context.goNamed(menuList[index].routeName);
+          },
           child: Padding(
             padding: const EdgeInsets.only(
               left: 10,

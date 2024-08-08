@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model_2.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -21,7 +21,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isPasswordInvisible = true;
-  final double? formWidth = 280;
+  final double? formWidth = 300;
   final double? formHeight = 42;
 
   Map<String, String> formData = {};
@@ -44,7 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         try {
           _formKey.currentState!.save();
           await ref
-              .read(adminProfileProvider2.notifier)
+              .read(adminProfileProvider.notifier)
               .login(formData["email"]!, formData["password"]!, context);
         } catch (e) {
           // ignore: avoid_print
@@ -171,7 +171,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       right: 0,
                       bottom: 0,
                       child: SizedBox(
-                        width: 360,
+                        width: 400,
                         child: Column(
                           children: [
                             Row(
@@ -190,7 +190,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                     cursorColor: Palette().darkPurple,
                                     onFieldSubmitted: (value) => _onSubmitTap(),
                                     textAlignVertical: TextAlignVertical.center,
-                                    style: InjicareFont().body03.copyWith(
+                                    style: InjicareFont().body06.copyWith(
                                           color: Palette().darkPurple,
                                         ),
                                     decoration: InputDecoration(
@@ -279,7 +279,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                     cursorColor: Palette().darkPurple,
                                     onFieldSubmitted: (value) => _onSubmitTap(),
                                     textAlignVertical: TextAlignVertical.center,
-                                    style: InjicareFont().body03.copyWith(
+                                    style: InjicareFont().body06.copyWith(
                                           color: Palette().darkPurple,
                                         ),
                                     obscureText: _isPasswordInvisible,

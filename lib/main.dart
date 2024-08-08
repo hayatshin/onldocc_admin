@@ -56,10 +56,10 @@ class OnldoccAdmin extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      localizationsDelegates: const [],
-      supportedLocales: const [
-        Locale('ko', 'KR'),
-      ],
+      // localizationsDelegates: const [],
+      // supportedLocales: const [
+      //   Locale('ko', 'KR'),
+      // ],
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
       title: '인지케어 관리자페이지',

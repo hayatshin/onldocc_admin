@@ -1,12 +1,14 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/common/widgets/period_button.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -20,7 +22,10 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
+  OverlayEntry? overlayEntry;
   final String _selectedPeriod = "이번달";
+
   GlobalKey diaryColumnKey = GlobalKey();
   double? diaryWidgetHeight = 300;
   GlobalKey aiColumnKey = GlobalKey();
@@ -45,9 +50,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showDashboardConstruction();
       _diaryCalculateHeight();
       _aiCalculateHeight();
     });
+  }
+
+  @override
+  void dispose() {
+    removeDashboardConstruction();
+    super.dispose();
   }
 
   void _diaryCalculateHeight() {
@@ -74,470 +86,283 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return DefaultScreen(
-      menu: menuList[0],
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  void _showDashboardConstruction() async {
+    assert(overlayEntry == null);
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned.fill(
+        child: Material(
+          color: Colors.black54,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const PeriodButton(),
-              ReportButton(
-                iconExists: true,
-                buttonText: "리포트 출력하기",
-                buttonColor: Palette().darkPurple,
-                action: () {},
+              ColorFiltered(
+                colorFilter:
+                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                child: SvgPicture.asset(
+                  "assets/svg/tools.svg",
+                  width: 40,
+                ),
+              ),
+              Gaps.v40,
+              Text(
+                "대시보드 화면은\n현재 작업 중입니다\n\n완성되기 전까지는 매달 메일로 전달드리는\n[인지케어 월별 리포트]를 참고해주세요",
+                style: InjicareFont().body07.copyWith(
+                      color: Colors.white,
+                    ),
+                textAlign: TextAlign.center,
               )
             ],
           ),
-          Gaps.v32,
-          // header
-          Container(
-            decoration: BoxDecoration(
-              color: Palette().darkPurple,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 5,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  HeaderBox(
-                    headerText: "누적 회원가입 수",
-                    headerColor: Palette().dashPink,
-                    contentData: "820 명",
-                  ),
-                  Container(
-                    width: 0.5,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Palette().darkGray,
-                    ),
-                  ),
-                  HeaderBox(
-                    headerText: "기간 회원가입 수",
-                    headerColor: Palette().dashBlue,
-                    contentData: "122 명",
-                  ),
-                  Container(
-                    width: 0.5,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Palette().darkGray,
-                    ),
-                  ),
-                  HeaderBox(
-                    headerText: "기간 방문 횟수",
-                    headerColor: Palette().dashGreen,
-                    contentData: "2000 번",
-                  ),
-                  Container(
-                    width: 0.5,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Palette().darkGray,
-                    ),
-                  ),
-                  HeaderBox(
-                    headerText: "기간 방문자 수",
-                    headerColor: Palette().dashYellow,
-                    contentData: "153 명",
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // 일기 데이터
-          const DashType(type: "일기 데이터"),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  key: diaryColumnKey,
-                  mainAxisSize: MainAxisSize.min,
+        ),
+      ),
+    );
+    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
+  }
+
+  void removeDashboardConstruction() {
+    overlayEntry?.remove();
+    overlayEntry = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Overlay(
+      initialEntries: [
+        OverlayEntry(
+          builder: (context) => DefaultScreen(
+            menu: menuList[0],
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    WhiteBox(
-                      boxTitle: "",
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          SubHeaderBox(
-                            subHeader: "일기 작성 횟수",
-                            subHeaderColor: Palette().dashPink,
-                            contentData: "18 회",
-                          ),
-                          const GrayDivider(
-                            height: 60,
-                          ),
-                          SubHeaderBox(
-                            subHeader: "댓글 횟수",
-                            subHeaderColor: Palette().dashBlue,
-                            contentData: "39 회",
-                          ),
-                          const GrayDivider(
-                            height: 60,
-                          ),
-                          SubHeaderBox(
-                            subHeader: "좋아요 횟수",
-                            subHeaderColor: Palette().dashGreen,
-                            contentData: "112 회",
-                          ),
-                        ],
-                      ),
+                    const PeriodButton(),
+                    ReportButton(
+                      iconExists: true,
+                      buttonText: "리포트 출력하기",
+                      buttonColor: Palette().darkPurple,
+                      action: () {},
+                    )
+                  ],
+                ),
+                Gaps.v32,
+                // headerin
+                Container(
+                  decoration: BoxDecoration(
+                    color: Palette().darkPurple,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
                     ),
-                    Gaps.v16,
-                    WhiteBox(
-                      boxTitle: "마음 분포도",
-                      child: Row(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        HeaderBox(
+                          headerText: "누적 회원가입 수",
+                          headerColor: Palette().dashPink,
+                          contentData: "820 명",
+                        ),
+                        Container(
+                          width: 0.5,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Palette().darkGray,
+                          ),
+                        ),
+                        HeaderBox(
+                          headerText: "기간 회원가입 수",
+                          headerColor: Palette().dashBlue,
+                          contentData: "122 명",
+                        ),
+                        Container(
+                          width: 0.5,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Palette().darkGray,
+                          ),
+                        ),
+                        HeaderBox(
+                          headerText: "기간 방문 횟수",
+                          headerColor: Palette().dashGreen,
+                          contentData: "2000 번",
+                        ),
+                        Container(
+                          width: 0.5,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Palette().darkGray,
+                          ),
+                        ),
+                        HeaderBox(
+                          headerText: "기간 방문자 수",
+                          headerColor: Palette().dashYellow,
+                          contentData: "153 명",
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // 일기 데이터
+                const DashType(type: "일기 데이터"),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        key: diaryColumnKey,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          SizedBox(
-                            width: 250,
-                            height: 250,
-                            child: SfCircularChart(
-                              legend: const Legend(isVisible: true),
-                              series: <PieSeries<ChartData, String>>[
-                                PieSeries(
-                                  explode: true,
-                                  explodeIndex: 0,
-                                  dataSource: moodData,
-                                  xValueMapper: (datum, index) => datum.x,
-                                  yValueMapper: (datum, index) => datum.y,
+                          WhiteBox(
+                            boxTitle: "",
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                SubHeaderBox(
+                                  subHeader: "일기 작성 횟수",
+                                  subHeaderColor: Palette().dashPink,
+                                  contentData: "18 회",
+                                ),
+                                const GrayDivider(
+                                  height: 60,
+                                ),
+                                SubHeaderBox(
+                                  subHeader: "댓글 횟수",
+                                  subHeaderColor: Palette().dashBlue,
+                                  contentData: "39 회",
+                                ),
+                                const GrayDivider(
+                                  height: 60,
+                                ),
+                                SubHeaderBox(
+                                  subHeader: "좋아요 횟수",
+                                  subHeaderColor: Palette().dashGreen,
+                                  contentData: "112 회",
+                                ),
+                              ],
+                            ),
+                          ),
+                          Gaps.v16,
+                          WhiteBox(
+                            boxTitle: "마음 분포도",
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 250,
+                                  height: 250,
+                                  child: SfCircularChart(
+                                    legend: const Legend(isVisible: true),
+                                    series: <PieSeries<ChartData, String>>[
+                                      PieSeries(
+                                        explode: true,
+                                        explodeIndex: 0,
+                                        dataSource: moodData,
+                                        xValueMapper: (datum, index) => datum.x,
+                                        yValueMapper: (datum, index) => datum.y,
+                                      )
+                                    ],
+                                  ),
                                 )
                               ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Gaps.v16,
-                    WhiteBox(
-                      boxTitle: "문제 풀기",
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          right: 80,
-                          left: 30,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                "20 회",
-                                style: TextStyle(
-                                  fontSize: Sizes.size16,
-                                  fontWeight: FontWeight.w800,
-                                  color: Palette().darkGray,
-                                ),
+                          ),
+                          Gaps.v16,
+                          WhiteBox(
+                            boxTitle: "문제 풀기",
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                right: 80,
+                                left: 30,
                               ),
-                            ),
-                            Expanded(
-                              flex: 2,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    children: [
-                                      Text(
-                                        "맞음",
-                                        style: TextStyle(
-                                          color: Palette().normalGray,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                      ),
-                                      Gaps.v10,
-                                      Text(
-                                        "19 회",
-                                        style: TextStyle(
-                                          color: Palette().darkGray,
-                                          fontSize: Sizes.size16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const GrayDivider(
-                                    height: 60,
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        "틀림",
-                                        style: TextStyle(
-                                          color: Palette().normalGray,
-                                          fontSize: Sizes.size12,
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                      ),
-                                      Gaps.v10,
-                                      Text(
-                                        "1 회",
-                                        style: TextStyle(
-                                          color: Palette().darkGray,
-                                          fontSize: Sizes.size16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Gaps.h20,
-              Expanded(
-                child: SizedBox(
-                  height: diaryWidgetHeight,
-                  child: WhiteBox(
-                    boxTitle: "10회 이상 일기 작성자",
-                    child: Expanded(
-                      child: ListView.separated(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                        ),
-                        itemCount: 10,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Text(
-                                  "${index + 1}",
-                                  style: TextStyle(
-                                    fontSize: Sizes.size16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Palette().darkGray,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Palette().lightGray,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 8,
-                                child: Text(
-                                  "김영자",
-                                  style: TextStyle(
-                                    fontSize: Sizes.size16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Palette().darkGray,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      "18회",
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      "20 회",
                                       style: TextStyle(
                                         fontSize: Sizes.size16,
                                         fontWeight: FontWeight.w800,
                                         color: Palette().darkGray,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Text(
+                                              "맞음",
+                                              style: TextStyle(
+                                                color: Palette().normalGray,
+                                                fontSize: Sizes.size12,
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                            ),
+                                            Gaps.v10,
+                                            Text(
+                                              "19 회",
+                                              style: TextStyle(
+                                                color: Palette().darkGray,
+                                                fontSize: Sizes.size16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const GrayDivider(
+                                          height: 60,
+                                        ),
+                                        Column(
+                                          children: [
+                                            Text(
+                                              "틀림",
+                                              style: TextStyle(
+                                                color: Palette().normalGray,
+                                                fontSize: Sizes.size12,
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                            ),
+                                            Gaps.v10,
+                                            Text(
+                                              "1 회",
+                                              style: TextStyle(
+                                                color: Palette().darkGray,
+                                                fontSize: Sizes.size16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
                               ),
-                            ],
-                          );
-                        },
-                        separatorBuilder: (context, index) => Gaps.v10,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          // 인지 검사 데이터
-          const DashType(type: "인지 검사 데이터"),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: WhiteBox(
-                  boxTitle: "",
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SubHeaderBox(
-                        subHeader: "전체",
-                        subHeaderColor: Palette().dashPink,
-                        contentData: "32 회",
-                      ),
-                      const GrayDivider(height: 60),
-                      SubHeaderBox(
-                        subHeader: "온라인 치매 검사",
-                        subHeaderColor: Palette().dashBlue,
-                        contentData: "20 회",
-                      ),
-                      const GrayDivider(height: 60),
-                      SubHeaderBox(
-                        subHeader: "노인 우울척도 검사",
-                        subHeaderColor: Palette().dashGreen,
-                        contentData: "12 회",
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Gaps.h20,
-              Expanded(
-                child: Container(),
-              ),
-            ],
-          ),
-          Gaps.v16,
-          const Row(
-            children: [
-              // 온라인 치매 검사
-              CognitionDetailTestBox(
-                detailTest: "온라인 치매 검사",
-                testResult1: "정상",
-                testResult1Data: "18회",
-                testResult2: "치매 조기 검진 필요",
-                testResult2Data: "2회",
-                listName: "치매 조기 검진 필요 대상자",
-              ),
-              Gaps.h20,
-              CognitionDetailTestBox(
-                detailTest: "노인 우울척도 검사",
-                testResult1: "정상",
-                testResult1Data: "18회",
-                testResult2: "우울",
-                testResult2Data: "2회",
-                listName: "우울 대상자",
-              ),
-            ],
-          ),
-          // 걸음수 데이터
-          const DashType(type: "AI 대화하기 데이터"),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 1,
-                child: WhiteBox(
-                  key: aiColumnKey,
-                  boxTitle: "",
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SubHeaderBox(
-                              subHeader: "총 대화 횟수",
-                              subHeaderColor: Palette().dashPink,
-                              contentData: "20 회",
-                            ),
-                            Gaps.v20,
-                            SubHeaderBox(
-                              subHeader: "총 대화 시간",
-                              subHeaderColor: Palette().dashBlue,
-                              contentData: "2시간 30분",
-                            ),
-                            Gaps.v20,
-                            SubHeaderBox(
-                              subHeader: "평균 대화 시간",
-                              subHeaderColor: Palette().dashGreen,
-                              contentData: "2분 30초",
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Gaps.h20,
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  height: aiWidgetHeight,
-                  child: WhiteBox(
-                    boxTitle: "AI 대화하기 사용자",
-                    child: Expanded(
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 4,
-                                child: Text(
-                                  "#",
-                                  style: TextStyle(
-                                    color: Palette().darkGray,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: Sizes.size14,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "사용 횟수",
-                                      style: TextStyle(
-                                        color: Palette().darkGray,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: Sizes.size14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "총 사용 시간",
-                                      style: TextStyle(
-                                        color: Palette().darkGray,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: Sizes.size14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Gaps.v10,
-                          Expanded(
+                    Gaps.h20,
+                    Expanded(
+                      child: SizedBox(
+                        height: diaryWidgetHeight,
+                        child: WhiteBox(
+                          boxTitle: "10회 이상 일기 작성자",
+                          child: Expanded(
                             child: ListView.separated(
-                              itemCount: 5,
-                              padding: const EdgeInsets.only(top: 10),
-                              separatorBuilder: (context, index) => Gaps.v10,
+                              padding: const EdgeInsets.only(
+                                top: 20,
+                              ),
+                              itemCount: 10,
                               itemBuilder: (context, index) {
                                 return Row(
                                   children: [
@@ -546,71 +371,50 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                       child: Text(
                                         "${index + 1}",
                                         style: TextStyle(
+                                          fontSize: Sizes.size16,
+                                          fontWeight: FontWeight.w700,
                                           color: Palette().darkGray,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: Sizes.size14,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                      ),
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Palette().lightGray,
                                         ),
                                       ),
                                     ),
                                     Expanded(
-                                      flex: 1,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: 30,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              color: Palette().lightGray,
-                                            ),
-                                          ),
-                                        ],
+                                      flex: 8,
+                                      child: Text(
+                                        "김영자",
+                                        style: TextStyle(
+                                          fontSize: Sizes.size16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Palette().darkGray,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     Expanded(
                                       flex: 2,
-                                      child: Text(
-                                        "김영자",
-                                        style: TextStyle(
-                                          color: Palette().darkGray,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: Sizes.size14,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.end,
                                         children: [
                                           Text(
                                             "18회",
                                             style: TextStyle(
+                                              fontSize: Sizes.size16,
+                                              fontWeight: FontWeight.w800,
                                               color: Palette().darkGray,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: Sizes.size14,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "4분 30초",
-                                            style: TextStyle(
-                                              color: Palette().darkGray,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: Sizes.size14,
                                             ),
                                           ),
                                         ],
@@ -619,277 +423,546 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   ],
                                 );
                               },
+                              separatorBuilder: (context, index) => Gaps.v10,
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              )
-            ],
-          ),
-          // 걸음수 데이터
-          const DashType(type: "걸음수 데이터"),
-          Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 15,
-                        ),
+                // 인지 검사 데이터
+                const DashType(type: "인지 검사 데이터"),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: WhiteBox(
+                        boxTitle: "",
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Text(
-                              "기간 평균 걸음수",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: Sizes.size13,
-                                  color: Palette().darkPurple),
+                            SubHeaderBox(
+                              subHeader: "전체",
+                              subHeaderColor: Palette().dashPink,
+                              contentData: "32 회",
                             ),
-                            Text(
-                              "940 보",
-                              style: TextStyle(
-                                fontSize: Sizes.size16,
-                                fontWeight: FontWeight.w800,
-                                color: Palette().darkGray,
-                              ),
-                            )
+                            const GrayDivider(height: 60),
+                            SubHeaderBox(
+                              subHeader: "온라인 치매 검사",
+                              subHeaderColor: Palette().dashBlue,
+                              contentData: "20 회",
+                            ),
+                            const GrayDivider(height: 60),
+                            SubHeaderBox(
+                              subHeader: "노인 우울척도 검사",
+                              subHeaderColor: Palette().dashGreen,
+                              contentData: "12 회",
+                            ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                  Gaps.h20,
-                  Expanded(
-                    flex: 2,
-                    child: Container(),
-                  )
-                ],
-              ),
-              Gaps.v20,
-              SfCartesianChart(
-                primaryXAxis: CategoryAxis(),
-                series: <CartesianSeries>[
-                  SplineSeries<ChartData, String>(
-                    dataSource: stepData,
-                    xValueMapper: (ChartData datum, index) => datum.x,
-                    yValueMapper: (ChartData datum, index) => datum.y,
-                    pointColorMapper: (datum, index) => Palette().darkPurple,
-                  ),
-                ],
-              )
-            ],
-          ),
-          const DashType(type: "보호자 지정 알림"),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "사용자가 설정한 '설정일'을 기준으로 사용자의 활동이 없을 경우 상태에 빨간불 표시가 되어있습니다.",
-                style: TextStyle(
-                  fontSize: Sizes.size12,
-                  color: Palette().normalGray,
+                    Gaps.h20,
+                    Expanded(
+                      child: Container(),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          Gaps.v16,
-          Row(
-            children: [
-              Expanded(
-                child: WhiteBox(
-                  boxTitle: "",
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              "#",
-                              style: TextStyle(
-                                color: Palette().darkGray,
-                                fontWeight: FontWeight.w700,
-                                fontSize: Sizes.size14,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              "사진",
-                              style: TextStyle(
-                                color: Palette().darkGray,
-                                fontWeight: FontWeight.w700,
-                                fontSize: Sizes.size14,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              "이름",
-                              style: TextStyle(
-                                color: Palette().darkGray,
-                                fontWeight: FontWeight.w700,
-                                fontSize: Sizes.size14,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "설정일",
-                                  style: TextStyle(
-                                    color: Palette().darkGray,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: Sizes.size14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "상태",
-                                  style: TextStyle(
-                                    color: Palette().darkGray,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: Sizes.size14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Gaps.v10,
-                      SizedBox(
-                        height: 150,
-                        child: Column(
+                Gaps.v16,
+                const Row(
+                  children: [
+                    // 온라인 치매 검사
+                    CognitionDetailTestBox(
+                      detailTest: "온라인 치매 검사",
+                      testResult1: "정상",
+                      testResult1Data: "18회",
+                      testResult2: "치매 조기 검진 필요",
+                      testResult2Data: "2회",
+                      listName: "치매 조기 검진 필요 대상자",
+                    ),
+                    Gaps.h20,
+                    CognitionDetailTestBox(
+                      detailTest: "노인 우울척도 검사",
+                      testResult1: "정상",
+                      testResult1Data: "18회",
+                      testResult2: "우울",
+                      testResult2Data: "2회",
+                      listName: "우울 대상자",
+                    ),
+                  ],
+                ),
+                // 걸음수 데이터
+                const DashType(type: "AI 대화하기 데이터"),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: WhiteBox(
+                        key: aiColumnKey,
+                        boxTitle: "",
+                        child: Row(
                           children: [
                             Expanded(
-                              child: ListView.separated(
-                                itemCount: 5,
-                                padding: const EdgeInsets.only(top: 10),
-                                separatorBuilder: (context, index) => Gaps.v10,
-                                itemBuilder: (context, index) {
-                                  return Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text(
-                                          "${index + 1}",
-                                          style: TextStyle(
-                                            color: Palette().darkGray,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: Sizes.size14,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  SubHeaderBox(
+                                    subHeader: "총 대화 횟수",
+                                    subHeaderColor: Palette().dashPink,
+                                    contentData: "20 회",
+                                  ),
+                                  Gaps.v20,
+                                  SubHeaderBox(
+                                    subHeader: "총 대화 시간",
+                                    subHeaderColor: Palette().dashBlue,
+                                    contentData: "2시간 30분",
+                                  ),
+                                  Gaps.v20,
+                                  SubHeaderBox(
+                                    subHeader: "평균 대화 시간",
+                                    subHeaderColor: Palette().dashGreen,
+                                    contentData: "2분 30초",
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Gaps.h20,
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: aiWidgetHeight,
+                        child: WhiteBox(
+                          boxTitle: "AI 대화하기 사용자",
+                          child: Expanded(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 4,
+                                      child: Text(
+                                        "#",
+                                        style: TextStyle(
+                                          color: Palette().darkGray,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: Sizes.size14,
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              width: 30,
-                                              height: 30,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                                color: Palette().lightGray,
-                                              ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "사용 횟수",
+                                            style: TextStyle(
+                                              color: Palette().darkGray,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: Sizes.size14,
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          "김영자",
-                                          style: TextStyle(
-                                            color: Palette().darkGray,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: Sizes.size14,
-                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              "7일",
-                                              style: TextStyle(
-                                                color: Palette().darkGray,
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: Sizes.size14,
-                                              ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "총 사용 시간",
+                                            style: TextStyle(
+                                              color: Palette().darkGray,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: Sizes.size14,
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              "🚨",
+                                    ),
+                                  ],
+                                ),
+                                Gaps.v10,
+                                Expanded(
+                                  child: ListView.separated(
+                                    itemCount: 5,
+                                    padding: const EdgeInsets.only(top: 10),
+                                    separatorBuilder: (context, index) =>
+                                        Gaps.v10,
+                                    itemBuilder: (context, index) {
+                                      return Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 1,
+                                            child: Text(
+                                              "${index + 1}",
                                               style: TextStyle(
                                                 color: Palette().darkGray,
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: Sizes.size14,
                                               ),
                                             ),
-                                          ],
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  width: 30,
+                                                  height: 30,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                    color: Palette().lightGray,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Text(
+                                              "김영자",
+                                              style: TextStyle(
+                                                color: Palette().darkGray,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: Sizes.size14,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "18회",
+                                                  style: TextStyle(
+                                                    color: Palette().darkGray,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: Sizes.size14,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "4분 30초",
+                                                  style: TextStyle(
+                                                    color: Palette().darkGray,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: Sizes.size14,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                // 걸음수 데이터
+                const DashType(type: "걸음수 데이터"),
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.white,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 15,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    "기간 평균 걸음수",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: Sizes.size13,
+                                        color: Palette().darkPurple),
+                                  ),
+                                  Text(
+                                    "940 보",
+                                    style: TextStyle(
+                                      fontSize: Sizes.size16,
+                                      fontWeight: FontWeight.w800,
+                                      color: Palette().darkGray,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Gaps.h20,
+                        Expanded(
+                          flex: 2,
+                          child: Container(),
+                        )
+                      ],
+                    ),
+                    Gaps.v20,
+                    SfCartesianChart(
+                      primaryXAxis: const CategoryAxis(),
+                      series: <CartesianSeries>[
+                        SplineSeries<ChartData, String>(
+                          dataSource: stepData,
+                          xValueMapper: (ChartData datum, index) => datum.x,
+                          yValueMapper: (ChartData datum, index) => datum.y,
+                          pointColorMapper: (datum, index) =>
+                              Palette().darkPurple,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                const DashType(type: "보호자 지정 알림"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "사용자가 설정한 '설정일'을 기준으로 사용자의 활동이 없을 경우 상태에 빨간불 표시가 되어있습니다.",
+                      style: TextStyle(
+                        fontSize: Sizes.size12,
+                        color: Palette().normalGray,
+                      ),
+                    ),
+                  ],
+                ),
+                Gaps.v16,
+                Row(
+                  children: [
+                    Expanded(
+                      child: WhiteBox(
+                        boxTitle: "",
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    "#",
+                                    style: TextStyle(
+                                      color: Palette().darkGray,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: Sizes.size14,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    "사진",
+                                    style: TextStyle(
+                                      color: Palette().darkGray,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: Sizes.size14,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    "이름",
+                                    style: TextStyle(
+                                      color: Palette().darkGray,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: Sizes.size14,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "설정일",
+                                        style: TextStyle(
+                                          color: Palette().darkGray,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: Sizes.size14,
                                         ),
                                       ),
                                     ],
-                                  );
-                                },
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "상태",
+                                        style: TextStyle(
+                                          color: Palette().darkGray,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: Sizes.size14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Gaps.v10,
+                            SizedBox(
+                              height: 150,
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView.separated(
+                                      itemCount: 5,
+                                      padding: const EdgeInsets.only(top: 10),
+                                      separatorBuilder: (context, index) =>
+                                          Gaps.v10,
+                                      itemBuilder: (context, index) {
+                                        return Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
+                                              child: Text(
+                                                "${index + 1}",
+                                                style: TextStyle(
+                                                  color: Palette().darkGray,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: Sizes.size14,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: 30,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                      color:
+                                                          Palette().lightGray,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 2,
+                                              child: Text(
+                                                "김영자",
+                                                style: TextStyle(
+                                                  color: Palette().darkGray,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: Sizes.size14,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "7일",
+                                                    style: TextStyle(
+                                                      color: Palette().darkGray,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontSize: Sizes.size14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "🚨",
+                                                    style: TextStyle(
+                                                      color: Palette().darkGray,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: Sizes.size14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Gaps.h20,
-              Expanded(
-                child: Container(),
-              ),
-            ],
-          )
-        ],
-      ),
+                    ),
+                    Gaps.h20,
+                    Expanded(
+                      child: Container(),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 }
@@ -1373,7 +1446,7 @@ class PeriodDropdownMenu extends StatelessWidget {
             ),
             scrollbarTheme: ScrollbarThemeData(
               radius: const Radius.circular(10),
-              thumbVisibility: MaterialStateProperty.all(true),
+              thumbVisibility: WidgetStateProperty.all(true),
             ),
           ),
           menuItemStyleData: const MenuItemStyleData(

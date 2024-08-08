@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
+import 'package:onldocc_admin/features/care/view/care_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
+import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
@@ -108,24 +111,24 @@ final menuList = [
   Menu(
     index: 8,
     name: "보호자 지정",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
+    routeName: CareScreen.routeName,
+    child: const CareScreen(),
     backButton: false,
     colorButton: const Color(0xff20A39E),
   ),
   Menu(
     index: 9,
     name: "화풀기",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
+    routeName: DecibelScreen.routeName,
+    child: const DecibelScreen(),
     backButton: false,
     colorButton: const Color(0xffEF5B5B),
   ),
   Menu(
     index: 10,
     name: "친구 초대 관리",
-    routeName: UsersScreen.routeName,
-    child: const UsersScreen(),
+    routeName: InvitationScreen.routeName,
+    child: const InvitationScreen(),
     backButton: false,
     colorButton: null,
   ),

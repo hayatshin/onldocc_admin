@@ -110,7 +110,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
         _feedDescription = _descriptionControllder.text;
       });
     });
-    _findPosition();
+    // _findPosition();
   }
 
   @override
@@ -143,7 +143,6 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
     setState(() {
       _offset = position;
     });
-    print("offset: $_offset");
   }
 
   @override
@@ -155,7 +154,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
           size: size,
           modalTitle: "공지 올리기",
           modalButtonOneText: "확인",
-          modalButtonOneFunction: () {},
+          modalButtonOneFunction: _submitFeedNotification,
           child: Stack(
             children: [
               Column(

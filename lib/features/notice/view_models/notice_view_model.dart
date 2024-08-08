@@ -6,7 +6,6 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/features/notice/repo/notice_repo.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
-import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class NoticeViewModel extends AsyncNotifier<void> {
@@ -57,7 +56,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
 
     if (!isUserExist) {
       await ref
-          .read(userProvider.notifier)
+          .read(adminProfileProvider.notifier)
           .saveAdminUser(notiUserId, selectContractRegion.value!);
     }
 

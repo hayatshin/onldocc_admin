@@ -4,9 +4,10 @@ import 'dart:html';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/common/view_a/default_screen.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/decibel/models/decibel_model.dart';
 import 'package:onldocc_admin/features/decibel/view_models/decibel_view_model.dart';
@@ -153,139 +154,140 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return !loadingFinished
-        ? const SkeletonLoadingScreen()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SearchCsv(
-                filterUserList: filterUserDataList,
-                resetInitialList: resetInitialList,
-                generateCsv: generateUserCsv,
-              ),
-              SearchBelow(
-                size: size,
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                    Sizes.size10,
-                  ),
-                  child: DataTable2(
-                    columns: const [
-                      DataColumn2(
-                        label: Text(
-                          "날짜",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+    return DefaultScreen(
+      menu: menuList[9],
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SearchCsv(
+              filterUserList: filterUserDataList,
+              resetInitialList: resetInitialList,
+              generateCsv: generateUserCsv,
+            ),
+            loadingFinished
+                ? Expanded(
+                    child: DataTable2(
+                      columns: const [
+                        DataColumn2(
+                          label: Text(
+                            "날짜",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 200,
-                        label: Text(
-                          "데시벨",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 200,
+                          label: Text(
+                            "데시벨",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "이름",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 140,
+                          label: Text(
+                            "이름",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "나이",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 140,
+                          label: Text(
+                            "나이",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "성별",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 140,
+                          label: Text(
+                            "성별",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          "핸드폰 번호",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          label: Text(
+                            "핸드폰 번호",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                    rows: [
-                      for (var i = 0; i < _userDataList.length; i++)
-                        DataRow2(
-                          cells: [
-                            DataCell(
-                              Text(
-                                secondsToYearMonthDayHourMinute(
-                                    _userDataList[i].createdAt),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                      ],
+                      rows: [
+                        for (var i = 0; i < _userDataList.length; i++)
+                          DataRow2(
+                            cells: [
+                              DataCell(
+                                Text(
+                                  secondsToYearMonthDayHourMinute(
+                                      _userDataList[i].createdAt),
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].decibel,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i].decibel,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].name.length > 8
-                                    ? "${_userDataList[i].name.substring(0, 8)}.."
-                                    : _userDataList[i].name,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i].name.length > 8
+                                      ? "${_userDataList[i].name.substring(0, 8)}.."
+                                      : _userDataList[i].name,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].age,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i].age,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].gender,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i].gender,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].phone,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i].phone,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          );
+                            ],
+                          ),
+                      ],
+                    ),
+                  )
+                : const SkeletonLoadingScreen()
+          ],
+        ),
+      ),
+    );
   }
 }
