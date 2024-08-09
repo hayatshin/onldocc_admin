@@ -265,6 +265,11 @@ int convertEndDateTimeToSeconds(DateTime date) {
   return (millisecondsSinceEpoch / 1000).round();
 }
 
+String periodDateFormat(DateTime dateTime) {
+  final formattedDate = DateFormat('yyyy/MM/dd').format(dateTime);
+  return formattedDate;
+}
+
 DateTime getThisWeekMonday() {
   DateTime now = DateTime.now();
   int difference = now.weekday - 1;

@@ -1,6 +1,7 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
@@ -25,7 +26,18 @@ class DepressionTestScreen extends ConsumerStatefulWidget {
 }
 
 class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
-  bool loadingFinished = false;
+  bool _loadingFinished = false;
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size13,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
   final List<String> _tableHeader = [
     "시행 날짜",
     "분류",
@@ -88,7 +100,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
     downloadCsv(csvContent, fileName);
   }
 
-  Future<void> filterUserDataList(
+  Future<void> _filterUserDataList(
       String? searchBy, String searchKeyword) async {
     List<CognitionTestModel> initialList =
         ref.read(cognitionTestProvider).value ??
@@ -97,7 +109,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                 .getCognitionTestData(depression_test);
 
     List<CognitionTestModel> filterList = [];
-    if (searchBy == "name") {
+    if (searchBy == "이름") {
       filterList = initialList
           .where((element) => element.userName!.contains(searchKeyword))
           .cast<CognitionTestModel>()
@@ -122,7 +134,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
     if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
-          loadingFinished = true;
+          _loadingFinished = true;
           _testList = testList;
         });
       }
@@ -136,14 +148,14 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
             .toList();
         if (mounted) {
           setState(() {
-            loadingFinished = true;
+            _loadingFinished = true;
             _testList = filterDataList;
           });
         }
       } else {
         if (mounted) {
           setState(() {
-            loadingFinished = true;
+            _loadingFinished = true;
             _testList = testList;
           });
         }
@@ -161,7 +173,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
     selectContractRegion.addListener(() async {
       if (mounted) {
         setState(() {
-          loadingFinished = false;
+          _loadingFinished = false;
         });
 
         await _initializeTableList();
@@ -177,15 +189,16 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
       child: SizedBox(
         width: size.width,
         height: size.height,
-        child: loadingFinished
-            ? Column(
-                children: [
-                  SearchCsv(
-                    filterUserList: filterUserDataList,
-                    resetInitialList: _initializeTableList,
-                    generateCsv: generateUserCsv,
-                  ),
-                  Expanded(
+        child: Column(
+          children: [
+            SearchCsv(
+              filterUserList: _filterUserDataList,
+              resetInitialList: _initializeTableList,
+              generateCsv: generateUserCsv,
+            ),
+            !_loadingFinished
+                ? const SkeletonLoadingScreen()
+                : Expanded(
                     child: DataTable2(
                       isVerticalScrollBarVisible: false,
                       smRatio: 0.7,
@@ -201,82 +214,58 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                         ),
                       ),
                       columns: [
-                        const DataColumn2(
+                        DataColumn2(
                           fixedWidth: 130,
                           label: Text(
                             "시행 날짜",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Colors.black,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           fixedWidth: 100,
                           label: Text(
                             "분류",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Colors.black,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           fixedWidth: 100,
                           label: Text(
                             "점수",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Colors.black,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           label: Text(
                             "이름",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Colors.black,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           fixedWidth: 100,
                           label: Text(
                             "성별",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Colors.black,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           fixedWidth: 100,
                           label: Text(
                             "나이",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Colors.black,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
-                        const DataColumn2(
+                        DataColumn2(
                           label: Text(
                             "핸드폰 번호",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Colors.black,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           fixedWidth: 100,
                           label: Text(
                             "자세히 보기",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                       ],
@@ -287,94 +276,72 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
                               DataCell(
                                 Text(
                                   secondsToStringLine(_testList[i].createdAt),
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].result,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].totalPoint.toString(),
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userName!,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userGender!,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userAge!.toString(),
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userPhone!,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                MouseRegion(
-                                  cursor: SystemMouseCursors.click,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      context.go(
-                                        "/depression/${_testList[i].testId}",
-                                        extra: _testList[i],
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: Sizes.size10,
-                                      ),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.grey.shade200,
-                                        child: Icon(
-                                          Icons.chevron_right,
-                                          size: Sizes.size16,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
+                                Center(
+                                  child: MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        context.go(
+                                          "/depression/${_testList[i].testId}",
+                                          extra: _testList[i],
+                                        );
+                                      },
+                                      child: FaIcon(
+                                        FontAwesomeIcons.arrowRight,
+                                        color: Palette().darkGray,
+                                        size: 14,
                                       ),
                                     ),
                                   ),
                                 ),
-                              )
+                              ),
                             ],
                           )
                       ],
                     ),
                   ),
-                ],
-              )
-            : const SkeletonLoadingScreen(),
+          ],
+        ),
       ),
     );
   }

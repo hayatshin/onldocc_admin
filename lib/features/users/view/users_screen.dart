@@ -120,8 +120,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   }
 
   Future<void> _getUserModelList() async {
-    List<UserModel?> userDataList = ref.read(userProvider).value!;
-    int rowCount = _pageCount + _offset;
+    List<UserModel?> userDataList = ref.read(userProvider).value ??
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
+    int rowCount =
+        userDataList.length > 20 ? _pageCount + _offset : userDataList.length;
 
     if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
@@ -189,6 +193,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     });
   }
 
+  // excel
   List<dynamic> exportToList(int index, UserModel userModel) {
     return [
       index,
@@ -257,7 +262,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned.fill(
         child: Material(
-          color: Colors.black54,
+          color: Colors.black38,
           child: Center(
             child: AlertDialog(
               title: Text(

@@ -111,9 +111,9 @@ final routerProvider = Provider(
                 menuNotifier.setSelectedMenu(9, context);
                 return SidebarTemplate(selectedMenuURL: 9, child: child);
 
-              case InvitationScreen.routeURL:
-                menuNotifier.setSelectedMenu(10, context);
-                return SidebarTemplate(selectedMenuURL: 10, child: child);
+              // case InvitationScreen.routeURL:
+              //   menuNotifier.setSelectedMenu(10, context);
+              //   return SidebarTemplate(selectedMenuURL: 10, child: child);
             }
             return child;
           },

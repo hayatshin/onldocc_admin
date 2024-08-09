@@ -25,7 +25,8 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
 
     final points = await _rankingRepo.getUserPoints(nonNullUserList, range);
     final userpoints = points.map((e) => UserModel.fromJson(e)).toList();
-    userpoints.sort((a, b) => b.totalScore!.compareTo(a.totalScore!));
+
+    userpoints.sort((a, b) => b.totalPoint!.compareTo(a.totalPoint!));
 
     return indexRankingModel(userpoints);
   }
@@ -40,7 +41,7 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
       );
       list.add(indexUpdateUser);
       if (userList.length > i + 1) {
-        if (userList[i].totalScore != userList[i + 1].totalScore) {
+        if (userList[i].totalPoint != userList[i + 1].totalPoint) {
           count++;
         }
       }

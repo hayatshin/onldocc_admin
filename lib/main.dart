@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/firebase_options.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/router.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
@@ -56,10 +58,13 @@ class OnldoccAdmin extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      // localizationsDelegates: const [],
-      // supportedLocales: const [
-      //   Locale('ko', 'KR'),
-      // ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+      ],
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
       title: '인지케어 관리자페이지',
@@ -67,6 +72,13 @@ class OnldoccAdmin extends ConsumerWidget {
           ScrollConfiguration.of(context).copyWith(scrollbars: false),
       theme: ThemeData(
         fontFamily: "Pretendard",
+        datePickerTheme: DatePickerThemeData(
+          headerBackgroundColor: Palette().darkPurple,
+          cancelButtonStyle: ButtonStyle(
+            elevation: const WidgetStatePropertyAll(0),
+            textStyle: WidgetStatePropertyAll(InjicareFont().body01),
+          ),
+        ),
         primaryColor: const Color(0xFFFF2D78),
         canvasColor: Colors.blueGrey.shade500,
         useMaterial3: true,

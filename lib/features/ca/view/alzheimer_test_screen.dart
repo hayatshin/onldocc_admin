@@ -1,6 +1,7 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
@@ -25,7 +26,7 @@ class AlzheimerTestScreen extends ConsumerStatefulWidget {
 }
 
 class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
-  bool loadingFinished = false;
+  bool _loadingFinished = false;
   final TextStyle _headerTextStyle = TextStyle(
     fontSize: Sizes.size13,
     fontWeight: FontWeight.w600,
@@ -98,7 +99,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
     downloadCsv(csvContent, fileName);
   }
 
-  Future<void> filterUserDataList(
+  Future<void> _filterUserDataList(
       String? searchBy, String searchKeyword) async {
     List<CognitionTestModel> initialList =
         ref.read(cognitionTestProvider).value ??
@@ -107,7 +108,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                 .getCognitionTestData(alzheimer_test);
 
     List<CognitionTestModel> filterList = [];
-    if (searchBy == "name") {
+    if (searchBy == "이름") {
       filterList = initialList
           .where((element) => element.userName!.contains(searchKeyword))
           .cast<CognitionTestModel>()
@@ -148,7 +149,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
     if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
         setState(() {
-          loadingFinished = true;
+          _loadingFinished = true;
           _testList = testList;
         });
       }
@@ -162,14 +163,14 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
             .toList();
         if (mounted) {
           setState(() {
-            loadingFinished = true;
+            _loadingFinished = true;
             _testList = filterDataList;
           });
         }
       } else {
         if (mounted) {
           setState(() {
-            loadingFinished = true;
+            _loadingFinished = true;
             _testList = testList;
           });
         }
@@ -187,7 +188,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
     selectContractRegion.addListener(() async {
       if (mounted) {
         setState(() {
-          loadingFinished = false;
+          _loadingFinished = false;
         });
 
         await _initializeTableList();
@@ -203,15 +204,16 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
       child: SizedBox(
         width: size.width,
         height: size.height,
-        child: loadingFinished
-            ? Column(
-                children: [
-                  SearchCsv(
-                    filterUserList: filterUserDataList,
-                    resetInitialList: _initializeTableList,
-                    generateCsv: generateUserCsv,
-                  ),
-                  Expanded(
+        child: Column(
+          children: [
+            SearchCsv(
+              filterUserList: _filterUserDataList,
+              resetInitialList: _initializeTableList,
+              generateCsv: generateUserCsv,
+            ),
+            !_loadingFinished
+                ? const SkeletonLoadingScreen()
+                : Expanded(
                     child: DataTable2(
                       isVerticalScrollBarVisible: false,
                       smRatio: 0.7,
@@ -290,58 +292,43 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                               DataCell(
                                 Text(
                                   secondsToStringLine(_testList[i].createdAt),
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].result,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].totalPoint.toString(),
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userName!,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userGender!,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userAge!.toString(),
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _testList[i].userPhone!,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
@@ -355,10 +342,10 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                                           extra: _testList[i],
                                         );
                                       },
-                                      child: Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: Sizes.size16,
+                                      child: FaIcon(
+                                        FontAwesomeIcons.arrowRight,
                                         color: Palette().darkGray,
+                                        size: 14,
                                       ),
                                     ),
                                   ),
@@ -369,9 +356,8 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                       ],
                     ),
                   ),
-                ],
-              )
-            : const SkeletonLoadingScreen(),
+          ],
+        ),
       ),
     );
   }

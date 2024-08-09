@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
-import 'package:onldocc_admin/common/widgets/period_button.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -106,7 +105,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               Gaps.v40,
               Text(
-                "대시보드 화면은\n현재 작업 중입니다\n\n완성되기 전까지는 매달 메일로 전달드리는\n[인지케어 월별 리포트]를 참고해주세요",
+                "대시보드 화면은\n현재 작업 중입니다\n\n완성되기 전까지는 매달 메일로 발행되는\n[인지케어 월별 리포트]를 참고해주세요",
                 style: InjicareFont().body07.copyWith(
                       color: Colors.white,
                     ),
@@ -137,7 +136,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const PeriodButton(),
+                    // const PeriodButton(),
                     ReportButton(
                       iconExists: true,
                       buttonText: "리포트 출력하기",

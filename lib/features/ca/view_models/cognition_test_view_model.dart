@@ -10,7 +10,7 @@ const alzheimer_test = "alzheimer_test";
 const depression_test = "depression_test";
 
 class CognitionViewModel extends AsyncNotifier<List<CognitionTestModel>> {
-  late CognitionTestRepository _cognitionTestRepo;
+  CognitionTestRepository _cognitionTestRepo = CognitionTestRepository();
 
   @override
   FutureOr<List<CognitionTestModel>> build() async {
@@ -19,10 +19,12 @@ class CognitionViewModel extends AsyncNotifier<List<CognitionTestModel>> {
   }
 
   Future<List<CognitionTestModel>> getCognitionTestData(String testType) async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
     final list =
-        await _cognitionTestRepo.getTestData(testType, adminProfileModel!);
+        await _cognitionTestRepo.getTestData(testType, adminProfileModel);
     final modelList = list.map((e) => CognitionTestModel.fromJson(e)).toList();
 
     state = AsyncData(modelList);

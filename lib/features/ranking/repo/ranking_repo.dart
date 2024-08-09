@@ -9,7 +9,7 @@ import 'package:onldocc_admin/utils.dart';
 
 class RankingRepository {
   static final pointPFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-p-functions");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-p-functions-5");
 
   // supabase
   Future<List<dynamic>> getUserPoints(

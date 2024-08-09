@@ -52,7 +52,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
             await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
     selectContractRegion.value = ContractRegionModel(
-      name: adminProfileModel!.name,
+      name: adminProfileModel.name,
       subdistrictId: adminProfileModel.subdistrictId,
       contractRegionId: adminProfileModel.contractRegionId,
       image: adminProfileModel.image,
@@ -285,11 +285,11 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                           ),
                         ],
                       ),
-                      const SingleSidebarTile(
-                        index: 10,
-                        assetPath: "assets/svg/paper-plane.svg",
-                        title: "친구 초대 관리",
-                      ),
+                      // const SingleSidebarTile(
+                      //   index: 10,
+                      //   assetPath: "assets/svg/paper-plane.svg",
+                      //   title: "친구 초대 관리",
+                      // ),
                       Gaps.v20,
                     ],
                   ),

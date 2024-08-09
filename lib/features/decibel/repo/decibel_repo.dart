@@ -10,14 +10,14 @@ class DecibelRepository {
       final data = _supabase
           .from("decibels")
           .select('*, users!inner(*)')
-          .order('createdAt', ascending: true);
+          .order('createdAt', ascending: false);
       return data;
     } else {
       final data = _supabase
           .from("decibels")
           .select('*, users!inner(*)')
           .eq('users.subdistrictId', userSubdistrictId)
-          .order('createdAt', ascending: true);
+          .order('createdAt', ascending: false);
       return data;
     }
   }

@@ -14,11 +14,12 @@ class UserModel {
   final int createdAt;
   final int? lastVisit;
   final int? partnerDates;
-  final int? totalScore;
-  final int? stepScore;
-  final int? diaryScore;
-  final int? commentScore;
-  final int? likeScore;
+  final int? totalPoint;
+  final int? stepPoint;
+  final int? diaryPoint;
+  final int? commentPoint;
+  final int? likePoint;
+  final int? invitationPoint;
 
   UserModel({
     required this.index,
@@ -34,11 +35,12 @@ class UserModel {
     required this.createdAt,
     required this.lastVisit,
     required this.partnerDates,
-    required this.totalScore,
-    required this.stepScore,
-    required this.diaryScore,
-    required this.commentScore,
-    required this.likeScore,
+    required this.totalPoint,
+    required this.stepPoint,
+    required this.diaryPoint,
+    required this.commentPoint,
+    required this.likePoint,
+    required this.invitationPoint,
   });
 
   UserModel.empty()
@@ -55,11 +57,12 @@ class UserModel {
         createdAt = 0,
         lastVisit = 0,
         partnerDates = 0,
-        totalScore = 0,
-        stepScore = 0,
-        diaryScore = 0,
-        commentScore = 0,
-        likeScore = 0;
+        totalPoint = 0,
+        stepPoint = 0,
+        diaryPoint = 0,
+        commentPoint = 0,
+        likePoint = 0,
+        invitationPoint = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -74,11 +77,12 @@ class UserModel {
       "createdAt": createdAt,
       "lastVisit": lastVisit,
       "partnerDates": partnerDates,
-      "totalScore": totalScore,
-      "stepScore": stepScore,
-      "diaryScore": diaryScore,
-      "commentScore": commentScore,
-      "likeScore": likeScore,
+      "totalPoint": totalPoint,
+      "stepPoint": stepPoint,
+      "diaryPoint": diaryPoint,
+      "commentPoint": commentPoint,
+      "likePoint": likePoint,
+      "invitationPoint": invitationPoint,
     };
   }
 
@@ -104,12 +108,14 @@ class UserModel {
             json.containsKey("partnerDates") && json["partnerDates"] != null
                 ? json["partnerDates"]
                 : 0,
-        totalScore = json.containsKey("totalPoint") ? json["totalPoint"] : 0,
-        stepScore = json.containsKey("stepPoint") ? json["stepPoint"] : 0,
-        diaryScore = json.containsKey("diaryPoint") ? json["diaryPoint"] : 0,
-        commentScore =
+        totalPoint = json.containsKey("totalPoint") ? json["totalPoint"] : 0,
+        stepPoint = json.containsKey("stepPoint") ? json["stepPoint"] : 0,
+        diaryPoint = json.containsKey("diaryPoint") ? json["diaryPoint"] : 0,
+        commentPoint =
             json.containsKey("commentPoint") ? json["commentPoint"] : 0,
-        likeScore = json.containsKey("likePoint") ? json["likePoint"] : 0;
+        likePoint = json.containsKey("likePoint") ? json["likePoint"] : 0,
+        invitationPoint =
+            json.containsKey("invitationPoint") ? json["invitationPoint"] : 0;
 
   UserModel copyWith({
     final int? index,
@@ -125,11 +131,12 @@ class UserModel {
     final int? createdAt,
     final int? lastVisit,
     final int? partnerDates,
-    final int? totalScore,
-    final int? stepScore,
-    final int? diaryScore,
-    final int? commentScore,
-    final int? likeScore,
+    final int? totalPoint,
+    final int? stepPoint,
+    final int? diaryPoint,
+    final int? commentPoint,
+    final int? likePoint,
+    final int? invitationPoint,
   }) {
     return UserModel(
       index: index ?? this.index,
@@ -145,11 +152,12 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       lastVisit: lastVisit ?? this.lastVisit,
       partnerDates: partnerDates ?? this.partnerDates,
-      totalScore: totalScore ?? this.totalScore,
-      stepScore: stepScore ?? this.stepScore,
-      diaryScore: diaryScore ?? this.diaryScore,
-      commentScore: commentScore ?? this.commentScore,
-      likeScore: likeScore ?? this.likeScore,
+      totalPoint: totalPoint ?? this.totalPoint,
+      stepPoint: stepPoint ?? this.stepPoint,
+      diaryPoint: diaryPoint ?? this.diaryPoint,
+      commentPoint: commentPoint ?? this.commentPoint,
+      likePoint: likePoint ?? this.likePoint,
+      invitationPoint: invitationPoint ?? this.invitationPoint,
     );
   }
 }

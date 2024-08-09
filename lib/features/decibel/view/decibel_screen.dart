@@ -13,6 +13,8 @@ import 'package:onldocc_admin/features/decibel/models/decibel_model.dart';
 import 'package:onldocc_admin/features/decibel/view_models/decibel_view_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class DecibelScreen extends ConsumerStatefulWidget {
@@ -25,9 +27,20 @@ class DecibelScreen extends ConsumerStatefulWidget {
 }
 
 class _DecibelScreenState extends ConsumerState<DecibelScreen> {
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size13,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
   List<DecibelModel> _userDataList = [];
   List<DecibelModel> _initialList = [];
-  bool loadingFinished = false;
+  bool _loadingFinished = false;
 
   final List<String> _userListHeader = [
     "날짜",
@@ -48,9 +61,12 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     selectContractRegion.addListener(() async {
       if (mounted) {
         setState(() {
-          loadingFinished = false;
+          _loadingFinished = false;
         });
-        await _initializeUserDecibels();
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
+        _initializeUserDecibels();
       }
     });
   }
@@ -58,7 +74,7 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   Future<void> filterUserDataList(
       String? searchBy, String searchKeyword) async {
     List<DecibelModel> filterList = [];
-    if (searchBy == "name") {
+    if (searchBy == "이름") {
       filterList = _initialList
           .where((element) => element.name.contains(searchKeyword))
           .cast<DecibelModel>()
@@ -137,15 +153,17 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   }
 
   Future<void> _initializeUserDecibels() async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    final userSubdistrictId = adminProfileModel!.master
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+    final userSubdistrictId = adminProfileModel.master
         ? selectContractRegion.value!.subdistrictId
         : adminProfileModel.subdistrictId;
     final decibelList = await ref
         .read(decibelProvider.notifier)
         .fetchUserDecibels(userSubdistrictId);
     setState(() {
-      loadingFinished = true;
+      _loadingFinished = true;
       _userDataList = decibelList;
       _initialList = decibelList;
     });
@@ -167,60 +185,61 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
               resetInitialList: resetInitialList,
               generateCsv: generateUserCsv,
             ),
-            loadingFinished
+            _loadingFinished
                 ? Expanded(
                     child: DataTable2(
-                      columns: const [
+                      isVerticalScrollBarVisible: false,
+                      smRatio: 0.7,
+                      lmRatio: 1.2,
+                      dividerThickness: 0.1,
+                      horizontalMargin: 0,
+                      headingRowDecoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Palette().lightGray,
+                            width: 0.1,
+                          ),
+                        ),
+                      ),
+                      columns: [
                         DataColumn2(
                           label: Text(
                             "날짜",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          fixedWidth: 200,
+                          size: ColumnSize.L,
                           label: Text(
                             "데시벨",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          fixedWidth: 140,
+                          size: ColumnSize.L,
                           label: Text(
                             "이름",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          fixedWidth: 140,
+                          size: ColumnSize.S,
                           label: Text(
                             "나이",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          fixedWidth: 140,
+                          size: ColumnSize.S,
                           label: Text(
                             "성별",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           label: Text(
                             "핸드폰 번호",
-                            style: TextStyle(
-                              fontSize: Sizes.size13,
-                            ),
+                            style: _headerTextStyle,
                           ),
                         ),
                       ],
@@ -232,17 +251,13 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
                                 Text(
                                   secondsToYearMonthDayHourMinute(
                                       _userDataList[i].createdAt),
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _userDataList[i].decibel,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
@@ -250,33 +265,25 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
                                   _userDataList[i].name.length > 8
                                       ? "${_userDataList[i].name.substring(0, 8)}.."
                                       : _userDataList[i].name,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _userDataList[i].age,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _userDataList[i].gender,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   _userDataList[i].phone,
-                                  style: const TextStyle(
-                                    fontSize: Sizes.size13,
-                                  ),
+                                  style: _contentTextStyle,
                                 ),
                               ),
                             ],
