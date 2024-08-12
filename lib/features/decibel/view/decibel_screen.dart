@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:html';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,19 +88,19 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     });
   }
 
-  List<dynamic> exportToList(DecibelModel userModel) {
+  List<String> exportToList(DecibelModel userModel) {
     return [
       secondsToStringDiaryTimeLine(userModel.createdAt),
-      userModel.decibel,
-      userModel.name,
-      userModel.age,
-      userModel.gender,
-      userModel.phone,
+      userModel.decibel.toString(),
+      userModel.name.toString(),
+      userModel.age.toString(),
+      userModel.gender.toString(),
+      userModel.phone.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<DecibelModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<DecibelModel?> userDataList) {
+    List<List<String>> list = [];
 
     list.add(_userListHeader);
 
@@ -114,36 +111,42 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     return list;
   }
 
-  void generateUserCsv() {
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList(_userDataList);
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
+
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+  //   final String fileName = "인지케어 화풀기 $formatDate.csv";
+
+  //   final encodedUri = Uri.dataFromString(
+  //     csvContent,
+  //     encoding: Encoding.getByName(encodingType()),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
+
+  void generateExcel() {
     final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 보호자 지정 $formatDate.csv";
-
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    final String fileName = "인지케어 화풀기 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   Future<void> resetInitialList() async {
@@ -183,7 +186,7 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
             SearchCsv(
               filterUserList: filterUserDataList,
               resetInitialList: resetInitialList,
-              generateCsv: generateUserCsv,
+              generateCsv: generateExcel,
             ),
             _loadingFinished
                 ? Expanded(

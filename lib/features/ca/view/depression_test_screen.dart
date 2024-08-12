@@ -50,20 +50,20 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
   ];
   List<CognitionTestModel> _testList = [];
 
-  List<dynamic> exportToList(CognitionTestModel testModel) {
+  List<String> exportToList(CognitionTestModel testModel) {
     return [
       secondsToStringLine(testModel.createdAt),
-      testModel.result,
-      testModel.totalPoint,
-      testModel.userName,
-      testModel.userGender,
-      testModel.userAge,
-      testModel.userPhone,
+      testModel.result.toString(),
+      testModel.totalPoint.toString(),
+      testModel.userName.toString(),
+      testModel.userGender.toString(),
+      testModel.userAge.toString(),
+      testModel.userPhone.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList() {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList() {
+    List<List<String>> list = [];
 
     final csvHeader = _tableHeader.sublist(0, _tableHeader.length - 1);
     list.add(csvHeader);
@@ -75,29 +75,33 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
     return list;
   }
 
-  void generateUserCsv() {
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList();
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
+
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate = convertTimettampToStringDate(currentDate);
+  //   final String fileName = "노인 우울척도 단축형 검사 $formatDate.csv";
+  //   downloadCsv(csvContent, fileName);
+  // }
+
+  void generateExcel() {
     final csvData = exportToFullList();
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate = convertTimettampToStringDate(currentDate);
-
-    final String fileName = "노인 우울척도 단축형 검사 $formatDate.csv";
-
-    downloadCsv(csvContent, fileName);
+    final String fileName = "우울척도 단축형 검사 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   Future<void> _filterUserDataList(
@@ -194,7 +198,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
             SearchCsv(
               filterUserList: _filterUserDataList,
               resetInitialList: _initializeTableList,
-              generateCsv: generateUserCsv,
+              generateCsv: generateExcel,
             ),
             !_loadingFinished
                 ? const SkeletonLoadingScreen()

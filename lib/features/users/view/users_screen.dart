@@ -195,24 +195,24 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   }
 
   // excel
-  List<dynamic> exportToList(int index, UserModel userModel) {
+  List<String> exportToList(int index, UserModel userModel) {
     return [
-      index,
-      userModel.name,
-      userModel.userAge,
-      userModel.birthYear,
-      userModel.gender,
-      userModel.phone,
-      userModel.fullRegion,
-      secondsToStringLine(userModel.createdAt),
+      index.toString(),
+      userModel.name.toString(),
+      userModel.userAge.toString(),
+      userModel.birthYear.toString(),
+      userModel.gender.toString(),
+      userModel.phone.toString(),
+      userModel.fullRegion.toString(),
+      secondsToStringLine(userModel.createdAt).toString(),
       userModel.lastVisit != 0
-          ? secondsToStringLine(userModel.lastVisit!)
+          ? secondsToStringLine(userModel.lastVisit!).toString()
           : "-",
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<UserModel?> userDataList) {
+    List<List<String>> list = [];
 
     list.add(_userListHeader);
 
@@ -223,30 +223,36 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     return list;
   }
 
-  void generateUserCsv() {
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList(_userDataList);
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
+
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+  //   final String fileName = "인지케어 회원관리 $formatDate.csv";
+
+  //   downloadCsv(csvContent, fileName);
+  // }
+
+  void generateExcel() {
     final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 회원관리 $formatDate.csv";
-
-    downloadCsv(csvContent, fileName);
+    final String fileName = "인지케어 회원관리 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   void removeDeleteOverlay() {
@@ -294,7 +300,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 SearchCsv(
                   filterUserList: _filterUserDataList,
                   resetInitialList: _getUserModelList,
-                  generateCsv: generateUserCsv,
+                  generateCsv: generateExcel,
                 ),
                 Expanded(
                   child: DataTable2(

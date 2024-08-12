@@ -97,20 +97,20 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     });
   }
 
-  List<dynamic> exportToList(CareModel userModel) {
+  List<String> exportToList(CareModel userModel) {
     return [
-      userModel.partnerDates,
-      userModel.name,
-      userModel.age,
-      userModel.gender,
-      userModel.phone,
+      userModel.partnerDates.toString(),
+      userModel.name.toString(),
+      userModel.age.toString(),
+      userModel.gender.toString(),
+      userModel.phone.toString(),
       secondsToStringLine(userModel.lastVisit),
       userModel.partnerContact ? "🚨" : "X",
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<CareModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<CareModel?> userDataList) {
+    List<List<String>> list = [];
 
     list.add(_userListHeader);
 
@@ -157,6 +157,12 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     setState(() {
       _userDataList = _initialList;
     });
+  }
+
+  void generateExcel() {
+    final csvData = exportToFullList(_userDataList);
+    final String fileName = "인지케어 보호자 지정 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   Future<void> _initializeUserCare() async {
@@ -245,7 +251,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
               SearchCsv(
                 filterUserList: _filterUserDataList,
                 resetInitialList: _initializeUserCare,
-                generateCsv: generateUserCsv,
+                generateCsv: generateExcel,
               ),
               _loadingFinished
                   ? Expanded(

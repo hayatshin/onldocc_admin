@@ -12,7 +12,7 @@ import 'package:onldocc_admin/palette.dart';
 
 class EventDetailTemplate extends ConsumerWidget {
   final EventModel eventModel;
-  final Function(String) generateCsv;
+  final Function() generateCsv;
   final Widget child;
   const EventDetailTemplate({
     super.key,
@@ -52,7 +52,7 @@ class EventDetailTemplate extends ConsumerWidget {
             children: [
               Gaps.v20,
               Csv(
-                generateCsv: () => generateCsv(eventModel.title),
+                generateCsv: generateCsv,
                 rankingType: "event",
                 userName: eventModel.title,
                 menu: menuList[4],

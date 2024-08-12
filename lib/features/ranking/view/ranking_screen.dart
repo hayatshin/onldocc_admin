@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
@@ -19,7 +17,6 @@ import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:universal_html/html.dart';
 
 import '../../users/models/user_model.dart';
 
@@ -274,20 +271,21 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   }
 
   // excel
-  List<dynamic> exportToList(UserModel userModel) {
+  List<String> exportToList(UserModel userModel) {
     return [
-      userModel.index,
-      userModel.name,
-      userModel.phone,
-      userModel.totalPoint,
-      userModel.stepPoint,
-      userModel.diaryPoint,
-      userModel.commentPoint,
+      userModel.index.toString(),
+      userModel.name.toString(),
+      userModel.phone.toString(),
+      userModel.totalPoint.toString(),
+      userModel.stepPoint.toString(),
+      userModel.diaryPoint.toString(),
+      userModel.commentPoint.toString(),
+      userModel.invitationPoint.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<UserModel?> userDataList) {
+    List<List<String>> list = [];
 
     list.add(_userListHeader);
 
@@ -298,36 +296,45 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     return list;
   }
 
-  void generateUserCsv() {
-    final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList(_userDataList);
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
 
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+  //   final String fileName = "인지케어 전체 점수 $formatDate.csv";
+
+  //   final encodedUri = Uri.dataFromString(
+  //     csvContent,
+  //     encoding: Encoding.getByName(encodingType()),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
+
+  void generateExcel() {
+    final csvData = exportToFullList(_userDataList);
     final currentDate = DateTime.now();
     final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 전체 점수 $formatDate.csv";
-
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+        "${currentDate.year}.${currentDate.month.toString().padLeft(2, '0')}.${currentDate.day.toString().padLeft(2, '0')}";
+    final String fileName = "인지케어 점수관리 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   Future<void> updateOrderStandard(String value) async {
@@ -457,7 +464,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                   SearchCsv(
                     filterUserList: _filterUserDataList,
                     resetInitialList: () => _getScoreList(_selectedDateRange),
-                    generateCsv: generateUserCsv,
+                    generateCsv: generateExcel,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

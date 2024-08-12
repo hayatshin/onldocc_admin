@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
@@ -9,7 +7,6 @@ import 'package:onldocc_admin/features/ca/consts/cognition_test_questionnaire.da
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
 
 class CognitionTestDetailScreen extends StatefulWidget {
   final CognitionTestModel model;
@@ -67,15 +64,15 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     setState(() {});
   }
 
-  List<dynamic> exportToList(String questionnaire, String answer) {
+  List<String> exportToList(String questionnaire, String answer) {
     return [
-      questionnaire,
-      answer,
+      questionnaire.toString(),
+      answer.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList() {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList() {
+    List<List<String>> list = [];
 
     list.add(_listHeader);
 
@@ -88,37 +85,43 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     return list;
   }
 
-  void generateUserCsv() {
-    String testInfo =
-        "$testDate\n$totalPoint\n$result\n\n$name\n$gender\n$age\n$phone";
+  // void generateUserCsv() {
+  //   String testInfo =
+  //       "$testDate\n$totalPoint\n$result\n\n$name\n$gender\n$age\n$phone";
 
+  //   final csvData = exportToFullList();
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i];
+  //       }
+  //       // csvContent += row[i].toString();
+
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+
+  //   final String fileName = "인지케어 $testType ${widget.model.userName}.csv";
+
+  //   final encodedUri = Uri.dataFromString(
+  //     "$testInfo\n\n$csvContent",
+  //     encoding: Encoding.getByName(encodingType()),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
+
+  void generateExcel() {
     final csvData = exportToFullList();
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i];
-        }
-        // csvContent += row[i].toString();
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-
-    final String fileName = "인지케어 $testType ${widget.model.userName}.csv";
-
-    final encodedUri = Uri.dataFromString(
-      "$testInfo\n\n$csvContent",
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    final String fileName = "인지케어 $testType ${widget.model.userName}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   @override
@@ -145,7 +148,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
             children: [
               Gaps.v20,
               Csv(
-                generateCsv: generateUserCsv,
+                generateCsv: generateExcel,
                 rankingType: testType,
                 userName: widget.model.userName!,
                 menu: testType == "alzheimer_test" ? menuList[4] : menuList[5],

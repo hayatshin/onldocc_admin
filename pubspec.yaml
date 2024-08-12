@@ -81,6 +81,7 @@ dependencies:
   flutter_skeleton_ui: ^0.0.6
   syncfusion_flutter_datepicker: ^26.2.5
   flutter_localization: ^0.2.1
+  excel: ^4.0.3
   # firebase_auth_web: ^5.9.8
   # firebase_core: ^2.27.0
 

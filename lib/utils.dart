@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:excel/excel.dart' hide Border;
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,6 +16,26 @@ import 'package:onldocc_admin/palette.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'dart:html' as html;
 import 'package:universal_html/html.dart' as html;
+
+// 엑셀
+
+void exportExcel(
+  List<List<String>> contents,
+  String fileName,
+) {
+  Excel excel = Excel.createExcel();
+  Sheet sheetObject = excel["Sheet1"];
+
+  for (int row = 0; row < contents.length; row++) {
+    List<String> eachRow = contents[row];
+    for (int col = 0; col < eachRow.length; col++) {
+      var cell = sheetObject.cell(
+          CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row + 1));
+      cell.value = TextCellValue(eachRow[col]);
+    }
+  }
+  excel.save(fileName: fileName);
+}
 
 Widget deleteOverlay(
     String title, Function() removeOverlay, Function() delete) {
@@ -306,6 +327,11 @@ String todayToStringLine() {
   String formattedDate =
       '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
   return formattedDate;
+}
+
+String todayToStringDot() {
+  DateTime dateTime = DateTime.now();
+  return DateFormat('yyyy.MM.dd').format(dateTime);
 }
 
 String daterangeToSlashString(DateRange range) {

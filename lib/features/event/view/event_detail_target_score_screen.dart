@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
@@ -10,7 +8,6 @@ import 'package:onldocc_admin/features/event/template/event_detail_template.dart
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
 
 class EventDetailTargetScoreScreen extends ConsumerStatefulWidget {
   final EventModel? eventModel;
@@ -64,14 +61,14 @@ class _EventDetailPointScreenState
     super.dispose();
   }
 
-  List<dynamic> exportToList(ParticipantModel participantModel, int index) {
+  List<String> exportToList(ParticipantModel participantModel, int index) {
     return [
       (index + 1).toString(),
-      participantModel.name,
-      participantModel.userAge,
-      participantModel.gender,
-      participantModel.phone,
-      participantModel.smallRegion,
+      participantModel.name.toString(),
+      participantModel.userAge.toString(),
+      participantModel.gender.toString(),
+      participantModel.phone.toString(),
+      participantModel.smallRegion.toString(),
       secondsToStringLine(participantModel.createdAt),
       participantModel.userTotalPoint!.toString(),
       participantModel.userAchieveOrNot! ? "달성" : "미달성",
@@ -79,9 +76,9 @@ class _EventDetailPointScreenState
     ];
   }
 
-  List<List<dynamic>> exportToFullList(
+  List<List<String>> exportToFullList(
       List<ParticipantModel?> participantsList) {
-    List<List<dynamic>> list = [];
+    List<List<String>> list = [];
 
     list.add(_listHeader);
 
@@ -92,38 +89,45 @@ class _EventDetailPointScreenState
     return list;
   }
 
-  void generateUserCsv(String eventTitle) {
+  // void generateUserCsv(String eventTitle) {
+  //   final csvData = exportToFullList(_participants);
+
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
+  //       // csvContent += row[i].toString();
+
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+  //   String fileName = "인지케어 행사 $eventTitle $formatDate.csv";
+
+  //   final encodedUri = Uri.dataFromString(
+  //     csvContent,
+  //     encoding: Encoding.getByName("utf-8"),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
+
+  void generateExcel() {
     final csvData = exportToFullList(_participants);
-
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-        // csvContent += row[i].toString();
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    String fileName = "인지케어 행사 $eventTitle $formatDate.csv";
-
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName("utf-8"),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    String fileName =
+        "인지케어 행사 ${widget.eventModel!.title} ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   Future<void> initializePariticants() async {
@@ -143,7 +147,7 @@ class _EventDetailPointScreenState
     final size = MediaQuery.of(context).size;
     return EventDetailTemplate(
       eventModel: widget.eventModel!,
-      generateCsv: generateUserCsv,
+      generateCsv: generateExcel,
       child: _initializeParticipants
           ? Center(
               child: DataTable(
