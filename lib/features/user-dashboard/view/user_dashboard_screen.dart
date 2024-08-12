@@ -199,7 +199,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
                   ),
                   HeaderBox(
                     headerText: "기간 방문 횟수",
-                    headerColor: Palette().dashGreen,
+                    headerColor: Palette().darkBlue,
                     contentData: "2000 번",
                   ),
                   Container(
@@ -250,7 +250,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
                           ),
                           SubHeaderBox(
                             subHeader: "좋아요 횟수",
-                            subHeaderColor: Palette().dashGreen,
+                            subHeaderColor: Palette().darkBlue,
                             contentData: "112 회",
                           ),
                         ],
@@ -466,7 +466,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
                       const GrayDivider(height: 60),
                       SubHeaderBox(
                         subHeader: "노인 우울척도 검사",
-                        subHeaderColor: Palette().dashGreen,
+                        subHeaderColor: Palette().darkBlue,
                         contentData: "12 회",
                       ),
                     ],
@@ -532,7 +532,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
                             Gaps.v20,
                             SubHeaderBox(
                               subHeader: "평균 대화 시간",
-                              subHeaderColor: Palette().dashGreen,
+                              subHeaderColor: Palette().darkBlue,
                               contentData: "2분 30초",
                             ),
                           ],
@@ -746,7 +746,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
               ),
               Gaps.v20,
               SfCartesianChart(
-                primaryXAxis: CategoryAxis(),
+                primaryXAxis: const CategoryAxis(),
                 series: <CartesianSeries>[
                   SplineSeries<ChartData, String>(
                     dataSource: stepData,
@@ -1440,7 +1440,7 @@ class PeriodDropdownMenu extends StatelessWidget {
             ),
             scrollbarTheme: ScrollbarThemeData(
               radius: const Radius.circular(10),
-              thumbVisibility: MaterialStateProperty.all(true),
+              thumbVisibility: WidgetStateProperty.all(true),
             ),
           ),
           menuItemStyleData: const MenuItemStyleData(

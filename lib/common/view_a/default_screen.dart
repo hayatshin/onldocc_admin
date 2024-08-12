@@ -156,7 +156,7 @@ class DefaultTemplate extends StatelessWidget {
                         ),
                         Gaps.h14,
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               adminModel.name,
@@ -166,15 +166,20 @@ class DefaultTemplate extends StatelessWidget {
                                 color: Palette().darkGray,
                               ),
                             ),
-                            Gaps.v2,
-                            Text(
-                              adminModel.mail,
-                              style: TextStyle(
-                                fontSize: Sizes.size10,
-                                fontWeight: FontWeight.w600,
-                                color: Palette().normalGray,
+                            if (adminModel.mail.contains("@"))
+                              Column(
+                                children: [
+                                  Gaps.v2,
+                                  Text(
+                                    adminModel.mail,
+                                    style: TextStyle(
+                                      fontSize: Sizes.size10,
+                                      fontWeight: FontWeight.w600,
+                                      color: Palette().normalGray,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
                           ],
                         )
                       ],

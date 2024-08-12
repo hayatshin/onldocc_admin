@@ -24,10 +24,12 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
   }
 
   Future<List<EventModel>> getUserEvents() async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
     final events = await _eventRepository.getUserEvents(
-        adminProfileModel!, selectContractRegion.value!.contractRegionId!);
+        adminProfileModel, selectContractRegion.value!.contractRegionId!);
 
     final list = events.map((e) => EventModel.fromJson(e)).toList();
     return list;

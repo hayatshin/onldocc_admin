@@ -9,6 +9,7 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/notice/repo/notice_repo.dart';
 import 'package:onldocc_admin/features/notice/view_models/notice_view_model.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
@@ -153,7 +154,7 @@ class _EditNotificationWidgetState
                   onPressed: removeDeleteOverlay,
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
+                        WidgetStateProperty.all(Colors.pink.shade100),
                   ),
                   child: Text(
                     "취소",
@@ -166,8 +167,8 @@ class _EditNotificationWidgetState
                 ElevatedButton(
                   onPressed: () => _deleteFeedNotification(),
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
+                    backgroundColor:
+                        WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
                   child: const Text(
                     "삭제",
@@ -256,7 +257,7 @@ class _EditNotificationWidgetState
                     width: widget.size.width * 0.12,
                     height: 50,
                     child: Text(
-                      "📌\n지역 보기\n상단 고정",
+                      "지역 보기\n상단 고정하기",
                       style: _headerTextStyle,
                       textAlign: TextAlign.start,
                     ),
@@ -265,10 +266,17 @@ class _EditNotificationWidgetState
                   Transform.scale(
                     scale: 1.3,
                     child: Checkbox(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        side: BorderSide(
+                          width: 0.5,
+                          color: Palette().darkGray,
+                        ),
+                      ),
                       value: _noticeTopFixed,
-                      activeColor: Palette().darkGreen,
-                      overlayColor: MaterialStateProperty.all(
-                          Palette().normalGreen.withOpacity(0.1)),
+                      activeColor: Palette().darkGray,
+                      overlayColor: WidgetStateProperty.all(
+                          Palette().darkBlue.withOpacity(0.1)),
                       onChanged: (value) {
                         setState(
                           () {
@@ -292,11 +300,7 @@ class _EditNotificationWidgetState
                           children: [
                             Text(
                               "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Palette().normalGray,
-                                fontSize: Sizes.size13,
-                              ),
+                              style: _contentTextStyle,
                             ),
                             Gaps.v2,
                           ],
@@ -331,14 +335,14 @@ class _EditNotificationWidgetState
                         decoration: InputDecoration(
                           isDense: true,
                           filled: true,
-                          fillColor: Palette().lightGreen.withOpacity(0.1),
+                          fillColor: Colors.white.withOpacity(0.1),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
                               Sizes.size20,
                             ),
                           ),
                           errorStyle: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                            color: InjicareColor().primary50,
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
@@ -346,7 +350,7 @@ class _EditNotificationWidgetState
                             ),
                             borderSide: BorderSide(
                               width: 1.5,
-                              color: Theme.of(context).primaryColor,
+                              color: InjicareColor().primary50,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
@@ -355,7 +359,7 @@ class _EditNotificationWidgetState
                             ),
                             borderSide: BorderSide(
                               width: 1.5,
-                              color: Palette().normalGreen.withOpacity(0.7),
+                              color: Palette().darkGray.withOpacity(0.5),
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -364,7 +368,7 @@ class _EditNotificationWidgetState
                             ),
                             borderSide: BorderSide(
                               width: 1.5,
-                              color: Palette().darkGreen.withOpacity(0.7),
+                              color: Palette().darkGray.withOpacity(0.5),
                             ),
                           ),
                           contentPadding: const EdgeInsets.symmetric(

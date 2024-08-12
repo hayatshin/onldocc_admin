@@ -17,43 +17,44 @@ EventType stringToEventType(String value) {
 
 class EventModel {
   final String eventId;
-  final String title;
-  final String description;
-  final String eventImage;
-  final bool allUsers;
   final String? contractRegionId;
   final String? contractCommunityId;
-  final int? targetScore;
-  final int achieversNumber;
+  final String title;
+  final String description;
+  final int? createdAt;
   final String startDate;
   final String endDate;
-  final String? state;
-  final int? createdAt;
-  final String? orgSubdistrictId;
-  final String? orgName;
-  final String? orgImage;
+  final String bannerImage;
+  final String eventImage;
+  final int achieversNumber;
+  final bool allUsers;
+  final int? ageLimit;
+  final String eventType;
+  final bool adminSecret;
+
+  final int? targetScore;
   final int? stepPoint;
   final int? diaryPoint;
   final int? commentPoint;
   final int? likePoint;
-  final int? quizPoint;
-  final bool adminSecret;
-
-  final String bannerImage;
-  final String eventType;
-  final int? ageLimit;
-
   final int? invitationPoint;
-  final int? invitationCount;
+  final int? quizPoint;
+
   final int? diaryCount;
   final int? commentCount;
   final int? likeCount;
+  final int? invitationCount;
   final int? quizCount;
 
   final int? maxStepCount;
   final int? maxCommentCount;
   final int? maxLikeCount;
   final int? maxInvitationCount;
+
+  final String? state;
+  final String? orgSubdistrictId;
+  final String? orgName;
+  final String? orgImage;
 
   EventModel({
     required this.eventId,

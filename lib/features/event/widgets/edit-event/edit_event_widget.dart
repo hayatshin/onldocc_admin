@@ -11,9 +11,6 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
-import 'package:onldocc_admin/features/event/widgets/edit-event/edit_target_score_event_widget.dart';
-import 'package:onldocc_admin/features/event/widgets/upload-event/upload_count_widget.dart';
-import 'package:onldocc_admin/features/event/widgets/upload-event/upload_multiple_scores_widget.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -485,7 +482,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                             decoration: InputDecoration(
                               isDense: true,
                               filled: true,
-                              fillColor: Palette().lightGreen.withOpacity(0.1),
+                              fillColor: Palette().darkBlue.withOpacity(0.1),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(
                                   Sizes.size20,
@@ -509,7 +506,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 ),
                                 borderSide: BorderSide(
                                   width: 1.5,
-                                  color: Palette().normalGreen.withOpacity(0.7),
+                                  color: Palette().darkBlue.withOpacity(0.7),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -518,7 +515,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 ),
                                 borderSide: BorderSide(
                                   width: 1.5,
-                                  color: Palette().darkGreen.withOpacity(0.7),
+                                  color: Palette().darkBlue.withOpacity(0.7),
                                 ),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -567,7 +564,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                             decoration: InputDecoration(
                               isDense: true,
                               filled: true,
-                              fillColor: Palette().lightGreen.withOpacity(0.1),
+                              fillColor: Palette().darkBlue.withOpacity(0.1),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(
                                   Sizes.size20,
@@ -591,7 +588,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 ),
                                 borderSide: BorderSide(
                                   width: 1.5,
-                                  color: Palette().normalGreen.withOpacity(0.7),
+                                  color: Palette().darkBlue.withOpacity(0.7),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -600,7 +597,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 ),
                                 borderSide: BorderSide(
                                   width: 1.5,
-                                  color: Palette().darkGreen.withOpacity(0.7),
+                                  color: Palette().darkBlue.withOpacity(0.7),
                                 ),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -789,7 +786,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                               isDense: true,
                                               filled: true,
                                               fillColor: Palette()
-                                                  .lightGreen
+                                                  .darkBlue
                                                   .withOpacity(0.1),
                                               border: OutlineInputBorder(
                                                 borderRadius:
@@ -820,7 +817,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                                 borderSide: BorderSide(
                                                   width: 1.5,
                                                   color: Palette()
-                                                      .normalGreen
+                                                      .darkBlue
                                                       .withOpacity(0.7),
                                                 ),
                                               ),
@@ -832,7 +829,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                                 borderSide: BorderSide(
                                                   width: 1.5,
                                                   color: Palette()
-                                                      .darkGreen
+                                                      .darkBlue
                                                       .withOpacity(0.7),
                                                 ),
                                               ),
@@ -1039,7 +1036,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                               isDense: true,
                                               filled: true,
                                               fillColor: Palette()
-                                                  .lightGreen
+                                                  .darkBlue
                                                   .withOpacity(0.1),
                                               border: OutlineInputBorder(
                                                 borderRadius:
@@ -1070,7 +1067,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                                 borderSide: BorderSide(
                                                   width: 1.5,
                                                   color: Palette()
-                                                      .normalGreen
+                                                      .darkBlue
                                                       .withOpacity(0.7),
                                                 ),
                                               ),
@@ -1082,7 +1079,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                                 borderSide: BorderSide(
                                                   width: 1.5,
                                                   color: Palette()
-                                                      .darkGreen
+                                                      .darkBlue
                                                       .withOpacity(0.7),
                                                 ),
                                               ),
@@ -1122,14 +1119,14 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                     Container(
                       height: 1,
                       decoration: BoxDecoration(
-                        color: Palette().normalGreen.withOpacity(0.3),
+                        color: Palette().darkBlue.withOpacity(0.3),
                       ),
                     ),
                     Gaps.v52,
                     Text(
                       "행사 설정",
                       style: TextStyle(
-                        color: Palette().darkGreen,
+                        color: Palette().darkBlue,
                         fontWeight: FontWeight.w700,
                         fontSize: Sizes.size14,
                       ),
@@ -1176,7 +1173,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                 children: [
                                   Icon(
                                     Icons.arrow_forward_ios,
-                                    color: Palette().normalGreen,
+                                    color: Palette().darkBlue,
                                     size: 13,
                                   ),
                                   Gaps.h10,
@@ -1187,7 +1184,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                       Text(
                                         "${_eventType.eventTypeName}:",
                                         style: TextStyle(
-                                          color: Palette().normalGreen,
+                                          color: Palette().darkBlue,
                                           fontWeight: FontWeight.w700,
                                           fontSize: Sizes.size12,
                                         ),
@@ -1196,7 +1193,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                                       Text(
                                         _eventType.eventTypeDescription,
                                         style: TextStyle(
-                                          color: Palette().normalGreen,
+                                          color: Palette().darkBlue,
                                           fontWeight: FontWeight.w300,
                                           fontSize: Sizes.size12,
                                         ),
@@ -1211,59 +1208,58 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
                       ],
                     ),
                     Gaps.v52,
-                    _eventType == eventList[0]
-                        ? EditTargetScoreEventWidget(
-                            context: context,
-                            size: size,
-                            eventModel: widget.eventModel,
-                            refreshScreen: widget.refreshScreen,
-                            goalScoreController: _goalScoreController,
-                            diaryField: _diaryField,
-                            quizField: _quizField,
-                            commentField: _commentField,
-                            likeField: _likeField,
-                            invitationField: _invitationField,
-                            stepField: _stepField,
-                            quizLimitField: _quizLimitField,
-                            commentLimitField: _commentLimitField,
-                            likeLimitField: _likeLimitField,
-                            invitationLimitField: _invitationLimitField,
-                            diaryPointController: _diaryPointController,
-                            quizPointController: _quizPointController,
-                            commentPointController: _commentPointController,
-                            likePointController: _likePointController,
-                            invitationPointController:
-                                _invitationPointController,
-                            stepPointController: _stepPointController,
-                            quizMaxPointController: _quizMaxPointController,
-                            commentMaxPointController:
-                                _commentMaxPointController,
-                            likeMaxPointController: _likeMaxPointController,
-                            invitationMaxPointController:
-                                _invitationMaxPointController,
-                            stepMaxPointController: _stepMaxPointController,
-                          )
-                        : _eventType == eventList[1]
-                            ? UploadMultipleScoresWidget(
-                                updateGoalScore: updateGoalScore,
-                                updateDiaryPoint: updateDiaryPoint,
-                                updateCommentPoint: updateCommentPoint,
-                                updateLikePoint: updateLikePoint,
-                                updateStepPoint: updateStepPoint,
-                                updateInvitationPoint: updateInvitationPoint,
-                                updateQuizPoint: updateQuizPoint,
-                                updateMaxStepCount: updateMaxStepCount,
-                                updateMaxCommentCount: updateMaxCommentCount,
-                                updateMaxLikeCount: updateMaxLikeCount,
-                                updateInvitationCount: updateMaxInvitationCount,
-                              )
-                            : UploadCountWidget(
-                                updateDiaryCount: updateDiaryCount,
-                                updateCommentCount: updateCommentCount,
-                                updateLikeCount: updateLikeCount,
-                                updateInvitationCount: updateInvitationCount,
-                                updateQuizCount: updateQuizCount,
-                              ),
+                    // _eventType == eventList[0]
+                    //     ? EditTargetScoreEventWidget(
+                    //         context: context,
+                    //         size: size,
+                    //         eventModel: widget.eventModel,
+                    //         refreshScreen: widget.refreshScreen,
+                    //         goalScoreController: _goalScoreController,
+                    //         diaryField: _diaryField,
+                    //         quizField: _quizField,
+                    //         commentField: _commentField,
+                    //         likeField: _likeField,
+                    //         invitationField: _invitationField,
+                    //         stepField: _stepField,
+                    //         quizLimitField: _quizLimitField,
+                    //         commentLimitField: _commentLimitField,
+                    //         likeLimitField: _likeLimitField,
+                    //         invitationLimitField: _invitationLimitField,
+                    //         diaryPointController: _diaryPointController,
+                    //         quizPointController: _quizPointController,
+                    //         commentPointController: _commentPointController,
+                    //         likePointController: _likePointController,
+                    //         invitationPointController:
+                    //             _invitationPointController,
+                    //         stepPointController: _stepPointController,
+                    //         commentMaxPointController:
+                    //             _commentMaxPointController,
+                    //         likeMaxPointController: _likeMaxPointController,
+                    //         invitationMaxPointController:
+                    //             _invitationMaxPointController,
+                    //         stepMaxPointController: _stepMaxPointController,
+                    //       )
+                    //     : _eventType == eventList[1]
+                    //         ? UploadMultipleScoresWidget(
+                    //             updateGoalScore: updateGoalScore,
+                    //             updateDiaryPoint: updateDiaryPoint,
+                    //             updateCommentPoint: updateCommentPoint,
+                    //             updateLikePoint: updateLikePoint,
+                    //             updateStepPoint: updateStepPoint,
+                    //             updateInvitationPoint: updateInvitationPoint,
+                    //             updateQuizPoint: updateQuizPoint,
+                    //             updateMaxStepCount: updateMaxStepCount,
+                    //             updateMaxCommentCount: updateMaxCommentCount,
+                    //             updateMaxLikeCount: updateMaxLikeCount,
+                    //             updateInvitationCount: updateMaxInvitationCount,
+                    //           )
+                    //         : UploadCountWidget(
+                    //             updateDiaryCount: updateDiaryCount,
+                    //             updateCommentCount: updateCommentCount,
+                    //             updateLikeCount: updateLikeCount,
+                    //             updateInvitationCount: updateInvitationCount,
+                    //             updateQuizCount: updateQuizCount,
+                    //           ),
                     Gaps.v40,
                   ],
                 ),
@@ -1494,7 +1490,7 @@ class EventTypeDropdown extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               color: Colors.white,
               border: Border.all(
-                color: Palette().normalGreen,
+                color: Palette().darkBlue,
                 width: 0.5,
               ),
             ),
@@ -1504,8 +1500,8 @@ class EventTypeDropdown extends StatelessWidget {
               Icons.expand_more_rounded,
             ),
             iconSize: 14,
-            iconEnabledColor: Palette().normalGreen,
-            iconDisabledColor: Palette().normalGreen,
+            iconEnabledColor: Palette().darkBlue,
+            iconDisabledColor: Palette().darkBlue,
           ),
           dropdownStyleData: DropdownStyleData(
             elevation: 2,
@@ -1516,7 +1512,7 @@ class EventTypeDropdown extends StatelessWidget {
             ),
             scrollbarTheme: ScrollbarThemeData(
               radius: const Radius.circular(10),
-              thumbVisibility: MaterialStateProperty.all(true),
+              thumbVisibility: WidgetStateProperty.all(true),
             ),
           ),
           menuItemStyleData: const MenuItemStyleData(

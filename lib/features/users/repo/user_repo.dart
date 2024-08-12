@@ -41,6 +41,7 @@ class UserRepository {
             .neq('loginType', '어드민')
             .eq('subdistrictId', userSubdistrictId)
             .order('createdAt', ascending: false);
+
         userList = data;
       }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/event/widgets/field-box/point_field_box.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -13,18 +14,22 @@ class UploadTargetScoreWidget extends StatefulWidget {
   final Function(int) updateStepPoint;
   final Function(int) updateInvitationPoint;
   final Function(int) updateQuizPoint;
-  final Function(int) updateMaxStepCount;
-  final TextEditingController diaryPointController;
-  final TextEditingController quizPointController;
-  final TextEditingController commentPointController;
-  final TextEditingController likePointController;
-  final TextEditingController invitationPointController;
-  final TextEditingController stepPointController;
-  final TextEditingController quizMaxPointController;
-  final TextEditingController commentMaxPointController;
-  final TextEditingController likeMaxPointController;
-  final TextEditingController invitationMaxPointController;
-  final TextEditingController stepMaxPointController;
+  final Function(int) updateMaxStepPoint;
+  final Function(int) updateMaxCommentPoint;
+  final Function(int) updateMaxLikePoint;
+  final Function(int) updateMaxInvitationPoint;
+  final bool edit;
+  final EventModel? eventModel;
+  // final TextEditingController diaryPointController;
+  // final TextEditingController quizPointController;
+  // final TextEditingController commentPointController;
+  // final TextEditingController likePointController;
+  // final TextEditingController invitationPointController;
+  // final TextEditingController stepPointController;
+  // final TextEditingController commentMaxPointController;
+  // final TextEditingController likeMaxPointController;
+  // final TextEditingController invitationMaxPointController;
+  // final TextEditingController stepMaxPointController;
 
   const UploadTargetScoreWidget({
     super.key,
@@ -35,18 +40,22 @@ class UploadTargetScoreWidget extends StatefulWidget {
     required this.updateStepPoint,
     required this.updateInvitationPoint,
     required this.updateQuizPoint,
-    required this.updateMaxStepCount,
-    required this.diaryPointController,
-    required this.quizPointController,
-    required this.commentPointController,
-    required this.likePointController,
-    required this.invitationPointController,
-    required this.stepPointController,
-    required this.quizMaxPointController,
-    required this.commentMaxPointController,
-    required this.likeMaxPointController,
-    required this.invitationMaxPointController,
-    required this.stepMaxPointController,
+    required this.updateMaxStepPoint,
+    required this.updateMaxCommentPoint,
+    required this.updateMaxLikePoint,
+    required this.updateMaxInvitationPoint,
+    required this.edit,
+    this.eventModel,
+    // required this.diaryPointController,
+    // required this.quizPointController,
+    // required this.commentPointController,
+    // required this.likePointController,
+    // required this.invitationPointController,
+    // required this.stepPointController,
+    // required this.commentMaxPointController,
+    // required this.likeMaxPointController,
+    // required this.invitationMaxPointController,
+    // required this.stepMaxPointController,
   });
 
   @override
@@ -62,20 +71,50 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
   final _invitationField = ValueNotifier<bool>(false);
   final _stepField = ValueNotifier<bool>(false);
 
-  final _quizLimitField = ValueNotifier<bool>(false);
   final _commentLimitField = ValueNotifier<bool>(false);
   final _likeLimitField = ValueNotifier<bool>(false);
   final _invitationLimitField = ValueNotifier<bool>(false);
 
-  final _quizLimitValue = ValueNotifier<int>(0);
-  final _commentLimitValue = ValueNotifier<int>(0);
-  final _likeLimitValue = ValueNotifier<int>(0);
-  final _invitationLimitValue = ValueNotifier<int>(0);
-  final _stepLimitValue = ValueNotifier<int>(0);
+  // final _quizLimitValue = ValueNotifier<int>(0);
+  // final _commentLimitValue = ValueNotifier<int>(0);
+  // final _likeLimitValue = ValueNotifier<int>(0);
+  // final _invitationLimitValue = ValueNotifier<int>(0);
+  // final _stepLimitValue = ValueNotifier<int>(0);
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.edit && widget.eventModel != null) {
+      _diaryField.value = widget.eventModel!.diaryPoint != 0;
+      _quizField.value = widget.eventModel!.quizPoint != 0;
+      _commentField.value = widget.eventModel!.commentPoint != 0;
+      _likeField.value = widget.eventModel!.likePoint != 0;
+      _stepField.value = widget.eventModel!.stepPoint != 0;
+      _invitationField.value = widget.eventModel!.invitationPoint != 0;
+      _commentLimitField.value = widget.eventModel!.maxCommentCount != 0;
+      _likeLimitField.value = widget.eventModel!.maxLikeCount != 0;
+      _invitationLimitField.value = widget.eventModel!.maxInvitationCount != 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _diaryField.dispose();
+    _quizField.dispose();
+    _commentField.dispose();
+    _likeField.dispose();
+    _invitationField.dispose();
+    _stepField.dispose();
+
+    _commentLimitField.dispose();
+    _likeLimitField.dispose();
+    _invitationLimitField.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,12 +143,18 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
                       maxLines: 1,
                       // minLines: null,
                       // controller: _descriptionControllder,
+                      initialValue: widget.eventModel?.targetScore.toString(),
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          widget.updateGoalScore(int.parse(value));
+                        }
+                      },
                       textAlignVertical: TextAlignVertical.top,
                       style: contentTextStyle,
                       decoration: InputDecoration(
                         isDense: true,
                         filled: true,
-                        fillColor: Palette().lightGreen.withOpacity(0.1),
+                        fillColor: Colors.white.withOpacity(0.3),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(
                             Sizes.size20,
@@ -133,7 +178,7 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
                           ),
                           borderSide: BorderSide(
                             width: 1.5,
-                            color: Palette().normalGreen.withOpacity(0.7),
+                            color: Palette().darkBlue.withOpacity(0.5),
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
@@ -142,7 +187,7 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
                           ),
                           borderSide: BorderSide(
                             width: 1.5,
-                            color: Palette().darkGreen.withOpacity(0.7),
+                            color: Palette().darkBlue.withOpacity(0.5),
                           ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
@@ -176,21 +221,31 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
           likeField: _likeField,
           invitationField: _invitationField,
           stepField: _stepField,
-          quizLimitField: _quizLimitField,
           commentLimitField: _commentLimitField,
           likeLimitField: _likeLimitField,
           invitationLimitField: _invitationLimitField,
-          diaryPointController: widget.diaryPointController,
-          quizPointController: widget.quizPointController,
-          commentPointController: widget.commentPointController,
-          likePointController: widget.likePointController,
-          invitationPointController: widget.invitationPointController,
-          stepPointController: widget.stepPointController,
-          quizMaxPointController: widget.quizMaxPointController,
-          commentMaxPointController: widget.commentMaxPointController,
-          likeMaxPointController: widget.likeMaxPointController,
-          invitationMaxPointController: widget.invitationMaxPointController,
-          stepMaxPointController: widget.stepMaxPointController,
+          updateDiaryPoint: widget.updateDiaryPoint,
+          updateCommentPoint: widget.updateCommentPoint,
+          updateLikePoint: widget.updateLikePoint,
+          updateStepPoint: widget.updateStepPoint,
+          updateInvitationPoint: widget.updateInvitationPoint,
+          updateQuizPoint: widget.updateQuizPoint,
+          updateMaxCommentPoint: widget.updateMaxCommentPoint,
+          updateMaxLikePoint: widget.updateMaxLikePoint,
+          updateMaxInvitationPoint: widget.updateMaxInvitationPoint,
+          updateMaxStepPoint: widget.updateMaxCommentPoint,
+          edit: widget.edit,
+          eventModel: widget.eventModel,
+          // diaryPointController: widget.diaryPointController,
+          // quizPointController: widget.quizPointController,
+          // commentPointController: widget.commentPointController,
+          // likePointController: widget.likePointController,
+          // invitationPointController: widget.invitationPointController,
+          // stepPointController: widget.stepPointController,
+          // commentMaxPointController: widget.commentMaxPointController,
+          // likeMaxPointController: widget.likeMaxPointController,
+          // invitationMaxPointController: widget.invitationMaxPointController,
+          // stepMaxPointController: widget.stepMaxPointController,
         ),
       ],
     );
@@ -198,10 +253,16 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
 }
 
 class PointTextFormField extends StatelessWidget {
-  final TextEditingController controller;
+  final Function(int) updateState;
+  final bool step;
+  final bool edit;
+  final int? point;
   const PointTextFormField({
     super.key,
-    required this.controller,
+    required this.updateState,
+    this.step = false,
+    required this.edit,
+    this.point,
   });
 
   @override
@@ -216,7 +277,14 @@ class PointTextFormField extends StatelessWidget {
       width: 80,
       child: TextFormField(
         maxLines: 1,
-        controller: controller,
+        onChanged: (String value) {
+          updateState(int.parse(value));
+        },
+        initialValue: edit
+            ? "$point"
+            : step
+                ? "7000"
+                : null,
         textAlignVertical: TextAlignVertical.top,
         style: contentTextStyle,
         decoration: InputDecoration(

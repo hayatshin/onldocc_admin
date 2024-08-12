@@ -21,14 +21,18 @@ import 'package:onldocc_admin/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class UploadEventWidget extends ConsumerStatefulWidget {
-  final BuildContext context;
+  final BuildContext pcontext;
   final Size size;
   final Function() refreshScreen;
+  final bool edit;
+  final EventModel? eventModel;
   const UploadEventWidget({
     super.key,
-    required this.context,
+    required this.pcontext,
     required this.size,
     required this.refreshScreen,
+    required this.edit,
+    this.eventModel,
   });
 
   @override
@@ -37,32 +41,34 @@ class UploadEventWidget extends ConsumerStatefulWidget {
 
 class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   bool _enabledEventButton = false;
-  final TextEditingController _titleControllder = TextEditingController();
-  final TextEditingController _descriptionControllder = TextEditingController();
-  final TextEditingController _goalScoreController = TextEditingController();
-  final TextEditingController _prizewinnersControllder =
-      TextEditingController();
-  final TextEditingController _ageLimitControllder = TextEditingController();
+  // final TextEditingController _titleControllder = TextEditingController();
+  // final TextEditingController _descriptionControllder = TextEditingController();
+  // final TextEditingController _goalScoreController = TextEditingController();
+  // final TextEditingController _prizewinnersControllder =
+  //     TextEditingController();
+  // final TextEditingController _ageLimitControllder = TextEditingController();
 
   // 행사 추가하기
-  final String _eventTitle = "";
-  final String _eventDescription = "";
+  String _eventTitle = "";
+  String _eventDescription = "";
 
-  PlatformFile? _eventImageFile;
-  Uint8List? _eventImageBytes;
-
+  String _bannerImage = "";
   PlatformFile? _bannerImageFile;
   Uint8List? _bannerImageBytes;
+
+  String _eventImage = "";
+  PlatformFile? _eventImageFile;
+  Uint8List? _eventImageBytes;
 
   DateTime? _eventStartDate;
   DateTime? _eventEndDate;
 
-  final int _eventPrizeWinners = 0;
+  int _eventPrizeWinners = 0;
+  int _eventAgeLimit = 0;
+
   int _eventGoalScore = 0;
 
   EventType _eventType = eventList[0];
-
-  final int _eventAgeLimit = 0;
 
   int _eventStepPoint = 0;
   int _eventDiaryPoint = 0;
@@ -77,40 +83,86 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   int _eventInvitationCount = 0;
   int _eventQuizCount = 0;
 
-  int _eventMaxStepCount = 10000;
+  int _eventMaxStepCount = 7000;
   int _eventMaxCommentCount = 0;
   int _eventMaxLikeCount = 0;
   int _eventMaxInvitationCount = 0;
 
   bool tapUploadEvent = false;
 
-  final _diaryField = ValueNotifier<bool>(false);
-  final _quizField = ValueNotifier<bool>(false);
-  final _commentField = ValueNotifier<bool>(false);
-  final _likeField = ValueNotifier<bool>(false);
-  final _invitationField = ValueNotifier<bool>(false);
-  final _stepField = ValueNotifier<bool>(false);
+  OverlayEntry? overlayEntry;
+  GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
 
-  final _quizLimitField = ValueNotifier<bool>(false);
-  final _commentLimitField = ValueNotifier<bool>(false);
-  final _likeLimitField = ValueNotifier<bool>(false);
-  final _invitationLimitField = ValueNotifier<bool>(false);
+  // final _diaryField = ValueNotifier<bool>(false);
+  // final _quizField = ValueNotifier<bool>(false);
+  // final _commentField = ValueNotifier<bool>(false);
+  // final _likeField = ValueNotifier<bool>(false);
+  // final _invitationField = ValueNotifier<bool>(false);
+  // final _stepField = ValueNotifier<bool>(false);
 
-  final TextEditingController _diaryPointController = TextEditingController();
-  final TextEditingController _quizPointController = TextEditingController();
-  final TextEditingController _commentPointController = TextEditingController();
-  final TextEditingController _likePointController = TextEditingController();
-  final TextEditingController _invitationPointController =
-      TextEditingController();
-  final TextEditingController _stepPointController = TextEditingController();
+  // final _quizLimitField = ValueNotifier<bool>(false);
+  // final _commentLimitField = ValueNotifier<bool>(false);
+  // final _likeLimitField = ValueNotifier<bool>(false);
+  // final _invitationLimitField = ValueNotifier<bool>(false);
 
-  final TextEditingController _quizMaxPointController = TextEditingController();
-  final TextEditingController _commentMaxPointController =
-      TextEditingController();
-  final TextEditingController _likeMaxPointController = TextEditingController();
-  final TextEditingController _invitationMaxPointController =
-      TextEditingController();
-  final TextEditingController _stepMaxPointController = TextEditingController();
+  // final TextEditingController _diaryController = TextEditingController();
+  // final TextEditingController _quizController = TextEditingController();
+  // final TextEditingController _commentController = TextEditingController();
+  // final TextEditingController _likeController = TextEditingController();
+  // final TextEditingController _invitationController = TextEditingController();
+  // final TextEditingController _stepController = TextEditingController();
+
+  // final TextEditingController _commentMaxController = TextEditingController();
+  // final TextEditingController _likeMaxController = TextEditingController();
+  // final TextEditingController _invitationMaxController =
+  //     TextEditingController();
+  // final TextEditingController _stepMaxController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 점수
+    _eventMaxStepCount = 7000;
+
+    if (widget.edit && widget.eventModel != null) {
+      _eventTitle = widget.eventModel!.title;
+      _eventDescription = widget.eventModel!.description;
+      _eventStartDate =
+          convertStartDateStringToDateTime(widget.eventModel!.startDate);
+      _eventEndDate =
+          convertEndDateStringToDateTime(widget.eventModel!.endDate);
+      _eventGoalScore = widget.eventModel!.targetScore!;
+      _eventPrizeWinners = widget.eventModel!.achieversNumber;
+      _eventAgeLimit = widget.eventModel!.ageLimit ?? 0;
+      _bannerImage = widget.eventModel!.bannerImage;
+      _eventImage = widget.eventModel!.eventImage;
+      _eventType = eventList.firstWhere(
+          (element) => element.eventCode == widget.eventModel!.eventType);
+
+      _eventStepPoint = widget.eventModel!.stepPoint ?? 0;
+      _eventDiaryPoint = widget.eventModel!.diaryPoint ?? 0;
+      _eventCommentPoint = widget.eventModel!.commentPoint ?? 0;
+      _eventLikePoint = widget.eventModel!.likePoint ?? 0;
+      _eventInvitationPoint = widget.eventModel!.invitationPoint ?? 0;
+      _eventQuizPoint = widget.eventModel!.quizPoint ?? 0;
+      _eventDiaryCount = widget.eventModel!.diaryCount ?? 0;
+      _eventCommentCount = widget.eventModel!.commentCount ?? 0;
+      _eventLikeCount = widget.eventModel!.likeCount ?? 0;
+      _eventInvitationCount = widget.eventModel!.invitationCount ?? 0;
+      _eventQuizCount = widget.eventModel!.quizCount ?? 0;
+      _eventMaxStepCount = widget.eventModel!.maxStepCount ?? 0;
+      _eventMaxCommentCount = widget.eventModel!.maxCommentCount ?? 0;
+      _eventMaxLikeCount = widget.eventModel!.maxLikeCount ?? 0;
+      _eventMaxInvitationCount = widget.eventModel!.maxInvitationCount ?? 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    removeDeleteOverlay();
+    super.dispose();
+  }
 
   void selectStartPeriod(void Function(void Function()) setState) async {
     DateTime now = DateTime.now();
@@ -119,6 +171,17 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       initialDate: now,
       firstDate: DateTime(now.year, now.month, 1),
       lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Palette().darkBlue,
+              onSurface: Palette().darkGray,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -136,6 +199,17 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       initialDate: now,
       firstDate: DateTime(now.year, now.month, 1),
       lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Palette().darkBlue,
+              onSurface: Palette().darkGray,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -159,11 +233,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("오류가 발생했습니다."),
-        ),
-      );
+      showWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -181,11 +251,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("오류가 발생했습니다."),
-        ),
-      );
+      showWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -210,16 +276,20 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       tapUploadEvent = true;
     });
 
-    if (!_enabledEventButton) return;
+    if (!widget.edit && !_enabledEventButton) return;
 
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    final eventId = const Uuid().v4();
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+    final eventId =
+        !widget.edit ? const Uuid().v4() : widget.eventModel!.eventId;
+
     final eventImageUrl = await ref
         .read(eventRepo)
-        .uploadSingleImageToStorage(eventId, _eventImageBytes);
+        .uploadSingleImageToStorage(eventId, _eventImageBytes ?? _eventImage);
     final bannerImageUrl = await ref
         .read(eventRepo)
-        .uploadSingleImageToStorage(eventId, _bannerImageBytes);
+        .uploadSingleImageToStorage(eventId, _bannerImageBytes ?? _bannerImage);
 
     final eventModel = EventModel(
       eventId: eventId,
@@ -233,7 +303,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
       createdAt: getCurrentSeconds(),
-      contractRegionId: adminProfileModel!.contractRegionId != ""
+      contractRegionId: adminProfileModel.contractRegionId != ""
           ? adminProfileModel.contractRegionId
           : null,
       contractCommunityId: selectContractRegion.value!.contractCommunityId != ""
@@ -259,19 +329,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       maxInvitationCount: _eventMaxInvitationCount,
     );
 
-    await ref.read(eventRepo).addEvent(eventModel);
+    !widget.edit
+        ? await ref.read(eventRepo).addEvent(eventModel)
+        : await ref.read(eventRepo).editEvent(eventModel);
     if (!mounted) return;
-    resultBottomModal(context, "성공적으로 행사가 올라갔습니다.", widget.refreshScreen);
-  }
-
-  @override
-  void dispose() {
-    _titleControllder.dispose();
-    _descriptionControllder.dispose();
-    _goalScoreController.dispose();
-    _prizewinnersControllder.dispose();
-    _ageLimitControllder.dispose();
-    super.dispose();
+    resultBottomModal(
+        context,
+        !widget.edit ? "성공적으로 행사가 올라갔습니다" : "성공적으로 행사가 수정되었습니다",
+        widget.refreshScreen);
   }
 
   void updateGoalScore(int goalScore) {
@@ -372,6 +437,32 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     });
   }
 
+  // 행사 삭제
+  void removeDeleteOverlay() {
+    overlayEntry?.remove();
+    overlayEntry = null;
+  }
+
+  Future<void> deleteEvent(String eventId) async {
+    await ref.read(eventRepo).deleteEvent(eventId);
+    await ref.read(eventRepo).deleteEventImageStorage(eventId);
+
+    if (!mounted) return;
+    resultBottomModal(context, "성공적으로 행사가 삭제되었습니다.", widget.refreshScreen);
+  }
+
+  void showDeleteOverlay(String eventId, String eventName) async {
+    removeDeleteOverlay();
+    overlayEntry = OverlayEntry(builder: (context) {
+      return deleteOverlay(
+          eventName.length > 10 ? "${eventName.substring(0, 11)}.." : eventName,
+          removeDeleteOverlay,
+          () => deleteEvent(eventId));
+    });
+
+    Overlay.of(widget.pcontext, debugRequiredFor: widget).insert(overlayEntry!);
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -379,17 +470,20 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     return StatefulBuilder(builder: (context, setState) {
       return ModalScreen(
         size: size,
-        modalTitle: "행사 올리기",
-        modalButtonOneText: "확인",
-        modalButtonOneFunction: () {},
+        modalTitle: !widget.edit ? "행사 올리기" : "행사 수정하기",
+        modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
+        modalButtonOneFunction: !widget.edit
+            ? _submitEvent
+            : () => showDeleteOverlay(
+                widget.eventModel!.eventId, widget.eventModel!.title),
+        modalButtonTwoText: !widget.edit ? null : "수정하기",
+        modalButtonTwoFunction: _submitEvent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Gaps.v20,
             Column(
               children: [
-                Gaps.v52,
                 IntrinsicHeight(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -403,6 +497,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("행사 이름", style: headerTextStyle),
+                              if (tapUploadEvent && _eventTitle.isEmpty)
+                                const InsufficientField(text: "행사 이름을 입력해주세요.")
                             ],
                           ),
                         ),
@@ -410,58 +506,18 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       Gaps.h32,
                       Expanded(
                         child: SizedBox(
-                          // height: 200,
                           child: TextFormField(
-                            expands: true,
-                            maxLines: null,
-                            minLines: null,
-                            controller: _titleControllder,
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  _eventTitle = value;
+                                },
+                              );
+                            },
+                            initialValue: _eventTitle,
                             textAlignVertical: TextAlignVertical.top,
                             style: contentTextStyle,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Palette().lightGreen.withOpacity(0.1),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                              ),
-                              errorStyle: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1.5,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1.5,
-                                  color: Palette().normalGreen.withOpacity(0.7),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1.5,
-                                  color: Palette().darkGreen.withOpacity(0.7),
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: Sizes.size20,
-                                vertical: Sizes.size20,
-                              ),
-                            ),
+                            decoration: inputDecorationStyle(),
                           ),
                         ),
                       ),
@@ -497,53 +553,17 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             expands: true,
                             maxLines: null,
                             minLines: null,
-                            controller: _descriptionControllder,
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  _eventDescription = value;
+                                },
+                              );
+                            },
+                            initialValue: _eventDescription,
                             textAlignVertical: TextAlignVertical.top,
                             style: contentTextStyle,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              fillColor: Palette().lightGreen.withOpacity(0.1),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                              ),
-                              errorStyle: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1.5,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1.5,
-                                  color: Palette().normalGreen.withOpacity(0.7),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size20,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1.5,
-                                  color: Palette().darkGreen.withOpacity(0.7),
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: Sizes.size20,
-                                vertical: Sizes.size20,
-                              ),
-                            ),
+                            decoration: inputDecorationStyle(),
                           ),
                         ),
                       ),
@@ -578,8 +598,15 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           style: headerTextStyle,
                                           textAlign: TextAlign.start,
                                         ),
+                                        Gaps.v5,
+                                        Text(
+                                          "가로:세로 = 5:4 비율\n(ex. 1000px:800px)",
+                                          style: headerInfoTextStyle,
+                                          textAlign: TextAlign.start,
+                                        ),
                                         if (tapUploadEvent &&
-                                            _bannerImageBytes == null)
+                                            (!widget.edit &&
+                                                _bannerImageBytes == null))
                                           const InsufficientField(
                                               text: "배너 이미지를 추가해주세요.")
                                       ],
@@ -592,7 +619,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     children: [
                                       Container(
                                         width: 150,
-                                        height: 150,
+                                        height: 120,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
                                             Sizes.size20,
@@ -600,24 +627,37 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           border: Border.all(
                                               width: 1.5,
                                               color: Palette()
-                                                  .normalGray
-                                                  .withOpacity(0.2)),
-                                          color: Palette()
-                                              .lightGray
-                                              .withOpacity(0.1),
+                                                  .darkGray
+                                                  .withOpacity(0.5)),
+                                          color: Colors.white.withOpacity(0.3),
                                         ),
-                                        child: _bannerImageFile == null
-                                            ? Icon(
-                                                Icons.image,
-                                                size: Sizes.size60,
-                                                color: Palette()
-                                                    .normalGray
-                                                    .withOpacity(0.2),
+                                        clipBehavior: Clip.hardEdge,
+                                        child: widget.edit
+                                            ? ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: Image.network(
+                                                  _bannerImage,
+                                                  fit: BoxFit.cover,
+                                                ),
                                               )
-                                            : Image.memory(
-                                                _bannerImageBytes!,
-                                                fit: BoxFit.cover,
-                                              ),
+                                            : _bannerImageFile == null
+                                                ? Icon(
+                                                    Icons.image,
+                                                    size: Sizes.size60,
+                                                    color: Palette()
+                                                        .darkBlue
+                                                        .withOpacity(0.3),
+                                                  )
+                                                : ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    child: Image.memory(
+                                                      _bannerImageBytes!,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
                                       ),
                                       Gaps.v20,
                                       ModalButton(
@@ -668,11 +708,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     if (_eventStartDate != null)
                                       Text(
                                         "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade800,
-                                          fontSize: Sizes.size14,
-                                        ),
+                                        style: contentTextStyle,
                                       ),
                                   ],
                                 )
@@ -709,71 +745,23 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           width: 100,
                                           height: 40,
                                           child: TextFormField(
+                                            keyboardType: TextInputType.number,
                                             // expands: true,
                                             maxLines: 1,
                                             // minLines: null,
-                                            controller:
-                                                _prizewinnersControllder,
+                                            initialValue: "$_eventPrizeWinners",
+                                            onChanged: (value) {
+                                              if (value.isNotEmpty) {
+                                                setState(() {
+                                                  _eventPrizeWinners =
+                                                      int.parse(value);
+                                                });
+                                              }
+                                            },
                                             textAlignVertical:
                                                 TextAlignVertical.top,
                                             style: contentTextStyle,
-                                            decoration: InputDecoration(
-                                              isDense: true,
-                                              filled: true,
-                                              fillColor: Palette()
-                                                  .lightGreen
-                                                  .withOpacity(0.1),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                              ),
-                                              errorStyle: TextStyle(
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
-                                              errorBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                                borderSide: BorderSide(
-                                                  width: 1.5,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                                borderSide: BorderSide(
-                                                  width: 1.5,
-                                                  color: Palette()
-                                                      .normalGreen
-                                                      .withOpacity(0.7),
-                                                ),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                                borderSide: BorderSide(
-                                                  width: 1.5,
-                                                  color: Palette()
-                                                      .darkGreen
-                                                      .withOpacity(0.7),
-                                                ),
-                                              ),
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: Sizes.size20,
-                                                vertical: Sizes.size20,
-                                              ),
-                                            ),
+                                            decoration: inputDecorationStyle(),
                                           ),
                                         ),
                                         Gaps.h10,
@@ -827,8 +815,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           style: headerTextStyle,
                                           textAlign: TextAlign.start,
                                         ),
-                                        if (tapUploadEvent &&
-                                            _eventImageBytes == null)
+                                        if ((!widget.edit &&
+                                            _bannerImageBytes == null))
                                           const InsufficientField(
                                               text: "행사 이미지를 추가해주세요.")
                                       ],
@@ -847,26 +835,40 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                             Sizes.size20,
                                           ),
                                           border: Border.all(
-                                              width: 1.5,
-                                              color: Palette()
-                                                  .normalGray
-                                                  .withOpacity(0.2)),
-                                          color: Palette()
-                                              .lightGray
-                                              .withOpacity(0.1),
+                                            width: 1.5,
+                                            color: Palette()
+                                                .darkGray
+                                                .withOpacity(0.5),
+                                          ),
+                                          color: Colors.white.withOpacity(0.3),
                                         ),
-                                        child: _eventImageBytes == null
-                                            ? Icon(
-                                                Icons.image,
-                                                size: Sizes.size60,
-                                                color: Palette()
-                                                    .normalGray
-                                                    .withOpacity(0.2),
+                                        clipBehavior: Clip.hardEdge,
+                                        child: widget.edit
+                                            ? ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: Image.network(
+                                                  _eventImage,
+                                                  fit: BoxFit.cover,
+                                                ),
                                               )
-                                            : Image.memory(
-                                                _eventImageBytes!,
-                                                fit: BoxFit.cover,
-                                              ),
+                                            : _eventImageBytes == null
+                                                ? Icon(
+                                                    Icons.image,
+                                                    size: Sizes.size60,
+                                                    color: Palette()
+                                                        .darkBlue
+                                                        .withOpacity(0.3),
+                                                  )
+                                                : ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    child: Image.memory(
+                                                      _eventImageBytes!,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
                                       ),
                                       Gaps.v20,
                                       ModalButton(
@@ -916,11 +918,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     if (_eventEndDate != null)
                                       Text(
                                         "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade800,
-                                          fontSize: Sizes.size14,
-                                        ),
+                                        style: contentTextStyle,
                                       ),
                                   ],
                                 )
@@ -957,70 +955,24 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           width: 100,
                                           height: 40,
                                           child: TextFormField(
+                                            keyboardType: TextInputType.number,
+
                                             // expands: true,
                                             maxLines: 1,
                                             // minLines: null,
-                                            controller: _ageLimitControllder,
+                                            onChanged: (value) {
+                                              if (value.isNotEmpty) {
+                                                setState(() {
+                                                  _eventAgeLimit =
+                                                      int.parse(value);
+                                                });
+                                              }
+                                            },
+                                            initialValue: "$_eventAgeLimit",
                                             textAlignVertical:
                                                 TextAlignVertical.top,
                                             style: contentTextStyle,
-                                            decoration: InputDecoration(
-                                              isDense: true,
-                                              filled: true,
-                                              fillColor: Palette()
-                                                  .lightGreen
-                                                  .withOpacity(0.1),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                              ),
-                                              errorStyle: TextStyle(
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
-                                              errorBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                                borderSide: BorderSide(
-                                                  width: 1.5,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                                borderSide: BorderSide(
-                                                  width: 1.5,
-                                                  color: Palette()
-                                                      .normalGreen
-                                                      .withOpacity(0.7),
-                                                ),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  Sizes.size20,
-                                                ),
-                                                borderSide: BorderSide(
-                                                  width: 1.5,
-                                                  color: Palette()
-                                                      .darkGreen
-                                                      .withOpacity(0.7),
-                                                ),
-                                              ),
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: Sizes.size20,
-                                                vertical: Sizes.size20,
-                                              ),
-                                            ),
+                                            decoration: inputDecorationStyle(),
                                           ),
                                         ),
                                         Gaps.h10,
@@ -1052,14 +1004,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                     Container(
                       height: 1,
                       decoration: BoxDecoration(
-                        color: Palette().normalGreen.withOpacity(0.3),
+                        color: Palette().darkBlue.withOpacity(0.3),
                       ),
                     ),
                     Gaps.v52,
                     Text(
                       "행사 설정",
                       style: TextStyle(
-                        color: Palette().darkGreen,
+                        color: Palette().darkBlue,
                         fontWeight: FontWeight.w700,
                         fontSize: Sizes.size14,
                       ),
@@ -1106,7 +1058,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 children: [
                                   Icon(
                                     Icons.arrow_forward_ios,
-                                    color: Palette().normalGreen,
+                                    color: Palette().darkBlue,
                                     size: 13,
                                   ),
                                   Gaps.h10,
@@ -1117,7 +1069,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                       Text(
                                         "${_eventType.eventTypeName}:",
                                         style: TextStyle(
-                                          color: Palette().normalGreen,
+                                          color: Palette().darkBlue,
                                           fontWeight: FontWeight.w700,
                                           fontSize: Sizes.size12,
                                         ),
@@ -1126,7 +1078,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                       Text(
                                         _eventType.eventTypeDescription,
                                         style: TextStyle(
-                                          color: Palette().normalGreen,
+                                          color: Palette().dashBlue,
                                           fontWeight: FontWeight.w300,
                                           fontSize: Sizes.size12,
                                         ),
@@ -1150,35 +1102,28 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             updateStepPoint: updateStepPoint,
                             updateInvitationPoint: updateInvitationPoint,
                             updateQuizPoint: updateQuizPoint,
-                            updateMaxStepCount: updateMaxStepCount,
-                            diaryPointController: _diaryPointController,
-                            quizPointController: _quizPointController,
-                            commentPointController: _commentPointController,
-                            likePointController: _likePointController,
-                            invitationPointController:
-                                _invitationPointController,
-                            stepPointController: _stepPointController,
-                            quizMaxPointController: _quizMaxPointController,
-                            commentMaxPointController:
-                                _commentMaxPointController,
-                            likeMaxPointController: _likeMaxPointController,
-                            invitationMaxPointController:
-                                _invitationMaxPointController,
-                            stepMaxPointController: _stepMaxPointController,
+                            updateMaxStepPoint: updateMaxStepCount,
+                            updateMaxCommentPoint: updateMaxCommentCount,
+                            updateMaxLikePoint: updateMaxLikeCount,
+                            updateMaxInvitationPoint: updateMaxInvitationCount,
+                            edit: widget.edit,
+                            eventModel: widget.eventModel,
                           )
                         : _eventType == eventList[1]
                             ? UploadMultipleScoresWidget(
-                                updateGoalScore: updateGoalScore,
                                 updateDiaryPoint: updateDiaryPoint,
                                 updateCommentPoint: updateCommentPoint,
                                 updateLikePoint: updateLikePoint,
                                 updateStepPoint: updateStepPoint,
                                 updateInvitationPoint: updateInvitationPoint,
                                 updateQuizPoint: updateQuizPoint,
-                                updateMaxStepCount: updateMaxStepCount,
-                                updateMaxCommentCount: updateMaxCommentCount,
-                                updateMaxLikeCount: updateMaxLikeCount,
-                                updateInvitationCount: updateMaxInvitationCount,
+                                updateMaxStepPoint: updateMaxStepCount,
+                                updateMaxCommentPoint: updateMaxCommentCount,
+                                updateMaxLikePoint: updateMaxLikeCount,
+                                updateMaxInvitationPoint:
+                                    updateMaxInvitationCount,
+                                edit: widget.edit,
+                                eventModel: widget.eventModel,
                               )
                             : UploadCountWidget(
                                 updateDiaryCount: updateDiaryCount,
@@ -1186,6 +1131,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 updateLikeCount: updateLikeCount,
                                 updateInvitationCount: updateInvitationCount,
                                 updateQuizCount: updateQuizCount,
+                                updateMaxCommentCount: updateMaxCommentCount,
+                                updateMaxLikeCount: updateMaxLikeCount,
+                                updateMaxInvitationCount:
+                                    updateMaxInvitationCount,
+                                edit: widget.edit,
+                                eventModel: widget.eventModel,
                               ),
                     Gaps.v40,
                   ],
@@ -1247,53 +1198,7 @@ class DefaultPointTile extends StatelessWidget {
                   color: Colors.black87,
                   fontWeight: FontWeight.w600,
                 ),
-                decoration: InputDecoration(
-                  isDense: true,
-                  hintText: "$defaultPoint",
-                  hintStyle: TextStyle(
-                    fontSize: Sizes.size14,
-                    color: Colors.grey.shade400,
-                    fontWeight: FontWeight.w300,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                  ),
-                  errorStyle: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      Sizes.size3,
-                    ),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: Sizes.size10,
-                    vertical: Sizes.size10,
-                  ),
-                ),
+                decoration: inputDecorationStyle(),
               ),
             ),
             Gaps.h10,
@@ -1417,7 +1322,7 @@ class EventTypeDropdown extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               color: Colors.white,
               border: Border.all(
-                color: Palette().normalGreen,
+                color: Palette().darkBlue,
                 width: 0.5,
               ),
             ),
@@ -1427,8 +1332,8 @@ class EventTypeDropdown extends StatelessWidget {
               Icons.expand_more_rounded,
             ),
             iconSize: 14,
-            iconEnabledColor: Palette().normalGreen,
-            iconDisabledColor: Palette().normalGreen,
+            iconEnabledColor: Palette().darkBlue,
+            iconDisabledColor: Palette().darkBlue,
           ),
           dropdownStyleData: DropdownStyleData(
             elevation: 2,
@@ -1439,7 +1344,7 @@ class EventTypeDropdown extends StatelessWidget {
             ),
             scrollbarTheme: ScrollbarThemeData(
               radius: const Radius.circular(10),
-              thumbVisibility: MaterialStateProperty.all(true),
+              thumbVisibility: WidgetStateProperty.all(true),
             ),
           ),
           menuItemStyleData: const MenuItemStyleData(

@@ -4,6 +4,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
@@ -484,7 +485,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           ),
                           Gaps.v5,
                           Text(
-                            "걸음수: 1,000보당 10점 (하루 최대 만보)",
+                            "걸음수: 1,000보당 10점 (하루 최대 7천보)",
                             style: TextStyle(
                               fontSize: Sizes.size11,
                               color: Palette().normalGray,
@@ -584,7 +585,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               ),
                               DataColumn2(
                                 size: ColumnSize.S,
-                                tooltip: "클릭하면 '일기'를 기준으로 정렬됩니다.",
+                                tooltip: "클릭하면 '일기'를 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
                                   setState(() {
                                     _sortColumnIndex = columnIndex;
@@ -597,7 +598,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               ),
                               DataColumn2(
                                 size: ColumnSize.S,
-                                tooltip: "클릭하면 '댓글'을 기준으로 정렬됩니다.",
+                                tooltip: "클릭하면 '댓글'을 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
                                   setState(() {
                                     _sortColumnIndex = columnIndex;
@@ -610,7 +611,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               ),
                               DataColumn2(
                                 size: ColumnSize.S,
-                                tooltip: "클릭하면 '좋아요'를 기준으로 정렬됩니다.",
+                                tooltip: "클릭하면 '좋아요'를 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
                                   setState(() {
                                     _sortColumnIndex = columnIndex;
@@ -623,7 +624,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               ),
                               DataColumn2(
                                 size: ColumnSize.S,
-                                tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다.",
+                                tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
                                   setState(() {
                                     _sortColumnIndex = columnIndex;
@@ -632,6 +633,19 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 label: Text(
                                   "친구초대",
                                   style: _headerTextStyle,
+                                ),
+                              ),
+                              DataColumn2(
+                                size: ColumnSize.S,
+                                onSort: (columnIndex, sortAscending) {
+                                  setState(() {
+                                    _sortColumnIndex = columnIndex;
+                                  });
+                                },
+                                label: Text(
+                                  "활동\n자세히 보기",
+                                  style: _headerTextStyle,
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ],
@@ -696,6 +710,21 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                           style: _contentTextStyle,
                                         ),
                                       ),
+                                      DataCell(
+                                        Center(
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () {},
+                                              child: FaIcon(
+                                                FontAwesomeIcons.arrowRight,
+                                                color: Palette().darkGray,
+                                                size: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
                                     ],
                                   ),
                             ],

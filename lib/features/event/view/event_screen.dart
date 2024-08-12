@@ -7,8 +7,8 @@ import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/common/widgets/loading_widget.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
+import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
-import 'package:onldocc_admin/features/event/widgets/edit-event/edit_event_widget.dart';
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_event_widget.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -26,14 +26,31 @@ class EventScreen extends ConsumerStatefulWidget {
 }
 
 class _EventScreenState extends ConsumerState<EventScreen> {
-  final bool _addEventHover = false;
-
   List<EventModel> _eventList = [];
   bool loadingFinished = false;
 
   Map<String, dynamic> addedEventData = {};
 
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (selectContractRegion.value != null) {
+      getUserEvents();
+    }
+
+    selectContractRegion.addListener(() async {
+      if (mounted) {
+        await getUserEvents();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   void refreshScreen() {
     getUserEvents();
@@ -48,9 +65,10 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       ),
       builder: (context) {
         return UploadEventWidget(
-          context: context,
+          pcontext: context,
           size: size,
           refreshScreen: refreshScreen,
+          edit: false,
         );
       },
     );
@@ -64,12 +82,19 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         minWidth: size.width,
       ),
       builder: (context) {
-        return EditEventWidget(
-          context: context,
+        return UploadEventWidget(
+          pcontext: context,
           size: size,
           refreshScreen: refreshScreen,
+          edit: true,
           eventModel: eventModel,
         );
+        // return EditEventWidget(
+        //   context: context,
+        //   size: size,
+        //   refreshScreen: refreshScreen,
+        //   eventModel: eventModel,
+        // );
       },
     );
   }
@@ -119,278 +144,293 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    if (selectContractRegion.value != null) {
-      getUserEvents();
-    }
-
-    selectContractRegion.addListener(() async {
-      if (mounted) {
-        await getUserEvents();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return DefaultScreen(
-      menu: menuList[4],
-      child: SizedBox(
-        width: size.width,
-        height: size.height,
-        child: loadingFinished
-            ? Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ReportButton(
-                        iconExists: false,
-                        buttonText: "행사 올리기",
-                        buttonColor: Palette().darkPurple,
-                        action: () => addEventTap(context, size),
-                      ),
-                    ],
-                  ),
-                  Gaps.v40,
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          Sizes.size10,
+    return Overlay(
+      initialEntries: [
+        OverlayEntry(
+          builder: (context) => DefaultScreen(
+            menu: menuList[4],
+            child: SizedBox(
+              width: size.width,
+              height: size.height,
+              child: loadingFinished
+                  ? Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ReportButton(
+                              iconExists: false,
+                              buttonText: "행사 올리기",
+                              buttonColor: Palette().darkPurple,
+                              action: () => addEventTap(context, size),
+                            ),
+                          ],
                         ),
-                      ),
-                      child: DataTable2(
-                        isVerticalScrollBarVisible: false,
-                        isHorizontalScrollBarVisible: false,
-                        dataRowHeight: 80,
-                        lmRatio: 2,
-                        dividerThickness: 0.1,
-                        horizontalMargin: 5,
-                        headingRowDecoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Palette().lightGray,
-                              width: 0.1,
-                            ),
-                          ),
-                        ),
-                        columns: [
-                          DataColumn2(
-                            fixedWidth: 80,
-                            label: Center(
-                              child: Text(
-                                "#",
-                                style: headerTextStyle,
+                        Gaps.v40,
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(
+                                Sizes.size10,
                               ),
                             ),
-                          ),
-                          DataColumn2(
-                            size: ColumnSize.L,
-                            label: Center(
-                              child: Text(
-                                "행사",
-                                style: headerTextStyle,
+                            child: DataTable2(
+                              isVerticalScrollBarVisible: false,
+                              isHorizontalScrollBarVisible: false,
+                              dataRowHeight: 80,
+                              lmRatio: 2,
+                              dividerThickness: 0.1,
+                              horizontalMargin: 5,
+                              headingRowDecoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Palette().lightGray,
+                                    width: 0.1,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          DataColumn2(
-                            label: Center(
-                              child: Text(
-                                "주최 기관",
-                                style: headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          DataColumn2(
-                            label: Center(
-                              child: Text(
-                                "시작일",
-                                style: headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          DataColumn2(
-                            label: Center(
-                              child: Text(
-                                "종료일",
-                                style: headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          DataColumn2(
-                            fixedWidth: 100,
-                            label: Center(
-                              child: Text(
-                                "상태",
-                                style: headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          DataColumn2(
-                            label: Center(
-                              child: Text(
-                                "공개 여부",
-                                style: headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          DataColumn2(
-                            fixedWidth: 80,
-                            label: Center(
-                              child: Text(
-                                "수정",
-                                style: headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          DataColumn2(
-                            fixedWidth: 80,
-                            label: Center(
-                              child: Text(
-                                "선택",
-                                style: headerTextStyle,
-                              ),
-                            ),
-                          ),
-                        ],
-                        rows: [
-                          for (var i = 0; i < _eventList.length; i++)
-                            DataRow2(
-                              cells: [
-                                DataCell(
-                                  Center(
+                              columns: [
+                                DataColumn2(
+                                  fixedWidth: 80,
+                                  label: Center(
                                     child: Text(
-                                      "${i + 1}",
-                                      style: contentTextStyle,
+                                      "#",
+                                      style: headerTextStyle,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Text(
-                                    _eventList[i].title,
-                                    style: contentTextStyle,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                DataCell(
-                                  Center(
+                                DataColumn2(
+                                  size: ColumnSize.L,
+                                  label: Center(
                                     child: Text(
-                                      _eventList[i].orgName ?? "인지케어",
-                                      style: contentTextStyle,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      "행사",
+                                      style: headerTextStyle,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Center(
+                                DataColumn2(
+                                  label: Center(
                                     child: Text(
-                                      _eventList[i].startDate,
-                                      style: contentTextStyle,
-                                      maxLines: 1,
+                                      "주최 기관",
+                                      style: headerTextStyle,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Center(
+                                DataColumn2(
+                                  size: ColumnSize.L,
+                                  label: Center(
                                     child: Text(
-                                      _eventList[i].endDate,
-                                      style: contentTextStyle,
-                                      maxLines: 1,
+                                      "시작일",
+                                      style: headerTextStyle,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Center(
+                                DataColumn2(
+                                  size: ColumnSize.L,
+                                  label: Center(
                                     child: Text(
-                                      _eventList[i].state ?? "-",
-                                      style: contentTextStyle,
-                                      maxLines: 1,
+                                      "종료일",
+                                      style: headerTextStyle,
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  Center(
-                                    child: MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () {},
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Palette().darkBlue,
-                                            borderRadius:
-                                                BorderRadius.circular(5),
+                                DataColumn2(
+                                  fixedWidth: 100,
+                                  label: Center(
+                                    child: Text(
+                                      "상태",
+                                      style: headerTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn2(
+                                  label: Center(
+                                    child: Text(
+                                      "공개 여부",
+                                      style: headerTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 80,
+                                  label: Center(
+                                    child: Text(
+                                      "수정",
+                                      style: headerTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn2(
+                                  fixedWidth: 80,
+                                  label: Center(
+                                    child: Text(
+                                      "선택",
+                                      style: headerTextStyle,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              rows: [
+                                for (var i = 0; i < _eventList.length; i++)
+                                  DataRow2(
+                                    cells: [
+                                      DataCell(
+                                        Center(
+                                          child: Text(
+                                            "${i + 1}",
+                                            style: contentTextStyle,
                                           ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 15,
-                                              vertical: 5,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _eventList[i].title,
+                                          style: contentTextStyle,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Center(
+                                          child: Text(
+                                            _eventList[i]
+                                                .orgName
+                                                .toString()
+                                                .split(" ")
+                                                .last,
+                                            style: contentTextStyle,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Center(
+                                          child: Text(
+                                            _eventList[i].startDate,
+                                            style: contentTextStyle,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Center(
+                                          child: Text(
+                                            _eventList[i].endDate,
+                                            style: contentTextStyle,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Center(
+                                          child: Text(
+                                            _eventList[i].state ?? "-",
+                                            style: contentTextStyle,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Center(
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () async {
+                                                await ref
+                                                    .read(eventRepo)
+                                                    .editEventAdminSecret(
+                                                        _eventList[i].eventId,
+                                                        _eventList[i]
+                                                            .adminSecret);
+                                                await getUserEvents();
+                                              },
+                                              child: _eventList[i].adminSecret
+                                                  ? Text(
+                                                      "비공개",
+                                                      style: contentTextStyle
+                                                          .copyWith(
+                                                        color:
+                                                            Palette().darkBlue,
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            Palette().darkBlue,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 2,
+                                                        ),
+                                                        child: Text(
+                                                          "공개",
+                                                          style:
+                                                              contentTextStyle
+                                                                  .copyWith(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
                                             ),
-                                            child: Text(
-                                              "공개",
-                                              style: TextStyle(
-                                                fontSize: Sizes.size11,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Center(
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () => editEventTap(
+                                                  context, size, _eventList[i]),
+                                              child: Icon(
+                                                Icons.create,
+                                                size: Sizes.size16,
+                                                color: Palette().darkGray,
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Center(
-                                    child: MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () => editEventTap(
-                                            context, size, _eventList[i]),
-                                        child: Icon(
-                                          Icons.create,
-                                          size: Sizes.size16,
-                                          color: Palette().darkGray,
+                                      DataCell(
+                                        Center(
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () =>
+                                                  goDetailEvent(_eventList[i]),
+                                              child: Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: Sizes.size16,
+                                                color: Palette().darkGray,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ),
-                                DataCell(
-                                  Center(
-                                    child: MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () {},
-                                        child: Icon(
-                                          Icons.arrow_forward_ios,
-                                          size: Sizes.size16,
-                                          color: Palette().darkGray,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
                               ],
                             ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            : loadingWidget(context),
-      ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : loadingWidget(context),
+            ),
+          ),
+        )
+      ],
     );
   }
 }
@@ -418,7 +458,7 @@ final TextStyle contentTextStyle = TextStyle(
 final TextStyle fieldHeaderTextStyle = TextStyle(
   fontSize: Sizes.size13,
   fontWeight: FontWeight.w700,
-  color: Palette().normalGreen,
+  color: Palette().darkBlue,
 );
 
 final TextStyle fieldLimitTextStyle = TextStyle(

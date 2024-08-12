@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class TvRepository {
   final _supabase = Supabase.instance.client;
@@ -67,6 +68,28 @@ class TvRepository {
     final fileUrl = _supabase.storage.from("tv").getPublicUrl(fileStoragePath);
 
     return fileUrl;
+  }
+
+  Future<String> uploadSingleImageToStorage(
+      String videoId, dynamic image) async {
+    if (!image.toString().startsWith("https://")) {
+      // await deleteEventImageStorage(eventId);
+      final uuid = const Uuid().v4();
+      final fileStoragePath = "$videoId/$uuid";
+
+      XFile xFile = XFile.fromData(image);
+      final imageBytes = await xFile.readAsBytes();
+
+      await _supabase.storage.from("tv").uploadBinary(
+          fileStoragePath, imageBytes,
+          fileOptions: const FileOptions(upsert: true));
+
+      final fileUrl =
+          _supabase.storage.from("tv").getPublicUrl(fileStoragePath);
+
+      return fileUrl;
+    }
+    return image;
   }
 }
 

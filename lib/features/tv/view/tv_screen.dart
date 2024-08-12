@@ -7,7 +7,6 @@ import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/tv/models/tv_model.dart';
 import 'package:onldocc_admin/features/tv/view_models/tv_view_model.dart';
-import 'package:onldocc_admin/features/tv/widgets/edit_tv_widget.dart';
 import 'package:onldocc_admin/features/tv/widgets/upload_tv_widget.dart';
 import 'package:onldocc_admin/palette.dart';
 
@@ -57,8 +56,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
       builder: (context) {
         return UploadTvWidget(
           context: context,
-          totalWidth: totalWidth,
-          totalHeight: totalHeight,
+          edit: false,
           refreshScreen: getUserTvs,
         );
       },
@@ -74,13 +72,19 @@ class _TvScreenState extends ConsumerState<TvScreen> {
         minWidth: totalWidth,
       ),
       builder: (context) {
-        return EditTvWidget(
+        return UploadTvWidget(
           context: context,
-          totalWidth: totalWidth,
-          totalHeight: totalHeight,
+          edit: true,
           tvModel: tvModel,
           refreshScreen: getUserTvs,
         );
+        // return EditTvWidget(
+        //   context: context,
+        //   totalWidth: totalWidth,
+        //   totalHeight: totalHeight,
+        //   tvModel: tvModel,
+        //   refreshScreen: getUserTvs,
+        // );
       },
     );
   }

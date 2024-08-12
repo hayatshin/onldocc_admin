@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -27,10 +26,10 @@ class ModalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: size.height * 0.8,
+      height: size.height * 0.85,
       width: size.width,
       decoration: BoxDecoration(
-        color: Palette().modalBgLightGreen,
+        color: Palette().bgLightBlue,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(Sizes.size20),
           topRight: Radius.circular(Sizes.size20),
@@ -45,22 +44,14 @@ class ModalScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: size.width * 0.5,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Palette().normalGray.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            Gaps.v40,
+            Gaps.v20,
             Row(
               children: [
                 Expanded(
                   child: Text(
                     modalTitle,
                     style: TextStyle(
-                      color: Palette().darkGreen,
+                      color: Palette().darkBlue,
                       fontWeight: FontWeight.w700,
                       fontSize: Sizes.size16,
                     ),
@@ -71,26 +62,54 @@ class ModalScreen extends StatelessWidget {
                     ReportButton(
                       iconExists: false,
                       buttonText: modalButtonOneText,
-                      buttonColor: Palette().darkGreen,
+                      buttonColor: Palette().darkBlue,
                       action: modalButtonOneFunction,
                     ),
                     if (modalButtonTwoText != null)
                       Row(
                         children: [
                           Gaps.h20,
-                          ReportButton(
-                            iconExists: false,
-                            buttonText: modalButtonTwoText!,
-                            buttonColor: Palette().darkGreen,
-                            action: modalButtonTwoFunction!,
-                          ),
+                          MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: modalButtonTwoFunction!,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    width: 1.5,
+                                    color: Palette().darkBlue,
+                                  ),
+                                  color: Palette().darkBlue,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 30,
+                                    vertical: 7,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        modalButtonTwoText!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: Sizes.size14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                   ],
                 ),
               ],
             ),
-            Gaps.v20,
+            Gaps.v40,
             Expanded(
               child: SingleChildScrollView(
                 child: child,

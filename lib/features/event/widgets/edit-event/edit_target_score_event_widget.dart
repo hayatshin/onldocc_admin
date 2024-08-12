@@ -5,7 +5,6 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
-import 'package:onldocc_admin/features/event/widgets/field-box/point_field_box.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
@@ -31,7 +30,6 @@ class EditTargetScoreEventWidget extends ConsumerStatefulWidget {
   final TextEditingController likePointController;
   final TextEditingController invitationPointController;
   final TextEditingController stepPointController;
-  final TextEditingController quizMaxPointController;
   final TextEditingController commentMaxPointController;
   final TextEditingController likeMaxPointController;
   final TextEditingController invitationMaxPointController;
@@ -60,7 +58,6 @@ class EditTargetScoreEventWidget extends ConsumerStatefulWidget {
     required this.likePointController,
     required this.invitationPointController,
     required this.stepPointController,
-    required this.quizMaxPointController,
     required this.commentMaxPointController,
     required this.likeMaxPointController,
     required this.invitationMaxPointController,
@@ -229,7 +226,7 @@ class _EditPointEventWidgetState
                   onPressed: removeDeleteOverlay,
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
+                        WidgetStateProperty.all(Colors.pink.shade100),
                   ),
                   child: Text(
                     "취소",
@@ -242,8 +239,8 @@ class _EditPointEventWidgetState
                 ElevatedButton(
                   onPressed: () => deleteEvent(eventId),
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
+                    backgroundColor:
+                        WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
                   child: const Text(
                     "삭제",
@@ -298,7 +295,7 @@ class _EditPointEventWidgetState
                       decoration: InputDecoration(
                         isDense: true,
                         filled: true,
-                        fillColor: Palette().lightGreen.withOpacity(0.1),
+                        fillColor: Palette().darkBlue.withOpacity(0.1),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(
                             Sizes.size20,
@@ -322,7 +319,7 @@ class _EditPointEventWidgetState
                           ),
                           borderSide: BorderSide(
                             width: 1.5,
-                            color: Palette().normalGreen.withOpacity(0.7),
+                            color: Palette().darkBlue.withOpacity(0.7),
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
@@ -331,7 +328,7 @@ class _EditPointEventWidgetState
                           ),
                           borderSide: BorderSide(
                             width: 1.5,
-                            color: Palette().darkGreen.withOpacity(0.7),
+                            color: Palette().darkBlue.withOpacity(0.7),
                           ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
@@ -358,29 +355,18 @@ class _EditPointEventWidgetState
           textAlign: TextAlign.start,
         ),
         Gaps.v20,
-        PointFieldBox(
-          diaryField: widget.diaryField,
-          quizField: widget.quizField,
-          commentField: widget.commentField,
-          likeField: widget.likeField,
-          invitationField: widget.invitationField,
-          stepField: widget.stepField,
-          quizLimitField: widget.quizLimitField,
-          commentLimitField: widget.commentLimitField,
-          likeLimitField: widget.likeLimitField,
-          invitationLimitField: widget.invitationLimitField,
-          diaryPointController: widget.diaryPointController,
-          quizPointController: widget.quizPointController,
-          commentPointController: widget.commentPointController,
-          likePointController: widget.likePointController,
-          invitationPointController: widget.invitationPointController,
-          stepPointController: widget.stepPointController,
-          quizMaxPointController: widget.quizMaxPointController,
-          commentMaxPointController: widget.commentMaxPointController,
-          likeMaxPointController: widget.likeMaxPointController,
-          invitationMaxPointController: widget.invitationMaxPointController,
-          stepMaxPointController: widget.stepMaxPointController,
-        ),
+        // PointFieldBox(
+        //   diaryField: widget.diaryField,
+        //   quizField: widget.quizField,
+        //   commentField: widget.commentField,
+        //   likeField: widget.likeField,
+        //   invitationField: widget.invitationField,
+        //   stepField: widget.stepField,
+        //   quizLimitField: widget.quizLimitField,
+        //   commentLimitField: widget.commentLimitField,
+        //   likeLimitField: widget.likeLimitField,
+        //   invitationLimitField: widget.invitationLimitField,
+        // ),
       ],
     );
   }

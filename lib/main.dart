@@ -72,6 +72,10 @@ class OnldoccAdmin extends ConsumerWidget {
           ScrollConfiguration.of(context).copyWith(scrollbars: false),
       theme: ThemeData(
         fontFamily: "Pretendard",
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Palette().darkBlue,
+          selectionColor: Palette().darkBlue.withOpacity(0.3),
+        ),
         datePickerTheme: DatePickerThemeData(
           headerBackgroundColor: Palette().darkPurple,
           cancelButtonStyle: ButtonStyle(

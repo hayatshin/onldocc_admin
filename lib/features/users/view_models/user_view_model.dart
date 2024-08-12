@@ -43,6 +43,7 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
 
   Future<List<UserModel?>> initializeUserList(String subdistrictId) async {
     final userlist = await _userRepo.initializeUserList(subdistrictId);
+
     final modelList = userlist.map((e) => UserModel.fromJson(e)).toList();
 
     state = AsyncData(modelList);

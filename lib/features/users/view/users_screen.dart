@@ -12,7 +12,6 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
-import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
@@ -111,8 +110,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   }
 
   Future<void> _initializeAdminProfile() async {
-    final adminProfile = ref.read(adminProfileProvider).value;
-    final sortColumnIndex = adminProfile!.master ? 6 : 5;
+    final adminProfile = ref.read(adminProfileProvider).value ??
+        await ref.read(adminProfileProvider.notifier).getAdminProfile();
+    final sortColumnIndex = adminProfile.master ? 6 : 5;
     setState(() {
       _sortColumnIndex = sortColumnIndex;
       _adminProfile = adminProfile;
@@ -124,6 +124,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         await ref
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
+
     int rowCount =
         userDataList.length > 20 ? _pageCount + _offset : userDataList.length;
 
@@ -259,88 +260,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
     assert(overlayEntry == null);
 
-    overlayEntry = OverlayEntry(
-      builder: (context) => Positioned.fill(
-        child: Material(
-          color: Colors.black38,
-          child: Center(
-            child: AlertDialog(
-              title: Text(
-                userName,
-                style: InjicareFont().headline03.copyWith(
-                      color: Palette().darkPurple,
-                    ),
-              ),
-              backgroundColor: Colors.white,
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "정말로 삭제하시겠습니까?",
-                    style: InjicareFont().label03,
-                  ),
-                  Text(
-                    "삭제하면 다시 되돌릴 수 없습니다.",
-                    style: InjicareFont().label03,
-                  ),
-                ],
-              ),
-              actions: [
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: removeDeleteOverlay,
-                    child: Container(
-                      width: 60,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          width: 1.5,
-                          color: Palette().darkPurple,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "취소",
-                          style: InjicareFont().body07,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () async {
-                      await ref.read(userRepo).deleteUser(userId);
-                      removeDeleteOverlay();
-                      setState(() {});
-                    },
-                    child: Container(
-                      width: 60,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Palette().darkPurple,
-                      ),
-                      child: Center(
-                        child: Text(
-                          "삭제",
-                          style: InjicareFont().body07.copyWith(
-                                color: Colors.white,
-                              ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    overlayEntry = OverlayEntry(builder: (context) {
+      return deleteOverlay(userName, removeDeleteOverlay, () async {
+        await ref.read(userRepo).deleteUser(userId);
+        removeDeleteOverlay();
+        setState(() {});
+      });
+    });
     Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
   }
 

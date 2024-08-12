@@ -233,10 +233,17 @@ class EventRepository {
 
   Future<void> editEventAdminSecret(String eventId, bool currentSecret) async {
     try {
-      await _supabase.from("events").update({
-        'adminSecret': !currentSecret,
-        'createdAt': getCurrentSeconds()
-      }).eq("eventId", eventId);
+      if (currentSecret) {
+        // 비공개 -> 공개
+        await _supabase.from("events").update({
+          'adminSecret': !currentSecret,
+          'createdAt': getCurrentSeconds()
+        }).eq("eventId", eventId);
+      } else {
+        await _supabase.from("events").update({
+          'adminSecret': !currentSecret,
+        }).eq("eventId", eventId);
+      }
     } catch (e) {
       // ignore: avoid_print
       print("editEvent -> $e");

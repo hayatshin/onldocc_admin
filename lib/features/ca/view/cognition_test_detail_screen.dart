@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
-import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/consts/cognition_test_questionnaire.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:universal_html/html.dart';
 
@@ -23,6 +24,18 @@ class CognitionTestDetailScreen extends StatefulWidget {
 }
 
 class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size13,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
+
   List<String> testQuestionnare = [];
   final List<String> _listHeader = ["문항", "답변"];
   String testDate = "";
@@ -117,29 +130,36 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Csv(
-          generateCsv: generateUserCsv,
-          rankingType: testType,
-          userName: widget.model.userName!,
+    return Container(
+      width: size.width,
+      height: size.height,
+      decoration: BoxDecoration(
+        color: Palette().bgLightBlue,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
         ),
-        SearchBelow(
-          size: size,
-          child: SingleChildScrollView(
-            child: Container(
-              color: Colors.grey.shade100,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 60,
-                  horizontal: 200,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Gaps.v20,
+              Csv(
+                generateCsv: generateUserCsv,
+                rankingType: testType,
+                userName: widget.model.userName!,
+                menu: testType == "alzheimer_test" ? menuList[4] : menuList[5],
+              ),
+              Gaps.v40,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 70,
+                    ),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Column(
@@ -164,100 +184,106 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                         )
                       ],
                     ),
-                    Gaps.v32,
-                    Center(
-                      child: Container(
-                        width: size.width - 600,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1.0,
-                            color: Colors.black,
+                  ),
+                  Gaps.v52,
+                  Center(
+                    child: SizedBox(
+                      width: size.width - 600,
+                      child: DataTable(
+                        dividerThickness: 0.1,
+                        border: TableBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          top: BorderSide(
+                            color: Palette().darkPurple,
+                            width: 1.5,
                           ),
-                          borderRadius: BorderRadius.circular(
-                            Sizes.size5,
+                          bottom: BorderSide(
+                            color: Palette().darkPurple,
+                            width: 1.5,
                           ),
-                          color: Colors.white,
+                          horizontalInside: BorderSide(
+                            color: Palette().lightGray,
+                            width: 0.1,
+                          ),
                         ),
-                        child: DataTable(
-                          columns: const [
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  "#",
-                                  textAlign: TextAlign.center,
-                                ),
+                        columns: [
+                          DataColumn(
+                            label: Expanded(
+                              child: Text(
+                                "#",
+                                style: _headerTextStyle,
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  "문항",
-                                  textAlign: TextAlign.center,
-                                ),
+                          ),
+                          DataColumn(
+                            label: Expanded(
+                              child: Text(
+                                "문항",
+                                style: _headerTextStyle,
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  "답변",
-                                  textAlign: TextAlign.center,
-                                ),
+                          ),
+                          DataColumn(
+                            label: Expanded(
+                              child: Text(
+                                "답변",
+                                style: _headerTextStyle,
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                          ],
-                          rows: [
-                            for (int i = 0; i < testQuestionnare.length; i++)
-                              DataRow(
-                                cells: [
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        (i + 1).toString(),
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
-                                        ),
+                          ),
+                        ],
+                        rows: [
+                          for (int i = 0; i < testQuestionnare.length; i++)
+                            DataRow(
+                              cells: [
+                                DataCell(
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      (i + 1).toString(),
+                                      style: _contentTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      testQuestionnare[i],
+                                      style: _contentTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      widget.model.userAnswers["a$i"]!
+                                          ? "예"
+                                          : "아니오",
+                                      textAlign: TextAlign.end,
+                                      style: _contentTextStyle.copyWith(
+                                        fontWeight: FontWeight.w800,
                                       ),
                                     ),
                                   ),
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        testQuestionnare[i],
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        widget.model.userAnswers["a$i"]!
-                                            ? "예"
-                                            : "아니오",
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                          fontSize: Sizes.size13,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
+                                ),
+                              ],
+                            ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
+                  Gaps.v52,
+                ],
+              )
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -279,18 +305,12 @@ class TestInfoText extends StatelessWidget {
           children: [
             Text(
               "🔹  $header",
-              style: const TextStyle(
-                fontSize: Sizes.size15,
-                fontWeight: FontWeight.w700,
-              ),
+              style: caHeaderTextStyle,
             ),
             Gaps.h20,
             Text(
               contents,
-              style: const TextStyle(
-                fontSize: Sizes.size15,
-                fontWeight: FontWeight.w500,
-              ),
+              style: caContentTextStyle,
             ),
           ],
         ),
@@ -317,18 +337,12 @@ class UserInfoText extends StatelessWidget {
           children: [
             Text(
               "▪️   $header",
-              style: const TextStyle(
-                fontSize: Sizes.size15,
-                fontWeight: FontWeight.w700,
-              ),
+              style: caHeaderTextStyle,
             ),
             Gaps.h20,
             Text(
               contents,
-              style: const TextStyle(
-                fontSize: Sizes.size15,
-                fontWeight: FontWeight.w500,
-              ),
+              style: caContentTextStyle,
             ),
           ],
         ),
@@ -337,3 +351,15 @@ class UserInfoText extends StatelessWidget {
     );
   }
 }
+
+final TextStyle caHeaderTextStyle = TextStyle(
+  fontSize: Sizes.size14,
+  fontWeight: FontWeight.w800,
+  color: Palette().darkGray,
+);
+
+final TextStyle caContentTextStyle = TextStyle(
+  fontSize: Sizes.size14,
+  fontWeight: FontWeight.w500,
+  color: Palette().darkGray,
+);

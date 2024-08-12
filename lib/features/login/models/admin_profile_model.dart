@@ -38,11 +38,11 @@ class AdminProfileModel {
       : adminId = json["adminId"],
         master = json["master"],
         contractType = "region",
-        contractRegionId = json["subdistricts"] != null
-            ? json["subdistricts"]["subdistrict"]
+        contractRegionId = json["contract_regions"] != null
+            ? json["contract_regions"]["contractRegionId"]
             : "",
         subdistrictId = json["subdistricts"] != null
-            ? json["subdistricts"]["subdistrict"]
+            ? json["subdistricts"]["subdistrictId"]
             : "",
         name = json["subdistricts"] != null
             ? json["subdistricts"]["subdistrict"]

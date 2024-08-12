@@ -19,11 +19,11 @@ class ModalButton extends StatelessWidget {
         onTap: modalAction,
         child: Container(
           decoration: BoxDecoration(
-              color: Palette().lightGreen.withOpacity(0.3),
+              color: Palette().lightBlue.withOpacity(0.3),
               borderRadius: BorderRadius.circular(30),
               border: Border.all(
-                width: 1.2,
-                color: Palette().darkGreen,
+                width: 1.7,
+                color: Palette().darkGray,
               )),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -33,7 +33,7 @@ class ModalButton extends StatelessWidget {
             child: Text(
               modalText,
               style: TextStyle(
-                color: Palette().darkGreen,
+                color: Palette().darkGray,
                 fontSize: Sizes.size13,
                 fontWeight: FontWeight.w600,
               ),

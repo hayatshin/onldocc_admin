@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_target_score_widget.dart';
 import 'package:onldocc_admin/palette.dart';
 
@@ -11,21 +12,31 @@ class PointFieldBox extends StatelessWidget {
   final ValueNotifier<bool> likeField;
   final ValueNotifier<bool> invitationField;
   final ValueNotifier<bool> stepField;
-  final ValueNotifier<bool> quizLimitField;
   final ValueNotifier<bool> commentLimitField;
   final ValueNotifier<bool> likeLimitField;
   final ValueNotifier<bool> invitationLimitField;
-  final TextEditingController diaryPointController;
-  final TextEditingController quizPointController;
-  final TextEditingController commentPointController;
-  final TextEditingController likePointController;
-  final TextEditingController invitationPointController;
-  final TextEditingController stepPointController;
-  final TextEditingController quizMaxPointController;
-  final TextEditingController commentMaxPointController;
-  final TextEditingController likeMaxPointController;
-  final TextEditingController invitationMaxPointController;
-  final TextEditingController stepMaxPointController;
+  // final TextEditingController diaryPointController;
+  // final TextEditingController quizPointController;
+  // final TextEditingController commentPointController;
+  // final TextEditingController likePointController;
+  // final TextEditingController invitationPointController;
+  // final TextEditingController stepPointController;
+  // final TextEditingController commentMaxPointController;
+  // final TextEditingController likeMaxPointController;
+  // final TextEditingController invitationMaxPointController;
+  // final TextEditingController stepMaxPointController;
+  final Function(int) updateDiaryPoint;
+  final Function(int) updateCommentPoint;
+  final Function(int) updateLikePoint;
+  final Function(int) updateStepPoint;
+  final Function(int) updateInvitationPoint;
+  final Function(int) updateQuizPoint;
+  final Function(int) updateMaxStepPoint;
+  final Function(int) updateMaxCommentPoint;
+  final Function(int) updateMaxLikePoint;
+  final Function(int) updateMaxInvitationPoint;
+  final bool edit;
+  final EventModel? eventModel;
 
   const PointFieldBox({
     super.key,
@@ -35,21 +46,31 @@ class PointFieldBox extends StatelessWidget {
     required this.likeField,
     required this.invitationField,
     required this.stepField,
-    required this.quizLimitField,
     required this.commentLimitField,
     required this.likeLimitField,
     required this.invitationLimitField,
-    required this.diaryPointController,
-    required this.quizPointController,
-    required this.commentPointController,
-    required this.likePointController,
-    required this.invitationPointController,
-    required this.stepPointController,
-    required this.quizMaxPointController,
-    required this.commentMaxPointController,
-    required this.likeMaxPointController,
-    required this.invitationMaxPointController,
-    required this.stepMaxPointController,
+    required this.updateDiaryPoint,
+    required this.updateCommentPoint,
+    required this.updateLikePoint,
+    required this.updateStepPoint,
+    required this.updateInvitationPoint,
+    required this.updateQuizPoint,
+    required this.updateMaxStepPoint,
+    required this.updateMaxCommentPoint,
+    required this.updateMaxLikePoint,
+    required this.updateMaxInvitationPoint,
+    required this.edit,
+    this.eventModel,
+    // required this.diaryPointController,
+    // required this.quizPointController,
+    // required this.commentPointController,
+    // required this.likePointController,
+    // required this.invitationPointController,
+    // required this.stepPointController,
+    // required this.commentMaxPointController,
+    // required this.likeMaxPointController,
+    // required this.invitationMaxPointController,
+    // required this.stepMaxPointController,
   });
 
   @override
@@ -59,7 +80,7 @@ class PointFieldBox extends StatelessWidget {
     final TextStyle fieldHeaderTextStyle = TextStyle(
       fontSize: Sizes.size13,
       fontWeight: FontWeight.w700,
-      color: Palette().normalGreen,
+      color: Palette().darkBlue,
     );
     final TextStyle fieldContentTextStyle = TextStyle(
       fontSize: Sizes.size12,
@@ -72,7 +93,7 @@ class PointFieldBox extends StatelessWidget {
         color: Colors.white,
         border: Border.all(
           width: 0.5,
-          color: Palette().normalGreen.withOpacity(0.7),
+          color: Palette().darkBlue.withOpacity(0.7),
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -128,7 +149,7 @@ class PointFieldBox extends StatelessWidget {
             ),
             Container(
               width: 0.5,
-              color: Palette().normalGreen.withOpacity(0.7),
+              color: Palette().darkBlue.withOpacity(0.7),
             ),
             Expanded(
               flex: 3,
@@ -145,6 +166,7 @@ class PointFieldBox extends StatelessWidget {
                             !diaryFieldValue
                                 ? Container()
                                 : Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Expanded(
                                         child: Row(
@@ -155,7 +177,9 @@ class PointFieldBox extends StatelessWidget {
                                             ),
                                             Gaps.h16,
                                             PointTextFormField(
-                                              controller: diaryPointController,
+                                              edit: edit,
+                                              point: eventModel?.diaryPoint,
+                                              updateState: updateDiaryPoint,
                                             ),
                                             Gaps.h10,
                                             Text(
@@ -186,89 +210,147 @@ class PointFieldBox extends StatelessWidget {
                       ),
                     ),
                     // 문제 풀기
-                    FieldPointSetterTile(
-                      fieldHeight: fieldHeight,
-                      fieldContentTextStyle: fieldContentTextStyle,
-                      field: quizField,
-                      fieldLimit: quizLimitField,
-                      pointController: quizPointController,
-                      dailyMaxPointController: quizMaxPointController,
+                    SizedBox(
+                      height: fieldHeight,
+                      child: ValueListenableBuilder(
+                        valueListenable: quizField,
+                        builder: (context, quizFieldValue, child) =>
+                            !quizFieldValue
+                                ? Container()
+                                : Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "1회당 점수:",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                            Gaps.h16,
+                                            PointTextFormField(
+                                              edit: edit,
+                                              point: eventModel?.quizPoint,
+                                              updateState: updateQuizPoint,
+                                            ),
+                                            Gaps.h10,
+                                            Text(
+                                              "점",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(child: Container()),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "1일 최대:",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                            Gaps.h20,
+                                            Text(
+                                              "1 회",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                      ),
                     ),
                     FieldPointSetterTile(
                       fieldHeight: fieldHeight,
                       fieldContentTextStyle: fieldContentTextStyle,
                       field: commentField,
                       fieldLimit: commentLimitField,
-                      pointController: commentPointController,
-                      dailyMaxPointController: commentMaxPointController,
+                      updateState: updateCommentPoint,
+                      updateMaxState: updateMaxCommentPoint,
+                      edit: edit,
+                      point: eventModel?.commentPoint,
+                      maxPoint: eventModel?.maxCommentCount,
                     ),
                     FieldPointSetterTile(
                       fieldHeight: fieldHeight,
                       fieldContentTextStyle: fieldContentTextStyle,
                       field: likeField,
                       fieldLimit: likeLimitField,
-                      pointController: likePointController,
-                      dailyMaxPointController: likeMaxPointController,
+                      updateState: updateLikePoint,
+                      updateMaxState: updateMaxLikePoint,
+                      edit: edit,
+                      point: eventModel?.likePoint,
+                      maxPoint: eventModel?.maxLikeCount,
                     ),
                     FieldPointSetterTile(
                       fieldHeight: fieldHeight,
                       fieldContentTextStyle: fieldContentTextStyle,
                       field: invitationField,
                       fieldLimit: invitationLimitField,
-                      pointController: invitationPointController,
-                      dailyMaxPointController: invitationMaxPointController,
+                      updateState: updateInvitationPoint,
+                      updateMaxState: updateMaxInvitationPoint,
+                      edit: edit,
+                      point: eventModel?.invitationPoint,
+                      maxPoint: eventModel?.maxInvitationCount,
                     ),
                     SizedBox(
                       height: fieldHeight,
                       child: ValueListenableBuilder(
                         valueListenable: stepField,
-                        builder: (context, fieldValue, child) => !fieldValue
-                            ? Container()
-                            : Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          "1회당 점수:",
-                                          style: fieldContentTextStyle,
+                        builder: (context, stepFieldValue, child) =>
+                            !stepFieldValue
+                                ? Container()
+                                : Row(
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "1회당 점수:",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                            Gaps.h16,
+                                            PointTextFormField(
+                                              edit: edit,
+                                              point: eventModel?.stepPoint,
+                                              updateState: updateStepPoint,
+                                            ),
+                                            Gaps.h10,
+                                            Text(
+                                              "점",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                          ],
                                         ),
-                                        Gaps.h16,
-                                        PointTextFormField(
-                                          controller: stepPointController,
+                                      ),
+                                      Expanded(
+                                        child: Container(),
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "1일 최대:",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                            Gaps.h16,
+                                            PointTextFormField(
+                                              edit: edit,
+                                              point: eventModel?.maxStepCount,
+                                              updateState: updateMaxStepPoint,
+                                              step: true,
+                                            ),
+                                            Gaps.h10,
+                                            Text(
+                                              "보",
+                                              style: fieldContentTextStyle,
+                                            ),
+                                          ],
                                         ),
-                                        Gaps.h10,
-                                        Text(
-                                          "점",
-                                          style: fieldContentTextStyle,
-                                        ),
-                                      ],
-                                    ),
+                                      )
+                                    ],
                                   ),
-                                  Expanded(
-                                    child: Container(),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          "1일 최대:",
-                                          style: fieldContentTextStyle,
-                                        ),
-                                        Gaps.h16,
-                                        PointTextFormField(
-                                          controller: stepMaxPointController,
-                                        ),
-                                        Gaps.h10,
-                                        Text(
-                                          "회",
-                                          style: fieldContentTextStyle,
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
                       ),
                     )
                   ],
@@ -312,7 +394,7 @@ class FieldPointUsageTile extends StatelessWidget {
                     scale: 0.8,
                     child: Checkbox(
                       value: fieldValue,
-                      activeColor: Palette().normalGreen,
+                      activeColor: Palette().darkBlue,
                       splashRadius: 0,
                       onChanged: (value) {
                         if (value != null) {
@@ -341,8 +423,11 @@ class FieldPointSetterTile extends StatelessWidget {
   final TextStyle fieldContentTextStyle;
   final ValueNotifier<bool> field;
   final ValueNotifier<bool> fieldLimit;
-  final TextEditingController pointController;
-  final TextEditingController dailyMaxPointController;
+  final Function(int) updateState;
+  final Function(int) updateMaxState;
+  final bool edit;
+  final int? point;
+  final int? maxPoint;
 
   const FieldPointSetterTile({
     super.key,
@@ -350,8 +435,11 @@ class FieldPointSetterTile extends StatelessWidget {
     required this.fieldContentTextStyle,
     required this.field,
     required this.fieldLimit,
-    required this.pointController,
-    required this.dailyMaxPointController,
+    required this.updateState,
+    required this.updateMaxState,
+    required this.edit,
+    this.point,
+    this.maxPoint,
   });
 
   @override
@@ -363,9 +451,11 @@ class FieldPointSetterTile extends StatelessWidget {
         builder: (context, fieldValue, child) => !fieldValue
             ? Container()
             : Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
                           "1회당 점수:",
@@ -373,7 +463,9 @@ class FieldPointSetterTile extends StatelessWidget {
                         ),
                         Gaps.h16,
                         PointTextFormField(
-                          controller: pointController,
+                          edit: edit,
+                          point: point,
+                          updateState: updateState,
                         ),
                         Gaps.h10,
                         Text(
@@ -393,7 +485,7 @@ class FieldPointSetterTile extends StatelessWidget {
                               toggleable: true,
                               value: false,
                               splashRadius: 0,
-                              activeColor: Palette().normalGreen,
+                              activeColor: Palette().darkBlue,
                               groupValue: fieldLimitValue,
                               onChanged: (bool? value) {
                                 fieldLimit.value = !fieldLimit.value;
@@ -423,7 +515,9 @@ class FieldPointSetterTile extends StatelessWidget {
                                     ),
                                     Gaps.h16,
                                     PointTextFormField(
-                                      controller: dailyMaxPointController,
+                                      updateState: updateMaxState,
+                                      edit: edit,
+                                      point: maxPoint,
                                     ),
                                     Gaps.h10,
                                     Text(

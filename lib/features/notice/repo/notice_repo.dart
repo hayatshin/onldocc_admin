@@ -1,8 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:onldocc_admin/features/notice/models/popup_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class NoticeRepository {
   final _supabase = Supabase.instance.client;
@@ -108,13 +110,127 @@ class NoticeRepository {
     await _supabase.from("diaries").upsert(diaryJson);
   }
 
-  Future<void> editFeedNotificationDiaryId(
-      String diaryId, String newDiaryId) async {
+  // 팝업
+  Future<String> addPopupNotification(PopupModel popupModel) async {
     try {
-      await _supabase.from("diaries").update({
-        "diaryId": newDiaryId,
+      final data = await _supabase
+          .from("subdistricts_popup")
+          .upsert(popupModel.toJson());
+      return data["popupId"];
+    } catch (e) {
+      // ignore: avoid_print
+      print("addPopupNotification -> $e");
+    }
+    return "";
+  }
+
+  Future<String> uploadSinglePopupImageToStorage(
+      String popupId, dynamic filePath) async {
+    if (filePath.toString().startsWith("https://")) {
+      return filePath;
+    }
+    final uuid = const Uuid().v4();
+    final fileStoragePath = "$popupId/$uuid";
+
+    XFile xFile = XFile.fromData(filePath);
+    final imageBytes = await xFile.readAsBytes();
+
+    await _supabase.storage
+        .from("popups")
+        .uploadBinary(fileStoragePath, imageBytes,
+            fileOptions: const FileOptions(
+              upsert: true,
+            ));
+
+    final fileUrl =
+        _supabase.storage.from("popups").getPublicUrl(fileStoragePath);
+
+    return fileUrl;
+  }
+
+  Future<List<String>> uploadPopupImagesToStorage(
+      String popupId, List<dynamic> images) async {
+    try {
+      List<String> urlList = [];
+      await Future.wait(images.mapIndexed((index, filePath) async {
+        final url = await uploadSingleImageToStorage(popupId, filePath);
+        await _supabase.from("subdistricts_popup_images").upsert({
+          'popupId': popupId,
+          'image': url,
+          'createdAt': getCurrentSeconds()
+        });
+
+        urlList.add(url);
+      }));
+      return urlList;
+    } catch (e) {
+      // ignore: avoid_print
+      print("uploadImageFileToStorage -> $e");
+    }
+
+    return [];
+  }
+
+  Future<PopupModel?> checkPopup(String diaryId) async {
+    final data = await _supabase
+        .from("subdistricts_popup")
+        .select('*')
+        .eq('diaryId', diaryId);
+    return data.isNotEmpty ? PopupModel.fromJson(data[0]) : null;
+  }
+
+  Future<void> deletePopupImageStorage(
+    String diaryId,
+  ) async {
+    try {
+      final objects =
+          await _supabase.storage.from("popups").list(path: diaryId);
+
+      if (objects.isNotEmpty) {
+        final fileList = objects.mapIndexed((index, e) {
+          // ignore: avoid_print
+          final path = "$diaryId/${e.name}";
+          return path;
+        }).toList();
+
+        await _supabase.storage.from("popups").remove(fileList);
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print("deleteDiaryImageStorage -> $e");
+    }
+  }
+
+  Future<void> editPopupAdminSecret(String popupId, bool currentState) async {
+    try {
+      print("currentState2: $currentState");
+
+      await _supabase.from("subdistricts_popup").update({
+        "adminSecret": !currentState,
         "createdAt": getCurrentSeconds()
-      }).match({"diaryId": diaryId});
+      }).match({"popupId": popupId});
+    } catch (e) {
+      // ignore: avoid_print
+      print("editPopupAdminSecret -> $e");
+    }
+  }
+
+  // 수정
+  Future<void> editFeedAdminSecret(
+      String diaryId, String newDiaryId, bool currentState) async {
+    try {
+      if (currentState) {
+        // 비공개 -> 공개
+        await _supabase.from("diaries").update({
+          "diaryId": newDiaryId,
+          "createdAt": getCurrentSeconds()
+        }).match({"diaryId": diaryId});
+      } else {
+        // 공개 -> 비공개
+        await _supabase.from("diaries").update({
+          "diaryId": newDiaryId,
+        }).match({"diaryId": diaryId});
+      }
     } catch (e) {
       // ignore: avoid_print
       print("editFeedNotificationDiaryId -> $e");

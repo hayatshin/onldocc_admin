@@ -12,8 +12,9 @@ class NoticeViewModel extends AsyncNotifier<void> {
   late AdminProfileModel? adminProfileModel;
 
   @override
-  FutureOr<void> build() {
-    adminProfileModel = ref.read(adminProfileProvider).value;
+  FutureOr<void> build() async {
+    adminProfileModel = ref.read(adminProfileProvider).value ??
+        await ref.read(adminProfileProvider.notifier).getAdminProfile();
   }
 
   Future<List<DiaryModel>> fetchAllNotices() async {
@@ -23,7 +24,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
     return notices.map((e) => DiaryModel.fromJson(e)).toList();
   }
 
-  Future<void> addFeedNotification(
+  Future<String> addFeedNotification(
     AdminProfileModel adminProfileModel,
     String todayDiary,
     List<dynamic> imageList,
@@ -65,6 +66,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
     if (imageList.isNotEmpty) {
       await ref.read(noticeRepo).uploadImageFileToStorage(diaryId, imageList);
     }
+    return diaryId;
   }
 
   Future<void> editFeedNotification(
@@ -79,7 +81,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
     await ref.read(noticeRepo).uploadImageFileToStorage(diaryId, imageList);
   }
 
-  Future<void> changeAdminSecretDiary(
+  Future<String> editFeedAdminSecret(
     String diaryId,
     bool currentSecret,
   ) async {
@@ -89,11 +91,13 @@ class NoticeViewModel extends AsyncNotifier<void> {
           "${parts.sublist(0, parts.length - 1).join(":")}:${!currentSecret}";
       await ref
           .read(noticeRepo)
-          .editFeedNotificationDiaryId(diaryId, newDiaryId);
+          .editFeedAdminSecret(diaryId, newDiaryId, currentSecret);
+      return newDiaryId;
     } catch (e) {
       // ignore: avoid_print
       print("changeAdminSecretDiary: $e");
     }
+    return diaryId;
   }
 }
 
