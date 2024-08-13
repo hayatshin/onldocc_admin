@@ -498,7 +498,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             children: [
                               Text("행사 이름", style: headerTextStyle),
                               if (tapUploadEvent && _eventTitle.isEmpty)
-                                const InsufficientField(text: "행사 이름을 입력해주세요.")
+                                const InsufficientField(text: "행사 이름을 입력해주세요")
                             ],
                           ),
                         ),
@@ -541,7 +541,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                               textAlign: TextAlign.start,
                             ),
                             if (tapUploadEvent && _eventDescription.isEmpty)
-                              const InsufficientField(text: "행사 설명을 입력해주세요.")
+                              const InsufficientField(text: "행사 설명을 입력해주세요")
                           ],
                         ),
                       ),
@@ -608,7 +608,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                             (!widget.edit &&
                                                 _bannerImageBytes == null))
                                           const InsufficientField(
-                                              text: "배너 이미지를 추가해주세요.")
+                                              text: "배너 이미지를 추가해주세요")
                                       ],
                                     ),
                                   ),
@@ -689,7 +689,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                       if (tapUploadEvent &&
                                           _eventStartDate == null)
                                         const InsufficientField(
-                                            text: "시작일을 입력해주세요.")
+                                            text: "시작일을 입력해주세요")
                                     ],
                                   ),
                                 ),
@@ -818,7 +818,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                         if ((!widget.edit &&
                                             _bannerImageBytes == null))
                                           const InsufficientField(
-                                              text: "행사 이미지를 추가해주세요.")
+                                              text: "행사 이미지를 추가해주세요")
                                       ],
                                     ),
                                   ),
@@ -899,7 +899,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                       if (tapUploadEvent &&
                                           _eventEndDate == null)
                                         const InsufficientField(
-                                            text: "종료일을 입력해주세요.")
+                                            text: "종료일을 입력해주세요")
                                     ],
                                   ),
                                 ),
@@ -1266,10 +1266,8 @@ class InsufficientField extends StatelessWidget {
             Flexible(
               child: Text(
                 text,
-                style: const TextStyle(
+                style: headerTextStyle.copyWith(
                   color: Colors.red,
-                  fontWeight: FontWeight.w600,
-                  fontSize: Sizes.size12,
                 ),
                 overflow: TextOverflow.visible,
                 softWrap: true,

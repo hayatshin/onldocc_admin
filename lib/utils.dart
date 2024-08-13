@@ -127,34 +127,34 @@ InputDecoration inputDecorationStyle() {
         Sizes.size20,
       ),
     ),
-    errorStyle: contentTextStyle.copyWith(
-      color: InjicareColor().primary50,
+    errorStyle: headerTextStyle.copyWith(
+      color: Colors.red,
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(
         Sizes.size20,
       ),
-      borderSide: BorderSide(
+      borderSide: const BorderSide(
         width: 1.5,
-        color: InjicareColor().primary50,
+        color: Colors.red,
       ),
     ),
     focusedErrorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(
         Sizes.size20,
       ),
-      borderSide: BorderSide(
+      borderSide: const BorderSide(
         width: 1.5,
-        color: InjicareColor().primary50,
+        color: Colors.red,
       ),
     ),
     disabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(
         Sizes.size20,
       ),
-      borderSide: BorderSide(
+      borderSide: const BorderSide(
         width: 1.5,
-        color: InjicareColor().primary50,
+        color: Colors.red,
       ),
     ),
     enabledBorder: OutlineInputBorder(
@@ -590,28 +590,6 @@ Widget noAuthorizedWidget() {
     ),
     textAlign: TextAlign.center,
   );
-}
-
-String getVideoId(String link) {
-  String documentId = "";
-  if (link.contains("youtu.be")) {
-    final parts = link.split("youtu.be/");
-    documentId = parts[1].split('?').first;
-  } else if (link.contains("youtube.com")) {
-    final parts = link.split("watch?v=");
-    documentId = parts[1];
-  }
-  return documentId;
-}
-
-String getVideoThumbnail(String videoId, String link) {
-  String thumbnail = "";
-  if (link.contains("youtu.be")) {
-    thumbnail = "http://i3.ytimg.com/vi/$videoId/hqdefault.jpg";
-  } else if (link.contains("youtube.com")) {
-    thumbnail = "https://img.youtube.com/vi/$videoId/mqdefault.jpg";
-  }
-  return thumbnail;
 }
 
 String encodingType() {

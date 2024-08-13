@@ -154,7 +154,6 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
           _noticeTopFixed,
           convertEndDateTimeToSeconds(_noticeFixedAt),
         );
-    print("diaryId: $diaryId");
 
     // 팝업 공지
     if (_noticePopup) {

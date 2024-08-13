@@ -55,7 +55,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
       ),
       builder: (context) {
         return UploadTvWidget(
-          context: context,
+          pcontext: context,
           edit: false,
           refreshScreen: getUserTvs,
         );
@@ -73,7 +73,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
       ),
       builder: (context) {
         return UploadTvWidget(
-          context: context,
+          pcontext: context,
           edit: true,
           tvModel: tvModel,
           refreshScreen: getUserTvs,
@@ -150,192 +150,198 @@ class _TvScreenState extends ConsumerState<TvScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return DefaultScreen(
-      menu: menuList[7],
-      child: SizedBox(
-        width: size.width,
-        height: size.height,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ReportButton(
-                  iconExists: false,
-                  buttonText: "영상 올리기",
-                  buttonColor: Palette().darkPurple,
-                  action: () => uploadVideoTap(
-                    context,
-                    size.width,
-                    size.height,
-                  ),
-                ),
-              ],
-            ),
-            Gaps.v40,
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(
-                    Sizes.size20,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: Sizes.size20,
+    return Overlay(
+      initialEntries: [
+        OverlayEntry(
+          builder: (context) => DefaultScreen(
+            menu: menuList[7],
+            child: SizedBox(
+              width: size.width,
+              height: size.height,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ReportButton(
+                        iconExists: false,
+                        buttonText: "영상 올리기",
+                        buttonColor: Palette().darkPurple,
+                        action: () => uploadVideoTap(
+                          context,
+                          size.width,
+                          size.height,
+                        ),
                       ),
-                      child: Row(
+                    ],
+                  ),
+                  Gaps.v40,
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          Sizes.size20,
+                        ),
+                      ),
+                      child: Column(
                         children: [
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "#",
-                                style: _headerTextStyle,
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: Sizes.size20,
                             ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "썸네일",
-                                style: _headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "제목",
-                                style: _headerTextStyle,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "수정",
-                                style: _headerTextStyle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                      color: Colors.grey.shade200,
-                    ),
-                    Gaps.v16,
-                    Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _tvList.length,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    Sizes.size3,
-                                  ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      (index + 1).toString(),
-                                      softWrap: true,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: _contentTextStyle,
+                                      "#",
+                                      style: _headerTextStyle,
                                     ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    Sizes.size3,
-                                  ),
+                                Expanded(
+                                  flex: 2,
                                   child: Align(
                                     alignment: Alignment.center,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                        Sizes.size5,
-                                      ),
-                                      child: SizedBox(
-                                        width: 150,
-                                        height: 100,
-                                        child: Image.network(
-                                          _tvList[index].thumbnail,
-                                          fit: BoxFit.cover,
+                                    child: Text(
+                                      "썸네일",
+                                      style: _headerTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "제목",
+                                      style: _headerTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "수정",
+                                      style: _headerTextStyle,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.grey.shade200,
+                          ),
+                          Gaps.v16,
+                          Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _tvList.length,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(
+                                          Sizes.size3,
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            (index + 1).toString(),
+                                            softWrap: true,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: _contentTextStyle,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    Sizes.size3,
-                                  ),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _tvList[index].title,
-                                      softWrap: true,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: _contentTextStyle,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: MouseRegion(
-                                    cursor: SystemMouseCursors.click,
-                                    child: GestureDetector(
-                                      onTap: () => editVideoTap(
-                                        context,
-                                        size.width,
-                                        size.height,
-                                        _tvList[index],
-                                      ),
-                                      child: FaIcon(
-                                        FontAwesomeIcons.pen,
-                                        size: 14,
-                                        color: Palette().darkGray,
+                                    Expanded(
+                                      flex: 2,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(
+                                          Sizes.size3,
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              Sizes.size5,
+                                            ),
+                                            child: SizedBox(
+                                              width: 150,
+                                              height: 100,
+                                              child: Image.network(
+                                                _tvList[index].thumbnail,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(
+                                          Sizes.size3,
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            _tvList[index].title,
+                                            softWrap: true,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: _contentTextStyle,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => editVideoTap(
+                                              context,
+                                              size.width,
+                                              size.height,
+                                              _tvList[index],
+                                            ),
+                                            child: FaIcon(
+                                              FontAwesomeIcons.pen,
+                                              size: 14,
+                                              color: Palette().darkGray,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                          Gaps.v16,
+                        ],
                       ),
                     ),
-                    Gaps.v16,
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        )
+      ],
     );
   }
 }
