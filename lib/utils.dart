@@ -17,8 +17,20 @@ import 'package:path_provider/path_provider.dart';
 // import 'dart:html' as html;
 import 'package:universal_html/html.dart' as html;
 
-// 엑셀
+String encodeDateRange(DateRange dateRange) {
+  final startDate = dateRange.start.toIso8601String();
+  final endDate = dateRange.end.toIso8601String();
+  return '$startDate,$endDate';
+}
 
+DateRange decodeDateRange(String encodedDateRange) {
+  final dates = encodedDateRange.split(',');
+  final startDate = DateTime.parse(dates[0]);
+  final endDate = DateTime.parse(dates[1]);
+  return DateRange(startDate, endDate);
+}
+
+// 엑셀
 void exportExcel(
   List<List<String>> contents,
   String fileName,

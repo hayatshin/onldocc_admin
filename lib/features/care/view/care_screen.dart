@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:html';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,6 +66,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
         setState(() {
           _loadingFinished = false;
         });
+
         await ref
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
@@ -121,37 +119,37 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     return list;
   }
 
-  void generateUserCsv() {
-    final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList(_userDataList);
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
 
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
-    final String fileName = "인지케어 보호자 지정 $formatDate.csv";
+  //   final String fileName = "인지케어 보호자 지정 $formatDate.csv";
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
-  }
+  //   final encodedUri = Uri.dataFromString(
+  //     csvContent,
+  //     encoding: Encoding.getByName(encodingType()),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
 
   Future<void> resetInitialList() async {
     setState(() {

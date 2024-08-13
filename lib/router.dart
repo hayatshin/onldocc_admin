@@ -22,6 +22,7 @@ import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
+import 'package:onldocc_admin/features/ranking/view/ranking_user_dashboard_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/user-dashboard/view/user_dashboard_screen.dart';
@@ -60,6 +61,10 @@ final routerProvider = Provider(
                 return SidebarTemplate(selectedMenuURL: 1, child: child);
 
               case RankingScreen.routeURL:
+                menuNotifier.setSelectedMenu(2, context);
+                return SidebarTemplate(selectedMenuURL: 2, child: child);
+
+              case "${RankingScreen.routeURL}/:userId":
                 menuNotifier.setSelectedMenu(2, context);
                 return SidebarTemplate(selectedMenuURL: 2, child: child);
 
@@ -156,13 +161,29 @@ final routerProvider = Provider(
                   )
                 ]),
             GoRoute(
-              name: RankingScreen.routeName,
-              path: RankingScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const RankingScreen(),
-              ),
-            ),
+                name: RankingScreen.routeName,
+                path: RankingScreen.routeURL,
+                pageBuilder: (context, state) => NoTransitionPage(
+                      key: state.pageKey,
+                      child: const RankingScreen(),
+                    ),
+                routes: [
+                  GoRoute(
+                    path: ":userId",
+                    pageBuilder: (context, state) => MaterialPage(
+                      key: state.pageKey,
+                      child: RankingUserDashboardScreen(
+                        userId: state.pathParameters["userId"],
+                        userName: state.extra != null
+                            ? (state.extra as RankingPathExtra).userName
+                            : null,
+                        dateRange: state.extra != null
+                            ? (state.extra as RankingPathExtra).dateRange
+                            : null,
+                      ),
+                    ),
+                  )
+                ]),
             GoRoute(
               name: NoticeScreen.routeName,
               path: NoticeScreen.routeURL,

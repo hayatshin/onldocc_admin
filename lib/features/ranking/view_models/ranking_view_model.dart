@@ -4,6 +4,7 @@ import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/repo/ranking_repo.dart';
+import 'package:onldocc_admin/features/ranking/view/ranking_user_dashboard_screen.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 
@@ -48,6 +49,75 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
     }
 
     return list;
+  }
+
+  Future<List<RankingDataSet>> getRankingData(
+      String rankingType, String userId, DateRange dateRange) async {
+    try {
+      List<RankingDataSet> list;
+      switch (rankingType) {
+        case "일기":
+          int index = 1;
+          final query =
+              await ref.read(rankingRepo).fetchUserDiary(userId, dateRange);
+          list = query
+              .map((e) => RankingDataSet(
+                  index: index++,
+                  createdAt: e["createdAt"],
+                  content: e["todayDiary"]))
+              .toList();
+          break;
+        case "걸음수":
+          int index = 1;
+          final query =
+              await ref.read(rankingRepo).fetchUserSteps(userId, dateRange);
+          list = query
+              .map((e) => RankingDataSet(
+                  index: index++,
+                  stepDate: e["date"],
+                  content: "${e["step"]}보"))
+              .toList();
+          break;
+        case "댓글":
+          int index = 1;
+          final query =
+              await ref.read(rankingRepo).fetchUserComments(userId, dateRange);
+          list = query
+              .map((e) => RankingDataSet(
+                  index: index++,
+                  createdAt: e["createdAt"],
+                  content: e["description"]))
+              .toList();
+          break;
+        case "좋아요":
+          int index = 1;
+          final query =
+              await ref.read(rankingRepo).fetchUserLikes(userId, dateRange);
+          list = query
+              .map((e) => RankingDataSet(
+                  index: index++, createdAt: e["createdAt"], content: ""))
+              .toList();
+          break;
+        case "친구초대":
+          int index = 1;
+          final query = await ref
+              .read(rankingRepo)
+              .fetchUserInvitations(userId, dateRange);
+          list = query
+              .map((e) => RankingDataSet(
+                  index: index++, createdAt: e["createdAt"], content: ""))
+              .toList();
+          break;
+        default:
+          list = [];
+          break;
+      }
+      return list;
+    } catch (e) {
+      // ignore: avoid_print
+      print("getRankingData -> $e");
+    }
+    return [];
   }
 }
 

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:onldocc_admin/common/models/path_extra.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
@@ -330,11 +332,21 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   void generateExcel() {
     final csvData = exportToFullList(_userDataList);
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}.${currentDate.month.toString().padLeft(2, '0')}.${currentDate.day.toString().padLeft(2, '0')}";
     final String fileName = "인지케어 점수관리 ${todayToStringDot()}.xlsx";
     exportExcel(csvData, fileName);
+  }
+
+  void goUserRankingDashboard({
+    required String userId,
+    required String userName,
+    required DateRange dateRange,
+  }) {
+    Map<String, String> extraJson = {
+      "userId": userId,
+      "userName": userName,
+      "dateRange": encodeDateRange(dateRange),
+    };
+    context.go("/ranking/$userId", extra: RankingPathExtra.fromJson(extraJson));
   }
 
   Future<void> updateOrderStandard(String value) async {
@@ -528,7 +540,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           child: DataTable2(
                             scrollController: _scrollController,
                             isVerticalScrollBarVisible: false,
-                            smRatio: 0.7,
+                            smRatio: 0.8,
                             lmRatio: 1.2,
                             dividerThickness: 0.1,
                             sortColumnIndex: _sortColumnIndex,
@@ -551,14 +563,14 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 ),
                               ),
                               DataColumn2(
-                                size: ColumnSize.L,
+                                // size: ColumnSize.L,
                                 label: Text(
                                   "이름",
                                   style: _headerTextStyle,
                                 ),
                               ),
                               DataColumn2(
-                                size: ColumnSize.L,
+                                // size: ColumnSize.L,
                                 label: Text(
                                   "핸드폰 번호",
                                   style: _headerTextStyle,
@@ -643,14 +655,14 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 ),
                               ),
                               DataColumn2(
-                                size: ColumnSize.S,
+                                fixedWidth: 70,
                                 onSort: (columnIndex, sortAscending) {
                                   setState(() {
                                     _sortColumnIndex = columnIndex;
                                   });
                                 },
                                 label: Text(
-                                  "활동\n자세히 보기",
+                                  "활동\n보기",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
                                 ),
@@ -722,7 +734,18 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                           child: MouseRegion(
                                             cursor: SystemMouseCursors.click,
                                             child: GestureDetector(
-                                              onTap: () {},
+                                              onTap: () =>
+                                                  goUserRankingDashboard(
+                                                userId:
+                                                    _userDataList[i]!.userId,
+                                                userName:
+                                                    _userDataList[i]!.name,
+                                                dateRange: _selectedDateRange ??
+                                                    DateRange(
+                                                      getThisWeekMonday(),
+                                                      DateTime.now(),
+                                                    ),
+                                              ),
                                               child: FaIcon(
                                                 FontAwesomeIcons.arrowRight,
                                                 color: Palette().darkGray,
