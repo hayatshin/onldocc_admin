@@ -349,7 +349,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     context.go("/ranking/$userId", extra: RankingPathExtra.fromJson(extraJson));
   }
 
-  Future<void> updateOrderStandard(String value) async {
+  Future<void> updateOrderStandard(String value, int columnIndex) async {
     List<UserModel?> copiedUserDataList = [..._userDataList];
     int count = 1;
 
@@ -454,7 +454,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         break;
     }
     setState(() {
-      sortOder = value;
+      _sortColumnIndex = columnIndex;
       _userDataList = list;
     });
   }
@@ -580,9 +580,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 size: ColumnSize.S,
                                 tooltip: "클릭하면 '종합 점수'를 기준으로 정렬됩니다.",
                                 onSort: (columnIndex, sortAscending) {
-                                  setState(() {
-                                    _sortColumnIndex = columnIndex;
-                                  });
+                                  updateOrderStandard(
+                                      "totalPoint", columnIndex);
                                 },
                                 label: Text(
                                   "종합",
@@ -593,9 +592,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 size: ColumnSize.S,
                                 tooltip: "클릭하면 '걸음수'를 기준으로 정렬됩니다.",
                                 onSort: (columnIndex, sortAscending) {
-                                  setState(() {
-                                    _sortColumnIndex = columnIndex;
-                                  });
+                                  updateOrderStandard("stepPoint", columnIndex);
                                 },
                                 label: Text(
                                   "걸음수",
@@ -606,9 +603,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 size: ColumnSize.S,
                                 tooltip: "클릭하면 '일기'를 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
-                                  setState(() {
-                                    _sortColumnIndex = columnIndex;
-                                  });
+                                  updateOrderStandard(
+                                      "diaryPoint", columnIndex);
                                 },
                                 label: Text(
                                   "일기",
@@ -619,9 +615,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 size: ColumnSize.S,
                                 tooltip: "클릭하면 '댓글'을 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
-                                  setState(() {
-                                    _sortColumnIndex = columnIndex;
-                                  });
+                                  updateOrderStandard(
+                                      "commentPoint", columnIndex);
                                 },
                                 label: Text(
                                   "댓글",
@@ -632,9 +627,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 size: ColumnSize.S,
                                 tooltip: "클릭하면 '좋아요'를 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
-                                  setState(() {
-                                    _sortColumnIndex = columnIndex;
-                                  });
+                                  updateOrderStandard("likePoint", columnIndex);
                                 },
                                 label: Text(
                                   "좋아요",
@@ -645,9 +638,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 size: ColumnSize.S,
                                 tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다",
                                 onSort: (columnIndex, sortAscending) {
-                                  setState(() {
-                                    _sortColumnIndex = columnIndex;
-                                  });
+                                  updateOrderStandard(
+                                      "invitationPoint", columnIndex);
                                 },
                                 label: Text(
                                   "친구초대",

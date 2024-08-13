@@ -39,6 +39,8 @@ class UploadNotificationWidget extends ConsumerStatefulWidget {
 }
 
 class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   String _feedDescription = "";
   bool _noticeTopFixed = false;
   DateTime _noticeFixedAt = DateTime.now();
@@ -143,41 +145,46 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
       tapUploadNotification = true;
     });
 
-    AdminProfileModel? adminProfileModel =
-        ref.read(adminProfileProvider).value ??
-            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+    if (_formKey.currentState != null) {
+      if (_formKey.currentState!.validate()) {
+        AdminProfileModel? adminProfileModel =
+            ref.read(adminProfileProvider).value ??
+                await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
-    final diaryId = await ref.read(noticeProvider.notifier).addFeedNotification(
-          adminProfileModel,
-          _feedDescription,
-          _feedImageArray,
-          _noticeTopFixed,
-          convertEndDateTimeToSeconds(_noticeFixedAt),
-        );
+        final diaryId =
+            await ref.read(noticeProvider.notifier).addFeedNotification(
+                  adminProfileModel,
+                  _feedDescription,
+                  _feedImageArray,
+                  _noticeTopFixed,
+                  convertEndDateTimeToSeconds(_noticeFixedAt),
+                );
 
-    // 팝업 공지
-    if (_noticePopup) {
-      final popupModel = PopupModel(
-        subdistrictId: adminProfileModel.subdistrictId,
-        noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
-        description: _feedDescription,
-        createdAt: getCurrentSeconds(),
-        diaryId: diaryId,
-        adminSecret: true,
-      );
-      final popupId =
-          await ref.read(noticeRepo).addPopupNotification(popupModel);
+        // 팝업 공지
+        if (_noticePopup) {
+          final popupModel = PopupModel(
+            subdistrictId: adminProfileModel.subdistrictId,
+            noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
+            description: _feedDescription,
+            createdAt: getCurrentSeconds(),
+            diaryId: diaryId,
+            adminSecret: true,
+          );
+          final popupId =
+              await ref.read(noticeRepo).addPopupNotification(popupModel);
 
-      // 팝업 이미지
-      if (_feedImageArray.isNotEmpty) {
-        await ref
-            .read(noticeRepo)
-            .uploadPopupImagesToStorage(popupId, _feedImageArray);
+          // 팝업 이미지
+          if (_feedImageArray.isNotEmpty) {
+            await ref
+                .read(noticeRepo)
+                .uploadPopupImagesToStorage(popupId, _feedImageArray);
+          }
+        }
+
+        if (!mounted) return;
+        resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen);
       }
     }
-
-    if (!mounted) return;
-    resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen);
   }
 
   void selectNoticeFixedAt() async {
@@ -554,33 +561,47 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                     ],
                   ),
                 Gaps.v52,
-                Row(
-                  children: [
-                    SizedBox(
-                      width: size.width * 0.12,
-                      height: 200,
-                      child: Text(
-                        "공지 내용",
-                        style: _headerTextStyle,
-                        textAlign: TextAlign.start,
-                      ),
-                    ),
-                    Gaps.h32,
-                    Expanded(
-                      child: SizedBox(
+                Form(
+                  key: _formKey,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: size.width * 0.12,
                         height: 200,
-                        child: TextFormField(
-                          expands: true,
-                          maxLines: null,
-                          minLines: null,
-                          controller: _descriptionControllder,
-                          textAlignVertical: TextAlignVertical.top,
-                          style: _contentTextStyle,
-                          decoration: inputDecorationStyle(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "공지 내용",
+                              style: _headerTextStyle,
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                      Gaps.h32,
+                      Expanded(
+                        child: SizedBox(
+                          height: 200,
+                          child: TextFormField(
+                            expands: true,
+                            maxLines: null,
+                            minLines: null,
+                            validator: (value) {
+                              if (value != null && value.isEmpty) {
+                                return "공지 내용을 입력해주세요";
+                              }
+                              return null;
+                            },
+                            controller: _descriptionControllder,
+                            textAlignVertical: TextAlignVertical.top,
+                            style: _contentTextStyle,
+                            decoration: inputDecorationStyle(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Gaps.v52,
                 SizedBox(

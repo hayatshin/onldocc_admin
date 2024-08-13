@@ -90,7 +90,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                   onPressed: removeDeleteOverlay,
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
+                        WidgetStateProperty.all(Colors.pink.shade100),
                   ),
                   child: Text(
                     "취소",
@@ -108,8 +108,8 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                         context, "성공적으로 영상을 삭제하였습니다.", widget.refreshScreen);
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
+                    backgroundColor:
+                        WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
                   child: const Text(
                     "삭제",
@@ -229,7 +229,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                                     maxLength: 50,
                                     validator: (value) {
                                       if (value != null && value.isEmpty) {
-                                        return "영상 제목을 적어주세요.";
+                                        return "영상 제목을 적어주세요";
                                       }
                                       return null;
                                     },

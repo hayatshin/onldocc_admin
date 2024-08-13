@@ -815,8 +815,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           style: headerTextStyle,
                                           textAlign: TextAlign.start,
                                         ),
-                                        if ((!widget.edit &&
-                                            _bannerImageBytes == null))
+                                        if (tapUploadEvent &&
+                                            (!widget.edit &&
+                                                _eventImageBytes == null))
                                           const InsufficientField(
                                               text: "행사 이미지를 추가해주세요")
                                       ],

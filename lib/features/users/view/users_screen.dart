@@ -365,23 +365,20 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                           ),
                         ),
                       DataColumn2(
-                        tooltip: "클릭하면 '가입일'을 기준으로 정렬됩니다.",
+                        tooltip: "클릭하면 '가입일'을 기준으로 정렬됩니다",
                         onSort: (columnIndex, sortAscending) {
-                          setState(() {
-                            _sortColumnIndex = columnIndex;
-                          });
-                          // if (columnIndex == 5) {
-                          //   setState(() {
-                          //     createdAtSort = !createdAtSort;
-                          //     if (createdAtSort) {
-                          //       _userDataList.sort((a, b) =>
-                          //           b!.createdAt.compareTo(a!.createdAt));
-                          //     } else {
-                          //       _userDataList.sort((a, b) =>
-                          //           a!.createdAt.compareTo(b!.createdAt));
-                          //     }
-                          //   });
-                          // }
+                          _sortColumnIndex = columnIndex;
+                          if (columnIndex == 5) {
+                            createdAtSort = !createdAtSort;
+                            if (createdAtSort) {
+                              _userDataList.sort((a, b) =>
+                                  b!.createdAt.compareTo(a!.createdAt));
+                            } else {
+                              _userDataList.sort((a, b) =>
+                                  a!.createdAt.compareTo(b!.createdAt));
+                            }
+                            setState(() {});
+                          }
                         },
                         label: Text(
                           "가입일",
@@ -389,23 +386,20 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                         ),
                       ),
                       DataColumn2(
-                        tooltip: "클릭하면 '마지막 방문일'을 기준으로 정렬됩니다.",
+                        tooltip: "클릭하면 '마지막 방문일'을 기준으로 정렬됩니다",
                         onSort: (columnIndex, sortAsending) {
-                          setState(() {
-                            _sortColumnIndex = columnIndex;
-                          });
-                          // if (columnIndex == 6) {
-                          //   setState(() {
-                          //     lastVisitSort = !lastVisitSort;
-                          //     if (lastVisitSort) {
-                          //       _userDataList.sort((a, b) => b!.lastVisit!
-                          //           .compareTo(a!.lastVisit!));
-                          //     } else {
-                          //       _userDataList.sort((a, b) => a!.lastVisit!
-                          //           .compareTo(b!.lastVisit!));
-                          //     }
-                          //   });
-                          // }
+                          _sortColumnIndex = columnIndex;
+                          if (columnIndex == 6) {
+                            lastVisitSort = !lastVisitSort;
+                            if (lastVisitSort) {
+                              _userDataList.sort((a, b) =>
+                                  b!.lastVisit!.compareTo(a!.lastVisit!));
+                            } else {
+                              _userDataList.sort((a, b) =>
+                                  a!.lastVisit!.compareTo(b!.lastVisit!));
+                            }
+                            setState(() {});
+                          }
                         },
                         label: Text(
                           "최근 방문일",
