@@ -37,11 +37,18 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
 
   Future<List<ParticipantModel>> getEventParticipants(
       EventModel eventModel) async {
-    final participants =
-        await _eventRepository.getEventPariticipants(eventModel.eventId);
+    List<dynamic> participants = [];
+    if (eventModel.eventType == EventType.quiz.name) {
+      participants =
+          await _eventRepository.getQuizEventPariticipants(eventModel.eventId);
+    } else {
+      participants =
+          await _eventRepository.getEventPariticipants(eventModel.eventId);
+    }
 
     final modelList = await Future.wait(participants.map((e) async {
       final model = ParticipantModel.fromJson(e);
+
       final userRegion = await ref
           .read(contractRepo)
           .convertSubdistrictIdToName(model.subdistrictId);
@@ -108,7 +115,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           userAchieveOrNot: data["userAchieveOrNot"],
         );
         return scorePointModel;
-      } else {
+      } else if (eventModel.eventType == EventType.count.name) {
         final data = await _eventRepository.getEventUserCount(
           model.userId,
           userStartSeconds,
@@ -129,10 +136,28 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           userAchieveOrNot: data["userAchieveOrNot"],
         );
         return scorePointModel;
+      } else if (eventModel.eventType == EventType.quiz.name) {
+        final scorePointModel = model.copyWith(
+          smallRegion: userRegion,
+          userAchieveOrNot: model.quizAnswer!.contains(eventModel.answerOne!),
+        );
+        return scorePointModel;
+      } else {
+        return ParticipantModel.empty();
       }
     }).toList());
-
     return modelList;
+  }
+
+  Future<EventModel> getCertainEvent(String eventId) async {
+    try {
+      final data = await ref.read(eventRepo).getCertainEvent(eventId);
+      return EventModel.fromJson(data);
+    } catch (e) {
+      // ignore: avoid_print
+      print("[router] getCertainEvent -> $e");
+    }
+    return EventModel.empty();
   }
 
   // Future<List<dynamic>> getEventUserScore(

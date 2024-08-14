@@ -13,6 +13,7 @@ import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_count_widget.dart';
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_multiple_scores_widget.dart';
+import 'package:onldocc_admin/features/event/widgets/upload-event/upload_quiz_event_widget.dart';
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_target_score_widget.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
@@ -88,6 +89,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   int _eventMaxLikeCount = 0;
   int _eventMaxInvitationCount = 0;
 
+  String _eventQuizOne = "";
+  String _eventAnswerOne = "";
+
   bool tapUploadEvent = false;
 
   OverlayEntry? overlayEntry;
@@ -155,6 +159,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       _eventMaxCommentCount = widget.eventModel!.maxCommentCount ?? 0;
       _eventMaxLikeCount = widget.eventModel!.maxLikeCount ?? 0;
       _eventMaxInvitationCount = widget.eventModel!.maxInvitationCount ?? 0;
+
+      _eventQuizOne = widget.eventModel!.quizOne ?? "";
+      _eventAnswerOne = widget.eventModel!.answerOne ?? "";
     }
   }
 
@@ -327,6 +334,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       maxCommentCount: _eventMaxCommentCount,
       maxLikeCount: _eventMaxLikeCount,
       maxInvitationCount: _eventMaxInvitationCount,
+      quizOne: _eventQuizOne,
+      answerOne: _eventAnswerOne,
     );
 
     !widget.edit
@@ -434,6 +443,18 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   void updateMaxInvitationCount(int maxCount) {
     setState(() {
       _eventMaxInvitationCount = maxCount;
+    });
+  }
+
+  void updateQuizOne(String quizOne) {
+    setState(() {
+      _eventQuizOne = quizOne;
+    });
+  }
+
+  void updateAnswerOne(String answerOne) {
+    setState(() {
+      _eventAnswerOne = answerOne;
     });
   }
 
@@ -1126,19 +1147,30 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 edit: widget.edit,
                                 eventModel: widget.eventModel,
                               )
-                            : UploadCountWidget(
-                                updateDiaryCount: updateDiaryCount,
-                                updateCommentCount: updateCommentCount,
-                                updateLikeCount: updateLikeCount,
-                                updateInvitationCount: updateInvitationCount,
-                                updateQuizCount: updateQuizCount,
-                                updateMaxCommentCount: updateMaxCommentCount,
-                                updateMaxLikeCount: updateMaxLikeCount,
-                                updateMaxInvitationCount:
-                                    updateMaxInvitationCount,
-                                edit: widget.edit,
-                                eventModel: widget.eventModel,
-                              ),
+                            : _eventType == eventList[2]
+                                ? UploadCountWidget(
+                                    updateDiaryCount: updateDiaryCount,
+                                    updateCommentCount: updateCommentCount,
+                                    updateLikeCount: updateLikeCount,
+                                    updateInvitationCount:
+                                        updateInvitationCount,
+                                    updateQuizCount: updateQuizCount,
+                                    updateMaxCommentCount:
+                                        updateMaxCommentCount,
+                                    updateMaxLikeCount: updateMaxLikeCount,
+                                    updateMaxInvitationCount:
+                                        updateMaxInvitationCount,
+                                    edit: widget.edit,
+                                    eventModel: widget.eventModel,
+                                  )
+                                : _eventType == eventList[3]
+                                    ? UploadQuizEventWidget(
+                                        updateQuiz: updateQuizOne,
+                                        updateAnswer: updateAnswerOne,
+                                        edit: widget.edit,
+                                        eventModel: widget.eventModel,
+                                      )
+                                    : Container(),
                     Gaps.v40,
                   ],
                 ),
@@ -1398,5 +1430,11 @@ final eventList = [
     eventTypeName: "횟수 달성 행사",
     eventTypeDescription: "행사 기간 동안 각 활동들의 설정된 횟수를 사용자가 달성하는 행사입니다.",
     eventCode: "count",
+  ),
+  EventType(
+    eventTypeName: "주관식 퀴즈 행사",
+    eventTypeDescription:
+        "주관식 퀴즈 문제를 내면 행사 기간동안 사용자들이 풀고 다른 사용자들의 답을 댓글로 보는 행사입니다.",
+    eventCode: "quiz",
   ),
 ];

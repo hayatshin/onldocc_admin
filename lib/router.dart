@@ -15,6 +15,7 @@ import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_multiple_scores_screen.dart';
+import 'package:onldocc_admin/features/event/view/event_detail_quiz_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_target_score_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
@@ -76,7 +77,7 @@ final routerProvider = Provider(
                 menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
 
-              case "${EventScreen.routeURL}/:eventId":
+              case "${EventScreen.routeURL}/:eventType/:eventId":
                 menuNotifier.setSelectedMenu(4, context);
                 return SidebarTemplate(selectedMenuURL: 4, child: child);
 
@@ -201,21 +202,32 @@ final routerProvider = Provider(
               ),
               routes: [
                 GoRoute(
-                  path: ":eventId",
+                  path: ":eventType/:eventId",
                   pageBuilder: (context, state) {
+                    final eventType = state.pathParameters["eventType"];
+                    final eventId = state.pathParameters["eventId"];
                     final eventModel = state.extra as EventModel?;
+
                     return MaterialPage(
                       key: state.pageKey,
-                      child: eventModel!.eventType == EventType.targetScore.name
+                      child: eventType == EventType.targetScore.name
                           ? EventDetailTargetScoreScreen(
+                              eventId: eventId,
                               eventModel: eventModel,
                             )
-                          : eventModel.eventType ==
-                                  EventType.multipleScores.name
+                          : eventType == EventType.multipleScores.name
                               ? EventDetailMultipleScoresScreen(
+                                  eventId: eventId,
                                   eventModel: eventModel,
                                 )
-                              : EventDetailCountScreen(eventModel: eventModel),
+                              : eventType == EventType.count.name
+                                  ? EventDetailCountScreen(
+                                      eventId: eventId, eventModel: eventModel)
+                                  : eventType == EventType.quiz.name
+                                      ? EventDetailQuizScreen(
+                                          eventId: eventId,
+                                          eventModel: eventModel)
+                                      : Container(),
                     );
                   },
                 ),

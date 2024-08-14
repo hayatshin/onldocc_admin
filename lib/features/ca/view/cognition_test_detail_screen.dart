@@ -307,7 +307,7 @@ class TestInfoText extends StatelessWidget {
         Row(
           children: [
             Text(
-              "🔹  $header",
+              "▪︎   $header",
               style: caHeaderTextStyle,
             ),
             Gaps.h20,
@@ -339,7 +339,7 @@ class UserInfoText extends StatelessWidget {
         Row(
           children: [
             Text(
-              "▪️   $header",
+              "▫︎   $header",
               style: caHeaderTextStyle,
             ),
             Gaps.h20,

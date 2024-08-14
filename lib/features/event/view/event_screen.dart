@@ -140,7 +140,8 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   }
 
   void goDetailEvent(EventModel eventModel) {
-    context.go("/event/${eventModel.eventId}", extra: eventModel);
+    context.go("/event/${eventModel.eventType}/${eventModel.eventId}",
+        extra: eventModel);
   }
 
   @override

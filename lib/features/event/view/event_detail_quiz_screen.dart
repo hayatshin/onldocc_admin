@@ -9,24 +9,23 @@ import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class EventDetailTargetScoreScreen extends ConsumerStatefulWidget {
+class EventDetailQuizScreen extends ConsumerStatefulWidget {
   final String? eventId;
   final EventModel? eventModel;
-  const EventDetailTargetScoreScreen({
+  const EventDetailQuizScreen({
     super.key,
     required this.eventId,
     required this.eventModel,
   });
 
   @override
-  ConsumerState<EventDetailTargetScoreScreen> createState() =>
+  ConsumerState<EventDetailQuizScreen> createState() =>
       _EventDetailPointScreenState();
 }
 
 class _EventDetailPointScreenState
-    extends ConsumerState<EventDetailTargetScoreScreen> {
+    extends ConsumerState<EventDetailQuizScreen> {
   EventModel? _eventModel;
-
   final TextStyle _headerTextStyle = TextStyle(
     fontSize: Sizes.size13,
     fontWeight: FontWeight.w600,
@@ -48,9 +47,8 @@ class _EventDetailPointScreenState
     "성별",
     "핸드폰 번호",
     "참여일",
-    "점수",
-    "달성 여부",
-    "선물 신청"
+    "제출 답",
+    "정답 여부",
   ];
 
   @override
@@ -72,9 +70,8 @@ class _EventDetailPointScreenState
       participantModel.gender.toString(),
       participantModel.phone.toString(),
       secondsToStringLine(participantModel.createdAt),
-      participantModel.userTotalPoint!.toString(),
-      participantModel.userAchieveOrNot! ? "달성" : "미달성",
-      participantModel.gift ? "○" : "",
+      participantModel.quizAnswer!.toString(),
+      participantModel.userAchieveOrNot! ? "정답" : "",
     ];
   }
 
@@ -128,7 +125,7 @@ class _EventDetailPointScreenState
   void _generateExcel() {
     final csvData = _exportToFullList(_participants);
     String fileName =
-        "인지케어 행사 ${_eventModel!.title} ${todayToStringDot()}.xlsx";
+        "인지케어 행사 ${_eventModel?.title} ${todayToStringDot()}.xlsx";
     exportExcel(csvData, fileName);
   }
 
@@ -137,7 +134,6 @@ class _EventDetailPointScreenState
         await ref.read(eventProvider.notifier).getCertainEvent(widget.eventId!);
     final participants =
         await ref.read(eventProvider.notifier).getEventParticipants(eventModel);
-    participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
 
     setState(() {
       _eventModel = eventModel;
@@ -150,10 +146,11 @@ class _EventDetailPointScreenState
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return EventDetailTemplate(
-      eventModel: _eventModel!,
+      eventModel: _eventModel ?? EventModel.empty(),
       generateCsv: _generateExcel,
       child: _initializeParticipants
-          ? Center(
+          ? SizedBox(
+              width: size.width * 0.7,
               child: DataTable(
                 dividerThickness: 0.1,
                 border: TableBorder(
@@ -212,19 +209,13 @@ class _EventDetailPointScreenState
                   ),
                   DataColumn(
                     label: Text(
-                      "점수",
+                      "제출 답",
                       style: _headerTextStyle,
                     ),
                   ),
                   DataColumn(
                     label: Text(
-                      "달성 여부",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      "선물 신청",
+                      "정답 여부",
                       style: _headerTextStyle,
                     ),
                   ),
@@ -265,26 +256,28 @@ class _EventDetailPointScreenState
                         ),
                         DataCell(
                           Text(
-                            secondsToStringLine(_participants[i].createdAt),
+                            secondsToStringDateComment(
+                                _participants[i].createdAt),
                             style: _contentTextStyle,
                           ),
                         ),
                         DataCell(
                           Text(
-                            _participants[i].userTotalPoint.toString(),
+                            _participants[i].quizAnswer.toString(),
                             style: _contentTextStyle,
                           ),
                         ),
                         DataCell(
                           Text(
-                            _participants[i].userAchieveOrNot! ? "달성" : "미달성",
-                            style: _contentTextStyle,
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            _participants[i].gift ? "○" : "",
-                            style: _contentTextStyle,
+                            _participants[i].userAchieveOrNot! ? "정답" : "",
+                            style: _contentTextStyle.copyWith(
+                              color: _participants[i].userAchieveOrNot!
+                                  ? Palette().darkBlue
+                                  : Palette().darkGray,
+                              fontWeight: _participants[i].userAchieveOrNot!
+                                  ? FontWeight.w800
+                                  : FontWeight.w500,
+                            ),
                           ),
                         ),
                       ],

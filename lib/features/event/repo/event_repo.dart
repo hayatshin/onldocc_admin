@@ -177,6 +177,16 @@ class EventRepository {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getQuizEventPariticipants(
+      String eventId) async {
+    final data = await _supabase
+        .from("quiz_event_answers")
+        .select('*, users(*)')
+        .eq('eventId', eventId)
+        .order('createdAt', ascending: true);
+    return data;
+  }
+
   Future<List<Map<String, dynamic>>> getEventPariticipants(
       String eventId) async {
     final data = await _supabase
@@ -247,6 +257,16 @@ class EventRepository {
     } catch (e) {
       // ignore: avoid_print
       print("editEvent -> $e");
+    }
+  }
+
+  Future<dynamic> getCertainEvent(String eventId) async {
+    final data = await _supabase
+        .from("events")
+        .select("*, contract_regions(subdistrictId, name, image)")
+        .eq("eventId", eventId);
+    if (data.isNotEmpty) {
+      return data[0];
     }
   }
 

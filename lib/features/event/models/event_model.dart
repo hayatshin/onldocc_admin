@@ -4,6 +4,7 @@ enum EventType {
   targetScore,
   multipleScores,
   count,
+  quiz,
 }
 
 EventType stringToEventType(String value) {
@@ -51,6 +52,9 @@ class EventModel {
   final int? maxLikeCount;
   final int? maxInvitationCount;
 
+  final String? quizOne;
+  final String? answerOne;
+
   final String? state;
   final String? orgSubdistrictId;
   final String? orgName;
@@ -92,6 +96,8 @@ class EventModel {
     this.maxCommentCount,
     this.maxLikeCount,
     this.maxInvitationCount,
+    this.quizOne,
+    this.answerOne,
   });
 
   EventModel.empty()
@@ -129,7 +135,9 @@ class EventModel {
         maxStepCount = 0,
         maxCommentCount = 0,
         maxLikeCount = 0,
-        maxInvitationCount = 0;
+        maxInvitationCount = 0,
+        quizOne = "",
+        answerOne = "";
 
   Map<String, dynamic> toJson() {
     return {
@@ -164,6 +172,8 @@ class EventModel {
       "maxCommentCount": maxCommentCount,
       "maxLikeCount": maxLikeCount,
       "maxInvitationCount": maxInvitationCount,
+      "quizOne": quizOne,
+      "answerOne": answerOne,
     };
   }
 
@@ -199,6 +209,8 @@ class EventModel {
       "maxCommentCount": maxCommentCount,
       "maxLikeCount": maxLikeCount,
       "maxInvitationCount": maxInvitationCount,
+      "quizOne": quizOne,
+      "answerOne": answerOne,
     };
   }
 
@@ -246,7 +258,9 @@ class EventModel {
         maxStepCount = json["maxStepCount"] ?? 10000,
         maxCommentCount = json["maxCommentCount"] ?? 0,
         maxLikeCount = json["maxLikeCount"] ?? 0,
-        maxInvitationCount = json["maxInvitationCount"] ?? 0;
+        maxInvitationCount = json["maxInvitationCount"] ?? 0,
+        quizOne = json["quizOne"] ?? "",
+        answerOne = json["answerOne"] ?? "";
 
   EventModel copyWith({
     final String? eventId,
@@ -285,6 +299,8 @@ class EventModel {
     final int? maxCommentCount,
     final int? maxLikeCount,
     final int? maxInvitationCount,
+    final String? quizOne,
+    final String? answerOne,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -322,6 +338,8 @@ class EventModel {
       maxCommentCount: maxCommentCount ?? this.maxCommentCount,
       maxLikeCount: maxLikeCount ?? this.maxLikeCount,
       maxInvitationCount: maxInvitationCount ?? this.maxInvitationCount,
+      quizOne: quizOne ?? quizOne,
+      answerOne: answerOne ?? answerOne,
     );
   }
 }

@@ -10,9 +10,11 @@ import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class EventDetailMultipleScoresScreen extends ConsumerStatefulWidget {
+  final String? eventId;
   final EventModel? eventModel;
   const EventDetailMultipleScoresScreen({
     super.key,
+    required this.eventId,
     required this.eventModel,
   });
 
@@ -23,6 +25,7 @@ class EventDetailMultipleScoresScreen extends ConsumerStatefulWidget {
 
 class _EventDetailPointScreenState
     extends ConsumerState<EventDetailMultipleScoresScreen> {
+  EventModel? _eventModel;
   final TextStyle _headerTextStyle = TextStyle(
     fontSize: Sizes.size13,
     fontWeight: FontWeight.w600,
@@ -43,7 +46,6 @@ class _EventDetailPointScreenState
     "나이",
     "성별",
     "핸드폰 번호",
-    "거주 지역",
     "참여일",
     "점수",
     "달성 여부",
@@ -52,7 +54,7 @@ class _EventDetailPointScreenState
   @override
   void initState() {
     super.initState();
-    initializePariticants();
+    _initializePariticants();
   }
 
   @override
@@ -60,28 +62,27 @@ class _EventDetailPointScreenState
     super.dispose();
   }
 
-  List<String> exportToList(ParticipantModel participantModel, int index) {
+  List<String> _exportToList(ParticipantModel participantModel, int index) {
     return [
       (index + 1).toString(),
       participantModel.name.toString(),
       participantModel.userAge.toString(),
       participantModel.gender.toString(),
       participantModel.phone.toString(),
-      participantModel.smallRegion.toString(),
       secondsToStringLine(participantModel.createdAt),
       participantModel.userTotalPoint!.toString(),
       participantModel.userAchieveOrNot! ? "달성" : "미달성",
     ];
   }
 
-  List<List<String>> exportToFullList(
+  List<List<String>> _exportToFullList(
       List<ParticipantModel?> participantsList) {
     List<List<String>> list = [];
 
     list.add(_listHeader);
 
     for (int i = 0; i < participantsList.length; i++) {
-      final itemList = exportToList(participantsList[i]!, i);
+      final itemList = _exportToList(participantsList[i]!, i);
       list.add(itemList);
     }
     return list;
@@ -121,20 +122,22 @@ class _EventDetailPointScreenState
   //     ..click();
   // }
 
-  void generateExcel() {
-    final csvData = exportToFullList(_participants);
+  void _generateExcel() {
+    final csvData = _exportToFullList(_participants);
     String fileName =
-        "인지케어 행사 ${widget.eventModel!.title} ${todayToStringDot()}.xlsx";
+        "인지케어 행사 ${_eventModel!.title} ${todayToStringDot()}.xlsx";
     exportExcel(csvData, fileName);
   }
 
-  Future<void> initializePariticants() async {
-    final participants = await ref
-        .read(eventProvider.notifier)
-        .getEventParticipants(widget.eventModel!);
+  Future<void> _initializePariticants() async {
+    final eventModel = widget.eventModel ??
+        await ref.read(eventProvider.notifier).getCertainEvent(widget.eventId!);
+    final participants =
+        await ref.read(eventProvider.notifier).getEventParticipants(eventModel);
     participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
 
     setState(() {
+      _eventModel = eventModel;
       _participants = participants;
       _initializeParticipants = true;
     });
@@ -143,8 +146,8 @@ class _EventDetailPointScreenState
   @override
   Widget build(BuildContext context) {
     return EventDetailTemplate(
-      eventModel: widget.eventModel!,
-      generateCsv: generateExcel,
+      eventModel: _eventModel!,
+      generateCsv: _generateExcel,
       child: _initializeParticipants
           ? Center(
               child: Container(
@@ -208,12 +211,6 @@ class _EventDetailPointScreenState
                     ),
                     DataColumn(
                       label: Text(
-                        "거주 지역",
-                        style: _headerTextStyle,
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
                         "참여일",
                         style: _headerTextStyle,
                       ),
@@ -267,12 +264,6 @@ class _EventDetailPointScreenState
                           ),
                           DataCell(
                             Text(
-                              _participants[i].smallRegion,
-                              style: _contentTextStyle,
-                            ),
-                          ),
-                          DataCell(
-                            Text(
                               secondsToStringLine(_participants[i].createdAt),
                               style: _contentTextStyle,
                             ),
@@ -285,7 +276,7 @@ class _EventDetailPointScreenState
                           ),
                           DataCell(
                             Text(
-                              _participants[i].userAchieveOrNot! ? "달성" : "미달성",
+                              _participants[i].userAchieveOrNot! ? "정답" : "",
                               style: _contentTextStyle,
                             ),
                           ),

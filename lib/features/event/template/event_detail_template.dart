@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/csv.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
-import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
+import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/palette.dart';
 
@@ -58,210 +57,186 @@ class EventDetailTemplate extends ConsumerWidget {
                 menu: menuList[4],
               ),
               Gaps.v40,
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 200,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        width: 2,
-                        color: Palette().lightGray,
+              SizedBox(
+                width: size.width * 0.7,
+                height: 200,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      width: 150,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        // border: Border.all(
+                        //   width: 2,
+                        //   color: Palette().lightGray,
+                        // ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(18),
+                        clipBehavior: Clip.hardEdge,
+                        child: eventModel.eventImage != ""
+                            ? Image.network(
+                                eventModel.eventImage,
+                                fit: BoxFit.fill,
+                              )
+                            : Container(),
                       ),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      clipBehavior: Clip.hardEdge,
-                      child: Image.network(
-                        eventModel.eventImage,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                  Gaps.h80,
-                  SizedBox(
-                    width: size.width * 0.3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          eventModel.description.replaceAll('\\n', '\n'),
-                          overflow: TextOverflow.visible,
-                          style: headerTextStyle,
-                        ),
-                        Gaps.v32,
-                        Divider(
-                          color: InjicareColor().gray30,
-                          thickness: 0.5,
-                          endIndent: 10,
-                        ),
-                        Gaps.v32,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            FutureBuilder(
-                              future: ref
-                                  .read(contractRepo)
-                                  .convertSubdistrictIdToName(
-                                      eventModel.orgSubdistrictId),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                      text: "주최기관:  ",
+                    Gaps.h40,
+                    SizedBox(
+                      width: 180,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const EventHeader(headerText: "행사 개요"),
+                          Row(
+                            children: [
+                              Text(
+                                "주최기관: ",
+                                style: headerTextStyle,
+                              ),
+                              Text(
+                                eventModel.orgName!.split(' ').last,
+                                style: headerTextStyle.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gaps.v10,
+                          Row(
+                            children: [
+                              Text(
+                                "시작일:  ",
+                                style: headerTextStyle,
+                              ),
+                              Text(
+                                eventModel.startDate,
+                                style: headerTextStyle.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gaps.v10,
+                          Row(
+                            children: [
+                              Text(
+                                "종료일:  ",
+                                style: headerTextStyle,
+                              ),
+                              Text(
+                                eventModel.endDate,
+                                style: headerTextStyle.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gaps.v10,
+                          if (eventModel.eventType == "targetScore")
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "목표 점수:  ",
                                       style: headerTextStyle,
-                                      children: [
-                                        TextSpan(
-                                          text: snapshot.data!,
-                                          style: contentTextStyle,
-                                        )
-                                      ],
                                     ),
-                                  );
-                                }
-                                return RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(
-                                    text: "주최기관:  ",
+                                    Text(
+                                      "${eventModel.targetScore}점",
+                                      style: headerTextStyle.copyWith(
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Gaps.v10,
+                              ],
+                            ),
+                          if (eventModel.achieversNumber != 0)
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "달성자 수 제한:  ",
+                                      style: headerTextStyle,
+                                    ),
+                                    Text(
+                                      "${eventModel.achieversNumber}명",
+                                      style: headerTextStyle.copyWith(
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Gaps.v10,
+                              ],
+                            ),
+                          Row(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    "진행 상황:  ",
                                     style: headerTextStyle,
-                                    children: [
-                                      TextSpan(
-                                        text: "인지케어",
-                                        style: contentTextStyle,
-                                      )
-                                    ],
                                   ),
-                                );
-                              },
-                            ),
-                            Gaps.h20,
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundImage: NetworkImage(
-                                eventModel.orgImage != "" &&
-                                        eventModel.orgImage != null
-                                    ? eventModel.orgImage!
-                                    : injicareAvatar,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Gaps.v10,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: "시작일:  ",
-                                style: headerTextStyle,
-                                children: [
-                                  TextSpan(
-                                    text: eventModel.startDate,
-                                    style: contentTextStyle,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Gaps.v10,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: "종료일:  ",
-                                style: headerTextStyle,
-                                children: [
-                                  TextSpan(
-                                    text: eventModel.endDate,
-                                    style: contentTextStyle,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Gaps.v10,
-                        if (eventModel.eventType == "targetScore")
-                          Column(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                      text: "목표 점수:  ",
-                                      style: headerTextStyle,
-                                      children: [
-                                        TextSpan(
-                                          text: "${eventModel.targetScore}점",
-                                          style: contentTextStyle,
-                                        )
-                                      ],
+                                  Text(
+                                    "${eventModel.state}",
+                                    style: headerTextStyle.copyWith(
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ],
                               ),
-                              Gaps.v10,
                             ],
                           ),
-                        if (eventModel.achieversNumber != 0)
-                          Column(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                      text: "달성자 수 제한:  ",
-                                      style: headerTextStyle,
-                                      children: [
-                                        TextSpan(
-                                          text:
-                                              "${eventModel.achieversNumber}명",
-                                          style: contentTextStyle,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Gaps.v10,
-                            ],
-                          ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: "진행 상황:  ",
-                                style: headerTextStyle,
-                                children: [
-                                  TextSpan(
-                                    text: eventModel.state,
-                                    style: contentTextStyle,
-                                  )
-                                ],
-                              ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
                             ),
-                          ],
-                        ),
+                            child: Container(
+                              width: 0.5,
+                              color:
+                                  InjicareColor().secondary20.withOpacity(0.5),
+                            ),
+                          ),
+                        )
                       ],
                     ),
-                  )
-                ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const EventHeader(headerText: "설명"),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Text(
+                                eventModel.description.replaceAll('\\n', '\n'),
+                                softWrap: true,
+                                style: headerTextStyle.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Gaps.v96,
               child
@@ -269,6 +244,45 @@ class EventDetailTemplate extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class EventHeader extends StatelessWidget {
+  final String headerText;
+  const EventHeader({
+    super.key,
+    required this.headerText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: InjicareColor().secondary20.withOpacity(0.5),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
+                child: Text(
+                  headerText,
+                  style: headerTextStyle.copyWith(
+                    color: InjicareColor().gray80,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Gaps.v20,
+      ],
     );
   }
 }
