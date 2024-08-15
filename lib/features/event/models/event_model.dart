@@ -52,8 +52,15 @@ class EventModel {
   final int? maxLikeCount;
   final int? maxInvitationCount;
 
-  final String? quizOne;
-  final String? answerOne;
+  // final String? quizOne;
+  // final String? answerOne;
+  final String? quizEventId;
+  final String? quiz;
+  final String? firstChoice;
+  final String? secondChoice;
+  final String? thirdChoice;
+  final String? fourthChoice;
+  final int? quizAnswer;
 
   final String? state;
   final String? orgSubdistrictId;
@@ -96,8 +103,13 @@ class EventModel {
     this.maxCommentCount,
     this.maxLikeCount,
     this.maxInvitationCount,
-    this.quizOne,
-    this.answerOne,
+    this.quizEventId,
+    this.quiz,
+    this.firstChoice,
+    this.secondChoice,
+    this.thirdChoice,
+    this.fourthChoice,
+    this.quizAnswer,
   });
 
   EventModel.empty()
@@ -136,8 +148,13 @@ class EventModel {
         maxCommentCount = 0,
         maxLikeCount = 0,
         maxInvitationCount = 0,
-        quizOne = "",
-        answerOne = "";
+        quizEventId = "",
+        quiz = "",
+        firstChoice = "",
+        secondChoice = "",
+        thirdChoice = "",
+        fourthChoice = "",
+        quizAnswer = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -172,8 +189,6 @@ class EventModel {
       "maxCommentCount": maxCommentCount,
       "maxLikeCount": maxLikeCount,
       "maxInvitationCount": maxInvitationCount,
-      "quizOne": quizOne,
-      "answerOne": answerOne,
     };
   }
 
@@ -209,8 +224,6 @@ class EventModel {
       "maxCommentCount": maxCommentCount,
       "maxLikeCount": maxLikeCount,
       "maxInvitationCount": maxInvitationCount,
-      "quizOne": quizOne,
-      "answerOne": answerOne,
     };
   }
 
@@ -259,8 +272,27 @@ class EventModel {
         maxCommentCount = json["maxCommentCount"] ?? 0,
         maxLikeCount = json["maxLikeCount"] ?? 0,
         maxInvitationCount = json["maxInvitationCount"] ?? 0,
-        quizOne = json["quizOne"] ?? "",
-        answerOne = json["answerOne"] ?? "";
+        quizEventId = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["quizEventId"]
+            : "",
+        quiz = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["quiz"]
+            : "",
+        firstChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["firstChoice"]
+            : "",
+        secondChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["secondChoice"]
+            : "",
+        thirdChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["thirdChoice"]
+            : "",
+        fourthChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["fourthChoice"]
+            : "",
+        quizAnswer = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["quizAnswer"]
+            : 0;
 
   EventModel copyWith({
     final String? eventId,
@@ -299,8 +331,13 @@ class EventModel {
     final int? maxCommentCount,
     final int? maxLikeCount,
     final int? maxInvitationCount,
-    final String? quizOne,
-    final String? answerOne,
+    final String? quizEventId,
+    final String? quiz,
+    final String? firstChoice,
+    final String? secondChoice,
+    final String? thirdChoice,
+    final String? fourthChoice,
+    final int? quizAnswer,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -338,8 +375,13 @@ class EventModel {
       maxCommentCount: maxCommentCount ?? this.maxCommentCount,
       maxLikeCount: maxLikeCount ?? this.maxLikeCount,
       maxInvitationCount: maxInvitationCount ?? this.maxInvitationCount,
-      quizOne: quizOne ?? quizOne,
-      answerOne: answerOne ?? answerOne,
+      quizEventId: quizEventId ?? this.quizEventId,
+      quiz: quiz ?? this.quiz,
+      firstChoice: firstChoice ?? this.firstChoice,
+      secondChoice: secondChoice ?? this.secondChoice,
+      thirdChoice: thirdChoice ?? this.thirdChoice,
+      fourthChoice: fourthChoice ?? this.fourthChoice,
+      quizAnswer: quizAnswer ?? this.quizAnswer,
     );
   }
 }

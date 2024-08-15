@@ -5,6 +5,7 @@ import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/event/widgets/field-box/point_field_box.dart';
 import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class UploadTargetScoreWidget extends StatefulWidget {
   final Function(int) updateGoalScore;
@@ -151,50 +152,7 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
                       },
                       textAlignVertical: TextAlignVertical.top,
                       style: contentTextStyle,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.3),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            Sizes.size20,
-                          ),
-                        ),
-                        errorStyle: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            Sizes.size20,
-                          ),
-                          borderSide: BorderSide(
-                            width: 1.5,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            Sizes.size20,
-                          ),
-                          borderSide: BorderSide(
-                            width: 1.5,
-                            color: Palette().darkBlue.withOpacity(0.5),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            Sizes.size20,
-                          ),
-                          borderSide: BorderSide(
-                            width: 1.5,
-                            color: Palette().darkBlue.withOpacity(0.5),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: Sizes.size20,
-                          vertical: Sizes.size20,
-                        ),
-                      ),
+                      decoration: eventSettingInputDecorationStyle(),
                     ),
                   ),
                   Gaps.h10,

@@ -39,7 +39,7 @@ class ParticipantModel {
   final int? userQuizCount;
   final bool? userAchieveOrNot;
 
-  final String? quizAnswer;
+  final int? quizAnswer;
 
   ParticipantModel({
     required this.userId,
@@ -112,7 +112,7 @@ class ParticipantModel {
         userInvitationCount = 0,
         userQuizCount = 0,
         userAchieveOrNot = false,
-        quizAnswer = "";
+        quizAnswer = 0;
 
   ParticipantModel.fromJson(Map<String, dynamic> json)
       : userId = json["users"]["userId"],
@@ -149,7 +149,7 @@ class ParticipantModel {
         userInvitationCount = 0,
         userQuizCount = 0,
         userAchieveOrNot = false,
-        quizAnswer = json["answer"] ?? "";
+        quizAnswer = json["answer"] ?? 0;
 
   ParticipantModel copyWith({
     String? smallRegion,
@@ -177,7 +177,7 @@ class ParticipantModel {
     int? userInvitationCount,
     int? userQuizCount,
     bool? userAchieveOrNot,
-    String? quizAnswer,
+    int? quizAnswer,
   }) {
     return ParticipantModel(
       userId: userId,

@@ -98,16 +98,16 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
                   index: index++, createdAt: e["createdAt"], content: ""))
               .toList();
           break;
-        case "친구초대":
-          int index = 1;
-          final query = await ref
-              .read(rankingRepo)
-              .fetchUserInvitations(userId, dateRange);
-          list = query
-              .map((e) => RankingDataSet(
-                  index: index++, createdAt: e["createdAt"], content: ""))
-              .toList();
-          break;
+        // case "친구초대":
+        //   int index = 1;
+        //   final query = await ref
+        //       .read(rankingRepo)
+        //       .fetchUserInvitations(userId, dateRange);
+        //   list = query
+        //       .map((e) => RankingDataSet(
+        //           index: index++, createdAt: e["createdAt"], content: ""))
+        //       .toList();
+        //   break;
         default:
           list = [];
           break;

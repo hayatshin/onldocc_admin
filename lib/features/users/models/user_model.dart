@@ -19,7 +19,7 @@ class UserModel {
   final int? diaryPoint;
   final int? commentPoint;
   final int? likePoint;
-  final int? invitationPoint;
+  // final int? invitationPoint;
 
   UserModel({
     required this.index,
@@ -40,7 +40,7 @@ class UserModel {
     required this.diaryPoint,
     required this.commentPoint,
     required this.likePoint,
-    required this.invitationPoint,
+    // required this.invitationPoint,
   });
 
   UserModel.empty()
@@ -61,8 +61,7 @@ class UserModel {
         stepPoint = 0,
         diaryPoint = 0,
         commentPoint = 0,
-        likePoint = 0,
-        invitationPoint = 0;
+        likePoint = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -82,7 +81,7 @@ class UserModel {
       "diaryPoint": diaryPoint,
       "commentPoint": commentPoint,
       "likePoint": likePoint,
-      "invitationPoint": invitationPoint,
+      // "invitationPoint": invitationPoint,
     };
   }
 
@@ -113,9 +112,7 @@ class UserModel {
         diaryPoint = json.containsKey("diaryPoint") ? json["diaryPoint"] : 0,
         commentPoint =
             json.containsKey("commentPoint") ? json["commentPoint"] : 0,
-        likePoint = json.containsKey("likePoint") ? json["likePoint"] : 0,
-        invitationPoint =
-            json.containsKey("invitationPoint") ? json["invitationPoint"] : 0;
+        likePoint = json.containsKey("likePoint") ? json["likePoint"] : 0;
 
   UserModel copyWith({
     final int? index,
@@ -136,7 +133,7 @@ class UserModel {
     final int? diaryPoint,
     final int? commentPoint,
     final int? likePoint,
-    final int? invitationPoint,
+    // final int? invitationPoint,
   }) {
     return UserModel(
       index: index ?? this.index,
@@ -157,7 +154,7 @@ class UserModel {
       diaryPoint: diaryPoint ?? this.diaryPoint,
       commentPoint: commentPoint ?? this.commentPoint,
       likePoint: likePoint ?? this.likePoint,
-      invitationPoint: invitationPoint ?? this.invitationPoint,
+      // invitationPoint: invitationPoint ?? this.invitationPoint,
     );
   }
 }

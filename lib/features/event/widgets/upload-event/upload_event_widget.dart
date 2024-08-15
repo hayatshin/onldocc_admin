@@ -9,6 +9,7 @@ import 'package:onldocc_admin/common/widgets/modal_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
+import 'package:onldocc_admin/features/event/models/quiz_event_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_count_widget.dart';
@@ -89,10 +90,18 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   int _eventMaxLikeCount = 0;
   int _eventMaxInvitationCount = 0;
 
-  String _eventQuizOne = "";
-  String _eventAnswerOne = "";
+  // String _eventQuizOne = "";
+  // String _eventAnswerOne = "";
+
+  String _eventQuiz = "";
+  String _eventFirstChoice = "";
+  String _eventSecondChoice = "";
+  String _eventThirdChoice = "";
+  String _eventFourthChoice = "";
+  int _eventQuizAnswer = 0;
 
   bool tapUploadEvent = false;
+  bool notFilledEventSetting = false;
 
   OverlayEntry? overlayEntry;
   GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -160,8 +169,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       _eventMaxLikeCount = widget.eventModel!.maxLikeCount ?? 0;
       _eventMaxInvitationCount = widget.eventModel!.maxInvitationCount ?? 0;
 
-      _eventQuizOne = widget.eventModel!.quizOne ?? "";
-      _eventAnswerOne = widget.eventModel!.answerOne ?? "";
+      _eventQuiz = widget.eventModel!.quiz ?? "";
+      _eventFirstChoice = widget.eventModel!.firstChoice ?? "";
+      _eventSecondChoice = widget.eventModel!.secondChoice ?? "";
+      _eventThirdChoice = widget.eventModel!.thirdChoice ?? "";
+      _eventFourthChoice = widget.eventModel!.fourthChoice ?? "";
+      _eventQuizAnswer = widget.eventModel!.quizAnswer ?? 0;
     }
   }
 
@@ -281,9 +294,18 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   Future<void> _submitEvent() async {
     setState(() {
       tapUploadEvent = true;
+      notFilledEventSetting = _eventType.eventCode == "quiz" &&
+          (_eventQuiz == "" ||
+              _eventFirstChoice == "" ||
+              _eventSecondChoice == "" ||
+              _eventThirdChoice == "" ||
+              _eventFourthChoice == "" ||
+              _eventQuizAnswer == 0);
     });
 
-    if (!widget.edit && !_enabledEventButton) return;
+    if ((!widget.edit && !_enabledEventButton) || notFilledEventSetting) {
+      return;
+    }
 
     AdminProfileModel? adminProfileModel =
         ref.read(adminProfileProvider).value ??
@@ -334,13 +356,31 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       maxCommentCount: _eventMaxCommentCount,
       maxLikeCount: _eventMaxLikeCount,
       maxInvitationCount: _eventMaxInvitationCount,
-      quizOne: _eventQuizOne,
-      answerOne: _eventAnswerOne,
     );
 
     !widget.edit
         ? await ref.read(eventRepo).addEvent(eventModel)
         : await ref.read(eventRepo).editEvent(eventModel);
+
+    // 퀴즈: quiz_event_db
+    if (_eventType.eventCode == "quiz") {
+      final quizEventId =
+          !widget.edit ? const Uuid().v4() : widget.eventModel!.quizEventId!;
+      final quizEventModel = QuizEventModel(
+        quizEventId: quizEventId,
+        eventId: eventId,
+        quiz: _eventQuiz,
+        firstChoice: _eventFirstChoice,
+        secondChoice: _eventSecondChoice,
+        thirdChoice: _eventThirdChoice,
+        fourthChoice: _eventFourthChoice,
+        quizAnswer: _eventQuizAnswer,
+      );
+      !widget.edit
+          ? await ref.read(eventRepo).addQuizEvent(quizEventModel)
+          : await ref.read(eventRepo).editQuizEvent(quizEventModel);
+    }
+
     if (!mounted) return;
     resultBottomModal(
         context,
@@ -446,15 +486,39 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     });
   }
 
-  void updateQuizOne(String quizOne) {
+  void updateQuiz(String quiz) {
     setState(() {
-      _eventQuizOne = quizOne;
+      _eventQuiz = quiz;
     });
   }
 
-  void updateAnswerOne(String answerOne) {
+  void updateFirstChoice(String value) {
     setState(() {
-      _eventAnswerOne = answerOne;
+      _eventFirstChoice = value;
+    });
+  }
+
+  void updateSecondChoice(String value) {
+    setState(() {
+      _eventSecondChoice = value;
+    });
+  }
+
+  void updateThirdChoice(String value) {
+    setState(() {
+      _eventThirdChoice = value;
+    });
+  }
+
+  void updateFourthChoice(String value) {
+    setState(() {
+      _eventFourthChoice = value;
+    });
+  }
+
+  void updateQuizAnswer(int value) {
+    setState(() {
+      _eventQuizAnswer = value;
     });
   }
 
@@ -1030,13 +1094,32 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       ),
                     ),
                     Gaps.v52,
-                    Text(
-                      "행사 설정",
-                      style: TextStyle(
-                        color: Palette().darkBlue,
-                        fontWeight: FontWeight.w700,
-                        fontSize: Sizes.size14,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          "행사 설정",
+                          style: TextStyle(
+                            color: Palette().darkBlue,
+                            fontWeight: FontWeight.w700,
+                            fontSize: Sizes.size14,
+                          ),
+                        ),
+                        if (tapUploadEvent && notFilledEventSetting)
+                          Row(
+                            children: [
+                              Gaps.h32,
+                              Text(
+                                "행사 설정의 빈칸을 채워주세요",
+                                style: headerTextStyle.copyWith(
+                                  color: Colors.red,
+                                ),
+                                overflow: TextOverflow.visible,
+                                softWrap: true,
+                              )
+                            ],
+                          ),
+                      ],
                     ),
                     Gaps.v52,
                     Row(
@@ -1165,8 +1248,13 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                   )
                                 : _eventType == eventList[3]
                                     ? UploadQuizEventWidget(
-                                        updateQuiz: updateQuizOne,
-                                        updateAnswer: updateAnswerOne,
+                                        updateQuiz: updateQuiz,
+                                        updateFirstChoice: updateFirstChoice,
+                                        updateSecondChoice: updateSecondChoice,
+                                        updateThirdChoice: updateThirdChoice,
+                                        updateFourthChoice: updateFourthChoice,
+                                        updateQuizAnswer: updateQuizAnswer,
+                                        submit: tapUploadEvent,
                                         edit: widget.edit,
                                         eventModel: widget.eventModel,
                                       )

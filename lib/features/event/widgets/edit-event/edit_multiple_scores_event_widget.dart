@@ -355,7 +355,7 @@ class _EditPointEventWidgetState
                   onPressed: removeDeleteOverlay,
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
+                        WidgetStateProperty.all(Colors.pink.shade100),
                   ),
                   child: Text(
                     "취소",
@@ -368,8 +368,8 @@ class _EditPointEventWidgetState
                 ElevatedButton(
                   onPressed: () => deleteEvent(eventId),
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
+                    backgroundColor:
+                        WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
                   child: const Text(
                     "삭제",
@@ -877,9 +877,6 @@ class _EditPointEventWidgetState
                               SizedBox(
                                 width: 100,
                                 child: TextFormField(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
                                   minLines: 1,
                                   onChanged: (value) {
                                     setState(() {

@@ -129,6 +129,56 @@ Widget deleteOverlay(
   );
 }
 
+InputDecoration eventSettingInputDecorationStyle() {
+  return InputDecoration(
+    isDense: true,
+    filled: true,
+    fillColor: Colors.white.withOpacity(0.3),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+    ),
+    hintStyle: contentTextStyle.copyWith(
+      color: InjicareColor().gray50,
+    ),
+    errorStyle: const TextStyle(
+      color: Colors.red,
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: const BorderSide(
+        width: 1.5,
+        color: Colors.red,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: BorderSide(
+        width: 1.5,
+        color: Palette().darkBlue.withOpacity(0.5),
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: BorderSide(
+        width: 1.5,
+        color: Palette().darkBlue.withOpacity(0.5),
+      ),
+    ),
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: Sizes.size20,
+      vertical: Sizes.size20,
+    ),
+  );
+}
+
 InputDecoration inputDecorationStyle() {
   return InputDecoration(
     isDense: true,

@@ -137,9 +137,12 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
         );
         return scorePointModel;
       } else if (eventModel.eventType == EventType.quiz.name) {
+        print("model.quizAnswer -> ${model.quizAnswer}");
+        print("event.quizAnswer -> ${eventModel.quizAnswer}");
+
         final scorePointModel = model.copyWith(
           smallRegion: userRegion,
-          userAchieveOrNot: model.quizAnswer!.contains(eventModel.answerOne!),
+          userAchieveOrNot: model.quizAnswer == eventModel.quizAnswer,
         );
         return scorePointModel;
       } else {

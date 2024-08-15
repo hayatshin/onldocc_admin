@@ -50,7 +50,7 @@ class RankingRepository {
         .gte("createdAt", startSecond)
         .lte("createdAt", endSecond)
         .eq("userId", userId)
-        .order('createdAt', ascending: false);
+        .order('createdAt', ascending: true);
     return data;
   }
 
@@ -86,7 +86,7 @@ class RankingRepository {
         .gte("createdAt", startSecond)
         .lte("createdAt", endSecond)
         .eq("userId", userId)
-        .order('createdAt', ascending: false);
+        .order('createdAt', ascending: true);
     return data;
   }
 
@@ -100,23 +100,23 @@ class RankingRepository {
         .gte("createdAt", startSecond)
         .lte("createdAt", endSecond)
         .eq("userId", userId)
-        .order('createdAt', ascending: false);
+        .order('createdAt', ascending: true);
     return data;
   }
 
-  Future<List<dynamic>> fetchUserInvitations(
-      String userId, DateRange dateRange) async {
-    int startSecond = convertStartDateTimeToSeconds(dateRange.start);
-    int endSecond = convertEndDateTimeToSeconds(dateRange.end);
-    final data = _supabase
-        .from("receive_invitations")
-        .select('createdAt')
-        .gte("createdAt", startSecond)
-        .lte("createdAt", endSecond)
-        .eq("sendUserId", userId)
-        .order('createdAt', ascending: false);
-    return data;
-  }
+  // Future<List<dynamic>> fetchUserInvitations(
+  //     String userId, DateRange dateRange) async {
+  //   int startSecond = convertStartDateTimeToSeconds(dateRange.start);
+  //   int endSecond = convertEndDateTimeToSeconds(dateRange.end);
+  //   final data = _supabase
+  //       .from("receive_invitations")
+  //       .select('createdAt')
+  //       .gte("createdAt", startSecond)
+  //       .lte("createdAt", endSecond)
+  //       .eq("sendUserId", userId)
+  //       .order('createdAt', ascending: true);
+  //   return data;
+  // }
 }
 
 final rankingRepo = Provider((ref) => RankingRepository());

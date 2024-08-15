@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
+import 'package:onldocc_admin/features/event/models/quiz_event_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -155,7 +156,7 @@ class EventRepository {
     if (model.master && contractRegionId == "") {
       final allUsers = await _supabase
           .from("events")
-          .select('*, contract_regions(*)')
+          .select('*, contract_regions(*), quiz_event_db(*)')
           .eq('allUsers', true)
           .order(
             'createdAt',
@@ -165,14 +166,13 @@ class EventRepository {
     } else {
       final contractRegions = await _supabase
           .from("events")
-          .select('*, contract_regions(*)')
+          .select('*, contract_regions(*), quiz_event_db(*)')
           .eq('allUsers', false)
           .eq('contractRegionId', contractRegionId)
           .order(
             'createdAt',
             ascending: true,
           );
-
       return contractRegions;
     }
   }
@@ -241,6 +241,28 @@ class EventRepository {
     }
   }
 
+  // quiz
+  Future<void> addQuizEvent(QuizEventModel model) async {
+    try {
+      await _supabase.from("quiz_event_db").insert(model.toJson());
+    } catch (e) {
+      // ignore: avoid_print
+      print("addQuizEvent: $e");
+    }
+  }
+
+  Future<void> editQuizEvent(QuizEventModel model) async {
+    try {
+      await _supabase
+          .from("quiz_event_db")
+          .update(model.toJson())
+          .eq("eventId", model.eventId);
+    } catch (e) {
+      // ignore: avoid_print
+      print("editQuizEvent -> $e");
+    }
+  }
+
   Future<void> editEventAdminSecret(String eventId, bool currentSecret) async {
     try {
       if (currentSecret) {
@@ -263,7 +285,8 @@ class EventRepository {
   Future<dynamic> getCertainEvent(String eventId) async {
     final data = await _supabase
         .from("events")
-        .select("*, contract_regions(subdistrictId, name, image)")
+        .select(
+            "*, contract_regions(subdistrictId, name, image), quiz_event_db(quizAnswer)")
         .eq("eventId", eventId);
     if (data.isNotEmpty) {
       return data[0];

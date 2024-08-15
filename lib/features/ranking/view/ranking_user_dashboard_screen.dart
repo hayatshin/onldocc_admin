@@ -60,7 +60,7 @@ class _RankingUserDashboardScreenState
   );
 
   bool _loadingFinished = false;
-  final _rankingTypes = ["일기", "걸음수", "댓글", "좋아요", "친구초대"];
+  final _rankingTypes = ["일기", "걸음수", "댓글", "좋아요"];
   String _selectedRanking = "일기";
 
   List<RankingDataSet> _rankings = [];
@@ -373,7 +373,7 @@ class _RankingUserDashboardScreenState
                                         _selectedRanking == "걸음수"
                                             ? _rankings[i].stepDate ?? ""
                                             : _rankings[i].createdAt != null
-                                                ? secondsToStringLine(
+                                                ? secondsToStringDateComment(
                                                     _rankings[i].createdAt!)
                                                 : "",
                                         style: _contentTextStyle,

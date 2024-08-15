@@ -256,7 +256,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
           size: size,
           modalTitle: !widget.edit ? "영상 올리기" : "영상 수정하기",
           modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
-          modalButtonOneFunction: !widget.edit ? _editTv : _showDeleteOverlay,
+          modalButtonOneFunction: !widget.edit ? _submitTv : _showDeleteOverlay,
           modalButtonTwoText: !widget.edit ? null : "수정하기",
           modalButtonTwoFunction: _editTv,
           child: Form(

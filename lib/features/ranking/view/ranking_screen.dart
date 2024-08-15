@@ -43,7 +43,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     "걸음수",
     "일기",
     "댓글",
-    "친구초대",
+    // "친구초대",
   ];
 
   bool _loadingFinished = false;
@@ -282,7 +282,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
       userModel.stepPoint.toString(),
       userModel.diaryPoint.toString(),
       userModel.commentPoint.toString(),
-      userModel.invitationPoint.toString(),
+      // userModel.invitationPoint.toString(),
     ];
   }
 
@@ -436,22 +436,22 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           }
         }
         break;
-      case "invitationPoint":
-        copiedUserDataList
-            .sort((a, b) => b!.invitationPoint!.compareTo(a!.invitationPoint!));
+      // case "invitationPoint":
+      //   copiedUserDataList
+      //       .sort((a, b) => b!.invitationPoint!.compareTo(a!.invitationPoint!));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
-          UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
-            index: count,
-          );
-          list.add(indexUpdateUser);
+      //   for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+      //     UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
+      //       index: count,
+      //     );
+      //     list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.invitationPoint !=
-              copiedUserDataList[i + 1]!.invitationPoint) {
-            count++;
-          }
-        }
-        break;
+      //     if (copiedUserDataList[i]!.invitationPoint !=
+      //         copiedUserDataList[i + 1]!.invitationPoint) {
+      //       count++;
+      //     }
+      //   }
+      //   break;
     }
     setState(() {
       _sortColumnIndex = columnIndex;
@@ -520,15 +520,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               fontWeight: FontWeight.w300,
                             ),
                           ),
-                          Gaps.v5,
-                          Text(
-                            "내 초대로 가입한 친구 1명: 100점",
-                            style: TextStyle(
-                              fontSize: Sizes.size11,
-                              color: Palette().normalGray,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
+                          // Gaps.v5,
+                          // Text(
+                          //   "내 초대로 가입한 친구 1명: 100점",
+                          //   style: TextStyle(
+                          //     fontSize: Sizes.size11,
+                          //     color: Palette().normalGray,
+                          //     fontWeight: FontWeight.w300,
+                          //   ),
+                          // ),
                         ],
                       ),
                     ],
@@ -634,29 +634,29 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                   style: _headerTextStyle,
                                 ),
                               ),
+                              // DataColumn2(
+                              //   size: ColumnSize.S,
+                              //   tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다",
+                              //   onSort: (columnIndex, sortAscending) {
+                              //     updateOrderStandard(
+                              //         "invitationPoint", columnIndex);
+                              //   },
+                              //   label: Text(
+                              //     "친구초대",
+                              //     style: _headerTextStyle,
+                              //   ),
+                              // ),
                               DataColumn2(
-                                size: ColumnSize.S,
-                                tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다",
-                                onSort: (columnIndex, sortAscending) {
-                                  updateOrderStandard(
-                                      "invitationPoint", columnIndex);
-                                },
-                                label: Text(
-                                  "친구초대",
-                                  style: _headerTextStyle,
-                                ),
-                              ),
-                              DataColumn2(
-                                fixedWidth: 70,
+                                fixedWidth: 100,
                                 onSort: (columnIndex, sortAscending) {
                                   setState(() {
                                     _sortColumnIndex = columnIndex;
                                   });
                                 },
                                 label: Text(
-                                  "활동\n보기",
+                                  "활동\n자세히 보기",
                                   style: _headerTextStyle,
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.end,
                                 ),
                               ),
                             ],
@@ -715,12 +715,12 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                           style: _contentTextStyle,
                                         ),
                                       ),
-                                      DataCell(
-                                        Text(
-                                          "${_userDataList[i]!.invitationPoint}",
-                                          style: _contentTextStyle,
-                                        ),
-                                      ),
+                                      // DataCell(
+                                      //   Text(
+                                      //     "${_userDataList[i]!.invitationPoint}",
+                                      //     style: _contentTextStyle,
+                                      //   ),
+                                      // ),
                                       DataCell(
                                         Center(
                                           child: MouseRegion(
