@@ -1,17 +1,17 @@
-import 'dart:convert';
-import 'dart:html';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view/search_below.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/common/view_a/default_screen.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/decibel/models/decibel_model.dart';
 import 'package:onldocc_admin/features/decibel/view_models/decibel_view_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class DecibelScreen extends ConsumerStatefulWidget {
@@ -24,9 +24,20 @@ class DecibelScreen extends ConsumerStatefulWidget {
 }
 
 class _DecibelScreenState extends ConsumerState<DecibelScreen> {
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size13,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
   List<DecibelModel> _userDataList = [];
   List<DecibelModel> _initialList = [];
-  bool loadingFinished = false;
+  bool _loadingFinished = false;
 
   final List<String> _userListHeader = [
     "날짜",
@@ -47,9 +58,12 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     selectContractRegion.addListener(() async {
       if (mounted) {
         setState(() {
-          loadingFinished = false;
+          _loadingFinished = false;
         });
-        await _initializeUserDecibels();
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
+        _initializeUserDecibels();
       }
     });
   }
@@ -57,7 +71,7 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   Future<void> filterUserDataList(
       String? searchBy, String searchKeyword) async {
     List<DecibelModel> filterList = [];
-    if (searchBy == "name") {
+    if (searchBy == "이름") {
       filterList = _initialList
           .where((element) => element.name.contains(searchKeyword))
           .cast<DecibelModel>()
@@ -74,19 +88,19 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     });
   }
 
-  List<dynamic> exportToList(DecibelModel userModel) {
+  List<String> exportToList(DecibelModel userModel) {
     return [
       secondsToStringDiaryTimeLine(userModel.createdAt),
-      userModel.decibel,
-      userModel.name,
-      userModel.age,
-      userModel.gender,
-      userModel.phone,
+      userModel.decibel.toString(),
+      userModel.name.toString(),
+      userModel.age.toString(),
+      userModel.gender.toString(),
+      userModel.phone.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<DecibelModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<DecibelModel?> userDataList) {
+    List<List<String>> list = [];
 
     list.add(_userListHeader);
 
@@ -97,36 +111,42 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     return list;
   }
 
-  void generateUserCsv() {
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList(_userDataList);
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
+
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+  //   final String fileName = "인지케어 화풀기 $formatDate.csv";
+
+  //   final encodedUri = Uri.dataFromString(
+  //     csvContent,
+  //     encoding: Encoding.getByName(encodingType()),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
+
+  void generateExcel() {
     final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 보호자 지정 $formatDate.csv";
-
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    final String fileName = "인지케어 화풀기 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
   Future<void> resetInitialList() async {
@@ -136,15 +156,17 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   }
 
   Future<void> _initializeUserDecibels() async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    final userSubdistrictId = adminProfileModel!.master
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+    final userSubdistrictId = adminProfileModel.master
         ? selectContractRegion.value!.subdistrictId
         : adminProfileModel.subdistrictId;
     final decibelList = await ref
         .read(decibelProvider.notifier)
         .fetchUserDecibels(userSubdistrictId);
     setState(() {
-      loadingFinished = true;
+      _loadingFinished = true;
       _userDataList = decibelList;
       _initialList = decibelList;
     });
@@ -153,139 +175,129 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return !loadingFinished
-        ? const SkeletonLoadingScreen()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SearchCsv(
-                filterUserList: filterUserDataList,
-                resetInitialList: resetInitialList,
-                generateCsv: generateUserCsv,
-              ),
-              SearchBelow(
-                size: size,
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                    Sizes.size10,
-                  ),
-                  child: DataTable2(
-                    columns: const [
-                      DataColumn2(
-                        label: Text(
-                          "날짜",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+    return DefaultScreen(
+      menu: menuList[9],
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SearchCsv(
+              filterUserList: filterUserDataList,
+              resetInitialList: resetInitialList,
+              generateCsv: generateExcel,
+            ),
+            _loadingFinished
+                ? Expanded(
+                    child: DataTable2(
+                      isVerticalScrollBarVisible: false,
+                      smRatio: 0.7,
+                      lmRatio: 1.2,
+                      dividerThickness: 0.1,
+                      horizontalMargin: 0,
+                      headingRowDecoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Palette().lightGray,
+                            width: 0.1,
                           ),
                         ),
                       ),
-                      DataColumn2(
-                        fixedWidth: 200,
-                        label: Text(
-                          "데시벨",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                      columns: [
+                        DataColumn2(
+                          label: Text(
+                            "날짜",
+                            style: _headerTextStyle,
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "이름",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          size: ColumnSize.L,
+                          label: Text(
+                            "데시벨",
+                            style: _headerTextStyle,
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "나이",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          size: ColumnSize.L,
+                          label: Text(
+                            "이름",
+                            style: _headerTextStyle,
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "성별",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          size: ColumnSize.S,
+                          label: Text(
+                            "나이",
+                            style: _headerTextStyle,
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          "핸드폰 번호",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          size: ColumnSize.S,
+                          label: Text(
+                            "성별",
+                            style: _headerTextStyle,
                           ),
                         ),
-                      ),
-                    ],
-                    rows: [
-                      for (var i = 0; i < _userDataList.length; i++)
-                        DataRow2(
-                          cells: [
-                            DataCell(
-                              Text(
-                                secondsToYearMonthDayHourMinute(
-                                    _userDataList[i].createdAt),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].decibel,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].name.length > 8
-                                    ? "${_userDataList[i].name.substring(0, 8)}.."
-                                    : _userDataList[i].name,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].age,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].gender,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i].phone,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                          ],
+                        DataColumn2(
+                          label: Text(
+                            "핸드폰 번호",
+                            style: _headerTextStyle,
+                          ),
                         ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          );
+                      ],
+                      rows: [
+                        for (var i = 0; i < _userDataList.length; i++)
+                          DataRow2(
+                            cells: [
+                              DataCell(
+                                Text(
+                                  secondsToYearMonthDayHourMinute(
+                                      _userDataList[i].createdAt),
+                                  style: _contentTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i].decibel,
+                                  style: _contentTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i].name.length > 8
+                                      ? "${_userDataList[i].name.substring(0, 8)}.."
+                                      : _userDataList[i].name,
+                                  style: _contentTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i].age,
+                                  style: _contentTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i].gender,
+                                  style: _contentTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i].phone,
+                                  style: _contentTextStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  )
+                : const SkeletonLoadingScreen()
+          ],
+        ),
+      ),
+    );
   }
 }

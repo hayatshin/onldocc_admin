@@ -1,51 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/models/contract_region_model.dart';
-import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
-import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
-import 'package:onldocc_admin/utils.dart';
+import 'package:onldocc_admin/retry.dart';
 
 class UserViewModel extends AsyncNotifier<List<UserModel?>> {
-  late UserRepository _userRepo;
+  final UserRepository _userRepo = UserRepository();
   @override
   FutureOr<List<UserModel?>> build() async {
-    _userRepo = UserRepository();
-    return await initializeUserList(selectContractRegion.value!.subdistrictId);
-  }
-
-  Future<void> saveAdminUser(
-      String notiUserId, ContractRegionModel selectRegionModel) async {
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-
-    final name = notiUserId.contains("region")
-        ? await ref
-            .read(contractRepo)
-            .convertSubdistrictIdToName(selectRegionModel.subdistrictId)
-        : await ref.read(contractRepo).convertContractCommunityIdToName(
-            selectRegionModel.contractCommunityId);
-
-    final userJson = {
-      "userId": notiUserId,
-      "avatar": adminProfileModel!.image,
-      "loginType": "어드민",
-      "gender": "남성",
-      "birthYear": "1960",
-      "birthDay": "0101",
-      "phone": adminProfileModel.phone,
-      "name": name.split(' ').last,
-      "createdAt": getCurrentSeconds(),
-      "subdistrictId": selectRegionModel.subdistrictId != ""
-          ? selectRegionModel.subdistrictId
-          : adminProfileModel.subdistrictId,
-      "contractCommunityId": selectRegionModel.contractCommunityId != ""
-          ? selectRegionModel.contractCommunityId
-          : null,
-    };
-    await _userRepo.saveAdminUser(userJson);
+    return await retry(() async =>
+        await initializeUserList(selectContractRegion.value!.subdistrictId));
   }
 
   List<UserModel?> filterTableRows(
@@ -77,10 +43,11 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
 
   Future<List<UserModel?>> initializeUserList(String subdistrictId) async {
     final userlist = await _userRepo.initializeUserList(subdistrictId);
+
     final modelList = userlist.map((e) => UserModel.fromJson(e)).toList();
-    final filterList = modelList.where((e) => e.name != "탈퇴자").toList();
-    state = AsyncData(filterList);
-    return filterList;
+
+    state = AsyncData(modelList);
+    return modelList;
   }
 }
 

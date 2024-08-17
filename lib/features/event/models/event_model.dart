@@ -4,6 +4,7 @@ enum EventType {
   targetScore,
   multipleScores,
   count,
+  quiz,
 }
 
 EventType stringToEventType(String value) {
@@ -17,42 +18,54 @@ EventType stringToEventType(String value) {
 
 class EventModel {
   final String eventId;
-  final String title;
-  final String description;
-  final String eventImage;
-  final bool allUsers;
   final String? contractRegionId;
   final String? contractCommunityId;
-  final int? targetScore;
-  final int achieversNumber;
+  final String title;
+  final String description;
+  final int? createdAt;
   final String startDate;
   final String endDate;
-  final String? state;
-  final int? createdAt;
-  final String? orgSubdistrictId;
-  final String? orgImage;
+  final String bannerImage;
+  final String eventImage;
+  final int achieversNumber;
+  final bool allUsers;
+  final int? ageLimit;
+  final String eventType;
+  final bool adminSecret;
+
+  final int? targetScore;
   final int? stepPoint;
   final int? diaryPoint;
   final int? commentPoint;
   final int? likePoint;
-  final int? quizPoint;
-  final bool adminSecret;
-
-  final String bannerImage;
-  final String eventType;
-  final int? ageLimit;
-
   final int? invitationPoint;
-  final int? invitationCount;
+  final int? quizPoint;
+
   final int? diaryCount;
   final int? commentCount;
   final int? likeCount;
+  final int? invitationCount;
   final int? quizCount;
 
   final int? maxStepCount;
   final int? maxCommentCount;
   final int? maxLikeCount;
   final int? maxInvitationCount;
+
+  // final String? quizOne;
+  // final String? answerOne;
+  final String? quizEventId;
+  final String? quiz;
+  final String? firstChoice;
+  final String? secondChoice;
+  final String? thirdChoice;
+  final String? fourthChoice;
+  final int? quizAnswer;
+
+  final String? state;
+  final String? orgSubdistrictId;
+  final String? orgName;
+  final String? orgImage;
 
   EventModel({
     required this.eventId,
@@ -69,6 +82,7 @@ class EventModel {
     this.state,
     this.createdAt,
     this.orgSubdistrictId,
+    this.orgName,
     this.orgImage,
     this.stepPoint,
     this.diaryPoint,
@@ -89,6 +103,13 @@ class EventModel {
     this.maxCommentCount,
     this.maxLikeCount,
     this.maxInvitationCount,
+    this.quizEventId,
+    this.quiz,
+    this.firstChoice,
+    this.secondChoice,
+    this.thirdChoice,
+    this.fourthChoice,
+    this.quizAnswer,
   });
 
   EventModel.empty()
@@ -106,6 +127,7 @@ class EventModel {
         state = "진행",
         createdAt = 0,
         orgSubdistrictId = "",
+        orgName = "",
         orgImage = "",
         stepPoint = 0,
         diaryPoint = 0,
@@ -125,7 +147,14 @@ class EventModel {
         maxStepCount = 0,
         maxCommentCount = 0,
         maxLikeCount = 0,
-        maxInvitationCount = 0;
+        maxInvitationCount = 0,
+        quizEventId = "",
+        quiz = "",
+        firstChoice = "",
+        secondChoice = "",
+        thirdChoice = "",
+        fourthChoice = "",
+        quizAnswer = 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -218,6 +247,9 @@ class EventModel {
         orgSubdistrictId = json["contract_regions"] != null
             ? json["contract_regions"]["subdistrictId"]
             : "",
+        orgName = json["contract_regions"] != null
+            ? json["contract_regions"]["name"]
+            : "인지케어",
         orgImage = json["contract_regions"] != null
             ? json["contract_regions"]["image"]
             : "",
@@ -239,7 +271,28 @@ class EventModel {
         maxStepCount = json["maxStepCount"] ?? 10000,
         maxCommentCount = json["maxCommentCount"] ?? 0,
         maxLikeCount = json["maxLikeCount"] ?? 0,
-        maxInvitationCount = json["maxInvitationCount"] ?? 0;
+        maxInvitationCount = json["maxInvitationCount"] ?? 0,
+        quizEventId = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["quizEventId"]
+            : "",
+        quiz = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["quiz"]
+            : "",
+        firstChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["firstChoice"]
+            : "",
+        secondChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["secondChoice"]
+            : "",
+        thirdChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["thirdChoice"]
+            : "",
+        fourthChoice = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["fourthChoice"]
+            : "",
+        quizAnswer = json["quiz_event_db"].isNotEmpty
+            ? json["quiz_event_db"][0]["quizAnswer"]
+            : 0;
 
   EventModel copyWith({
     final String? eventId,
@@ -256,6 +309,7 @@ class EventModel {
     final String? state,
     final int? createdAt,
     final String? orgSubdistrictId,
+    final String? orgName,
     final String? orgImage,
     final int? stepPoint,
     final int? diaryPoint,
@@ -277,6 +331,13 @@ class EventModel {
     final int? maxCommentCount,
     final int? maxLikeCount,
     final int? maxInvitationCount,
+    final String? quizEventId,
+    final String? quiz,
+    final String? firstChoice,
+    final String? secondChoice,
+    final String? thirdChoice,
+    final String? fourthChoice,
+    final int? quizAnswer,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -293,6 +354,7 @@ class EventModel {
       state: state ?? this.state,
       createdAt: createdAt ?? this.createdAt,
       orgSubdistrictId: orgSubdistrictId ?? this.orgSubdistrictId,
+      orgName: orgName ?? this.orgName,
       orgImage: orgImage ?? this.orgImage,
       stepPoint: stepPoint ?? this.stepPoint,
       diaryPoint: diaryPoint ?? this.diaryPoint,
@@ -313,6 +375,13 @@ class EventModel {
       maxCommentCount: maxCommentCount ?? this.maxCommentCount,
       maxLikeCount: maxLikeCount ?? this.maxLikeCount,
       maxInvitationCount: maxInvitationCount ?? this.maxInvitationCount,
+      quizEventId: quizEventId ?? this.quizEventId,
+      quiz: quiz ?? this.quiz,
+      firstChoice: firstChoice ?? this.firstChoice,
+      secondChoice: secondChoice ?? this.secondChoice,
+      thirdChoice: thirdChoice ?? this.thirdChoice,
+      fourthChoice: fourthChoice ?? this.fourthChoice,
+      quizAnswer: quizAnswer ?? this.quizAnswer,
     );
   }
 }

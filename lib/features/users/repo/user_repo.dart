@@ -32,7 +32,7 @@ class UserRepository {
             .from("users")
             .select('*, subdistricts(*)')
             .neq('loginType', '어드민')
-            .order('createdAt', ascending: true, nullsFirst: true);
+            .order('createdAt', ascending: false, nullsFirst: false);
         userList = data;
       } else {
         final data = await _supabase
@@ -40,7 +40,8 @@ class UserRepository {
             .select('*, subdistricts(*)')
             .neq('loginType', '어드민')
             .eq('subdistrictId', userSubdistrictId)
-            .order('createdAt', ascending: true, nullsFirst: true);
+            .order('createdAt', ascending: false, nullsFirst: false);
+
         userList = data;
       }
 

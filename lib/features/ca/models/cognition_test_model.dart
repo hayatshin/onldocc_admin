@@ -43,8 +43,11 @@ class CognitionTestModel {
         result = json.containsKey("result") ? json["result"] : "",
         userName = json["users"]["name"] ?? "-",
         userGender = json["users"]["gender"] ?? "-",
-        userAge = userAgeCalculation(
-            json["users"]["birthYear"], json["users"]["birthDay"]),
+        userAge = json["users"]["birthYear"] != null &&
+                json["users"]["birthDay"] != null
+            ? userAgeCalculation(
+                json["users"]["birthYear"], json["users"]["birthDay"])
+            : "00",
         userPhone = json["users"]["phone"] ?? "-",
         userSubdistrictId = json["users"]['subdistrictId'] ?? "",
         userContractCommunityId = json["users"]["contractCommunityId"] ?? "";

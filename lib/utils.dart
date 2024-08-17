@@ -1,20 +1,345 @@
 import 'dart:convert';
 
+import 'package:excel/excel.dart' hide Border;
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get_thumbnail_video/index.dart';
 import 'package:get_thumbnail_video/video_thumbnail.dart';
 import 'package:intl/intl.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'dart:html' as html;
 import 'package:universal_html/html.dart' as html;
 
-void showSnackBar(BuildContext context, String error) {
+String encodeDateRange(DateRange dateRange) {
+  final startDate = dateRange.start.toIso8601String();
+  final endDate = dateRange.end.toIso8601String();
+  return '$startDate,$endDate';
+}
+
+DateRange decodeDateRange(String encodedDateRange) {
+  final dates = encodedDateRange.split(',');
+  final startDate = DateTime.parse(dates[0]);
+  final endDate = DateTime.parse(dates[1]);
+  return DateRange(startDate, endDate);
+}
+
+// 엑셀
+void exportExcel(
+  List<List<String>> contents,
+  String fileName,
+) {
+  Excel excel = Excel.createExcel();
+  Sheet sheetObject = excel["Sheet1"];
+
+  for (int row = 0; row < contents.length; row++) {
+    List<String> eachRow = contents[row];
+    for (int col = 0; col < eachRow.length; col++) {
+      var cell = sheetObject.cell(
+          CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row + 1));
+      cell.value = TextCellValue(eachRow[col]);
+    }
+  }
+  excel.save(fileName: fileName);
+}
+
+Widget deleteOverlay(
+    String title, Function() removeOverlay, Function() delete) {
+  return Positioned.fill(
+    child: Material(
+      color: Colors.black38,
+      child: Center(
+        child: AlertDialog(
+          title: Text(
+            title,
+            style: InjicareFont().headline03.copyWith(
+                  color: Palette().darkPurple,
+                ),
+          ),
+          backgroundColor: Colors.white,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "정말로 삭제하시겠습니까?",
+                style: InjicareFont().label03,
+              ),
+              Text(
+                "삭제하면 다시 되돌릴 수 없습니다.",
+                style: InjicareFont().label03,
+              ),
+            ],
+          ),
+          actions: [
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: removeOverlay,
+                child: Container(
+                  width: 60,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      width: 1.5,
+                      color: Palette().darkPurple,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "취소",
+                      style: InjicareFont().body07,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: delete,
+                child: Container(
+                  width: 60,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Palette().darkPurple,
+                  ),
+                  child: Center(
+                    child: Text(
+                      "삭제",
+                      style: InjicareFont().body07.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+InputDecoration eventSettingInputDecorationStyle() {
+  return InputDecoration(
+    isDense: true,
+    filled: true,
+    fillColor: Colors.white.withOpacity(0.3),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+    ),
+    hintStyle: contentTextStyle.copyWith(
+      color: InjicareColor().gray50,
+    ),
+    errorStyle: const TextStyle(
+      color: Colors.red,
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: const BorderSide(
+        width: 1.5,
+        color: Colors.red,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: BorderSide(
+        width: 1.5,
+        color: Palette().darkBlue.withOpacity(0.5),
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: BorderSide(
+        width: 1.5,
+        color: Palette().darkBlue.withOpacity(0.5),
+      ),
+    ),
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: Sizes.size20,
+      vertical: Sizes.size20,
+    ),
+  );
+}
+
+InputDecoration inputDecorationStyle() {
+  return InputDecoration(
+    isDense: true,
+    filled: true,
+    fillColor: Colors.white.withOpacity(0.3),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+    ),
+    errorStyle: headerTextStyle.copyWith(
+      color: Colors.red,
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: const BorderSide(
+        width: 1.5,
+        color: Colors.red,
+      ),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: const BorderSide(
+        width: 1.5,
+        color: Colors.red,
+      ),
+    ),
+    disabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: const BorderSide(
+        width: 1.5,
+        color: Colors.red,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: BorderSide(
+        width: 1.5,
+        color: Palette().darkGray.withOpacity(0.5),
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        Sizes.size20,
+      ),
+      borderSide: BorderSide(
+        width: 1.5,
+        color: Palette().darkGray.withOpacity(0.5),
+      ),
+    ),
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: Sizes.size20,
+      vertical: Sizes.size20,
+    ),
+  );
+}
+
+void showCompletingSnackBar(BuildContext context, String error) {
+  if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      showCloseIcon: true,
-      content: Text(error),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      padding: const EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 16,
+      ),
+      duration: const Duration(
+        milliseconds: 1500,
+      ),
+      content: Container(
+        decoration: BoxDecoration(
+          color: InjicareColor().gray100.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "assets/svg/circle-check.svg",
+                width: 20,
+              ),
+              Gaps.h10,
+              Flexible(
+                child: Text(
+                  error,
+                  style: const TextStyle(
+                    fontSize: Sizes.size14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void showWarningSnackBar(BuildContext context, String error) {
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      padding: const EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 16,
+      ),
+      duration: const Duration(
+        milliseconds: 1500,
+      ),
+      content: Container(
+        decoration: BoxDecoration(
+          color: InjicareColor().gray100.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "assets/svg/warning.svg",
+                width: 20,
+              ),
+              Gaps.h10,
+              Flexible(
+                child: Text(
+                  error,
+                  style: const TextStyle(
+                    fontSize: Sizes.size14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }
@@ -42,7 +367,8 @@ String userAgeCalculation(String birthYear, String birthDay) {
     return returnAge.toString();
   } catch (e) {
     // ignore: avoid_print
-    return "";
+    print("userAgeCalculation: error -> $e");
+    return "0";
   }
 }
 
@@ -63,6 +389,11 @@ String todayToStringLine() {
   String formattedDate =
       '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
   return formattedDate;
+}
+
+String todayToStringDot() {
+  DateTime dateTime = DateTime.now();
+  return DateFormat('yyyy.MM.dd').format(dateTime);
 }
 
 String daterangeToSlashString(DateRange range) {
@@ -264,6 +595,11 @@ int convertEndDateTimeToSeconds(DateTime date) {
   return (millisecondsSinceEpoch / 1000).round();
 }
 
+String periodDateFormat(DateTime dateTime) {
+  final formattedDate = DateFormat('yyyy/MM/dd').format(dateTime);
+  return formattedDate;
+}
+
 DateTime getThisWeekMonday() {
   DateTime now = DateTime.now();
   int difference = now.weekday - 1;
@@ -300,7 +636,7 @@ DateTime getLastMonthLastday() {
 
 void resultBottomModal(
     BuildContext context, String text, Function() refreshScreen) {
-  showSnackBar(context, text);
+  showCompletingSnackBar(context, text);
   Future.delayed(const Duration(milliseconds: 500), () {
     refreshScreen();
     Navigator.of(context).pop();
@@ -316,28 +652,6 @@ Widget noAuthorizedWidget() {
     ),
     textAlign: TextAlign.center,
   );
-}
-
-String getVideoId(String link) {
-  String documentId = "";
-  if (link.contains("youtu.be")) {
-    final parts = link.split("youtu.be/");
-    documentId = parts[1].split('?').first;
-  } else if (link.contains("youtube.com")) {
-    final parts = link.split("watch?v=");
-    documentId = parts[1];
-  }
-  return documentId;
-}
-
-String getVideoThumbnail(String videoId, String link) {
-  String thumbnail = "";
-  if (link.contains("youtu.be")) {
-    thumbnail = "http://i3.ytimg.com/vi/$videoId/hqdefault.jpg";
-  } else if (link.contains("youtube.com")) {
-    thumbnail = "https://img.youtube.com/vi/$videoId/mqdefault.jpg";
-  }
-  return thumbnail;
 }
 
 String encodingType() {

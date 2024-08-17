@@ -31,7 +31,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  go_router: ^14.2.0
+  flutter_localizations:
+    sdk: flutter
+
+  go_router: ^14.2.1
 
   provider: ^6.0.5
 
@@ -41,10 +44,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   font_awesome_flutter: ^10.4.0
-  firebase_core: ^3.1.1
-  firebase_auth: ^5.1.1
-  cloud_firestore: ^5.0.2
-  firebase_storage: ^12.1.0
+  firebase_core: ^3.2.0
+  firebase_auth: ^5.1.2
+  cloud_firestore: ^5.1.0
+  firebase_storage: ^12.1.1
   animated_custom_dropdown: ^3.0.0
   intl: ^0.19.0
   flutter_dotenv: ^5.1.0
@@ -53,11 +56,11 @@ dependencies:
   url_launcher: ^6.0.0
   universal_html: ^2.2.4
   dartz: ^0.10.0
-  syncfusion_flutter_charts: ^26.1.39
-  syncfusion_flutter_calendar: ^26.1.39
+  syncfusion_flutter_charts: ^26.1.42
+  syncfusion_flutter_calendar: ^26.1.42
   image_picker: ^1.0.1
   image_picker_for_web: ^3.0.4
-  file_picker: ^8.0.5
+  file_picker: ^8.0.6
   flutter_date_pickers: ^0.4.2
   loading_animation_widget: ^1.2.0+4
   flutter_animate: ^4.2.0+1
@@ -73,13 +76,18 @@ dependencies:
   path_provider: ^2.1.2
   # video_player: ^2.8.3
   get_thumbnail_video: ^0.6.1
+  dropdown_button2: ^2.3.9
+  flutter_svg: ^2.0.10+1
   flutter_skeleton_ui: ^0.0.6
-
+  syncfusion_flutter_datepicker: ^26.2.5
+  flutter_localization: ^0.2.1
+  excel: ^4.0.3
+  flutter_multi_formatter: ^2.13.0
   # firebase_auth_web: ^5.9.8
   # firebase_core: ^2.27.0
 
-# dependency_overrides:
-#   web: 0.4.0
+dependency_overrides:
+  # web: 0.4.0
 
 dev_dependencies:
   flutter_test:
@@ -105,9 +113,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - env
+    - assets/notice/
     - assets/images/
-    - assets/app_intro/
     - assets/app_screen/
+    - assets/svg/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -121,42 +130,16 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Spoqa
+    - family: Pretendard
       fonts:
-        - asset: assets/fonts/Spoqa-Bold.otf
-          weight: 600
-        - asset: assets/fonts/Spoqa-Medium.otf
-          weight: 500
-        - asset: assets/fonts/Spoqa-Light.otf
-          weight: 400
-        - asset: assets/fonts/Spoqa-Thin.otf
-          weight: 300
-    - family: GmarketSans
-      fonts:
-        - asset: assets/fonts/GmarketSans-Bold.ttf
-          weight: 600
-        - asset: assets/fonts/GmarketSans-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/GmarketSans-Light.ttf
-          weight: 400
-    - family: NanumSquare
-      fonts:
-        - asset: assets/fonts/NanumSquareNeoOTF-Hv.otf
-          weight: 800
-        - asset: assets/fonts/NanumSquareNeoOTF-Eb.otf
+        - asset: assets/fonts/Pretendard-Bold.otf
           weight: 700
-        - asset: assets/fonts/NanumSquareNeoOTF-Bd.otf
+        - asset: assets/fonts/Pretendard-SemiBold.otf
           weight: 600
-        - asset: assets/fonts/NanumSquareNeoOTF-Rg.otf
+        - asset: assets/fonts/Pretendard-Medium.otf
           weight: 500
-        - asset: assets/fonts/NanumSquareNeoOTF-Lt.otf
+        - asset: assets/fonts/Pretendard-Regular.otf
           weight: 400
-    - family: SamlipBasic
-      fonts:
-        - asset: assets/fonts/Samlip-Basic.otf
-    - family: SamlipOutline
-      fonts:
-        - asset: assets/fonts/Samlip-Outline.otf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

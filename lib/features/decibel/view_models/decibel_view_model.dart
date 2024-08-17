@@ -11,7 +11,12 @@ class DecibelViewModel extends AsyncNotifier<void> {
   Future<List<DecibelModel>> fetchUserDecibels(String userSubdistrictId) async {
     final data =
         await ref.read(decibelRepo).fetchUserDecibels(userSubdistrictId);
-    return data.map((e) => DecibelModel.fromJson(e)).toList();
+    final modelList = data.map((e) => DecibelModel.fromJson(e)).toList();
+    List<DecibelModel> nonNullUserList = modelList
+        .where((e) => (e.decibel != "") && (e.name != ""))
+        .cast<DecibelModel>()
+        .toList();
+    return nonNullUserList;
   }
 }
 

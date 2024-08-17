@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
-import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
 import 'package:onldocc_admin/features/care/view/care_screen.dart';
+import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
-import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
-import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 
@@ -21,22 +18,117 @@ class MenuNotifier extends ChangeNotifier {
   void setSelectedMenu(int menu, BuildContext context) {
     _selectedMenu = menu;
 
-    if (menu == 0) context.goNamed(UsersScreen.routeName);
-    if (menu == 1) context.goNamed(RankingScreen.routeName);
-    if (menu == 2) context.goNamed(RankingUsersScreen.stepRouteName);
-    if (menu == 3) context.goNamed(RankingUsersScreen.diaryRouteName);
-    if (menu == 4) context.goNamed(QuizScreen.routeName);
-    if (menu == 5) context.goNamed(AlzheimerTestScreen.routeName);
-    if (menu == 6) context.goNamed(DepressionTestScreen.routeName);
-    if (menu == 7) context.goNamed(InvitationScreen.routeName);
-    if (menu == 8) context.goNamed(NoticeScreen.routeName);
-    if (menu == 9) context.goNamed(EventScreen.routeName);
-    if (menu == 10) context.goNamed(CareScreen.routeName);
-    if (menu == 11) context.goNamed(DecibelScreen.routeName);
-    if (menu == 12) context.goNamed(TvScreen.routeName);
-
     notifyListeners();
   }
 }
 
 final menuNotifier = MenuNotifier();
+
+class Menu {
+  final int index;
+  final String name;
+  final String routeName;
+  final Widget child;
+  final bool backButton;
+  final Color? colorButton;
+
+  Menu({
+    required this.index,
+    required this.name,
+    required this.routeName,
+    required this.child,
+    required this.backButton,
+    required this.colorButton,
+  });
+}
+
+final menuList = [
+  Menu(
+    index: 0,
+    name: "대시보드",
+    routeName: DashboardScreen.routeName,
+    child: const DashboardScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 1,
+    name: "회원 관리",
+    routeName: UsersScreen.routeName,
+    child: const UsersScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 2,
+    name: "점수 관리",
+    routeName: RankingScreen.routeName,
+    child: const RankingScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 3,
+    name: "공지 관리",
+    routeName: NoticeScreen.routeName,
+    child: const NoticeScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 4,
+    name: "행사 관리",
+    routeName: EventScreen.routeName,
+    child: const EventScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 5,
+    name: "온라인 치매 검사",
+    routeName: AlzheimerTestScreen.routeName,
+    child: const AlzheimerTestScreen(),
+    backButton: false,
+    colorButton: const Color(0xff696EFF),
+  ),
+  Menu(
+    index: 6,
+    name: "노인 우울척도 검사",
+    routeName: DepressionTestScreen.routeName,
+    child: const DepressionTestScreen(),
+    backButton: false,
+    colorButton: const Color(0xffF8ACFF),
+  ),
+  Menu(
+    index: 7,
+    name: "영상 관리",
+    routeName: TvScreen.routeName,
+    child: const TvScreen(),
+    backButton: false,
+    colorButton: const Color(0xffFFBA49),
+  ),
+  Menu(
+    index: 8,
+    name: "보호자 지정",
+    routeName: CareScreen.routeName,
+    child: const CareScreen(),
+    backButton: false,
+    colorButton: const Color(0xff20A39E),
+  ),
+  Menu(
+    index: 9,
+    name: "화풀기",
+    routeName: DecibelScreen.routeName,
+    child: const DecibelScreen(),
+    backButton: false,
+    colorButton: const Color(0xffEF5B5B),
+  ),
+  // Menu(
+  //   index: 10,
+  //   name: "친구 초대 관리",
+  //   routeName: InvitationScreen.routeName,
+  //   child: const InvitationScreen(),
+  //   backButton: false,
+  //   colorButton: null,
+  // ),
+];

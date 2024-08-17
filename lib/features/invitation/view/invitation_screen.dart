@@ -4,9 +4,11 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/view/search_period_order.dart';
+import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/common/view_a/default_screen.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/invitation/models/invitation_model.dart';
 import 'package:onldocc_admin/features/invitation/view_models/invitation_view_model.dart';
@@ -217,157 +219,162 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return !loadingFinished
-        ? const SkeletonLoadingScreen()
-        : Column(
-            children: [
-              SearchPeriodOrder(
-                filterUserList: filterUserDataList,
-                resetInitialList: resetInitialList,
-                generateCsv: generateUserCsv,
-                updateOrderPeriod: updateOrderPeriod,
-              ),
-              SearchBelow(
-                size: size,
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                    Sizes.size10,
-                  ),
-                  child: DataTable2(
-                    columns: const [
-                      DataColumn2(
-                        fixedWidth: 50,
-                        label: Text(
-                          "#",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+    return DefaultScreen(
+      menu: menuList[10],
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: Column(
+          children: [
+            SearchCsv(
+              filterUserList: filterUserDataList,
+              resetInitialList: resetInitialList,
+              generateCsv: generateUserCsv,
+            ),
+            const Row(
+              children: [
+                // PeriodButton(),
+              ],
+            ),
+            Gaps.v20,
+            !loadingFinished
+                ? const SkeletonLoadingScreen()
+                : Expanded(
+                    child: DataTable2(
+                      columns: const [
+                        DataColumn2(
+                          label: Text(
+                            "#",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 200,
-                        label: Text(
-                          "이름",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 200,
+                          label: Text(
+                            "이름",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 100,
-                        label: Text(
-                          "나이",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 100,
+                          label: Text(
+                            "나이",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 100,
-                        label: Text(
-                          "성별",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 100,
+                          label: Text(
+                            "성별",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 200,
-                        label: Text(
-                          "핸드폰 번호",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 200,
+                          label: Text(
+                            "핸드폰 번호",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 150,
-                        label: Text(
-                          "초대 횟수",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 150,
+                          label: Text(
+                            "초대 횟수",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 300,
-                        label: Text(
-                          "날짜",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        DataColumn2(
+                          fixedWidth: 300,
+                          label: Text(
+                            "날짜",
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                    rows: [
-                      for (var i = 0; i < _userDataList.length; i++)
-                        DataRow2(
-                          cells: [
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.index.toString(),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                      ],
+                      rows: [
+                        for (var i = 0; i < _userDataList.length; i++)
+                          DataRow2(
+                            cells: [
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.index.toString(),
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.userName,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.userName,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.userAge,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.userAge,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.userGender,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.userGender,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.userPhone,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.userPhone,
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.invitationCount.toString(),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.invitationCount.toString(),
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                invitationDatesToTable(
-                                    _userDataList[i]!.invitationDates),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataCell(
+                                Text(
+                                  invitationDatesToTable(
+                                      _userDataList[i]!.invitationDates),
+                                  style: const TextStyle(
+                                    fontSize: Sizes.size13,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          );
+                            ],
+                          )
+                      ],
+                    ),
+                  )
+          ],
+        ),
+      ),
+    );
   }
 }
 

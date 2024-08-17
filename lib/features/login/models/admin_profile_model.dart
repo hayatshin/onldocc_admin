@@ -38,8 +38,12 @@ class AdminProfileModel {
       : adminId = json["adminId"],
         master = json["master"],
         contractType = "region",
-        contractRegionId = json["contractRegionId"] ?? "",
-        subdistrictId = json["subdistrictId"] ?? "",
+        contractRegionId = json["contract_regions"] != null
+            ? json["contract_regions"]["contractRegionId"]
+            : "",
+        subdistrictId = json["subdistricts"] != null
+            ? json["subdistricts"]["subdistrictId"]
+            : "",
         name = json["subdistricts"] != null
             ? json["subdistricts"]["subdistrict"]
             : "마스터",
@@ -51,7 +55,7 @@ class AdminProfileModel {
             : "",
         mail = json["contract_regions"] != null
             ? json["contract_regions"]["mail"]
-            : "";
+            : "help@hayat.kr";
 
   Map<String, dynamic> toJson() {
     return {

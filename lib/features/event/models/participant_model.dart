@@ -39,6 +39,8 @@ class ParticipantModel {
   final int? userQuizCount;
   final bool? userAchieveOrNot;
 
+  final int? quizAnswer;
+
   ParticipantModel({
     required this.userId,
     required this.name,
@@ -73,7 +75,44 @@ class ParticipantModel {
     this.userInvitationCount,
     this.userQuizCount,
     this.userAchieveOrNot,
+    this.quizAnswer,
   });
+
+  ParticipantModel.empty()
+      : userId = "",
+        name = "",
+        userAge = "",
+        gender = "",
+        phone = "",
+        subdistrictId = "",
+        smallRegion = "",
+        createdAt = 0,
+        gift = false,
+        stepPoint = 0,
+        diaryPoint = 0,
+        commentPoint = 0,
+        likePoint = 0,
+        invitationPoint = 0,
+        quizPoint = 0,
+        diaryCount = 0,
+        commentCount = 0,
+        likeCount = 0,
+        invitationCount = 0,
+        quizCount = 0,
+        userStepPoint = 0,
+        userDiaryPoint = 0,
+        userCommentPoint = 0,
+        userLikePoint = 0,
+        userInvitationPoint = 0,
+        userQuizPoint = 0,
+        userTotalPoint = 0,
+        userDiaryCount = 0,
+        userCommentCount = 0,
+        userLikeCount = 0,
+        userInvitationCount = 0,
+        userQuizCount = 0,
+        userAchieveOrNot = false,
+        quizAnswer = 0;
 
   ParticipantModel.fromJson(Map<String, dynamic> json)
       : userId = json["users"]["userId"],
@@ -109,7 +148,8 @@ class ParticipantModel {
         userLikeCount = 0,
         userInvitationCount = 0,
         userQuizCount = 0,
-        userAchieveOrNot = false;
+        userAchieveOrNot = false,
+        quizAnswer = json["answer"] ?? 0;
 
   ParticipantModel copyWith({
     String? smallRegion,
@@ -137,6 +177,7 @@ class ParticipantModel {
     int? userInvitationCount,
     int? userQuizCount,
     bool? userAchieveOrNot,
+    int? quizAnswer,
   }) {
     return ParticipantModel(
       userId: userId,
@@ -172,6 +213,7 @@ class ParticipantModel {
       userInvitationCount: userInvitationCount ?? this.userInvitationCount,
       userQuizCount: userQuizCount ?? this.userQuizCount,
       userAchieveOrNot: userAchieveOrNot ?? this.userAchieveOrNot,
+      quizAnswer: quizAnswer ?? this.quizAnswer,
     );
   }
 }

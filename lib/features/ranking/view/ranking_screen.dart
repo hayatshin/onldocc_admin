@@ -1,18 +1,24 @@
-import 'dart:convert';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view/search_below.dart';
-import 'package:onldocc_admin/common/view/search_period_order_ranking.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:onldocc_admin/common/models/path_extra.dart';
+import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/common/view_a/default_screen.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
+import 'package:onldocc_admin/common/widgets/period_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
+import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/injicare_font.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:universal_html/html.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../users/models/user_model.dart';
 
@@ -32,22 +38,41 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   final List<String> _userListHeader = [
     "#",
     "이름",
-    "나이",
-    "성별",
     "핸드폰 번호",
-    "종합 점수",
+    "종합",
     "걸음수",
     "일기",
-    "댓글"
+    "댓글",
+    // "친구초대",
   ];
 
-  bool loadingFinished = false;
-  final int _currentSortColumn = 0;
-  final bool _isSortAsc = true;
+  bool _loadingFinished = false;
+  int _sortColumnIndex = 2;
 
   String sortOder = "totalPoint";
 
-  DateRange? selectedDateRange = DateRange(
+  final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
+  OverlayEntry? overlayEntry;
+
+  final _scrollController = ScrollController();
+  bool _filtered = false;
+  int _pageCount = 0;
+  final int _offset = 20;
+  int _rowCount = 0;
+
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size11,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
+
+  DateRange? _selectedDateRange = DateRange(
     getThisWeekMonday(),
     DateTime.now(),
   );
@@ -57,24 +82,178 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     super.initState();
 
     if (selectContractRegion.value != null) {
-      getScoreList(selectedDateRange);
+      _getScoreList(_selectedDateRange);
     }
 
     selectContractRegion.addListener(() async {
       if (mounted) {
         setState(() {
-          loadingFinished = false;
+          _loadingFinished = false;
         });
-
-        await getScoreList(selectedDateRange);
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
+        await _getScoreList(_selectedDateRange);
       }
     });
+
+    _scrollController.addListener(_onDetectScroll);
   }
 
-  Future<void> filterUserDataList(
+  @override
+  void dispose() {
+    _removePeriodCalender();
+    _scrollController.removeListener(_onDetectScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onDetectScroll() {
+    if (_filtered) return;
+    if (_scrollController.position.atEdge) {
+      bool isTop = _scrollController.position.pixels == 0;
+      _pageCount += _offset;
+
+      if (!isTop) {
+        setState(() {
+          _rowCount = _pageCount + _offset;
+        });
+      }
+    }
+  }
+
+  Future<void> _getScoreList(DateRange? range) async {
+    final userDataList =
+        await ref.read(rankingProvider.notifier).getUserPoints(range!);
+    int rowCount =
+        userDataList.length > 20 ? _pageCount + _offset : userDataList.length;
+
+    if (selectContractRegion.value!.subdistrictId == "") {
+      if (mounted) {
+        setState(() {
+          _loadingFinished = true;
+          _filtered = false;
+          _userDataList = userDataList;
+          _initialPointList = userDataList;
+          _rowCount = rowCount;
+        });
+      }
+    } else {
+      if (selectContractRegion.value!.contractCommunityId != "" &&
+          selectContractRegion.value!.contractCommunityId != null) {
+        final filterDataList = userDataList
+            .where((e) =>
+                e.contractCommunityId ==
+                selectContractRegion.value!.contractCommunityId)
+            .toList();
+        if (mounted) {
+          setState(() {
+            _loadingFinished = true;
+            _filtered = false;
+            _userDataList = filterDataList;
+            _initialPointList = userDataList;
+            _rowCount = rowCount;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _loadingFinished = true;
+            _filtered = false;
+            _userDataList = userDataList;
+            _initialPointList = userDataList;
+            _rowCount = rowCount;
+          });
+        }
+      }
+    }
+  }
+
+  void _removePeriodCalender() {
+    overlayEntry?.remove();
+    overlayEntry = null;
+  }
+
+  void _showPeriodCalender() {
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Theme(
+          data: ThemeData(
+            colorScheme: ColorScheme.light(
+              primary: Palette().darkBlue,
+            ),
+          ),
+          child: Positioned.fill(
+            child: Material(
+              color: Colors.black38,
+              child: Center(
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: SfDateRangePicker(
+                    backgroundColor: Colors.white,
+                    headerHeight: 50,
+                    confirmText: "확인",
+                    cancelText: "취소",
+                    onCancel: () {
+                      _removePeriodCalender();
+                    },
+                    onSubmit: (dateRange) async {
+                      if (dateRange is PickerDateRange) {
+                        setState(() {
+                          _selectedDateRange = DateRange(
+                              dateRange.startDate!, dateRange.endDate!);
+                          _loadingFinished = false;
+                        });
+                        _removePeriodCalender();
+                        await _getScoreList(_selectedDateRange);
+                      }
+                    },
+                    showActionButtons: true,
+                    viewSpacing: 10,
+                    selectionColor: Palette().darkBlue,
+                    selectionTextStyle: InjicareFont().body07,
+                    rangeTextStyle: InjicareFont().body07,
+                    rangeSelectionColor: Palette().lightBlue,
+                    startRangeSelectionColor: Palette().darkBlue,
+                    endRangeSelectionColor: Palette().darkBlue,
+                    headerStyle: DateRangePickerHeaderStyle(
+                      backgroundColor: Palette().darkBlue,
+                      textStyle: InjicareFont().body01.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
+                    monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: InjicareFont().body07,
+                      leadingDatesTextStyle: InjicareFont().body07,
+                      trailingDatesTextStyle: InjicareFont().body07,
+                    ),
+                    monthViewSettings: const DateRangePickerMonthViewSettings(),
+                    selectionMode: DateRangePickerSelectionMode.extendableRange,
+                    initialSelectedRange: PickerDateRange(
+                      _selectedDateRange!.start,
+                      _selectedDateRange!.end,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
+  }
+
+  Future<void> _filterUserDataList(
       String? searchBy, String searchKeyword) async {
     List<UserModel> filterList = [];
-    if (searchBy == "name") {
+    if (searchBy == "이름") {
       filterList = _initialPointList
           .where((element) => element!.name.contains(searchKeyword))
           .cast<UserModel>()
@@ -87,26 +266,28 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     }
 
     setState(() {
+      _filtered = true;
+      _rowCount = filterList.length;
       _userDataList = filterList;
     });
   }
 
-  List<dynamic> exportToList(UserModel userModel) {
+  // excel
+  List<String> exportToList(UserModel userModel) {
     return [
-      userModel.index,
-      userModel.name,
-      userModel.userAge,
-      userModel.gender,
-      userModel.phone,
-      userModel.totalScore,
-      userModel.stepScore,
-      userModel.diaryScore,
-      userModel.commentScore,
+      userModel.index.toString(),
+      userModel.name.toString(),
+      userModel.phone.toString(),
+      userModel.totalPoint.toString(),
+      userModel.stepPoint.toString(),
+      userModel.diaryPoint.toString(),
+      userModel.commentPoint.toString(),
+      // userModel.invitationPoint.toString(),
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<UserModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<UserModel?> userDataList) {
+    List<List<String>> list = [];
 
     list.add(_userListHeader);
 
@@ -117,92 +298,58 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     return list;
   }
 
-  void generateUserCsv() {
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList(_userDataList);
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
+
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+
+  //   final String fileName = "인지케어 전체 점수 $formatDate.csv";
+
+  //   final encodedUri = Uri.dataFromString(
+  //     csvContent,
+  //     encoding: Encoding.getByName(encodingType()),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
+
+  void generateExcel() {
     final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
-
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-    final String fileName = "인지케어 전체 점수 $formatDate.csv";
-
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
+    final String fileName = "인지케어 점수관리 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
   }
 
-  Future<void> resetInitialList() async {
-    final userList = ref.read(rankingProvider).value ??
-        await ref
-            .read(rankingProvider.notifier)
-            .getUserPoints(selectedDateRange ??
-                DateRange(
-                  getThisWeekMonday(),
-                  DateTime.now(),
-                ));
-    setState(() {
-      _userDataList = userList;
-    });
+  void goUserRankingDashboard({
+    required String userId,
+    required String userName,
+    required DateRange dateRange,
+  }) {
+    Map<String, String> extraJson = {
+      "userId": userId,
+      "userName": userName,
+      "dateRange": encodeDateRange(dateRange),
+    };
+    context.go("/ranking/$userId", extra: RankingPathExtra.fromJson(extraJson));
   }
 
-  Future<void> getScoreList(DateRange? range) async {
-    final userList =
-        await ref.read(rankingProvider.notifier).getUserPoints(range!);
-
-    if (selectContractRegion.value!.subdistrictId == "") {
-      if (mounted) {
-        setState(() {
-          loadingFinished = true;
-          _userDataList = userList;
-          _initialPointList = userList;
-        });
-      }
-    } else {
-      if (selectContractRegion.value!.contractCommunityId != "" &&
-          selectContractRegion.value!.contractCommunityId != null) {
-        final filterDataList = userList
-            .where((e) =>
-                e.contractCommunityId ==
-                selectContractRegion.value!.contractCommunityId)
-            .toList();
-        if (mounted) {
-          setState(() {
-            loadingFinished = true;
-            _userDataList = filterDataList;
-            _initialPointList = userList;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            loadingFinished = true;
-            _userDataList = userList;
-            _initialPointList = userList;
-          });
-        }
-      }
-    }
-  }
-
-  Future<void> updateOrderStandard(String value) async {
+  Future<void> updateOrderStandard(String value, int columnIndex) async {
     List<UserModel?> copiedUserDataList = [..._userDataList];
     int count = 1;
 
@@ -210,7 +357,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     switch (value) {
       case "totalPoint":
         copiedUserDataList
-            .sort((a, b) => b!.totalScore!.compareTo(a!.totalScore!));
+            .sort((a, b) => b!.totalPoint!.compareTo(a!.totalPoint!));
 
         for (int i = 0; i < copiedUserDataList.length - 1; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
@@ -218,8 +365,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.totalScore !=
-              copiedUserDataList[i + 1]!.totalScore) {
+          if (copiedUserDataList[i]!.totalPoint !=
+              copiedUserDataList[i + 1]!.totalPoint) {
             count++;
           }
         }
@@ -227,7 +374,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         break;
       case "stepPoint":
         copiedUserDataList
-            .sort((a, b) => b!.stepScore!.compareTo(a!.stepScore!));
+            .sort((a, b) => b!.stepPoint!.compareTo(a!.stepPoint!));
 
         for (int i = 0; i < copiedUserDataList.length - 1; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
@@ -235,15 +382,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.stepScore !=
-              copiedUserDataList[i + 1]!.stepScore) {
+          if (copiedUserDataList[i]!.stepPoint !=
+              copiedUserDataList[i + 1]!.stepPoint) {
             count++;
           }
         }
         break;
       case "diaryPoint":
         copiedUserDataList
-            .sort((a, b) => b!.diaryScore!.compareTo(a!.diaryScore!));
+            .sort((a, b) => b!.diaryPoint!.compareTo(a!.diaryPoint!));
 
         for (int i = 0; i < copiedUserDataList.length - 1; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
@@ -251,15 +398,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.diaryScore !=
-              copiedUserDataList[i + 1]!.diaryScore) {
+          if (copiedUserDataList[i]!.diaryPoint !=
+              copiedUserDataList[i + 1]!.diaryPoint) {
             count++;
           }
         }
         break;
       case "commentPoint":
         copiedUserDataList
-            .sort((a, b) => b!.commentScore!.compareTo(a!.commentScore!));
+            .sort((a, b) => b!.commentPoint!.compareTo(a!.commentPoint!));
 
         for (int i = 0; i < copiedUserDataList.length - 1; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
@@ -267,15 +414,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.commentScore !=
-              copiedUserDataList[i + 1]!.commentScore) {
+          if (copiedUserDataList[i]!.commentPoint !=
+              copiedUserDataList[i + 1]!.commentPoint) {
             count++;
           }
         }
         break;
       case "likePoint":
         copiedUserDataList
-            .sort((a, b) => b!.likeScore!.compareTo(a!.likeScore!));
+            .sort((a, b) => b!.likePoint!.compareTo(a!.likePoint!));
 
         for (int i = 0; i < copiedUserDataList.length - 1; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
@@ -283,331 +430,349 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.commentScore !=
-              copiedUserDataList[i + 1]!.commentScore) {
+          if (copiedUserDataList[i]!.likePoint !=
+              copiedUserDataList[i + 1]!.likePoint) {
             count++;
           }
         }
         break;
+      // case "invitationPoint":
+      //   copiedUserDataList
+      //       .sort((a, b) => b!.invitationPoint!.compareTo(a!.invitationPoint!));
+
+      //   for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+      //     UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
+      //       index: count,
+      //     );
+      //     list.add(indexUpdateUser);
+
+      //     if (copiedUserDataList[i]!.invitationPoint !=
+      //         copiedUserDataList[i + 1]!.invitationPoint) {
+      //       count++;
+      //     }
+      //   }
+      //   break;
     }
     setState(() {
-      sortOder = value;
+      _sortColumnIndex = columnIndex;
       _userDataList = list;
     });
-  }
-
-  void updateOrderPeriod(DateRange? value) async {
-    setState(() {
-      loadingFinished = false;
-      selectedDateRange = value;
-    });
-
-    await getScoreList(value);
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return loadingFinished
-        ? Column(children: [
-            SearchPeriodOrderRanking(
-              filterUserList: filterUserDataList,
-              resetInitialList: () => getScoreList(selectedDateRange),
-              generateCsv: generateUserCsv,
-              updateOrderStandard: updateOrderStandard,
-              updateOrderPeriod: updateOrderPeriod,
-            ),
-            SearchBelow(
-              size: size,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Sizes.size5,
-                  vertical: Sizes.size10,
-                ),
-                child: DataTable2(
-                  sortColumnIndex: _currentSortColumn,
-                  sortAscending: _isSortAsc,
-                  columns: [
-                    const DataColumn2(
-                      fixedWidth: 50,
-                      label: Text(
-                        "#",
-                        style: TextStyle(
-                          fontSize: Sizes.size12,
+    return Overlay(
+      initialEntries: [
+        OverlayEntry(
+          builder: (context) => DefaultScreen(
+            menu: menuList[2],
+            child: SizedBox(
+              width: size.width,
+              height: size.height,
+              child: Column(
+                children: [
+                  SearchCsv(
+                    filterUserList: _filterUserDataList,
+                    resetInitialList: () => _getScoreList(_selectedDateRange),
+                    generateCsv: generateExcel,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: _showPeriodCalender,
+                          child: PeriodButton(
+                            startDate: _selectedDateRange!.start,
+                            endDate: _selectedDateRange!.end,
+                          ),
                         ),
                       ),
-                    ),
-                    const DataColumn2(
-                      fixedWidth: 160,
-                      label: Text(
-                        "이름",
-                        style: TextStyle(
-                          fontSize: Sizes.size12,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const DataColumn2(
-                      fixedWidth: 100,
-                      label: Text(
-                        "나이",
-                        style: TextStyle(
-                          fontSize: Sizes.size12,
-                        ),
-                      ),
-                    ),
-                    const DataColumn2(
-                      fixedWidth: 100,
-                      label: Text(
-                        "성별",
-                        style: TextStyle(
-                          fontSize: Sizes.size12,
-                        ),
-                      ),
-                    ),
-                    const DataColumn2(
-                      fixedWidth: 180,
-                      label: Text(
-                        "핸드폰 번호",
-                        style: TextStyle(
-                          fontSize: Sizes.size12,
-                        ),
-                      ),
-                    ),
-                    DataColumn2(
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "종합",
+                          Text(
+                            "점수 계산 방법",
                             style: TextStyle(
                               fontSize: Sizes.size12,
+                              color: Palette().normalGray,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Gaps.h3,
-                          Icon(
-                            sortOder == "totalPoint"
-                                ? Icons.expand_more_rounded
-                                : Icons.expand_less_rounded,
-                            size: Sizes.size12,
-                            color: Colors.grey.shade600,
-                          )
-                        ],
-                      ),
-                      onSort: (columnIndex, ascending) =>
-                          updateOrderStandard("totalPoint"),
-                    ),
-                    DataColumn2(
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            "걸음수",
+                          Gaps.v5,
+                          Text(
+                            "걸음수: 1,000보당 10점 (하루 최대 7천보)",
                             style: TextStyle(
-                              fontSize: Sizes.size12,
+                              fontSize: Sizes.size11,
+                              color: Palette().normalGray,
+                              fontWeight: FontWeight.w300,
                             ),
                           ),
-                          Gaps.h3,
-                          Icon(
-                            sortOder == "stepPoint"
-                                ? Icons.expand_more_rounded
-                                : Icons.expand_less_rounded,
-                            size: Sizes.size12,
-                            color: Colors.grey.shade600,
-                          )
-                        ],
-                      ),
-                      onSort: (columnIndex, ascending) =>
-                          updateOrderStandard("stepPoint"),
-                    ),
-                    DataColumn2(
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            "일기",
+                          Gaps.v5,
+                          Text(
+                            "일기: 100점 / 댓글: 20점 / 좋아요: 10점",
                             style: TextStyle(
-                              fontSize: Sizes.size12,
+                              fontSize: Sizes.size11,
+                              color: Palette().normalGray,
+                              fontWeight: FontWeight.w300,
                             ),
                           ),
-                          Gaps.h3,
-                          Icon(
-                            sortOder == "diaryPoint"
-                                ? Icons.expand_more_rounded
-                                : Icons.expand_less_rounded,
-                            size: Sizes.size12,
-                            color: Colors.grey.shade600,
-                          )
+                          // Gaps.v5,
+                          // Text(
+                          //   "내 초대로 가입한 친구 1명: 100점",
+                          //   style: TextStyle(
+                          //     fontSize: Sizes.size11,
+                          //     color: Palette().normalGray,
+                          //     fontWeight: FontWeight.w300,
+                          //   ),
+                          // ),
                         ],
                       ),
-                      onSort: (columnIndex, ascending) =>
-                          updateOrderStandard("diaryPoint"),
-                    ),
-                    DataColumn2(
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            "댓글",
-                            style: TextStyle(
-                              fontSize: Sizes.size12,
-                            ),
-                          ),
-                          Gaps.h3,
-                          Icon(
-                            sortOder == "commentPoint"
-                                ? Icons.expand_more_rounded
-                                : Icons.expand_less_rounded,
-                            size: Sizes.size12,
-                            color: Colors.grey.shade600,
-                          ),
-                        ],
-                      ),
-                      onSort: (columnIndex, ascending) =>
-                          updateOrderStandard("commentPoint"),
-                    ),
-                    DataColumn2(
-                      fixedWidth: 90,
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            "좋아요",
-                            style: TextStyle(
-                              fontSize: Sizes.size12,
-                            ),
-                          ),
-                          Gaps.h3,
-                          Icon(
-                            sortOder == "likePoint"
-                                ? Icons.expand_more_rounded
-                                : Icons.expand_less_rounded,
-                            size: Sizes.size12,
-                            color: Colors.grey.shade600,
-                          )
-                        ],
-                      ),
-                      onSort: (columnIndex, ascending) =>
-                          updateOrderStandard("likePoint"),
-                    ),
-                  ],
-                  rows: [
-                    for (var i = 0; i < _userDataList.length; i++)
-                      DataRow2(
-                        cells: [
-                          DataCell(
-                            Text(
-                              _userDataList[i]!.index.toString(),
-                              style: const TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              _userDataList[i]!.name.length > 8
-                                  ? "${_userDataList[i]!.name.substring(0, 8)}.."
-                                  : _userDataList[i]!.name,
-                              style: const TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              _userDataList[i]!.userAge!,
-                              style: const TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              _userDataList[i]!.gender,
-                              style: const TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              _userDataList[i]!.phone,
-                              style: const TextStyle(
-                                fontSize: Sizes.size13,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                numberDecimalCommans(
-                                    _userDataList[i]!.totalScore!),
-                                textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                    ],
+                  ),
+                  Gaps.v40,
+                  !_loadingFinished
+                      ? const SkeletonLoadingScreen()
+                      : Expanded(
+                          child: DataTable2(
+                            scrollController: _scrollController,
+                            isVerticalScrollBarVisible: false,
+                            smRatio: 0.8,
+                            lmRatio: 1.2,
+                            dividerThickness: 0.1,
+                            sortColumnIndex: _sortColumnIndex,
+                            sortArrowIcon: Icons.arrow_downward_rounded,
+                            horizontalMargin: 0,
+                            headingRowDecoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Palette().lightGray,
+                                  width: 0.1,
                                 ),
                               ),
                             ),
-                          ),
-                          DataCell(
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                numberDecimalCommans(
-                                    _userDataList[i]!.stepScore!),
-                                textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                            columns: [
+                              DataColumn2(
+                                fixedWidth: 50,
+                                label: Text(
+                                  "#",
+                                  style: _headerTextStyle,
                                 ),
                               ),
-                            ),
-                          ),
-                          DataCell(
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                numberDecimalCommans(
-                                    _userDataList[i]!.diaryScore!),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataColumn2(
+                                // size: ColumnSize.L,
+                                label: Text(
+                                  "이름",
+                                  style: _headerTextStyle,
                                 ),
                               ),
-                            ),
-                          ),
-                          DataCell(
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                numberDecimalCommans(
-                                    _userDataList[i]!.commentScore!),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataColumn2(
+                                // size: ColumnSize.L,
+                                label: Text(
+                                  "핸드폰 번호",
+                                  style: _headerTextStyle,
                                 ),
                               ),
-                            ),
-                          ),
-                          DataCell(
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                numberDecimalCommans(
-                                    _userDataList[i]!.likeScore!),
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
+                              DataColumn2(
+                                size: ColumnSize.S,
+                                tooltip: "클릭하면 '종합 점수'를 기준으로 정렬됩니다.",
+                                onSort: (columnIndex, sortAscending) {
+                                  updateOrderStandard(
+                                      "totalPoint", columnIndex);
+                                },
+                                label: Text(
+                                  "종합",
+                                  style: _headerTextStyle,
                                 ),
                               ),
-                            ),
+                              DataColumn2(
+                                size: ColumnSize.S,
+                                tooltip: "클릭하면 '걸음수'를 기준으로 정렬됩니다.",
+                                onSort: (columnIndex, sortAscending) {
+                                  updateOrderStandard("stepPoint", columnIndex);
+                                },
+                                label: Text(
+                                  "걸음수",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                              DataColumn2(
+                                size: ColumnSize.S,
+                                tooltip: "클릭하면 '일기'를 기준으로 정렬됩니다",
+                                onSort: (columnIndex, sortAscending) {
+                                  updateOrderStandard(
+                                      "diaryPoint", columnIndex);
+                                },
+                                label: Text(
+                                  "일기",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                              DataColumn2(
+                                size: ColumnSize.S,
+                                tooltip: "클릭하면 '댓글'을 기준으로 정렬됩니다",
+                                onSort: (columnIndex, sortAscending) {
+                                  updateOrderStandard(
+                                      "commentPoint", columnIndex);
+                                },
+                                label: Text(
+                                  "댓글",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                              DataColumn2(
+                                size: ColumnSize.S,
+                                tooltip: "클릭하면 '좋아요'를 기준으로 정렬됩니다",
+                                onSort: (columnIndex, sortAscending) {
+                                  updateOrderStandard("likePoint", columnIndex);
+                                },
+                                label: Text(
+                                  "좋아요",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                              // DataColumn2(
+                              //   size: ColumnSize.S,
+                              //   tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다",
+                              //   onSort: (columnIndex, sortAscending) {
+                              //     updateOrderStandard(
+                              //         "invitationPoint", columnIndex);
+                              //   },
+                              //   label: Text(
+                              //     "친구초대",
+                              //     style: _headerTextStyle,
+                              //   ),
+                              // ),
+                              DataColumn2(
+                                fixedWidth: 100,
+                                onSort: (columnIndex, sortAscending) {
+                                  setState(() {
+                                    _sortColumnIndex = columnIndex;
+                                  });
+                                },
+                                label: Text(
+                                  "활동\n자세히 보기",
+                                  style: _headerTextStyle,
+                                  textAlign: TextAlign.end,
+                                ),
+                              ),
+                            ],
+                            rows: [
+                              if (_userDataList.isNotEmpty)
+                                for (var i = 0; i < _rowCount; i++)
+                                  DataRow2(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          (i + 1).toString(),
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.name.length > 10
+                                              ? "${_userDataList[i]!.name.substring(0, 10)}.."
+                                              : _userDataList[i]!.name,
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _userDataList[i]!.phone,
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          "${_userDataList[i]!.totalPoint}",
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          "${_userDataList[i]!.stepPoint}",
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          "${_userDataList[i]!.diaryPoint}",
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          "${_userDataList[i]!.commentPoint}",
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          "${_userDataList[i]!.likePoint}",
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      // DataCell(
+                                      //   Text(
+                                      //     "${_userDataList[i]!.invitationPoint}",
+                                      //     style: _contentTextStyle,
+                                      //   ),
+                                      // ),
+                                      DataCell(
+                                        Center(
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () =>
+                                                  goUserRankingDashboard(
+                                                userId:
+                                                    _userDataList[i]!.userId,
+                                                userName:
+                                                    _userDataList[i]!.name,
+                                                dateRange: _selectedDateRange ??
+                                                    DateRange(
+                                                      getThisWeekMonday(),
+                                                      DateTime.now(),
+                                                    ),
+                                              ),
+                                              child: FaIcon(
+                                                FontAwesomeIcons.arrowRight,
+                                                color: Palette().darkGray,
+                                                size: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                            ],
                           ),
-                        ],
-                      ),
-                  ],
-                ),
+                        ),
+                ],
               ),
-            )
-          ])
-        : const SkeletonLoadingScreen();
+            ),
+          ),
+        )
+      ],
+    );
   }
+}
+
+DateTime getThisWeekStartDate() {
+  DateTime now = DateTime.now();
+  int currentDayOfWeek = now.weekday;
+  DateTime startOfWeek = now.subtract(Duration(days: currentDayOfWeek - 1));
+  return startOfWeek;
+}
+
+DateTime getThisWeekEndDate() {
+  DateTime now = DateTime.now();
+  int currentDayOfWeek = now.weekday;
+  DateTime startOfWeek = now.subtract(Duration(days: currentDayOfWeek - 1));
+  DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+  return endOfWeek;
 }

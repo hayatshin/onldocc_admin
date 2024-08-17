@@ -1,12 +1,12 @@
-import 'dart:convert';
-import 'dart:html';
-
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/view/search_below.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/common/view_a/default_screen.dart';
+import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/care/models/care_model.dart';
 import 'package:onldocc_admin/features/care/repo/care_repo.dart';
@@ -14,6 +14,7 @@ import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class CareScreen extends ConsumerStatefulWidget {
@@ -26,9 +27,21 @@ class CareScreen extends ConsumerStatefulWidget {
 }
 
 class _CareScreenState extends ConsumerState<CareScreen> {
+  final TextStyle _headerTextStyle = TextStyle(
+    fontSize: Sizes.size13,
+    fontWeight: FontWeight.w600,
+    color: Palette().darkGray,
+  );
+
+  final TextStyle _contentTextStyle = TextStyle(
+    fontSize: Sizes.size12,
+    fontWeight: FontWeight.w500,
+    color: Palette().darkGray,
+  );
+
   List<CareModel?> _userDataList = [];
   List<CareModel?> _initialList = [];
-  bool loadingFinished = false;
+  bool _loadingFinished = false;
 
   final List<String> _userListHeader = [
     "일수 지정",
@@ -51,17 +64,21 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     selectContractRegion.addListener(() async {
       if (mounted) {
         setState(() {
-          loadingFinished = false;
+          _loadingFinished = false;
         });
-        await _initializeUserCare();
+
+        await ref
+            .read(userProvider.notifier)
+            .initializeUserList(selectContractRegion.value!.subdistrictId);
+        _initializeUserCare();
       }
     });
   }
 
-  Future<void> filterUserDataList(
+  Future<void> _filterUserDataList(
       String? searchBy, String searchKeyword) async {
     List<CareModel> filterList = [];
-    if (searchBy == "name") {
+    if (searchBy == "이름") {
       filterList = _initialList
           .where((element) => element!.name.contains(searchKeyword))
           .cast<CareModel>()
@@ -78,20 +95,20 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     });
   }
 
-  List<dynamic> exportToList(CareModel userModel) {
+  List<String> exportToList(CareModel userModel) {
     return [
-      userModel.partnerDates,
-      userModel.name,
-      userModel.age,
-      userModel.gender,
-      userModel.phone,
+      userModel.partnerDates.toString(),
+      userModel.name.toString(),
+      userModel.age.toString(),
+      userModel.gender.toString(),
+      userModel.phone.toString(),
       secondsToStringLine(userModel.lastVisit),
       userModel.partnerContact ? "🚨" : "X",
     ];
   }
 
-  List<List<dynamic>> exportToFullList(List<CareModel?> userDataList) {
-    List<List<dynamic>> list = [];
+  List<List<String>> exportToFullList(List<CareModel?> userDataList) {
+    List<List<String>> list = [];
 
     list.add(_userListHeader);
 
@@ -102,37 +119,37 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     return list;
   }
 
-  void generateUserCsv() {
-    final csvData = exportToFullList(_userDataList);
-    String csvContent = '';
-    for (var row in csvData) {
-      for (var i = 0; i < row.length; i++) {
-        if (row[i].toString().contains(',')) {
-          csvContent += '"${row[i]}"';
-        } else {
-          csvContent += row[i].toString();
-        }
+  // void generateUserCsv() {
+  //   final csvData = exportToFullList(_userDataList);
+  //   String csvContent = '';
+  //   for (var row in csvData) {
+  //     for (var i = 0; i < row.length; i++) {
+  //       if (row[i].toString().contains(',')) {
+  //         csvContent += '"${row[i]}"';
+  //       } else {
+  //         csvContent += row[i].toString();
+  //       }
 
-        if (i != row.length - 1) {
-          csvContent += ',';
-        }
-      }
-      csvContent += '\n';
-    }
-    final currentDate = DateTime.now();
-    final formatDate =
-        "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
+  //       if (i != row.length - 1) {
+  //         csvContent += ',';
+  //       }
+  //     }
+  //     csvContent += '\n';
+  //   }
+  //   final currentDate = DateTime.now();
+  //   final formatDate =
+  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
 
-    final String fileName = "인지케어 보호자 지정 $formatDate.csv";
+  //   final String fileName = "인지케어 보호자 지정 $formatDate.csv";
 
-    final encodedUri = Uri.dataFromString(
-      csvContent,
-      encoding: Encoding.getByName(encodingType()),
-    ).toString();
-    final anchor = AnchorElement(href: encodedUri)
-      ..setAttribute('download', fileName)
-      ..click();
-  }
+  //   final encodedUri = Uri.dataFromString(
+  //     csvContent,
+  //     encoding: Encoding.getByName(encodingType()),
+  //   ).toString();
+  //   final anchor = AnchorElement(href: encodedUri)
+  //     ..setAttribute('download', fileName)
+  //     ..click();
+  // }
 
   Future<void> resetInitialList() async {
     setState(() {
@@ -140,10 +157,18 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     });
   }
 
+  void generateExcel() {
+    final csvData = exportToFullList(_userDataList);
+    final String fileName = "인지케어 보호자 지정 ${todayToStringDot()}.xlsx";
+    exportExcel(csvData, fileName);
+  }
+
   Future<void> _initializeUserCare() async {
     List<CareModel?> careList = [];
-    AdminProfileModel? adminProfileModel = ref.read(adminProfileProvider).value;
-    final subdistrictId = adminProfileModel!.master
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+    final subdistrictId = adminProfileModel.master
         ? selectContractRegion.value!.subdistrictId
         : adminProfileModel.subdistrictId;
 
@@ -182,7 +207,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     }
 
     setState(() {
-      loadingFinished = true;
+      _loadingFinished = true;
       _userDataList = careList;
       _initialList = careList;
     });
@@ -191,174 +216,171 @@ class _CareScreenState extends ConsumerState<CareScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return loadingFinished
-        ? Column(
+    return DefaultScreen(
+        menu: menuList[8],
+        child: SizedBox(
+          width: size.width,
+          height: size.height,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  ColorFiltered(
+                    colorFilter: const ColorFilter.mode(
+                      Colors.red,
+                      BlendMode.srcIn,
+                    ),
+                    child: SvgPicture.asset(
+                      "assets/svg/light-emergency-on.svg",
+                    ),
+                  ),
+                  Gaps.h20,
+                  Text(
+                    "지정한 일수 기간동안 인지케어 활동 기록과 걸음수 기록이 없는 사용자에게 [연락 필요] 열에 빨간 불이 들어옵니다",
+                    style: _contentTextStyle.copyWith(
+                      color: Palette().darkPurple,
+                    ),
+                  ),
+                ],
+              ),
+              Gaps.v40,
               SearchCsv(
-                filterUserList: filterUserDataList,
+                filterUserList: _filterUserDataList,
                 resetInitialList: _initializeUserCare,
-                generateCsv: generateUserCsv,
+                generateCsv: generateExcel,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Text(
-                  "보호자 지정을 설정한 사용자",
-                  style: TextStyle(
-                    background: Paint()
-                      ..color = Theme.of(context).primaryColor.withOpacity(0.1),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              SearchBelow(
-                size: size,
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                    Sizes.size10,
-                  ),
-                  child: DataTable2(
-                    columns: const [
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "일수 지정",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+              _loadingFinished
+                  ? Expanded(
+                      child: DataTable2(
+                        isVerticalScrollBarVisible: false,
+                        smRatio: 0.7,
+                        lmRatio: 1.2,
+                        dividerThickness: 0.1,
+                        horizontalMargin: 0,
+                        headingRowDecoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Palette().lightGray,
+                              width: 0.1,
+                            ),
                           ),
                         ),
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          "이름",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                        columns: [
+                          DataColumn2(
+                            size: ColumnSize.S,
+                            label: Text(
+                              "일수 지정",
+                              style: _headerTextStyle,
+                            ),
                           ),
-                        ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "나이",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                          DataColumn2(
+                            size: ColumnSize.L,
+                            label: Text(
+                              "이름",
+                              style: _headerTextStyle,
+                            ),
                           ),
-                        ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 140,
-                        label: Text(
-                          "성별",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                          DataColumn2(
+                            size: ColumnSize.S,
+                            label: Text(
+                              "나이",
+                              style: _headerTextStyle,
+                            ),
                           ),
-                        ),
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          "핸드폰 번호",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                          DataColumn2(
+                            size: ColumnSize.S,
+                            label: Text(
+                              "성별",
+                              style: _headerTextStyle,
+                            ),
                           ),
-                        ),
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          "마지막 방문일",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                          DataColumn2(
+                            size: ColumnSize.L,
+                            label: Text(
+                              "핸드폰 번호",
+                              style: _headerTextStyle,
+                            ),
                           ),
-                        ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 180,
-                        label: Text(
-                          "연락 필요",
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
+                          DataColumn2(
+                            size: ColumnSize.L,
+                            label: Text(
+                              "마지막 방문일",
+                              style: _headerTextStyle,
+                            ),
                           ),
-                        ),
+                          DataColumn2(
+                            label: Text(
+                              "연락 필요",
+                              style: _headerTextStyle,
+                            ),
+                          ),
+                        ],
+                        rows: [
+                          for (int i = 0; i < _userDataList.length; i++)
+                            DataRow2(
+                              cells: [
+                                DataCell(
+                                  Text(
+                                    "${_userDataList[i]!.partnerDates}일",
+                                    style: _contentTextStyle,
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _userDataList[i]!.name.length > 8
+                                        ? "${_userDataList[i]!.name.substring(0, 8)}.."
+                                        : _userDataList[i]!.name,
+                                    style: _contentTextStyle,
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _userDataList[i]!.age,
+                                    style: _contentTextStyle,
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _userDataList[i]!.gender,
+                                    style: _contentTextStyle,
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _userDataList[i]!.phone,
+                                    style: _contentTextStyle,
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    _userDataList[i]!.lastVisit != 0
+                                        ? secondsToStringLine(
+                                            _userDataList[i]!.lastVisit)
+                                        : "-",
+                                    style: _contentTextStyle,
+                                  ),
+                                ),
+                                DataCell(
+                                  _userDataList[i]!.partnerContact
+                                      ? ColorFiltered(
+                                          colorFilter: const ColorFilter.mode(
+                                              Colors.red, BlendMode.srcIn),
+                                          child: SvgPicture.asset(
+                                            "assets/svg/light-emergency-on.svg",
+                                          ),
+                                        )
+                                      : Container(),
+                                ),
+                              ],
+                            )
+                        ],
                       ),
-                    ],
-                    rows: [
-                      for (var i = 0; i < _userDataList.length; i++)
-                        DataRow2(
-                          cells: [
-                            DataCell(
-                              Text(
-                                "${_userDataList[i]!.partnerDates}일",
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.name.length > 8
-                                    ? "${_userDataList[i]!.name.substring(0, 8)}.."
-                                    : _userDataList[i]!.name,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.age,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.gender,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.phone,
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.lastVisit != 0
-                                    ? secondsToStringLine(
-                                        _userDataList[i]!.lastVisit)
-                                    : "-",
-                                style: const TextStyle(
-                                  fontSize: Sizes.size13,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                _userDataList[i]!.partnerContact ? "🚨" : "X",
-                                style: TextStyle(
-                                  fontSize: _userDataList[i]!.partnerContact
-                                      ? Sizes.size20
-                                      : Sizes.size14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-              )
+                    )
+                  : const SkeletonLoadingScreen(),
             ],
-          )
-        : const SkeletonLoadingScreen();
+          ),
+        ));
   }
 }

@@ -6,15 +6,15 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/features/notice/repo/notice_repo.dart';
 import 'package:onldocc_admin/features/ranking/models/diary_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
-import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class NoticeViewModel extends AsyncNotifier<void> {
   late AdminProfileModel? adminProfileModel;
 
   @override
-  FutureOr<void> build() {
-    adminProfileModel = ref.read(adminProfileProvider).value;
+  FutureOr<void> build() async {
+    adminProfileModel = ref.read(adminProfileProvider).value ??
+        await ref.read(adminProfileProvider.notifier).getAdminProfile();
   }
 
   Future<List<DiaryModel>> fetchAllNotices() async {
@@ -24,7 +24,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
     return notices.map((e) => DiaryModel.fromJson(e)).toList();
   }
 
-  Future<void> addFeedNotification(
+  Future<String> addFeedNotification(
     AdminProfileModel adminProfileModel,
     String todayDiary,
     List<dynamic> imageList,
@@ -57,7 +57,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
 
     if (!isUserExist) {
       await ref
-          .read(userProvider.notifier)
+          .read(adminProfileProvider.notifier)
           .saveAdminUser(notiUserId, selectContractRegion.value!);
     }
 
@@ -66,6 +66,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
     if (imageList.isNotEmpty) {
       await ref.read(noticeRepo).uploadImageFileToStorage(diaryId, imageList);
     }
+    return diaryId;
   }
 
   Future<void> editFeedNotification(
@@ -80,7 +81,7 @@ class NoticeViewModel extends AsyncNotifier<void> {
     await ref.read(noticeRepo).uploadImageFileToStorage(diaryId, imageList);
   }
 
-  Future<void> changeAdminSecretDiary(
+  Future<String> editFeedAdminSecret(
     String diaryId,
     bool currentSecret,
   ) async {
@@ -90,11 +91,13 @@ class NoticeViewModel extends AsyncNotifier<void> {
           "${parts.sublist(0, parts.length - 1).join(":")}:${!currentSecret}";
       await ref
           .read(noticeRepo)
-          .editFeedNotificationDiaryId(diaryId, newDiaryId);
+          .editFeedAdminSecret(diaryId, newDiaryId, currentSecret);
+      return newDiaryId;
     } catch (e) {
       // ignore: avoid_print
       print("changeAdminSecretDiary: $e");
     }
+    return diaryId;
   }
 }
 
