@@ -31,11 +31,16 @@ Future<T> retry<T>(
 /// This is computed as `pow(2, attempt) * delayFactor`, then is multiplied by
 /// between `-randomizationFactor` and `randomizationFactor` at random.
 Duration delay(int attempt) {
-  return switch (attempt) {
-    0 => 1.seconds,
-    1 => const Duration(seconds: 2),
-    _ => const Duration(seconds: 3)
-  };
+  return attempt == 0
+      ? 1.seconds
+      : attempt == 1
+          ? const Duration(seconds: 2)
+          : const Duration(seconds: 3);
+  // switch (attempt) {
+  //   0 => 1.seconds,
+  //   1 => const Duration(seconds: 2),
+  //   _ => const Duration(seconds: 3)
+  // };
 }
 
 extension intExt on int {
