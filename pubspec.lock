@@ -1133,35 +1133,39 @@ packages:
   syncfusion_flutter_calendar:
     dependency: "direct main"
     description:
-      name: syncfusion_flutter_calendar
-      sha256: eb9bddedd443e9b7f591d2f14babaf26ce146a3dd4d9f106a22c4775e194ba23
-      url: "https://pub.dev"
-    source: hosted
-    version: "26.2.9"
+      path: "packages/syncfusion_flutter_calendar"
+      ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      resolved-ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      url: "https://github.com/Luvti/flutter-widgets"
+    source: git
+    version: "25.2.7"
   syncfusion_flutter_charts:
     dependency: "direct main"
     description:
-      name: syncfusion_flutter_charts
-      sha256: "717f35c5b44a81189d81c977b80b1c3adb56cd28fdcf1ab11db43a4a0f9d2102"
-      url: "https://pub.dev"
-    source: hosted
-    version: "26.2.9"
+      path: "packages/syncfusion_flutter_charts"
+      ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      resolved-ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      url: "https://github.com/Luvti/flutter-widgets"
+    source: git
+    version: "25.2.5"
   syncfusion_flutter_core:
     dependency: transitive
     description:
-      name: syncfusion_flutter_core
-      sha256: "24d7f43ff33bd6248c95d8b3312f6b9fe89637727ca778d60490b81ebd5bd8e7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "26.2.9"
+      path: "packages/syncfusion_flutter_core"
+      ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      resolved-ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      url: "https://github.com/Luvti/flutter-widgets"
+    source: git
+    version: "25.2.7"
   syncfusion_flutter_datepicker:
     dependency: "direct main"
     description:
-      name: syncfusion_flutter_datepicker
-      sha256: "1c9469fbbeefb82b67dc8a48121e81a5860930516dec6c0ec33f3141063a1a07"
-      url: "https://pub.dev"
-    source: hosted
-    version: "26.2.9"
+      path: "packages/syncfusion_flutter_datepicker"
+      ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      resolved-ref: "15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea"
+      url: "https://github.com/Luvti/flutter-widgets"
+    source: git
+    version: "25.2.6"
   synchronized:
     dependency: transitive
     description:

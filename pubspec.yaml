@@ -56,12 +56,21 @@ dependencies:
   url_launcher: ^6.0.0
   universal_html: ^2.2.4
   dartz: ^0.10.0
+  syncfusion_flutter_datepicker: 
+    git:
+      url: https://github.com/Luvti/flutter-widgets
+      path: packages/syncfusion_flutter_datepicker
+      ref: 15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea
   syncfusion_flutter_charts:
     git:
       url: https://github.com/Luvti/flutter-widgets
       path: packages/syncfusion_flutter_charts
       ref: 15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea
-  syncfusion_flutter_calendar: ^26.1.42
+  syncfusion_flutter_calendar:
+    git:
+      url: https://github.com/Luvti/flutter-widgets
+      path: packages/syncfusion_flutter_calendar
+      ref: 15e3c4a95e3cf2e2393755bf5aa11c0206ed6dea
   image_picker: ^1.0.1
   image_picker_for_web: ^3.0.4
   file_picker: ^8.0.6
@@ -83,7 +92,6 @@ dependencies:
   dropdown_button2: ^2.3.9
   flutter_svg: ^2.0.10+1
   flutter_skeleton_ui: ^0.0.6
-  syncfusion_flutter_datepicker: ^26.2.5
   flutter_localization: ^0.2.1
   excel: ^4.0.3
   flutter_multi_formatter: ^2.13.0
