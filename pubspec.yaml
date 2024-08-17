@@ -58,8 +58,8 @@ dependencies:
   universal_html: ^2.2.4
   dartz: ^0.10.0
   syncfusion_flutter_datepicker: ^26.2.5
-  syncfusion_flutter_charts: ^26.1.42
-  syncfusion_flutter_calendar: ^26.1.42
+  syncfusion_flutter_charts: ^26.1.39
+  syncfusion_flutter_calendar: ^26.1.39
   image_picker: ^1.0.1
   image_picker_for_web: ^3.0.4
   file_picker: ^8.0.6
