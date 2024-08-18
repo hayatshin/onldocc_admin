@@ -176,7 +176,7 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                         ),
                         child: Center(
                           child: Text(
-                            "CSV 다운로드",
+                            "엑셀 다운로드",
                             style: TextStyle(
                               color: Colors.grey.shade800,
                               fontSize: Sizes.size14,

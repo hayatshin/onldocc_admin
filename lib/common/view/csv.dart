@@ -105,7 +105,7 @@ class _CsvState extends ConsumerState<Csv> {
                     cursor: SystemMouseCursors.click,
                     child: ReportButton(
                       iconExists: true,
-                      buttonText: "CSV 다운로드",
+                      buttonText: "엑셀 다운로드",
                       buttonColor: Palette().darkPurple,
                       action: widget.generateCsv,
                     ),

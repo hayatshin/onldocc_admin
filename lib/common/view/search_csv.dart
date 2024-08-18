@@ -194,7 +194,7 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
                   cursor: SystemMouseCursors.click,
                   child: ReportButton(
                     iconExists: true,
-                    buttonText: "CSV 다운로드",
+                    buttonText: "엑셀 다운로드",
                     buttonColor: Palette().darkPurple,
                     action: widget.generateCsv,
                   ),
