@@ -63,7 +63,7 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
         await ref
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
-        _initializeUserDecibels();
+        await _initializeUserDecibels();
       }
     });
   }
@@ -162,14 +162,32 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     final userSubdistrictId = adminProfileModel.master
         ? selectContractRegion.value!.subdistrictId
         : adminProfileModel.subdistrictId;
+
     final decibelList = await ref
         .read(decibelProvider.notifier)
         .fetchUserDecibels(userSubdistrictId);
-    setState(() {
-      _loadingFinished = true;
-      _userDataList = decibelList;
-      _initialList = decibelList;
-    });
+
+    if (selectContractRegion.value!.contractCommunityId == null) {
+      // 전체보기
+      setState(() {
+        _loadingFinished = true;
+        _userDataList = decibelList;
+        _initialList = decibelList;
+      });
+    } else {
+      // 기관 선택
+      final filterList = _initialList
+          .where((element) =>
+              element.contractCommunityId ==
+              selectContractRegion.value!.contractCommunityId)
+          .cast<DecibelModel>()
+          .toList();
+      setState(() {
+        _loadingFinished = true;
+        _userDataList = filterList;
+        _initialList = decibelList;
+      });
+    }
   }
 
   @override

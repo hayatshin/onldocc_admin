@@ -70,7 +70,8 @@ class _CareScreenState extends ConsumerState<CareScreen> {
         await ref
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
-        _initializeUserCare();
+        await _initializeUserCare();
+        await _filterContractCommunity();
       }
     });
   }
@@ -164,6 +165,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
   }
 
   Future<void> _initializeUserCare() async {
+    List<UserModel?> userList = [];
     List<CareModel?> careList = [];
     AdminProfileModel? adminProfileModel =
         ref.read(adminProfileProvider).value ??
@@ -172,9 +174,21 @@ class _CareScreenState extends ConsumerState<CareScreen> {
         ? selectContractRegion.value!.subdistrictId
         : adminProfileModel.subdistrictId;
 
-    final userList = ref.read(userProvider).value ??
+    final totalList = ref.read(userProvider).value ??
         await ref.read(userProvider.notifier).initializeUserList(subdistrictId);
 
+    if (selectContractRegion.value!.contractCommunityId == null) {
+      // 전체보기
+      userList = totalList;
+    } else {
+      // 기관 선택
+      userList = totalList
+          .where((element) =>
+              element!.contractCommunityId ==
+              selectContractRegion.value!.contractCommunityId)
+          .cast<UserModel>()
+          .toList();
+    }
     for (UserModel? user in userList) {
       if (user != null && user.partnerDates! > 0) {
         final now = DateTime.now();
@@ -201,6 +215,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
           phone: user.phone,
           lastVisit: user.lastVisit!,
           partnerContact: partnerContact,
+          contractCommunityId: user.contractCommunityId,
         );
         careList.add(newModel);
       }
@@ -211,6 +226,20 @@ class _CareScreenState extends ConsumerState<CareScreen> {
       _userDataList = careList;
       _initialList = careList;
     });
+  }
+
+  Future<void> _filterContractCommunity() async {
+    if (selectContractRegion.value!.contractCommunityId != null) {
+      final filterList = _initialList
+          .where((element) =>
+              element!.contractCommunityId ==
+              selectContractRegion.value!.contractCommunityId)
+          .cast<CareModel>()
+          .toList();
+      setState(() {
+        _userDataList = filterList;
+      });
+    }
   }
 
   @override

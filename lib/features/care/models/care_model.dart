@@ -6,6 +6,7 @@ class CareModel {
   final String phone;
   final int lastVisit;
   final bool partnerContact;
+  final String? contractCommunityId;
 
   CareModel({
     required this.partnerDates,
@@ -15,6 +16,7 @@ class CareModel {
     required this.phone,
     required this.lastVisit,
     required this.partnerContact,
+    this.contractCommunityId,
   });
 
   CareModel copyWith({
@@ -25,6 +27,7 @@ class CareModel {
     final String? phone,
     final int? lastVisit,
     final bool? partnerContact,
+    final String? contractCommunityId,
   }) {
     return CareModel(
       partnerDates: partnerDates ?? this.partnerDates,
@@ -34,6 +37,7 @@ class CareModel {
       phone: phone ?? this.phone,
       lastVisit: lastVisit ?? this.lastVisit,
       partnerContact: partnerContact ?? this.partnerContact,
+      contractCommunityId: contractCommunityId ?? this.contractCommunityId,
     );
   }
 }

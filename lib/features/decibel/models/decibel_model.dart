@@ -9,6 +9,7 @@ class DecibelModel {
   final String age;
   final String gender;
   final String phone;
+  final String? contractCommunityId;
 
   DecibelModel({
     required this.decibelId,
@@ -19,6 +20,7 @@ class DecibelModel {
     required this.age,
     required this.gender,
     required this.phone,
+    this.contractCommunityId,
   });
 
   DecibelModel.fromJson(Map<String, dynamic> json)
@@ -33,5 +35,6 @@ class DecibelModel {
                 json["users"]["birthYear"], json["users"]["birthDay"])
             : "0",
         gender = json["users"]["gender"] ?? "",
-        phone = json["users"]["phone"] ?? "";
+        phone = json["users"]["phone"] ?? "",
+        contractCommunityId = json["users"]["contractCommunityId"] ?? "";
 }

@@ -128,7 +128,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     int rowCount =
         userDataList.length > 20 ? _pageCount + _offset : userDataList.length;
 
-    if (selectContractRegion.value!.subdistrictId == "") {
+    if (selectContractRegion.value!.contractCommunityId == null) {
+      // 전체보기
       if (mounted) {
         setState(() {
           _loadingFinished = true;
@@ -139,34 +140,60 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         });
       }
     } else {
-      if (selectContractRegion.value!.contractCommunityId != "" &&
-          selectContractRegion.value!.contractCommunityId != null) {
-        final filterDataList = userDataList
-            .where((e) =>
-                e.contractCommunityId ==
-                selectContractRegion.value!.contractCommunityId)
-            .toList();
-        if (mounted) {
-          setState(() {
-            _loadingFinished = true;
-            _filtered = false;
-            _userDataList = filterDataList;
-            _initialPointList = userDataList;
-            _rowCount = rowCount;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _loadingFinished = true;
-            _filtered = false;
-            _userDataList = userDataList;
-            _initialPointList = userDataList;
-            _rowCount = rowCount;
-          });
-        }
+      final filterList = userDataList
+          .where((e) =>
+              e.contractCommunityId ==
+              selectContractRegion.value!.contractCommunityId)
+          .toList();
+      if (mounted) {
+        setState(() {
+          _loadingFinished = true;
+          _userDataList = filterList;
+          _filtered = false;
+          _rowCount = filterList.length;
+        });
       }
     }
+
+    // if (selectContractRegion.value!.subdistrictId == "") {
+    //   if (mounted) {
+    //     setState(() {
+    //       _loadingFinished = true;
+    //       _filtered = false;
+    //       _userDataList = userDataList;
+    //       _initialPointList = userDataList;
+    //       _rowCount = rowCount;
+    //     });
+    //   }
+    // } else {
+    //   if (selectContractRegion.value!.contractCommunityId != "" &&
+    //       selectContractRegion.value!.contractCommunityId != null) {
+    //     final filterDataList = userDataList
+    //         .where((e) =>
+    //             e.contractCommunityId ==
+    //             selectContractRegion.value!.contractCommunityId)
+    //         .toList();
+    //     if (mounted) {
+    //       setState(() {
+    //         _loadingFinished = true;
+    //         _filtered = false;
+    //         _userDataList = filterDataList;
+    //         _initialPointList = userDataList;
+    //         _rowCount = rowCount;
+    //       });
+    //     }
+    //   } else {
+    //     if (mounted) {
+    //       setState(() {
+    //         _loadingFinished = true;
+    //         _filtered = false;
+    //         _userDataList = userDataList;
+    //         _initialPointList = userDataList;
+    //         _rowCount = rowCount;
+    //       });
+    //     }
+    //   }
+    // }
   }
 
   void _removePeriodCalender() {

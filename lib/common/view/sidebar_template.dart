@@ -69,6 +69,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
         ];
       });
     } else {
+      // 마스터가 아닌 경우
       final communityItems = await ref
           .read(contractConfigProvider.notifier)
           .getCommunityItems(adminProfileModel.subdistrictId);
@@ -213,7 +214,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                       items: _contractCommunityItems,
                                       value: _selectCommunity,
                                       onChangedFunction: (value) =>
-                                          setContractCommunity,
+                                          setContractCommunity(value),
                                     ),
                                   ],
                                 ),
