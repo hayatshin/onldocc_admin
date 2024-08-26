@@ -1521,8 +1521,7 @@ final eventList = [
   ),
   EventType(
     eventTypeName: "객관식 퀴즈 행사",
-    eventTypeDescription:
-        "객관식 퀴즈 문제를 내면 행사 기간동안 사용자들이 풀고 다른 사용자들의 답을 댓글로 보는 행사입니다.",
+    eventTypeDescription: "객관식 퀴즈 문제를 내면 행사 기간동안 사용자들이 객관식 문제를 푸는 행사입니다.",
     eventCode: "quiz",
   ),
 ];
