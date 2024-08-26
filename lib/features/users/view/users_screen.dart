@@ -394,7 +394,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                         tooltip: "클릭하면 '가입일'을 기준으로 정렬됩니다",
                         onSort: (columnIndex, sortAscending) {
                           _sortColumnIndex = columnIndex;
-                          if (columnIndex == 5) {
+                          final sortIndex = _adminProfile.master ? 6 : 5;
+                          if (columnIndex == sortIndex) {
                             createdAtSort = !createdAtSort;
                             if (createdAtSort) {
                               _userDataList.sort((a, b) =>
@@ -415,7 +416,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                         tooltip: "클릭하면 '마지막 방문일'을 기준으로 정렬됩니다",
                         onSort: (columnIndex, sortAsending) {
                           _sortColumnIndex = columnIndex;
-                          if (columnIndex == 6) {
+                          final sortIndex = _adminProfile.master ? 7 : 6;
+
+                          if (columnIndex == sortIndex) {
                             lastVisitSort = !lastVisitSort;
                             if (lastVisitSort) {
                               _userDataList.sort((a, b) =>
