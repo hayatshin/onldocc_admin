@@ -116,7 +116,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
       if (!isTop) {
         setState(() {
-          _rowCount = _pageCount + _offset;
+          _rowCount = (_pageCount + _offset) > _userDataList.length
+              ? _userDataList.length
+              : _pageCount + _offset;
         });
       }
     }
