@@ -163,47 +163,51 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   }
 
   void _submitTv() async {
-    setState(() {
-      tapUploadTv = true;
-    });
+    if (_tvType == "파일" && _tvVideoBytes == null) {
+      showWarningSnackBar(context, "영상 파일을 선택해주세요");
+    } else {
+      setState(() {
+        tapUploadTv = true;
+      });
 
-    if (_formKey.currentState != null) {
-      final validate = _formKey.currentState!.validate();
-      final thumbnailValidate =
-          _thumbnailBytes != null || _thumbnailUrl != null;
+      if (_formKey.currentState != null) {
+        final validate = _formKey.currentState!.validate();
+        final thumbnailValidate =
+            _thumbnailBytes != null || _thumbnailUrl != null;
 
-      if (validate && thumbnailValidate) {
-        AdminProfileModel? adminProfileModel =
-            ref.read(adminProfileProvider).value;
-        final videoId =
-            !widget.edit ? const Uuid().v4() : widget.tvModel!.videoId;
-        final thumbnailUrl = _thumbnailBytes != null
-            ? await ref
-                .read(tvRepo)
-                .uploadSingleImageToStorage(videoId, _thumbnailBytes)
-            : _thumbnailUrl!;
+        if (validate && thumbnailValidate) {
+          AdminProfileModel? adminProfileModel =
+              ref.read(adminProfileProvider).value;
+          final videoId =
+              !widget.edit ? const Uuid().v4() : widget.tvModel!.videoId;
+          final thumbnailUrl = _thumbnailBytes != null
+              ? await ref
+                  .read(tvRepo)
+                  .uploadSingleImageToStorage(videoId, _thumbnailBytes)
+              : _thumbnailUrl!;
 
-        final tvModel = TvModel(
-          thumbnail: thumbnailUrl,
-          title: _title,
-          link: _link,
-          allUsers:
-              selectContractRegion.value!.subdistrictId != "" ? false : true,
-          videoId: videoId,
-          createdAt: getCurrentSeconds(),
-          videoType: _tvType == "유투브" ? "youtube" : "file",
-          contractRegionId: adminProfileModel!.contractRegionId != ""
-              ? adminProfileModel.contractRegionId
-              : null,
-          contractCommunityId:
-              selectContractRegion.value!.contractCommunityId != ""
-                  ? selectContractRegion.value!.contractCommunityId
-                  : null,
-        );
+          final tvModel = TvModel(
+            thumbnail: thumbnailUrl,
+            title: _title,
+            link: _link,
+            allUsers:
+                selectContractRegion.value!.subdistrictId != "" ? false : true,
+            videoId: videoId,
+            createdAt: getCurrentSeconds(),
+            videoType: _tvType == "유투브" ? "youtube" : "file",
+            contractRegionId: adminProfileModel!.contractRegionId != ""
+                ? adminProfileModel.contractRegionId
+                : null,
+            contractCommunityId:
+                selectContractRegion.value!.contractCommunityId != ""
+                    ? selectContractRegion.value!.contractCommunityId
+                    : null,
+          );
 
-        await ref.read(tvProvider.notifier).addTv(tvModel, _tvVideoBytes);
-        if (!mounted) return;
-        resultBottomModal(context, "성공적으로 영상이 올라갔습니다.", widget.refreshScreen);
+          await ref.read(tvProvider.notifier).addTv(tvModel, _tvVideoBytes);
+          if (!mounted) return;
+          resultBottomModal(context, "성공적으로 영상이 올라갔습니다.", widget.refreshScreen);
+        }
       }
     }
   }
