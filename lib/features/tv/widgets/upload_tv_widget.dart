@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -101,12 +100,10 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
   Future<void> pickVideoFile() async {
     try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.video,
       );
-
       if (result == null) return;
-
       setState(() {
         _tvVideoFile = result.files.first;
         _tvVideoBytes = _tvVideoFile!.bytes!;
@@ -122,7 +119,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
   void pickThumbnailFromGallery() async {
     try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;

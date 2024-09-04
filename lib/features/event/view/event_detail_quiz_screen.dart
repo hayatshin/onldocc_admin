@@ -132,11 +132,13 @@ class _EventDetailPointScreenState
   Future<void> _initializePariticants() async {
     final eventModel = widget.eventModel ??
         await ref.read(eventProvider.notifier).getCertainEvent(widget.eventId!);
+    setState(() {
+      _eventModel = eventModel;
+    });
     final participants =
         await ref.read(eventProvider.notifier).getEventParticipants(eventModel);
 
     setState(() {
-      _eventModel = eventModel;
       _participants = participants;
       _initializeParticipants = true;
     });

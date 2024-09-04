@@ -1,5 +1,4 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -217,7 +216,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   Future<void> pickEventImageFromGallery(
       void Function(void Function()) setState) async {
     try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
@@ -239,7 +238,7 @@ class _EditEventWidgetState extends ConsumerState<EditEventWidget> {
   Future<void> pickBannerImageFromGallery(
       void Function(void Function()) setState) async {
     try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;

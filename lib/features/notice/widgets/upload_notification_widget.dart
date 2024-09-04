@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,7 +120,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
   Future<void> pickMultipleImagesFromGallery(
       void Function(void Function()) setState) async {
     try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;

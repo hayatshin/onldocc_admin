@@ -1,5 +1,4 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -105,7 +104,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
   Future<void> pickEventImageFromGallery(
       void Function(void Function()) setState) async {
     try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
@@ -126,7 +125,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
   Future<void> pickBannerImageFromGallery(
       void Function(void Function()) setState) async {
     try {
-      FilePickerResult? result = await FilePickerWeb.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
@@ -310,7 +309,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                   onPressed: removeDeleteOverlay,
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.pink.shade100),
+                        WidgetStateProperty.all(Colors.pink.shade100),
                   ),
                   child: Text(
                     "취소",
@@ -323,8 +322,8 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                 ElevatedButton(
                   onPressed: () => deleteEvent(eventId),
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor),
+                    backgroundColor:
+                        WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
                   child: const Text(
                     "삭제",

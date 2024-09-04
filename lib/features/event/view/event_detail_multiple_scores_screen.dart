@@ -20,10 +20,10 @@ class EventDetailMultipleScoresScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<EventDetailMultipleScoresScreen> createState() =>
-      _EventDetailPointScreenState();
+      _EventDetailMultipleScoresScreenState();
 }
 
-class _EventDetailPointScreenState
+class _EventDetailMultipleScoresScreenState
     extends ConsumerState<EventDetailMultipleScoresScreen> {
   EventModel? _eventModel;
   final TextStyle _headerTextStyle = TextStyle(
@@ -132,12 +132,13 @@ class _EventDetailPointScreenState
   Future<void> _initializePariticants() async {
     final eventModel = widget.eventModel ??
         await ref.read(eventProvider.notifier).getCertainEvent(widget.eventId!);
+    setState(() {
+      _eventModel = eventModel;
+    });
     final participants =
         await ref.read(eventProvider.notifier).getEventParticipants(eventModel);
     participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
-
     setState(() {
-      _eventModel = eventModel;
       _participants = participants;
       _initializeParticipants = true;
     });
@@ -146,7 +147,7 @@ class _EventDetailPointScreenState
   @override
   Widget build(BuildContext context) {
     return EventDetailTemplate(
-      eventModel: _eventModel!,
+      eventModel: _eventModel ?? EventModel.empty(),
       generateCsv: _generateExcel,
       child: _initializeParticipants
           ? Center(
@@ -276,7 +277,7 @@ class _EventDetailPointScreenState
                           ),
                           DataCell(
                             Text(
-                              _participants[i].userAchieveOrNot! ? "정답" : "",
+                              _participants[i].userAchieveOrNot! ? "달성" : "미달성",
                               style: _contentTextStyle,
                             ),
                           ),

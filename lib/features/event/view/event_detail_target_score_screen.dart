@@ -135,12 +135,14 @@ class _EventDetailPointScreenState
   Future<void> _initializePariticants() async {
     final eventModel = widget.eventModel ??
         await ref.read(eventProvider.notifier).getCertainEvent(widget.eventId!);
+    setState(() {
+      _eventModel = eventModel;
+    });
     final participants =
         await ref.read(eventProvider.notifier).getEventParticipants(eventModel);
     participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
 
     setState(() {
-      _eventModel = eventModel;
       _participants = participants;
       _initializeParticipants = true;
     });
@@ -148,9 +150,8 @@ class _EventDetailPointScreenState
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return EventDetailTemplate(
-      eventModel: _eventModel!,
+      eventModel: _eventModel ?? EventModel.empty(),
       generateCsv: _generateExcel,
       child: _initializeParticipants
           ? Center(

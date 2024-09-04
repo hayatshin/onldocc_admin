@@ -131,12 +131,14 @@ class _EventDetailCountScreenState
   Future<void> _initializePariticants() async {
     final eventModel = widget.eventModel ??
         await ref.read(eventProvider.notifier).getCertainEvent(widget.eventId!);
+    setState(() {
+      _eventModel = eventModel;
+    });
     final participants =
         await ref.read(eventProvider.notifier).getEventParticipants(eventModel);
     participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
 
     setState(() {
-      _eventModel = eventModel;
       _participants = participants;
       _initializeParticipants = true;
     });
@@ -145,7 +147,7 @@ class _EventDetailCountScreenState
   @override
   Widget build(BuildContext context) {
     return EventDetailTemplate(
-      eventModel: _eventModel!,
+      eventModel: _eventModel ?? EventModel.empty(),
       generateCsv: _generateExcel,
       child: _initializeParticipants
           ? Center(

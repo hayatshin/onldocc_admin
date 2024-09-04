@@ -14,7 +14,6 @@ import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'dart:html' as html;
 import 'package:universal_html/html.dart' as html;
 
 String encodeDateRange(DateRange dateRange) {
@@ -421,25 +420,6 @@ String convertTimettampToStringDot(DateTime date) {
   final dateString =
       "${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
   return dateString;
-}
-
-double calculateMaxContentHeight(String description, double diaryWidth) {
-  double maxHeight = 0;
-  final textPainter = TextPainter(
-    text: TextSpan(
-      text: description,
-      style: const TextStyle(
-        fontSize: Sizes.size13,
-      ),
-    ),
-    maxLines: null,
-    // textDirection: TextDirection.ltr,
-  )..layout(maxWidth: diaryWidth);
-  double height = textPainter.height;
-  if (height > maxHeight) {
-    maxHeight = height;
-  }
-  return maxHeight;
 }
 
 String numberDecimalCommans(int number) {
