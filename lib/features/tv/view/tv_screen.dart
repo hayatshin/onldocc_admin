@@ -45,6 +45,36 @@ class _TvScreenState extends ConsumerState<TvScreen> {
   OverlayEntry? overlayEntry;
   bool loadingFinished = false;
 
+  @override
+  void initState() {
+    super.initState();
+    if (selectContractRegion.value != null) {
+      getUserTvs();
+    }
+
+    selectContractRegion.addListener(() async {
+      if (mounted) {
+        setState(() {
+          loadingFinished = false;
+        });
+
+        await getUserTvs();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    removeDeleteOverlay();
+
+    super.dispose();
+  }
+
+  void removeDeleteOverlay() {
+    overlayEntry?.remove();
+    overlayEntry = null;
+  }
+
   void uploadVideoTap(
       BuildContext context, double totalWidth, double totalHeight) {
     showModalBottomSheet(
@@ -87,24 +117,6 @@ class _TvScreenState extends ConsumerState<TvScreen> {
         // );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (selectContractRegion.value != null) {
-      getUserTvs();
-    }
-
-    selectContractRegion.addListener(() async {
-      if (mounted) {
-        setState(() {
-          loadingFinished = false;
-        });
-
-        await getUserTvs();
-      }
-    });
   }
 
   Future<void> getUserTvs() async {

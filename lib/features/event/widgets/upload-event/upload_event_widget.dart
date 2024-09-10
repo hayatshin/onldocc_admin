@@ -1257,7 +1257,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                         edit: widget.edit,
                                         eventModel: widget.eventModel,
                                       )
-                                    : Container(),
+                                    : _eventType == eventList[4]
+                                        ? Container()
+                                        : Container(),
                     Gaps.v40,
                   ],
                 ),
@@ -1522,5 +1524,10 @@ final eventList = [
     eventTypeName: "객관식 퀴즈 행사",
     eventTypeDescription: "객관식 퀴즈 문제를 내면 행사 기간동안 사용자들이 객관식 문제를 푸는 행사입니다.",
     eventCode: "quiz",
+  ),
+  EventType(
+    eventTypeName: "사진전 행사",
+    eventTypeDescription: "행사 기간 동안 참여자들이 사진을 출품하는 행사입니다.",
+    eventCode: "photo",
   ),
 ];

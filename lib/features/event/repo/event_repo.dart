@@ -156,7 +156,8 @@ class EventRepository {
     if (model.master && contractRegionId == "") {
       final allUsers = await _supabase
           .from("events")
-          .select('*, contract_regions(*), quiz_event_db(*)')
+          .select(
+              '*, contract_regions(*), quiz_event_db(*), photo_event_images(*)')
           .eq('allUsers', true)
           .order(
             'createdAt',
@@ -166,7 +167,8 @@ class EventRepository {
     } else {
       final contractRegions = await _supabase
           .from("events")
-          .select('*, contract_regions(*), quiz_event_db(*)')
+          .select(
+              '*, contract_regions(*), quiz_event_db(*), photo_event_images(*)')
           .eq('allUsers', false)
           .eq('contractRegionId', contractRegionId)
           .order(
@@ -177,6 +179,18 @@ class EventRepository {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getEventPariticipants(
+      String eventId) async {
+    final data = await _supabase
+        .from("event_participants")
+        .select('*, users(*)')
+        .eq('eventId', eventId)
+        .order('gift', ascending: false)
+        .order('createdAt', ascending: true);
+    return data;
+  }
+
+  // quiz-event-participants
   Future<List<Map<String, dynamic>>> getQuizEventPariticipants(
       String eventId) async {
     final data = await _supabase
@@ -187,13 +201,13 @@ class EventRepository {
     return data;
   }
 
-  Future<List<Map<String, dynamic>>> getEventPariticipants(
+  // photo-event-participants
+  Future<List<Map<String, dynamic>>> getPhotoEventPariticipants(
       String eventId) async {
     final data = await _supabase
-        .from("event_participants")
+        .from("photo_event_images")
         .select('*, users(*)')
         .eq('eventId', eventId)
-        .order('gift', ascending: false)
         .order('createdAt', ascending: true);
     return data;
   }
@@ -286,7 +300,7 @@ class EventRepository {
     final data = await _supabase
         .from("events")
         .select(
-            "*, contract_regions(subdistrictId, name, image), quiz_event_db(quizAnswer)")
+            "*, contract_regions(subdistrictId, name, image), quiz_event_db(quizAnswer), photo_event_images(photo, title)")
         .eq("eventId", eventId);
     if (data.isNotEmpty) {
       return data[0];

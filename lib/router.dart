@@ -15,6 +15,7 @@ import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_multiple_scores_screen.dart';
+import 'package:onldocc_admin/features/event/view/event_detail_photo_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_quiz_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_target_score_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
@@ -227,7 +228,11 @@ final routerProvider = Provider(
                                       ? EventDetailQuizScreen(
                                           eventId: eventId,
                                           eventModel: eventModel)
-                                      : Container(),
+                                      : eventType == EventType.photo.name
+                                          ? EventDetailPhotoScreen(
+                                              eventId: eventId,
+                                              eventModel: eventModel)
+                                          : Container(),
                     );
                   },
                 ),

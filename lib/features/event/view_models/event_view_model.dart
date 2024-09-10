@@ -41,6 +41,9 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
     if (eventModel.eventType == EventType.quiz.name) {
       participants =
           await _eventRepository.getQuizEventPariticipants(eventModel.eventId);
+    } else if (eventModel.eventType == EventType.photo.name) {
+      participants =
+          await _eventRepository.getPhotoEventPariticipants(eventModel.eventId);
     } else {
       participants =
           await _eventRepository.getEventPariticipants(eventModel.eventId);
@@ -140,6 +143,11 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
         final scorePointModel = model.copyWith(
           smallRegion: userRegion,
           userAchieveOrNot: model.quizAnswer == eventModel.quizAnswer,
+        );
+        return scorePointModel;
+      } else if (eventModel.eventType == EventType.photo.name) {
+        final scorePointModel = model.copyWith(
+          smallRegion: userRegion,
         );
         return scorePointModel;
       } else {

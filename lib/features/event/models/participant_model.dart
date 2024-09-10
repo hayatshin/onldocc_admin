@@ -40,6 +40,8 @@ class ParticipantModel {
   final bool? userAchieveOrNot;
 
   final int? quizAnswer;
+  final String? photo;
+  final String? photoTitle;
 
   ParticipantModel({
     required this.userId,
@@ -76,6 +78,8 @@ class ParticipantModel {
     this.userQuizCount,
     this.userAchieveOrNot,
     this.quizAnswer,
+    this.photo,
+    this.photoTitle,
   });
 
   ParticipantModel.empty()
@@ -112,7 +116,9 @@ class ParticipantModel {
         userInvitationCount = 0,
         userQuizCount = 0,
         userAchieveOrNot = false,
-        quizAnswer = 0;
+        quizAnswer = 0,
+        photo = "",
+        photoTitle = "";
 
   ParticipantModel.fromJson(Map<String, dynamic> json)
       : userId = json["users"]["userId"],
@@ -149,7 +155,9 @@ class ParticipantModel {
         userInvitationCount = 0,
         userQuizCount = 0,
         userAchieveOrNot = false,
-        quizAnswer = json["answer"] ?? 0;
+        quizAnswer = json["answer"] ?? 0,
+        photo = json["photo"] ?? "",
+        photoTitle = json["title"] ?? "";
 
   ParticipantModel copyWith({
     String? smallRegion,
@@ -178,6 +186,8 @@ class ParticipantModel {
     int? userQuizCount,
     bool? userAchieveOrNot,
     int? quizAnswer,
+    String? photo,
+    String? photoTitle,
   }) {
     return ParticipantModel(
       userId: userId,
@@ -214,6 +224,8 @@ class ParticipantModel {
       userQuizCount: userQuizCount ?? this.userQuizCount,
       userAchieveOrNot: userAchieveOrNot ?? this.userAchieveOrNot,
       quizAnswer: quizAnswer ?? this.quizAnswer,
+      photo: photo ?? this.photo,
+      photoTitle: photoTitle ?? this.photoTitle,
     );
   }
 }

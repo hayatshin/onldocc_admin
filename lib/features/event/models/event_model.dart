@@ -1,11 +1,6 @@
 import 'package:onldocc_admin/utils.dart';
 
-enum EventType {
-  targetScore,
-  multipleScores,
-  count,
-  quiz,
-}
+enum EventType { targetScore, multipleScores, count, quiz, photo }
 
 EventType stringToEventType(String value) {
   for (EventType type in EventType.values) {
@@ -52,8 +47,7 @@ class EventModel {
   final int? maxLikeCount;
   final int? maxInvitationCount;
 
-  // final String? quizOne;
-  // final String? answerOne;
+  // quiz-event
   final String? quizEventId;
   final String? quiz;
   final String? firstChoice;
@@ -61,6 +55,10 @@ class EventModel {
   final String? thirdChoice;
   final String? fourthChoice;
   final int? quizAnswer;
+
+  // photo-event
+  final String? photo;
+  final String? photoTitle;
 
   final String? state;
   final String? orgSubdistrictId;
@@ -110,6 +108,8 @@ class EventModel {
     this.thirdChoice,
     this.fourthChoice,
     this.quizAnswer,
+    this.photo,
+    this.photoTitle,
   });
 
   EventModel.empty()
@@ -154,7 +154,9 @@ class EventModel {
         secondChoice = "",
         thirdChoice = "",
         fourthChoice = "",
-        quizAnswer = 0;
+        quizAnswer = 0,
+        photo = "",
+        photoTitle = "";
 
   Map<String, dynamic> toJson() {
     return {
@@ -292,7 +294,13 @@ class EventModel {
             : "",
         quizAnswer = json["quiz_event_db"].isNotEmpty
             ? json["quiz_event_db"][0]["quizAnswer"]
-            : 0;
+            : 0,
+        photo = json["photo_event_images"].isNotEmpty
+            ? json["photo_event_images"][0]["photo"]
+            : "",
+        photoTitle = json["photo_event_images"].isNotEmpty
+            ? json["photo_event_images"][0]["title"]
+            : "";
 
   EventModel copyWith({
     final String? eventId,
@@ -338,6 +346,8 @@ class EventModel {
     final String? thirdChoice,
     final String? fourthChoice,
     final int? quizAnswer,
+    final String? photo,
+    final String? photoTitle,
   }) {
     return EventModel(
       eventId: eventId ?? this.eventId,
@@ -382,6 +392,8 @@ class EventModel {
       thirdChoice: thirdChoice ?? this.thirdChoice,
       fourthChoice: fourthChoice ?? this.fourthChoice,
       quizAnswer: quizAnswer ?? this.quizAnswer,
+      photo: photo ?? this.photo,
+      photoTitle: photoTitle ?? this.photoTitle,
     );
   }
 }
