@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/models/participant_model.dart';
@@ -152,141 +153,146 @@ class _EventDetailPointScreenState
       eventModel: _eventModel ?? EventModel.empty(),
       generateCsv: _generateExcel,
       child: _initializeParticipants
-          ? SizedBox(
-              width: size.width * 0.7,
-              child: DataTable(
-                dividerThickness: 0.1,
-                border: TableBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  top: BorderSide(
-                    color: Palette().darkPurple,
-                    width: 1.5,
-                  ),
-                  bottom: BorderSide(
-                    color: Palette().darkPurple,
-                    width: 1.5,
-                  ),
-                  horizontalInside: BorderSide(
-                    color: Palette().lightGray,
-                    width: 0.1,
-                  ),
-                ),
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      "#",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      "이름",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      "나이",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      "성별",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      "핸드폰 번호",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                  const DataColumn(
-                    label: Text(
-                      "참여일",
-                      style: TextStyle(
-                        fontSize: Sizes.size12,
+          ? Column(
+              children: [
+                SizedBox(
+                  width: size.width * 0.7,
+                  child: DataTable(
+                    dividerThickness: 0.1,
+                    border: TableBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      top: BorderSide(
+                        color: Palette().darkPurple,
+                        width: 1.5,
+                      ),
+                      bottom: BorderSide(
+                        color: Palette().darkPurple,
+                        width: 1.5,
+                      ),
+                      horizontalInside: BorderSide(
+                        color: Palette().lightGray,
+                        width: 0.1,
                       ),
                     ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      "제출 답",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      "정답 여부",
-                      style: _headerTextStyle,
-                    ),
-                  ),
-                ],
-                rows: [
-                  for (var i = 0; i < _participants.length; i++)
-                    DataRow(
-                      cells: [
-                        DataCell(
-                          Text(
-                            (i + 1).toString(),
-                            style: _contentTextStyle,
+                    columns: [
+                      DataColumn(
+                        label: Text(
+                          "#",
+                          style: _headerTextStyle,
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "이름",
+                          style: _headerTextStyle,
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "나이",
+                          style: _headerTextStyle,
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "성별",
+                          style: _headerTextStyle,
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "핸드폰 번호",
+                          style: _headerTextStyle,
+                        ),
+                      ),
+                      const DataColumn(
+                        label: Text(
+                          "참여일",
+                          style: TextStyle(
+                            fontSize: Sizes.size12,
                           ),
                         ),
-                        DataCell(
-                          Text(
-                            _participants[i].name,
-                            style: _contentTextStyle,
-                          ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "제출 답",
+                          style: _headerTextStyle,
                         ),
-                        DataCell(
-                          Text(
-                            _participants[i].userAge,
-                            style: _contentTextStyle,
-                          ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "정답 여부",
+                          style: _headerTextStyle,
                         ),
-                        DataCell(
-                          Text(
-                            _participants[i].gender,
-                            style: _contentTextStyle,
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            _participants[i].phone,
-                            style: _contentTextStyle,
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            secondsToStringDateComment(
-                                _participants[i].createdAt),
-                            style: _contentTextStyle,
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            _participants[i].quizAnswer.toString(),
-                            style: _contentTextStyle,
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            _participants[i].userAchieveOrNot! ? "정답" : "",
-                            style: _contentTextStyle.copyWith(
-                              color: _participants[i].userAchieveOrNot!
-                                  ? Palette().darkBlue
-                                  : Palette().darkGray,
-                              fontWeight: _participants[i].userAchieveOrNot!
-                                  ? FontWeight.w800
-                                  : FontWeight.w500,
+                      ),
+                    ],
+                    rows: [
+                      for (var i = 0; i < _participants.length; i++)
+                        DataRow(
+                          cells: [
+                            DataCell(
+                              Text(
+                                (i + 1).toString(),
+                                style: _contentTextStyle,
+                              ),
                             ),
-                          ),
+                            DataCell(
+                              Text(
+                                _participants[i].name,
+                                style: _contentTextStyle,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                _participants[i].userAge,
+                                style: _contentTextStyle,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                _participants[i].gender,
+                                style: _contentTextStyle,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                _participants[i].phone,
+                                style: _contentTextStyle,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                secondsToStringDateComment(
+                                    _participants[i].createdAt),
+                                style: _contentTextStyle,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                _participants[i].quizAnswer.toString(),
+                                style: _contentTextStyle,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                _participants[i].userAchieveOrNot! ? "정답" : "",
+                                style: _contentTextStyle.copyWith(
+                                  color: _participants[i].userAchieveOrNot!
+                                      ? Palette().darkBlue
+                                      : Palette().darkGray,
+                                  fontWeight: _participants[i].userAchieveOrNot!
+                                      ? FontWeight.w800
+                                      : FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                ],
-              ),
+                    ],
+                  ),
+                ),
+                Gaps.v52,
+              ],
             )
           : const SkeletonLoadingScreen(),
     );
