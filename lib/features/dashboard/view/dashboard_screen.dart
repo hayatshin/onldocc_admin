@@ -326,7 +326,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     int minutes = (totalSeconds % 3600) ~/ 60;
     int seconds = totalSeconds % 60;
 
-    return "${hours != 0 ? "$hours " : ""}${minutes != 0 ? "$minutes " : ""}${seconds != 0 ? "$seconds" : "0초"}";
+    return "${hours != 0 ? "$hours시 " : ""}${minutes != 0 ? "$minutes분 " : ""}${seconds != 0 ? "$seconds초" : "0초"}";
   }
 
   String _getSumChatTimeString(List<AiChatModel> list) {
