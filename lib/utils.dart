@@ -371,6 +371,43 @@ String userAgeCalculation(String birthYear, String birthDay) {
   }
 }
 
+String userAgeGroupCalculation(String birthYear, String birthDay) {
+  try {
+    String returnAgeGroup = "";
+    final int currentYear = DateTime.now().year;
+    final initialAge = currentYear - int.parse(birthYear);
+    int returnAge = isDatePassed(birthDay) ? initialAge : initialAge - 1;
+    switch (returnAge) {
+      case < 40:
+        returnAgeGroup = "40대 미만";
+        break;
+      case >= 40 && < 50:
+        returnAgeGroup = "40대";
+        break;
+      case >= 50 && < 60:
+        returnAgeGroup = "50대";
+        break;
+      case >= 60 && < 70:
+        returnAgeGroup = "60대";
+        break;
+      case >= 70 && < 80:
+        returnAgeGroup = "70대";
+        break;
+      case >= 80 && < 90:
+        returnAgeGroup = "80대";
+        break;
+      case >= 90:
+        returnAgeGroup = "90대 이상";
+        break;
+    }
+    return returnAgeGroup;
+  } catch (e) {
+    // ignore: avoid_print
+    print("userAgeGroupCalculation: error -> $e");
+    return "40대";
+  }
+}
+
 List<DateTime> getBetweenDays(DateTime startDate, DateTime endDate) {
   List<DateTime> dates = [];
   DateTime currentDate = startDate;
@@ -560,6 +597,11 @@ DateTime convertEndDateStringToDateTime(String endDate) {
   } else {
     return DateTime(2024);
   }
+}
+
+int convertDateTimeToSeconds(DateTime date) {
+  int millisecondsSinceEpoch = date.millisecondsSinceEpoch;
+  return (millisecondsSinceEpoch / 1000).round();
 }
 
 int convertStartDateTimeToSeconds(DateTime date) {

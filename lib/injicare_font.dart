@@ -67,8 +67,8 @@ class InjicareFont {
     height: 18 / 13,
   );
   final TextStyle label03 = const TextStyle(
-    fontWeight: FontWeight.w500,
-    fontSize: 13,
-    height: 18 / 13,
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    height: 18 / 12,
   );
 }

@@ -5,6 +5,7 @@ class UserModel {
   final String userId;
   final String name;
   final String? userAge;
+  final String? userAgeGroup;
   final String birthYear;
   final String birthDay;
   final String gender;
@@ -19,6 +20,7 @@ class UserModel {
   final int? diaryPoint;
   final int? commentPoint;
   final int? likePoint;
+
   // final int? invitationPoint;
 
   UserModel({
@@ -26,6 +28,7 @@ class UserModel {
     required this.userId,
     required this.name,
     this.userAge,
+    this.userAgeGroup,
     required this.birthYear,
     required this.birthDay,
     required this.gender,
@@ -47,7 +50,8 @@ class UserModel {
       : index = 0,
         userId = "",
         name = "",
-        userAge = "-",
+        userAge = "",
+        userAgeGroup = "",
         birthYear = "",
         birthDay = "",
         gender = "",
@@ -90,6 +94,8 @@ class UserModel {
         userId = json.containsKey("userId") ? json["userId"] : "-",
         name = json.containsKey("name") ? json["name"] : "-",
         userAge = userAgeCalculation(json["birthYear"], json["birthDay"]),
+        userAgeGroup =
+            userAgeGroupCalculation(json["birthYear"], json["birthDay"]),
         birthYear = json.containsKey("birthYear") ? json['birthYear'] : "-",
         birthDay = json.containsKey("birthDay") ? json['birthDay'] : "-",
         gender = json.containsKey("gender") ? json["gender"] : "-",
@@ -119,6 +125,7 @@ class UserModel {
     final String? userId,
     final String? name,
     final String? userAge,
+    final String? userAgeGroup,
     final String? birthYear,
     final String? birthDay,
     final String? gender,
@@ -140,6 +147,7 @@ class UserModel {
       userId: userId ?? this.userId,
       name: name ?? this.name,
       userAge: userAge ?? this.userAge,
+      userAgeGroup: userAgeGroup ?? this.userAgeGroup,
       birthYear: birthYear ?? this.birthYear,
       birthDay: birthDay ?? this.birthDay,
       gender: gender ?? this.gender,
