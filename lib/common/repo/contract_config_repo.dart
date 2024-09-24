@@ -11,14 +11,19 @@ class ContractConfigRepository {
   }
 
   Future<String> convertSubdistrictIdToName(String? subdistrictId) async {
-    if (subdistrictId != null) {
-      final data = await _supabase
-          .from("subdistricts")
-          .select('subdistrict')
-          .eq('subdistrictId', subdistrictId)
-          .single();
-      return data["subdistrict"];
-    } else {
+    try {
+      if (subdistrictId != null) {
+        final data = await _supabase
+            .from("subdistricts")
+            .select('subdistrict')
+            .eq('subdistrictId', subdistrictId);
+        return data[0]["subdistrict"];
+      } else {
+        return "";
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print("convertSubdistrictIdToName -> $e");
       return "";
     }
   }

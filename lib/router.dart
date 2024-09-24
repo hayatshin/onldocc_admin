@@ -207,6 +207,7 @@ final routerProvider = Provider(
                   pageBuilder: (context, state) {
                     final eventType = state.pathParameters["eventType"];
                     final eventId = state.pathParameters["eventId"];
+
                     final eventModel = state.extra as EventModel?;
 
                     return MaterialPage(

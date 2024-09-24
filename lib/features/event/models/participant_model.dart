@@ -121,13 +121,16 @@ class ParticipantModel {
         photoTitle = "";
 
   ParticipantModel.fromJson(Map<String, dynamic> json)
-      : userId = json["users"]["userId"],
-        name = json["users"]["name"],
-        userAge = userAgeCalculation(
-            json["users"]["birthYear"], json["users"]["birthDay"]),
-        gender = json["users"]["gender"],
-        phone = json["users"]["phone"],
-        subdistrictId = json["users"]["subdistrictId"],
+      : userId = json["users"]["userId"] ?? "",
+        name = json["users"]["name"] ?? "",
+        userAge = (json["users"]["birthYear"] != null) &&
+                (json["users"]["birthDay"] != null)
+            ? userAgeCalculation(
+                json["users"]["birthYear"], json["users"]["birthDay"])
+            : "-",
+        gender = json["users"]["gender"] ?? "",
+        phone = json["users"]["phone"] ?? "",
+        subdistrictId = json["users"]["subdistrictId"] ?? "",
         smallRegion = "",
         createdAt = json["createdAt"] ?? 0,
         gift = json["gift"] ?? false,

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/models/participant_model.dart';
 import 'package:onldocc_admin/features/event/repo/event_repo.dart';
@@ -52,9 +51,9 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
     final modelList = await Future.wait(participants.map((e) async {
       final model = ParticipantModel.fromJson(e);
 
-      final userRegion = await ref
-          .read(contractRepo)
-          .convertSubdistrictIdToName(model.subdistrictId);
+      // final userRegion = await ref
+      //     .read(contractRepo)
+      //     .convertSubdistrictIdToName(model.subdistrictId);
 
       int startSeconds = convertStartDateStringToSeconds(eventModel.startDate);
       int endSeconds = convertEndDateStringToSeconds(eventModel.endDate);
@@ -77,7 +76,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
         );
 
         final scorePointModel = model.copyWith(
-          smallRegion: userRegion,
+          // smallRegion: userRegion,
           userStepPoint: data["userStepPoint"],
           userInvitationPoint: data["userInvitationPoint"],
           userDiaryPoint: data["userDiaryPoint"],
@@ -107,7 +106,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
         );
 
         final scorePointModel = model.copyWith(
-          smallRegion: userRegion,
+          // smallRegion: userRegion,
           userStepPoint: data["userStepPoint"],
           userInvitationPoint: data["userInvitationPoint"],
           userDiaryPoint: data["userDiaryPoint"],
@@ -130,7 +129,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
           eventModel.quizCount!,
         );
         final scorePointModel = model.copyWith(
-          smallRegion: userRegion,
+          // smallRegion: userRegion,
           userInvitationCount: data["userInvitationCount"],
           userDiaryCount: data["userDiaryCount"],
           userCommentCount: data["userCommentCount"],
@@ -141,19 +140,20 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
         return scorePointModel;
       } else if (eventModel.eventType == EventType.quiz.name) {
         final scorePointModel = model.copyWith(
-          smallRegion: userRegion,
+          // smallRegion: userRegion,
           userAchieveOrNot: model.quizAnswer == eventModel.quizAnswer,
         );
         return scorePointModel;
       } else if (eventModel.eventType == EventType.photo.name) {
         final scorePointModel = model.copyWith(
-          smallRegion: userRegion,
-        );
+            // smallRegion: userRegion,
+            );
         return scorePointModel;
       } else {
         return ParticipantModel.empty();
       }
     }).toList());
+
     return modelList;
   }
 
