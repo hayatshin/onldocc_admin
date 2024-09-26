@@ -166,7 +166,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
       initialEntries: [
         OverlayEntry(
           builder: (context) => DefaultScreen(
-            menu: menuList[7],
+            menu: menuList[8],
             child: SizedBox(
               width: size.width,
               height: size.height,

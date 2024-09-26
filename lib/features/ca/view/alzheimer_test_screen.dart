@@ -206,7 +206,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return DefaultScreen(
-      menu: menuList[5],
+      menu: menuList[6],
       child: SizedBox(
         width: size.width,
         height: size.height,

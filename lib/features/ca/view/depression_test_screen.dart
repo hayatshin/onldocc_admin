@@ -189,7 +189,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return DefaultScreen(
-      menu: menuList[6],
+      menu: menuList[7],
       child: SizedBox(
         width: size.width,
         height: size.height,
