@@ -6,28 +6,45 @@ import 'package:onldocc_admin/features/ca/models/quiz_model.dart';
 import 'package:onldocc_admin/features/ca/repo/quiz_repo.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class QuizViewModel extends AsyncNotifier<List<QuizModel>> {
+class QuizViewModel extends AsyncNotifier<List<void>> {
   DateTime now = DateTime.now();
   late QuizRepository _quizRepository;
 
   @override
-  FutureOr<List<QuizModel>> build() {
+  FutureOr<List<void>> build() {
     _quizRepository = QuizRepository();
     return [];
   }
 
-  Future<List<QuizModel>> getUserDateCaData(
+  Future<List<QuizModel>> getUserQuizMathData(
       String userId, DateRange dateRange) async {
     int startSeconds = convertStartDateTimeToSeconds(dateRange.start);
     int endSeconds = convertEndDateTimeToSeconds(dateRange.end);
 
-    final userQuizDataList = await _quizRepository.getUserCertainDateCaData(
+    final userQuizDataList = await _quizRepository.getUserQuizMathData(
         userId, startSeconds, endSeconds);
 
     return userQuizDataList.map((e) => QuizModel.fromJson(e)).toList();
   }
+
+  Future<List<QuizModel>> getUserQuizMultipleChoicesData(
+      String userId, DateRange dateRange) async {
+    try {
+      int startSeconds = convertStartDateTimeToSeconds(dateRange.start);
+      int endSeconds = convertEndDateTimeToSeconds(dateRange.end);
+
+      final userQuizDataList = await _quizRepository
+          .getUserQuizMultipleChoicesData(userId, startSeconds, endSeconds);
+
+      return userQuizDataList.map((e) => QuizModel.fromJson(e)).toList();
+    } catch (e) {
+      // ignore: avoid_print
+      print("getUserQuizMultipleChoicesData -> $e");
+    }
+    return [];
+  }
 }
 
-final caProvider = AsyncNotifierProvider<QuizViewModel, List<QuizModel>>(
+final caProvider = AsyncNotifierProvider<QuizViewModel, List<void>>(
   () => QuizViewModel(),
 );

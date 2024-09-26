@@ -8,7 +8,8 @@ import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
-import 'package:onldocc_admin/features/ca/view/quiz_screen.dart';
+import 'package:onldocc_admin/features/ca/view/diary_cognition_quiz_screen.dart';
+import 'package:onldocc_admin/features/ca/view/diary_cognition_quiz_user_screen.dart';
 import 'package:onldocc_admin/features/care/view/care_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
@@ -25,12 +26,9 @@ import 'package:onldocc_admin/features/login/view/login_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_user_dashboard_screen.dart';
-import 'package:onldocc_admin/features/ranking/view/ranking_users_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/user-dashboard/view/user_dashboard_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
-
-import 'features/ranking/models/ranking_extra.dart';
 
 final routerProvider = Provider(
   (ref) {
@@ -90,33 +88,41 @@ final routerProvider = Provider(
               //   menuNotifier.setSelectedMenu(4, context);
               //   return SidebarTemplate(selectedMenuURL: 4, child: child);
 
-              case AlzheimerTestScreen.routeURL:
+              case DiaryCognitionQuizScreen.routeURL:
                 menuNotifier.setSelectedMenu(5, context);
                 return SidebarTemplate(selectedMenuURL: 5, child: child);
+
+              case "${DiaryCognitionQuizScreen.routeURL}/:userId":
+                menuNotifier.setSelectedMenu(5, context);
+                return SidebarTemplate(selectedMenuURL: 5, child: child);
+
+              case AlzheimerTestScreen.routeURL:
+                menuNotifier.setSelectedMenu(6, context);
+                return SidebarTemplate(selectedMenuURL: 6, child: child);
 
               case "${AlzheimerTestScreen.routeURL}/:testId":
-                menuNotifier.setSelectedMenu(5, context);
-                return SidebarTemplate(selectedMenuURL: 5, child: child);
+                menuNotifier.setSelectedMenu(6, context);
+                return SidebarTemplate(selectedMenuURL: 6, child: child);
 
               case DepressionTestScreen.routeURL:
-                menuNotifier.setSelectedMenu(6, context);
-                return SidebarTemplate(selectedMenuURL: 6, child: child);
-
-              case "${DepressionTestScreen.routeURL}/:testId":
-                menuNotifier.setSelectedMenu(6, context);
-                return SidebarTemplate(selectedMenuURL: 6, child: child);
-
-              case TvScreen.routeURL:
                 menuNotifier.setSelectedMenu(7, context);
                 return SidebarTemplate(selectedMenuURL: 7, child: child);
 
-              case CareScreen.routeURL:
+              case "${DepressionTestScreen.routeURL}/:testId":
+                menuNotifier.setSelectedMenu(7, context);
+                return SidebarTemplate(selectedMenuURL: 7, child: child);
+
+              case TvScreen.routeURL:
                 menuNotifier.setSelectedMenu(8, context);
                 return SidebarTemplate(selectedMenuURL: 8, child: child);
 
-              case DecibelScreen.routeURL:
+              case CareScreen.routeURL:
                 menuNotifier.setSelectedMenu(9, context);
                 return SidebarTemplate(selectedMenuURL: 9, child: child);
+
+              case DecibelScreen.routeURL:
+                menuNotifier.setSelectedMenu(10, context);
+                return SidebarTemplate(selectedMenuURL: 10, child: child);
 
               // case InvitationScreen.routeURL:
               //   menuNotifier.setSelectedMenu(10, context);
@@ -240,6 +246,30 @@ final routerProvider = Provider(
               ],
             ),
             GoRoute(
+              name: DiaryCognitionQuizScreen.routeName,
+              path: DiaryCognitionQuizScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const DiaryCognitionQuizScreen(),
+              ),
+              routes: [
+                GoRoute(
+                  path: ":userId",
+                  pageBuilder: (context, state) {
+                    return MaterialPage(
+                      key: state.pageKey,
+                      child: DiaryCognitionQuizUserScreen(
+                        userId: state.pathParameters["userId"],
+                        userName: state.extra != null
+                            ? (state.extra as PathExtra).userName
+                            : "",
+                      ),
+                    );
+                  },
+                )
+              ],
+            ),
+            GoRoute(
               name: AlzheimerTestScreen.routeName,
               path: AlzheimerTestScreen.routeURL,
               pageBuilder: (context, state) => NoTransitionPage(
@@ -258,32 +288,32 @@ final routerProvider = Provider(
                 )
               ],
             ),
-            GoRoute(
-              name: QuizScreen.routeName,
-              path: QuizScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const RankingUsersScreen(
-                  rankingType: "quiz",
-                ),
-              ),
-              routes: [
-                GoRoute(
-                  path: ":userId",
-                  pageBuilder: (context, state) => MaterialPage(
-                    key: state.pageKey,
-                    child: QuizScreen(
-                      // index: state.pathParameters["index"],
-                      userId: state.pathParameters["userId"],
-                      userName: state.extra != null
-                          ? (state.extra as RankingExtra).userName
-                          : "",
-                      rankingType: "인지",
-                    ),
-                  ),
-                )
-              ],
-            ),
+            // GoRoute(
+            //   name: QuizScreen.routeName,
+            //   path: QuizScreen.routeURL,
+            //   pageBuilder: (context, state) => NoTransitionPage(
+            //     key: state.pageKey,
+            //     child: const RankingUsersScreen(
+            //       rankingType: "quiz",
+            //     ),
+            //   ),
+            //   routes: [
+            //     GoRoute(
+            //       path: ":userId",
+            //       pageBuilder: (context, state) => MaterialPage(
+            //         key: state.pageKey,
+            //         child: QuizScreen(
+            //           // index: state.pathParameters["index"],
+            //           userId: state.pathParameters["userId"],
+            //           userName: state.extra != null
+            //               ? (state.extra as RankingExtra).userName
+            //               : "",
+            //           rankingType: "인지",
+            //         ),
+            //       ),
+            //     )
+            //   ],
+            // ),
             GoRoute(
               name: DepressionTestScreen.routeName,
               path: DepressionTestScreen.routeURL,

@@ -251,15 +251,20 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                       ),
                       ParentSidebarTile(
                         assetPath: "assets/svg/brain.svg",
-                        title: "인지 검사 관리",
+                        title: "인지 관리",
                         children: [
                           ChildTileModel(
                             index: 5,
+                            tileText: "일기 문제 풀기",
+                            tileColor: const Color(0xffD5306C),
+                          ),
+                          ChildTileModel(
+                            index: 6,
                             tileText: "온라인 치매 검사",
                             tileColor: const Color(0xff696EFF),
                           ),
                           ChildTileModel(
-                            index: 6,
+                            index: 7,
                             tileText: "노인 우울척도 검사",
                             tileColor: const Color(0xffF8ACFF),
                           ),
@@ -270,17 +275,17 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                         title: "일상 관리",
                         children: [
                           ChildTileModel(
-                            index: 7,
+                            index: 8,
                             tileText: "영상 관리",
                             tileColor: const Color(0xffFFBA49),
                           ),
                           ChildTileModel(
-                            index: 8,
+                            index: 9,
                             tileText: "보호자 지정",
                             tileColor: const Color(0xff20A39E),
                           ),
                           ChildTileModel(
-                            index: 9,
+                            index: 10,
                             tileText: "화풀기",
                             tileColor: const Color(0xffEF5B5B),
                           ),

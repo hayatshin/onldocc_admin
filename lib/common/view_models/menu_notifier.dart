@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
+import 'package:onldocc_admin/features/ca/view/diary_cognition_quiz_screen.dart';
 import 'package:onldocc_admin/features/care/view/care_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
@@ -85,6 +86,14 @@ final menuList = [
   ),
   Menu(
     index: 5,
+    name: "일기 문제 풀기",
+    routeName: DiaryCognitionQuizScreen.routeName,
+    child: const DiaryCognitionQuizScreen(),
+    backButton: false,
+    colorButton: const Color(0xffD5306C),
+  ),
+  Menu(
+    index: 6,
     name: "온라인 치매 검사",
     routeName: AlzheimerTestScreen.routeName,
     child: const AlzheimerTestScreen(),
@@ -92,7 +101,7 @@ final menuList = [
     colorButton: const Color(0xff696EFF),
   ),
   Menu(
-    index: 6,
+    index: 7,
     name: "노인 우울척도 검사",
     routeName: DepressionTestScreen.routeName,
     child: const DepressionTestScreen(),
@@ -100,7 +109,7 @@ final menuList = [
     colorButton: const Color(0xffF8ACFF),
   ),
   Menu(
-    index: 7,
+    index: 8,
     name: "영상 관리",
     routeName: TvScreen.routeName,
     child: const TvScreen(),
@@ -108,7 +117,7 @@ final menuList = [
     colorButton: const Color(0xffFFBA49),
   ),
   Menu(
-    index: 8,
+    index: 9,
     name: "보호자 지정",
     routeName: CareScreen.routeName,
     child: const CareScreen(),
@@ -116,7 +125,7 @@ final menuList = [
     colorButton: const Color(0xff20A39E),
   ),
   Menu(
-    index: 9,
+    index: 10,
     name: "화풀기",
     routeName: DecibelScreen.routeName,
     child: const DecibelScreen(),

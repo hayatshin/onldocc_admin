@@ -1,15 +1,15 @@
-class QuizModel {
+class MathQuizModel {
   final String userId;
   final String quizId;
   final int createdAt;
   final bool correct;
   final String quiz;
-  final String quizAnswer;
-  final String userAnswer;
+  final int quizAnswer;
+  final int userAnswer;
   final String userSubdistrictId;
   final String userContractCommunityId;
 
-  QuizModel({
+  MathQuizModel({
     required this.userId,
     required this.quizId,
     required this.createdAt,
@@ -21,14 +21,14 @@ class QuizModel {
     required this.userContractCommunityId,
   });
 
-  QuizModel.empty()
+  MathQuizModel.empty()
       : userId = "",
         quizId = "",
         createdAt = 0,
         correct = false,
         quiz = "",
-        quizAnswer = "",
-        userAnswer = "",
+        quizAnswer = 0,
+        userAnswer = 0,
         userSubdistrictId = "",
         userContractCommunityId = "";
 
@@ -44,18 +44,14 @@ class QuizModel {
     };
   }
 
-  QuizModel.fromJson(Map<String, dynamic> json)
+  MathQuizModel.fromJson(Map<String, dynamic> json)
       : userId = json["userId"] ?? "",
         quizId = json["quizId"] ?? "",
         createdAt = json["createdAt"] ?? 0,
         correct = json["correct"] ?? false,
-        quiz = json.containsKey("quiz")
-            ? (json["quiz"]).toString()
-            : json["quizzes_multiple_choices_db"]["quiz"],
-        quizAnswer = json.containsKey("quizAnswer")
-            ? (json["quizAnswer"]).toString()
-            : (json["quizzes_multiple_choices_db"]["quizAnswer"]).toString(),
-        userAnswer = (json["userAnswer"]).toString(),
+        quiz = json["quiz"] ?? "",
+        quizAnswer = json["quizAnswer"] ?? 0,
+        userAnswer = json["userAnswer"] ?? 0,
         userSubdistrictId = json["users"]["subdistrictId"] ?? "",
         userContractCommunityId = json["users"]["contactCommunityId"] ?? "";
 }

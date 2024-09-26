@@ -98,7 +98,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
     AdminProfileModel? adminProfileModel =
         ref.read(adminProfileProvider).value ??
             await ref.read(adminProfileProvider.notifier).getAdminProfile();
-    final userList = adminProfileModel!.master
+    final userList = adminProfileModel.master
         ? ref.read(userProvider).value ??
             await ref
                 .read(userProvider.notifier)
@@ -142,16 +142,11 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final menuTitle = widget.rankingType == "step"
-        ? "회원별 걸음수"
-        : widget.rankingType == "diary"
-            ? "회원별 일기"
-            : "회원별 문제 풀기";
+
     return loadingFinished
         ? Column(
             children: [
               Search(
-                menuText: menuTitle,
                 filterUserList: filterUserDataList,
                 resetInitialList: getUserModelList,
               ),
