@@ -175,8 +175,11 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
         if (validate && thumbnailValidate) {
           AdminProfileModel? adminProfileModel =
               ref.read(adminProfileProvider).value;
-          final videoId =
-              !widget.edit ? const Uuid().v4() : widget.tvModel!.videoId;
+          final videoId = !widget.edit
+              ? _tvType == "유투브"
+                  ? getYoutubeId(_link)
+                  : const Uuid().v4()
+              : widget.tvModel!.videoId;
           final thumbnailUrl = _thumbnailBytes != null
               ? await ref
                   .read(tvRepo)
