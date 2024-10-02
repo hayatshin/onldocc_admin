@@ -326,7 +326,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     int minutes = (totalSeconds % 3600) ~/ 60;
     int seconds = totalSeconds % 60;
 
-    return "${hours != 0 ? "$hours시 " : ""}${minutes != 0 ? "$minutes분 " : ""}${seconds != 0 ? "$seconds초" : "0초"}";
+    return "${hours != 0 ? "$hours시간 " : ""}${minutes != 0 ? "$minutes분 " : ""}${seconds != 0 ? "$seconds초" : "0초"}";
   }
 
   String _getSumChatTimeString(List<AiChatModel> list) {
@@ -810,11 +810,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                     TableModel(
                                         tableHeader: "남성",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userGender == "남성").length} 명"),
+                                            "${_diaryList.where((element) => element.userGender == "남성").length} 회"),
                                     TableModel(
                                         tableHeader: "여성",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userGender == "여성").length} 명"),
+                                            "${_diaryList.where((element) => element.userGender == "여성").length} 회"),
                                   ],
                                 ),
                                 Gaps.v10,
@@ -825,31 +825,31 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                     TableModel(
                                         tableHeader: "40대 미만",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userAgeGroup == "40대 미만").length} 명"),
+                                            "${_diaryList.where((element) => element.userAgeGroup == "40대 미만").length} 회"),
                                     TableModel(
                                         tableHeader: "40대",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userAgeGroup == "40대").length} 명"),
+                                            "${_diaryList.where((element) => element.userAgeGroup == "40대").length} 회"),
                                     TableModel(
                                         tableHeader: "50대",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userAgeGroup == "50대").length} 명"),
+                                            "${_diaryList.where((element) => element.userAgeGroup == "50대").length} 회"),
                                     TableModel(
                                         tableHeader: "60대",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userAgeGroup == "60대").length} 명"),
+                                            "${_diaryList.where((element) => element.userAgeGroup == "60대").length} 회"),
                                     TableModel(
                                         tableHeader: "70대",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userAgeGroup == "70대").length} 명"),
+                                            "${_diaryList.where((element) => element.userAgeGroup == "70대").length} 회"),
                                     TableModel(
                                         tableHeader: "80대",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userAgeGroup == "80대").length} 명"),
+                                            "${_diaryList.where((element) => element.userAgeGroup == "80대").length} 회"),
                                     TableModel(
                                         tableHeader: "90대 이상",
                                         tableContent:
-                                            "${_diaryList.where((element) => element.userAgeGroup == "90대 이상").length} 명"),
+                                            "${_diaryList.where((element) => element.userAgeGroup == "90대 이상").length} 회"),
                                   ],
                                 ),
                               ],
