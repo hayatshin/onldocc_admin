@@ -246,6 +246,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       );
       if (result == null) return;
       setState(() {
+        _eventImage = "";
         _eventImageFile = result.files.first;
         _eventImageBytes = _eventImageFile!.bytes!;
       });
@@ -264,6 +265,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       );
       if (result == null) return;
       setState(() {
+        _bannerImage = "";
         _bannerImageFile = result.files.first;
         _bannerImageBytes = _bannerImageFile!.bytes!;
       });
@@ -716,7 +718,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           color: Colors.white.withOpacity(0.3),
                                         ),
                                         clipBehavior: Clip.hardEdge,
-                                        child: widget.edit
+                                        child: _bannerImage != ""
                                             ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(20),
@@ -928,7 +930,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           color: Colors.white.withOpacity(0.3),
                                         ),
                                         clipBehavior: Clip.hardEdge,
-                                        child: widget.edit
+                                        child: _eventImage != ""
                                             ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(20),
