@@ -248,7 +248,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       setState(() {
         _eventImage = "";
         _eventImageFile = result.files.first;
-        _eventImageBytes = _eventImageFile!.bytes!;
+        _eventImageBytes = result.files.first.bytes!;
       });
       checkEnabledEventButton();
     } catch (e) {
@@ -267,7 +267,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       setState(() {
         _bannerImage = "";
         _bannerImageFile = result.files.first;
-        _bannerImageBytes = _bannerImageFile!.bytes!;
+        _bannerImageBytes = result.files.first.bytes!;
       });
       checkEnabledEventButton();
     } catch (e) {
