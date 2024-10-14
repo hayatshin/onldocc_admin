@@ -592,7 +592,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               child: Row(
                                 children: [
                                   SizedBox(
-                                    width: 250,
+                                    width: 300,
                                     height: 350,
                                     child: SfCircularChart(
                                       palette: const [
@@ -606,9 +606,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                         Color(0xff5D748D),
                                         Color(0xff663717),
                                         Color(0xff0F1113),
-                                        Color(0xff666666),
                                       ],
-                                      legend: const Legend(isVisible: true),
                                       series: <PieSeries<ChartData, String>>[
                                         PieSeries(
                                           explode: true,
@@ -729,6 +727,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                               datum.x,
                                           yValueMapper: (datum, index) =>
                                               datum.y,
+                                          dataLabelMapper: (datum, index) {
+                                            final percent = datum.y;
+                                            return percent.isNaN
+                                                ? ""
+                                                : "${percent.round()}%";
+                                          },
+                                          dataLabelSettings: DataLabelSettings(
+                                            textStyle: InjicareFont().label04,
+                                            labelAlignment:
+                                                ChartDataLabelAlignment.middle,
+                                            labelPosition:
+                                                ChartDataLabelPosition.inside,
+                                            margin: EdgeInsets.zero,
+                                            isVisible: true,
+                                            showZeroValue: false,
+                                          ),
                                         )
                                       ],
                                     ),
@@ -739,45 +753,65 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                       titleColor: Palette().dashYellow,
                                       list: [
                                         TableModel(
-                                            tableHeader: "기뻐요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 0).length} 회"),
+                                          tableHeader: "기뻐요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 0).length} 회",
+                                          headerColor: const Color(0xffD53736),
+                                        ),
                                         TableModel(
-                                            tableHeader: "설레요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 1).length} 회"),
+                                          tableHeader: "설레요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 1).length} 회",
+                                          headerColor: const Color(0xffE68E3C),
+                                        ),
                                         TableModel(
-                                            tableHeader: "감사해요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 2).length} 회"),
+                                          tableHeader: "감사해요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 2).length} 회",
+                                          headerColor: const Color(0xffE5CF50),
+                                        ),
                                         TableModel(
-                                            tableHeader: "평온해요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 3).length} 회"),
+                                          tableHeader: "평온해요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 3).length} 회",
+                                          headerColor: const Color(0xff4AA058),
+                                        ),
                                         TableModel(
-                                            tableHeader: "그냥 그래요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 4).length} 회"),
+                                          tableHeader: "그냥 그래요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 4).length} 회",
+                                          headerColor: const Color(0xff5D9DDD),
+                                        ),
                                         TableModel(
-                                            tableHeader: "외로워요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 5).length} 회"),
+                                          tableHeader: "외로워요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 5).length} 회",
+                                          headerColor: const Color(0xffC62D8C),
+                                        ),
                                         TableModel(
-                                            tableHeader: "불안해요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 6).length} 회"),
+                                          tableHeader: "불안해요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 6).length} 회",
+                                          headerColor: const Color(0xff633794),
+                                        ),
                                         TableModel(
-                                            tableHeader: "우울해요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 7).length} 회"),
+                                          tableHeader: "우울해요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 7).length} 회",
+                                          headerColor: const Color(0xff5D748D),
+                                        ),
                                         TableModel(
-                                            tableHeader: "슬퍼요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 8).length} 회"),
+                                          tableHeader: "슬퍼요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 8).length} 회",
+                                          headerColor: const Color(0xff663717),
+                                        ),
                                         TableModel(
-                                            tableHeader: "화나요",
-                                            tableContent:
-                                                "${_diaryList.where((element) => element.diaryTodayMood == 9).length} 회"),
+                                          tableHeader: "화나요",
+                                          tableContent:
+                                              "${_diaryList.where((element) => element.diaryTodayMood == 9).length} 회",
+                                          headerColor: const Color(0xff0F1113),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -1939,9 +1973,11 @@ class ChartData {
 class TableModel {
   final String tableHeader;
   final String tableContent;
+  final Color? headerColor;
   TableModel({
     required this.tableHeader,
     required this.tableContent,
+    this.headerColor,
   });
 }
 
@@ -1995,7 +2031,9 @@ class DashboardTable extends StatelessWidget {
                                 child: Text(
                                   list[i].tableHeader,
                                   textAlign: TextAlign.center,
-                                  style: contentTextStyle,
+                                  style: contentTextStyle.copyWith(
+                                    color: list[i].headerColor ?? Colors.black,
+                                  ),
                                 ),
                               ),
                             ),
@@ -2714,6 +2752,20 @@ class UserGenderAgeTable extends StatelessWidget {
                     ],
                     xValueMapper: (datum, index) => datum.x,
                     yValueMapper: (datum, index) => datum.y,
+                    dataLabelMapper: (datum, index) {
+                      int percent = userDataList.isNotEmpty
+                          ? ((datum.y / userDataList.length) * 100).round()
+                          : 0;
+                      return percent == 0 ? "" : "$percent%";
+                    },
+                    dataLabelSettings: DataLabelSettings(
+                      textStyle: InjicareFont().label04,
+                      labelAlignment: ChartDataLabelAlignment.middle,
+                      labelPosition: ChartDataLabelPosition.inside,
+                      margin: EdgeInsets.zero,
+                      isVisible: true,
+                      showZeroValue: false,
+                    ),
                   )
                 ],
               ),
@@ -2797,7 +2849,21 @@ class UserGenderAgeTable extends StatelessWidget {
                     ],
                     xValueMapper: (datum, index) => datum.x,
                     yValueMapper: (datum, index) => datum.y,
-                  )
+                    dataLabelMapper: (datum, index) {
+                      int percent = userDataList.isNotEmpty
+                          ? ((datum.y / userDataList.length) * 100).round()
+                          : 0;
+                      return percent == 0 ? "" : "$percent%";
+                    },
+                    dataLabelSettings: DataLabelSettings(
+                      textStyle: InjicareFont().label04,
+                      labelAlignment: ChartDataLabelAlignment.middle,
+                      labelPosition: ChartDataLabelPosition.inside,
+                      margin: EdgeInsets.zero,
+                      isVisible: true,
+                      showZeroValue: false,
+                    ),
+                  ),
                 ],
               ),
             )
