@@ -145,8 +145,8 @@ class _RankingUserDashboardScreenState
                     onSubmit: (dateRange) async {
                       if (dateRange is PickerDateRange) {
                         setState(() {
-                          _selectedDateRange = DateRange(
-                              dateRange.startDate!, dateRange.endDate!);
+                          _selectedDateRange = DateRange(dateRange.startDate!,
+                              dateRange.endDate ?? dateRange.startDate!);
                           _loadingFinished = false;
                         });
                         _removePeriodCalender();
@@ -174,7 +174,7 @@ class _RankingUserDashboardScreenState
                       trailingDatesTextStyle: InjicareFont().body07,
                     ),
                     monthViewSettings: const DateRangePickerMonthViewSettings(),
-                    selectionMode: DateRangePickerSelectionMode.extendableRange,
+                    selectionMode: DateRangePickerSelectionMode.range,
                     initialSelectedRange: PickerDateRange(
                       _selectedDateRange.start,
                       _selectedDateRange.end,
