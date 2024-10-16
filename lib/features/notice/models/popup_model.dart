@@ -1,11 +1,12 @@
 class PopupModel {
   final String? popupId;
-  final String subdistrictId;
+  final String? subdistrictId;
   final int noticeFixedAt;
   final String description;
   final int createdAt;
   final String diaryId;
   final bool adminSecret;
+  final bool master;
 
   PopupModel({
     this.popupId,
@@ -15,6 +16,7 @@ class PopupModel {
     required this.createdAt,
     required this.diaryId,
     required this.adminSecret,
+    required this.master,
   });
 
   Map<String, dynamic> toJson() {
@@ -25,6 +27,7 @@ class PopupModel {
       "createdAt": createdAt,
       "diaryId": diaryId,
       "adminSecret": adminSecret,
+      "master": master,
     };
   }
 
@@ -35,5 +38,6 @@ class PopupModel {
         description = json["description"],
         createdAt = json["createdAt"],
         diaryId = json["diaryId"],
-        adminSecret = json["adminSecret"];
+        adminSecret = json["adminSecret"],
+        master = json["masters"];
 }

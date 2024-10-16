@@ -17,9 +17,9 @@ class InvitationRepository {
     } else {
       final data = await _supabase.from("receive_invitations").select('''
               *, 
-              sendUsers:sendUserId(userId, name, gender, phone, birthYear, birthDay, subdistrictId, contractCommunityId),
+              sendUsers:sendUserId!inner(userId, name, gender, phone, birthYear, birthDay, subdistrictId, contractCommunityId),
               receiveUsers:receiveUserId(userId, name)
-              ''').eq("sendUsers.subdistrictId", userSubdistrictId);
+              ''').eq("sendUserId.subdistrictId", userSubdistrictId);
       return data;
     }
   }

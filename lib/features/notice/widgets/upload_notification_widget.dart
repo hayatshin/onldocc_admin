@@ -161,16 +161,32 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
 
         // 팝업 공지
         if (_noticePopup) {
-          final popupModel = PopupModel(
-            subdistrictId: adminProfileModel.subdistrictId,
-            noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
-            description: _feedDescription,
-            createdAt: getCurrentSeconds(),
-            diaryId: diaryId,
-            adminSecret: true,
-          );
-          final popupId =
-              await ref.read(noticeRepo).addPopupNotification(popupModel);
+          String popupId = "";
+          if (adminProfileModel.master) {
+            final popupModel = PopupModel(
+              subdistrictId: null,
+              noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
+              description: _feedDescription,
+              createdAt: getCurrentSeconds(),
+              diaryId: diaryId,
+              adminSecret: true,
+              master: true,
+            );
+            popupId =
+                await ref.read(noticeRepo).addPopupNotification(popupModel);
+          } else {
+            final popupModel = PopupModel(
+              subdistrictId: adminProfileModel.subdistrictId,
+              noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
+              description: _feedDescription,
+              createdAt: getCurrentSeconds(),
+              diaryId: diaryId,
+              adminSecret: true,
+              master: false,
+            );
+            popupId =
+                await ref.read(noticeRepo).addPopupNotification(popupModel);
+          }
 
           // 팝업 이미지
           if (_feedImageArray.isNotEmpty) {
