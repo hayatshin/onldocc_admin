@@ -6,6 +6,7 @@ import 'package:onldocc_admin/features/care/view/care_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
@@ -132,12 +133,12 @@ final menuList = [
     backButton: false,
     colorButton: const Color(0xffEF5B5B),
   ),
-  // Menu(
-  //   index: 10,
-  //   name: "친구 초대 관리",
-  //   routeName: InvitationScreen.routeName,
-  //   child: const InvitationScreen(),
-  //   backButton: false,
-  //   colorButton: null,
-  // ),
+  Menu(
+    index: 11,
+    name: "친구 초대",
+    routeName: InvitationScreen.routeName,
+    child: const InvitationScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
 ];

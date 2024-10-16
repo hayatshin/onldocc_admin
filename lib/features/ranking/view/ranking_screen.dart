@@ -43,7 +43,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     "걸음수",
     "일기",
     "댓글",
-    // "친구초대",
   ];
 
   bool _loadingFinished = false;
@@ -327,38 +326,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     return list;
   }
 
-  // void generateUserCsv() {
-  //   final csvData = exportToFullList(_userDataList);
-  //   String csvContent = '';
-  //   for (var row in csvData) {
-  //     for (var i = 0; i < row.length; i++) {
-  //       if (row[i].toString().contains(',')) {
-  //         csvContent += '"${row[i]}"';
-  //       } else {
-  //         csvContent += row[i].toString();
-  //       }
-
-  //       if (i != row.length - 1) {
-  //         csvContent += ',';
-  //       }
-  //     }
-  //     csvContent += '\n';
-  //   }
-  //   final currentDate = DateTime.now();
-  //   final formatDate =
-  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-  //   final String fileName = "인지케어 전체 점수 $formatDate.csv";
-
-  //   final encodedUri = Uri.dataFromString(
-  //     csvContent,
-  //     encoding: Encoding.getByName(encodingType()),
-  //   ).toString();
-  //   final anchor = AnchorElement(href: encodedUri)
-  //     ..setAttribute('download', fileName)
-  //     ..click();
-  // }
-
   void generateExcel() {
     final csvData = exportToFullList(_userDataList);
     final String fileName = "인지케어 점수관리 ${todayToStringDot()}.xlsx";
@@ -370,12 +337,16 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     required String userName,
     required DateRange dateRange,
   }) {
+    final startSeconds = convertStartDateTimeToSeconds(dateRange.start);
+    final endSeconds = convertEndDateTimeToSeconds(dateRange.end);
+
     Map<String, String> extraJson = {
       "userId": userId,
       "userName": userName,
       "dateRange": encodeDateRange(dateRange),
     };
-    context.go("/ranking/$userId", extra: RankingPathExtra.fromJson(extraJson));
+    context.go("/ranking/$userId?start=$startSeconds&end=$endSeconds",
+        extra: DatePathExtra.fromJson(extraJson));
   }
 
   Future<void> updateOrderStandard(String value, int columnIndex) async {

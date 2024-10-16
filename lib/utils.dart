@@ -22,6 +22,18 @@ String encodeDateRange(DateRange dateRange) {
   return '$startDate,$endDate';
 }
 
+DateTime convertSecondsToDateTime(int seconds) {
+  return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+}
+
+String encodeSeconds(String startSeconds, String endSeconds) {
+  final startSecondsInt = int.parse(startSeconds);
+  final endSecondsInt = int.parse(endSeconds);
+  final startDate = convertSecondsToDateTime(startSecondsInt).toIso8601String();
+  final endDate = convertSecondsToDateTime(endSecondsInt).toIso8601String();
+  return '$startDate,$endDate';
+}
+
 DateRange decodeDateRange(String encodedDateRange) {
   final dates = encodedDateRange.split(',');
   final startDate = DateTime.parse(dates[0]);

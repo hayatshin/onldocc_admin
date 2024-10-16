@@ -291,11 +291,11 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                           ),
                         ],
                       ),
-                      // const SingleSidebarTile(
-                      //   index: 10,
-                      //   assetPath: "assets/svg/paper-plane.svg",
-                      //   title: "친구 초대 관리",
-                      // ),
+                      const SingleSidebarTile(
+                        index: 11,
+                        assetPath: "assets/svg/envelope.svg",
+                        title: "친구 초대",
+                      ),
                       Gaps.v20,
                     ],
                   ),

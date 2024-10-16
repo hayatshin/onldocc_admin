@@ -20,6 +20,7 @@ import 'package:onldocc_admin/features/event/view/event_detail_photo_screen.dart
 import 'package:onldocc_admin/features/event/view/event_detail_quiz_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_detail_target_score_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/invitation/%08view/invitation_detail_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
@@ -29,6 +30,7 @@ import 'package:onldocc_admin/features/ranking/view/ranking_user_dashboard_scree
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
 import 'package:onldocc_admin/features/user-dashboard/view/user_dashboard_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
+import 'package:onldocc_admin/utils.dart';
 
 final routerProvider = Provider(
   (ref) {
@@ -124,9 +126,13 @@ final routerProvider = Provider(
                 menuNotifier.setSelectedMenu(10, context);
                 return SidebarTemplate(selectedMenuURL: 10, child: child);
 
-              // case InvitationScreen.routeURL:
-              //   menuNotifier.setSelectedMenu(10, context);
-              //   return SidebarTemplate(selectedMenuURL: 10, child: child);
+              case InvitationScreen.routeURL:
+                menuNotifier.setSelectedMenu(11, context);
+                return SidebarTemplate(selectedMenuURL: 11, child: child);
+
+              case "${InvitationScreen.routeURL}/:userId":
+                menuNotifier.setSelectedMenu(11, context);
+                return SidebarTemplate(selectedMenuURL: 11, child: child);
             }
             return child;
           },
@@ -178,18 +184,22 @@ final routerProvider = Provider(
                 routes: [
                   GoRoute(
                     path: ":userId",
-                    pageBuilder: (context, state) => MaterialPage(
-                      key: state.pageKey,
-                      child: RankingUserDashboardScreen(
-                        userId: state.pathParameters["userId"],
-                        userName: state.extra != null
-                            ? (state.extra as RankingPathExtra).userName
-                            : null,
-                        dateRange: state.extra != null
-                            ? (state.extra as RankingPathExtra).dateRange
-                            : null,
-                      ),
-                    ),
+                    pageBuilder: (context, state) {
+                      final startSeconds = state.uri.queryParameters["start"];
+                      final endSeconds = state.uri.queryParameters["end"];
+                      return MaterialPage(
+                        key: state.pageKey,
+                        child: RankingUserDashboardScreen(
+                          userId: state.pathParameters["userId"],
+                          userName: state.extra != null
+                              ? (state.extra as DatePathExtra).userName
+                              : null,
+                          dateRange: state.extra != null
+                              ? (state.extra as DatePathExtra).dateRange
+                              : encodeSeconds(startSeconds!, endSeconds!),
+                        ),
+                      );
+                    },
                   )
                 ]),
             GoRoute(
@@ -288,32 +298,6 @@ final routerProvider = Provider(
                 )
               ],
             ),
-            // GoRoute(
-            //   name: QuizScreen.routeName,
-            //   path: QuizScreen.routeURL,
-            //   pageBuilder: (context, state) => NoTransitionPage(
-            //     key: state.pageKey,
-            //     child: const RankingUsersScreen(
-            //       rankingType: "quiz",
-            //     ),
-            //   ),
-            //   routes: [
-            //     GoRoute(
-            //       path: ":userId",
-            //       pageBuilder: (context, state) => MaterialPage(
-            //         key: state.pageKey,
-            //         child: QuizScreen(
-            //           // index: state.pathParameters["index"],
-            //           userId: state.pathParameters["userId"],
-            //           userName: state.extra != null
-            //               ? (state.extra as RankingExtra).userName
-            //               : "",
-            //           rankingType: "인지",
-            //         ),
-            //       ),
-            //     )
-            //   ],
-            // ),
             GoRoute(
               name: DepressionTestScreen.routeName,
               path: DepressionTestScreen.routeURL,
@@ -342,14 +326,6 @@ final routerProvider = Provider(
               ),
             ),
             GoRoute(
-              name: InvitationScreen.routeName,
-              path: InvitationScreen.routeURL,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const InvitationScreen(),
-              ),
-            ),
-            GoRoute(
               name: CareScreen.routeName,
               path: CareScreen.routeURL,
               pageBuilder: (context, state) => NoTransitionPage(
@@ -365,8 +341,36 @@ final routerProvider = Provider(
                 child: const DecibelScreen(),
               ),
             ),
+            GoRoute(
+                name: InvitationScreen.routeName,
+                path: InvitationScreen.routeURL,
+                pageBuilder: (context, state) => NoTransitionPage(
+                      key: state.pageKey,
+                      child: const InvitationScreen(),
+                    ),
+                routes: [
+                  GoRoute(
+                    path: ":userId",
+                    pageBuilder: (context, state) {
+                      // final startSeconds = state.uri.queryParameters["start"];
+                      // final endSeconds = state.uri.queryParameters["end"];
+                      return MaterialPage(
+                        key: state.pageKey,
+                        child: InvitationDetailScreen(
+                          userId: state.pathParameters["userId"],
+                          userName: state.extra != null
+                              ? (state.extra as PathExtra).userName
+                              : null,
+                          // dateRange: state.extra != null
+                          //     ? (state.extra as DatePathExtra).dateRange
+                          //     : encodeSeconds(startSeconds!, endSeconds!),
+                        ),
+                      );
+                    },
+                  )
+                ]),
           ],
-        )
+        ),
       ],
     );
   },

@@ -9,18 +9,18 @@ class PathExtra {
         userName = json["userName"];
 }
 
-class RankingPathExtra {
+class DatePathExtra {
   final String? userId;
   final String? userName;
   final String? dateRange;
 
-  RankingPathExtra({
+  DatePathExtra({
     required this.userId,
     required this.userName,
     required this.dateRange,
   });
 
-  RankingPathExtra.fromJson(Map<String, String> json)
+  DatePathExtra.fromJson(Map<String, String> json)
       : userId = json["userId"],
         userName = json["userName"],
         dateRange = json["dateRange"];
