@@ -23,7 +23,7 @@ class EventRepository {
   static final eventUserMultipleScoresFunctions = Uri.parse(
       "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-multiplescores-functions-3");
   static final eventUserCountFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions-2");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions-3");
 
   Future<Map<String, dynamic>> getEventUserTargetScore(
     String userId,
