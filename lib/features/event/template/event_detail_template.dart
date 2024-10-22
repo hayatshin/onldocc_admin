@@ -239,7 +239,8 @@ class EventDetailTemplate extends ConsumerWidget {
                 ),
               ),
               Gaps.v96,
-              child
+              child,
+              Gaps.v40,
             ],
           ),
         ),
