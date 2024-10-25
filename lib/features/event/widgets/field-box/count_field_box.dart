@@ -31,6 +31,7 @@ class CountFieldBox extends StatelessWidget {
   final Function(int) updateMaxCommentCount;
   final Function(int) updateMaxLikeCount;
   final Function(int) updateMaxInvitationCount;
+  final Function(String) updateInvitationType;
   final bool edit;
   final EventModel? eventModel;
 
@@ -60,6 +61,7 @@ class CountFieldBox extends StatelessWidget {
     required this.updateMaxCommentCount,
     required this.updateMaxLikeCount,
     required this.updateMaxInvitationCount,
+    required this.updateInvitationType,
     required this.edit,
     this.eventModel,
   });
@@ -122,11 +124,13 @@ class CountFieldBox extends StatelessWidget {
                       fieldName: "좋아요",
                       field: likeField,
                     ),
-                    FieldPointUsageTile(
+                    InvitationFieldPointUsageTile(
                       fieldHeight: fieldHeight,
                       fieldHeaderTextStyle: fieldHeaderTextStyle,
                       fieldName: "친구 초대",
                       field: invitationField,
+                      invitationType: eventModel?.invitationType ?? "send",
+                      updateInvitationType: updateInvitationType,
                     ),
                   ],
                 ),

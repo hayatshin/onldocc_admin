@@ -16,6 +16,7 @@ class UploadCountWidget extends StatefulWidget {
   final Function(int) updateMaxCommentCount;
   final Function(int) updateMaxLikeCount;
   final Function(int) updateMaxInvitationCount;
+  final Function(String) updateInvitationType;
   final bool edit;
   final EventModel? eventModel;
   const UploadCountWidget({
@@ -28,6 +29,7 @@ class UploadCountWidget extends StatefulWidget {
     required this.updateMaxCommentCount,
     required this.updateMaxLikeCount,
     required this.updateMaxInvitationCount,
+    required this.updateInvitationType,
     required this.edit,
     this.eventModel,
   });
@@ -112,6 +114,7 @@ class _UploadCountWidgetState extends State<UploadCountWidget> {
           updateMaxCommentCount: widget.updateMaxCommentCount,
           updateMaxLikeCount: widget.updateMaxLikeCount,
           updateMaxInvitationCount: widget.updateMaxInvitationCount,
+          updateInvitationType: widget.updateInvitationType,
           edit: widget.edit,
           eventModel: widget.eventModel,
         ),

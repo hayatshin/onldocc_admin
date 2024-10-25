@@ -89,6 +89,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   int _eventMaxLikeCount = 0;
   int _eventMaxInvitationCount = 0;
 
+  String _eventInvitationType = "send";
+
   // String _eventQuizOne = "";
   // String _eventAnswerOne = "";
 
@@ -174,6 +176,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       _eventThirdChoice = widget.eventModel!.thirdChoice ?? "";
       _eventFourthChoice = widget.eventModel!.fourthChoice ?? "";
       _eventQuizAnswer = widget.eventModel!.quizAnswer ?? 0;
+
+      _eventInvitationType = widget.eventModel!.invitationType;
     }
   }
 
@@ -357,6 +361,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       maxCommentCount: _eventMaxCommentCount,
       maxLikeCount: _eventMaxLikeCount,
       maxInvitationCount: _eventMaxInvitationCount,
+      invitationType: _eventInvitationType,
     );
 
     !widget.edit
@@ -520,6 +525,12 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   void updateQuizAnswer(int value) {
     setState(() {
       _eventQuizAnswer = value;
+    });
+  }
+
+  void updateInvitationType(String value) {
+    setState(() {
+      _eventInvitationType = value;
     });
   }
 
@@ -1212,6 +1223,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             updateMaxCommentPoint: updateMaxCommentCount,
                             updateMaxLikePoint: updateMaxLikeCount,
                             updateMaxInvitationPoint: updateMaxInvitationCount,
+                            updateInvitationType: updateInvitationType,
                             edit: widget.edit,
                             eventModel: widget.eventModel,
                           )
@@ -1228,6 +1240,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                 updateMaxLikePoint: updateMaxLikeCount,
                                 updateMaxInvitationPoint:
                                     updateMaxInvitationCount,
+                                updateInvitationType: updateInvitationType,
                                 edit: widget.edit,
                                 eventModel: widget.eventModel,
                               )
@@ -1244,6 +1257,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     updateMaxLikeCount: updateMaxLikeCount,
                                     updateMaxInvitationCount:
                                         updateMaxInvitationCount,
+                                    updateInvitationType: updateInvitationType,
                                     edit: widget.edit,
                                     eventModel: widget.eventModel,
                                   )

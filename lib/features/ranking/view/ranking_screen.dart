@@ -359,14 +359,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         copiedUserDataList
             .sort((a, b) => b!.totalPoint!.compareTo(a!.totalPoint!));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+        for (int i = 0; i < copiedUserDataList.length; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
             index: count,
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.totalPoint !=
-              copiedUserDataList[i + 1]!.totalPoint) {
+          if ((i != copiedUserDataList.length - 1) &&
+              (copiedUserDataList[i]!.totalPoint !=
+                  copiedUserDataList[i + 1]!.totalPoint)) {
             count++;
           }
         }
@@ -376,14 +377,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         copiedUserDataList
             .sort((a, b) => b!.stepPoint!.compareTo(a!.stepPoint!));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+        for (int i = 0; i < copiedUserDataList.length; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
             index: count,
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.stepPoint !=
-              copiedUserDataList[i + 1]!.stepPoint) {
+          if ((i != copiedUserDataList.length - 1) &&
+              (copiedUserDataList[i]!.stepPoint !=
+                  copiedUserDataList[i + 1]!.stepPoint)) {
             count++;
           }
         }
@@ -392,14 +394,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         copiedUserDataList
             .sort((a, b) => b!.diaryPoint!.compareTo(a!.diaryPoint!));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+        for (int i = 0; i < copiedUserDataList.length; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
             index: count,
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.diaryPoint !=
-              copiedUserDataList[i + 1]!.diaryPoint) {
+          if ((i != copiedUserDataList.length - 1) &&
+              (copiedUserDataList[i]!.diaryPoint !=
+                  copiedUserDataList[i + 1]!.diaryPoint)) {
             count++;
           }
         }
@@ -408,14 +411,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         copiedUserDataList
             .sort((a, b) => b!.commentPoint!.compareTo(a!.commentPoint!));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+        for (int i = 0; i < copiedUserDataList.length; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
             index: count,
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.commentPoint !=
-              copiedUserDataList[i + 1]!.commentPoint) {
+          if ((i != copiedUserDataList.length - 1) &&
+              (copiedUserDataList[i]!.commentPoint !=
+                  copiedUserDataList[i + 1]!.commentPoint)) {
             count++;
           }
         }
@@ -424,14 +428,15 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         copiedUserDataList
             .sort((a, b) => b!.likePoint!.compareTo(a!.likePoint!));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+        for (int i = 0; i < copiedUserDataList.length; i++) {
           UserModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
             index: count,
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.likePoint !=
-              copiedUserDataList[i + 1]!.likePoint) {
+          if ((i != copiedUserDataList.length - 1) &&
+              (copiedUserDataList[i]!.likePoint !=
+                  copiedUserDataList[i + 1]!.likePoint)) {
             count++;
           }
         }

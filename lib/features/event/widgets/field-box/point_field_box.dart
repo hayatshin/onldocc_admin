@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -35,6 +36,7 @@ class PointFieldBox extends StatelessWidget {
   final Function(int) updateMaxCommentPoint;
   final Function(int) updateMaxLikePoint;
   final Function(int) updateMaxInvitationPoint;
+  final Function(String) updateInvitationType;
   final bool edit;
   final EventModel? eventModel;
 
@@ -59,6 +61,7 @@ class PointFieldBox extends StatelessWidget {
     required this.updateMaxCommentPoint,
     required this.updateMaxLikePoint,
     required this.updateMaxInvitationPoint,
+    required this.updateInvitationType,
     required this.edit,
     this.eventModel,
     // required this.diaryPointController,
@@ -131,11 +134,13 @@ class PointFieldBox extends StatelessWidget {
                       fieldName: "좋아요",
                       field: likeField,
                     ),
-                    FieldPointUsageTile(
+                    InvitationFieldPointUsageTile(
                       fieldHeight: fieldHeight,
                       fieldHeaderTextStyle: fieldHeaderTextStyle,
                       fieldName: "친구 초대",
                       field: invitationField,
+                      invitationType: eventModel?.invitationType ?? "send",
+                      updateInvitationType: updateInvitationType,
                     ),
                     FieldPointUsageTile(
                       fieldHeight: fieldHeight,
@@ -359,6 +364,157 @@ class PointFieldBox extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class InvitationFieldPointUsageTile extends StatefulWidget {
+  final double? fieldHeight;
+  final TextStyle fieldHeaderTextStyle;
+  final String fieldName;
+  final ValueNotifier<bool> field;
+  final String invitationType;
+  final Function(String) updateInvitationType;
+
+  const InvitationFieldPointUsageTile({
+    super.key,
+    required this.fieldHeight,
+    required this.fieldHeaderTextStyle,
+    required this.fieldName,
+    required this.field,
+    required this.invitationType,
+    required this.updateInvitationType,
+  });
+
+  @override
+  State<InvitationFieldPointUsageTile> createState() =>
+      _InvitationFieldPointUsageTileState();
+}
+
+class _InvitationFieldPointUsageTileState
+    extends State<InvitationFieldPointUsageTile> {
+  final double menuHeight = 30;
+  final List<String> _invitationTypes = ["친구 초대 기준", "초대 친구 가입 기준"];
+  String _selectedInvitationType = "친구 초대 기준";
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedInvitationType = widget.invitationType == "send"
+        ? _invitationTypes[0]
+        : _invitationTypes[1];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.fieldHeight,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Row(
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: widget.field,
+                  builder: (context, fieldValue, child) => Transform.scale(
+                    scale: 0.8,
+                    child: Checkbox(
+                      value: fieldValue,
+                      activeColor: Palette().darkBlue,
+                      splashRadius: 0,
+                      onChanged: (value) {
+                        if (value != null) {
+                          widget.field.value = value;
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                Gaps.h10,
+                Text(
+                  widget.fieldName,
+                  style: widget.fieldHeaderTextStyle,
+                ),
+                Gaps.h10,
+                Expanded(
+                  child: SizedBox(
+                    height: menuHeight,
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton2<String>(
+                        isExpanded: true,
+                        items: _invitationTypes.map((String item) {
+                          return DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Palette().normalGray,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        }).toList(),
+                        value: _selectedInvitationType,
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedInvitationType = value;
+                            });
+
+                            final invitationType = value == _invitationTypes[0]
+                                ? "send"
+                                : "receive";
+                            widget.updateInvitationType(invitationType);
+                          }
+                        },
+                        buttonStyleData: ButtonStyleData(
+                          padding: const EdgeInsets.only(left: 14, right: 14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Palette().lightGray,
+                              width: 0.5,
+                            ),
+                          ),
+                        ),
+                        iconStyleData: IconStyleData(
+                          icon: const Icon(
+                            Icons.expand_more_rounded,
+                          ),
+                          iconSize: 14,
+                          iconEnabledColor: Palette().normalGray,
+                          iconDisabledColor: Palette().normalGray,
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          elevation: 2,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                          ),
+                          scrollbarTheme: ScrollbarThemeData(
+                            radius: const Radius.circular(10),
+                            thumbVisibility: WidgetStateProperty.all(true),
+                          ),
+                        ),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: menuHeight,
+                          padding: const EdgeInsets.only(
+                            left: 15,
+                            right: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

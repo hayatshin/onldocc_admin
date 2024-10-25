@@ -15,10 +15,8 @@ import 'package:onldocc_admin/features/invitation/models/invitation_model.dart';
 import 'package:onldocc_admin/features/invitation/view_models/invitation_view_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/injicare_color.dart';
-import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class InvitationScreen extends ConsumerStatefulWidget {
   static const routeURL = "/invitation";
@@ -104,81 +102,81 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
     overlayEntry = null;
   }
 
-  void _showPeriodCalender() {
-    overlayEntry = OverlayEntry(
-      builder: (context) {
-        return Theme(
-          data: ThemeData(
-            colorScheme: ColorScheme.light(
-              primary: Palette().darkBlue,
-            ),
-          ),
-          child: Positioned.fill(
-            child: Material(
-              color: Colors.black38,
-              child: Center(
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                  ),
-                  clipBehavior: Clip.hardEdge,
-                  child: SfDateRangePicker(
-                    backgroundColor: Colors.white,
-                    headerHeight: 50,
-                    confirmText: "확인",
-                    cancelText: "취소",
-                    onCancel: () {
-                      _removePeriodCalender();
-                    },
-                    onSubmit: (dateRange) async {
-                      if (dateRange is PickerDateRange) {
-                        setState(() {
-                          _selectedDateRange = DateRange(dateRange.startDate!,
-                              dateRange.endDate ?? dateRange.startDate!);
-                          _loadingFinished = false;
-                        });
-                        _removePeriodCalender();
-                        await getInvitationList(_selectedDateRange);
-                      }
-                    },
-                    showActionButtons: true,
-                    viewSpacing: 10,
-                    selectionColor: Palette().darkBlue,
-                    selectionTextStyle: InjicareFont().body07,
-                    rangeTextStyle: InjicareFont().body07,
-                    rangeSelectionColor: Palette().lightBlue,
-                    startRangeSelectionColor: Palette().darkBlue,
-                    endRangeSelectionColor: Palette().darkBlue,
-                    headerStyle: DateRangePickerHeaderStyle(
-                      backgroundColor: Palette().darkBlue,
-                      textStyle: InjicareFont().body01.copyWith(
-                            color: Colors.white,
-                          ),
-                    ),
-                    monthCellStyle: DateRangePickerMonthCellStyle(
-                      textStyle: InjicareFont().body07,
-                      leadingDatesTextStyle: InjicareFont().body07,
-                      trailingDatesTextStyle: InjicareFont().body07,
-                    ),
-                    monthViewSettings: const DateRangePickerMonthViewSettings(),
-                    selectionMode: DateRangePickerSelectionMode.range,
-                    initialSelectedRange: PickerDateRange(
-                      _selectedDateRange!.start,
-                      _selectedDateRange!.end,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
-  }
+  // void _showPeriodCalender() {
+  //   overlayEntry = OverlayEntry(
+  //     builder: (context) {
+  //       return Theme(
+  //         data: ThemeData(
+  //           colorScheme: ColorScheme.light(
+  //             primary: Palette().darkBlue,
+  //           ),
+  //         ),
+  //         child: Positioned.fill(
+  //           child: Material(
+  //             color: Colors.black38,
+  //             child: Center(
+  //               child: Container(
+  //                 width: 300,
+  //                 height: 300,
+  //                 decoration: BoxDecoration(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                   color: Colors.white,
+  //                 ),
+  //                 clipBehavior: Clip.hardEdge,
+  //                 child: SfDateRangePicker(
+  //                   backgroundColor: Colors.white,
+  //                   headerHeight: 50,
+  //                   confirmText: "확인",
+  //                   cancelText: "취소",
+  //                   onCancel: () {
+  //                     _removePeriodCalender();
+  //                   },
+  //                   onSubmit: (dateRange) async {
+  //                     if (dateRange is PickerDateRange) {
+  //                       setState(() {
+  //                         _selectedDateRange = DateRange(dateRange.startDate!,
+  //                             dateRange.endDate ?? dateRange.startDate!);
+  //                         _loadingFinished = false;
+  //                       });
+  //                       _removePeriodCalender();
+  //                       await getInvitationList(_selectedDateRange);
+  //                     }
+  //                   },
+  //                   showActionButtons: true,
+  //                   viewSpacing: 10,
+  //                   selectionColor: Palette().darkBlue,
+  //                   selectionTextStyle: InjicareFont().body07,
+  //                   rangeTextStyle: InjicareFont().body07,
+  //                   rangeSelectionColor: Palette().lightBlue,
+  //                   startRangeSelectionColor: Palette().darkBlue,
+  //                   endRangeSelectionColor: Palette().darkBlue,
+  //                   headerStyle: DateRangePickerHeaderStyle(
+  //                     backgroundColor: Palette().darkBlue,
+  //                     textStyle: InjicareFont().body01.copyWith(
+  //                           color: Colors.white,
+  //                         ),
+  //                   ),
+  //                   monthCellStyle: DateRangePickerMonthCellStyle(
+  //                     textStyle: InjicareFont().body07,
+  //                     leadingDatesTextStyle: InjicareFont().body07,
+  //                     trailingDatesTextStyle: InjicareFont().body07,
+  //                   ),
+  //                   monthViewSettings: const DateRangePickerMonthViewSettings(),
+  //                   selectionMode: DateRangePickerSelectionMode.range,
+  //                   initialSelectedRange: PickerDateRange(
+  //                     _selectedDateRange!.start,
+  //                     _selectedDateRange!.end,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  //   Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
+  // }
 
   Future<void> filterUserDataList(
       String? searchBy, String searchKeyword) async {
@@ -304,34 +302,39 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
 
     switch (columnIndex) {
       case 1:
-        copiedUserDataList.sort(
-            (a, b) => b!.receiveUsers.length.compareTo(a!.receiveUsers.length));
+        // 초대 횟수
+        copiedUserDataList
+            .sort((a, b) => b!.sendCounts.compareTo(a!.sendCounts));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+        for (int i = 0; i < copiedUserDataList.length; i++) {
           InvitationModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
             index: count,
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.receiveUsers.length !=
-              copiedUserDataList[i + 1]!.receiveUsers.length) {
+          if ((i != copiedUserDataList.length - 1) &&
+              (copiedUserDataList[i]!.sendCounts !=
+                  copiedUserDataList[i + 1]!.sendCounts)) {
             count++;
           }
         }
 
         break;
       case 2:
+        // 초대 친구 가입자 수
         copiedUserDataList.sort(
             (a, b) => b!.receiveUsers.length.compareTo(a!.receiveUsers.length));
 
-        for (int i = 0; i < copiedUserDataList.length - 1; i++) {
+        for (int i = 0; i < copiedUserDataList.length; i++) {
+          // 0, 1, 2
           InvitationModel indexUpdateUser = copiedUserDataList[i]!.copyWith(
             index: count,
           );
           list.add(indexUpdateUser);
 
-          if (copiedUserDataList[i]!.receiveUsers.length !=
-              copiedUserDataList[i + 1]!.receiveUsers.length) {
+          if ((i != copiedUserDataList.length - 1) &&
+              (copiedUserDataList[i]!.receiveUsers.length !=
+                  copiedUserDataList[i + 1]!.receiveUsers.length)) {
             count++;
           }
         }
@@ -350,8 +353,8 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
     required String userName,
     required DateRange dateRange,
   }) {
-    final startSeconds = convertStartDateTimeToSeconds(dateRange.start);
-    final endSeconds = convertEndDateTimeToSeconds(dateRange.end);
+    // final startSeconds = convertStartDateTimeToSeconds(dateRange.start);
+    // final endSeconds = convertEndDateTimeToSeconds(dateRange.end);
 
     Map<String, String> extraJson = {
       "userId": userId,
@@ -421,14 +424,26 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                           ),
                         ),
                         DataColumn2(
+                          tooltip: "친구 초대를 한 횟수 기준으로 정렬됩니다.",
+                          onSort: (columnIndex, sortAscending) {
+                            updateOrderStandard(columnIndex);
+                          },
+                          label: Text(
+                            "초대 횟수",
+                            style: _headerTextStyle.copyWith(
+                              color: InjicareColor().secondary50,
+                            ),
+                          ),
+                        ),
+                        DataColumn2(
                           tooltip: "친구 초대를 통해 인지케어에 가입한 수를 기준으로 정렬됩니다.",
                           onSort: (columnIndex, sortAscending) {
                             updateOrderStandard(columnIndex);
                           },
                           label: Text(
-                            "친구 초대 수",
+                            "초대 친구\n가입자 수",
                             style: _headerTextStyle.copyWith(
-                              color: InjicareColor().secondary50,
+                              color: InjicareColor().primary50,
                             ),
                           ),
                         ),
@@ -464,8 +479,10 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                             });
                           },
                           label: Text(
-                            "초대 친구\n목록 보기",
-                            style: _headerTextStyle,
+                            "초대 친구\n가입자 목록",
+                            style: _headerTextStyle.copyWith(
+                              color: InjicareColor().primary50,
+                            ),
                             textAlign: TextAlign.end,
                           ),
                         ),
@@ -478,6 +495,16 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                                 Text(
                                   _userDataList[i]!.index.toString(),
                                   style: _contentTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  _userDataList[i]!.sendCounts.toString(),
+                                  style: _contentTextStyle.copyWith(
+                                    // color:
+                                    //     InjicareColor().primary50,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                                 ),
                               ),
                               DataCell(

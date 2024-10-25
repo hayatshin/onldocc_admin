@@ -148,7 +148,8 @@ class _InvitationDetailScreenState
                 builder: (context) => DefaultScreen(
                   menu: Menu(
                     index: 11,
-                    name: "${_userModel!.name} 님의 친구 초대로 인지케어에 가입한 사람",
+                    name:
+                        "${_userModel != null ? _userModel!.name : ""} 님의 친구 초대로 인지케어에 가입한 사람",
                     routeName: "invitation",
                     child: Container(),
                     backButton: true,

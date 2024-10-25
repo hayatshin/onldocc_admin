@@ -12,46 +12,19 @@ class InvitationViewModel extends AsyncNotifier<List<InvitationModel>> {
 
   Future<List<InvitationModel>> fetchInvitations(
       String userSubdistrictId) async {
-    List<InvitationModel> sendUsers = [];
-    final iDatas =
+    final data =
         await ref.read(invitationRepo).fetchInvitations(userSubdistrictId);
+    final models =
+        data.map((element) => InvitationModel.fromJson(element)).toList();
 
-    for (final iData in iDatas) {
-      bool hasSendUserId =
-          sendUsers.any((sendUser) => sendUser.userId == iData["sendUserId"]);
-      if (hasSendUserId) {
-        final sendUserInstance = sendUsers
-            .firstWhere((sendUser) => sendUser.userId == iData["sendUserId"]);
-        sendUserInstance.receiveUsers = [
-          ...sendUserInstance.receiveUsers,
-          ReceiveUser.fromJson(iData["receiveUsers"], iData["createdAt"])
-        ];
-      } else {
-        sendUsers.add(
-          InvitationModel.fromJson(iData),
-        );
-      }
-    }
-
-    // final modelList = invitationData.map((e) {
-    //   final map = Map<String, dynamic>.from(e);
-    //   return InvitationModel.fromJson(map);
-    // }).toList();
-    sendUsers
-        .sort((a, b) => b.receiveUsers.length.compareTo(a.receiveUsers.length));
-    return indexRankingModel(sendUsers);
+    models.sort((a, b) => b.sendCounts.compareTo(a.sendCounts));
+    return indexRankingModel(models);
   }
 
   Future<List<ReceiveUser>> fetchUserInvitation(String userId) async {
-    List<ReceiveUser> receivedUsers = [];
-
     final iDatas = await ref.read(invitationRepo).fetchUserInvitation(userId);
-    for (final iData in iDatas) {
-      receivedUsers
-          .add(ReceiveUser.fromJson(iData["receiveUsers"], iData["createdAt"]));
-    }
 
-    return receivedUsers;
+    return iDatas.map((element) => ReceiveUser.fromJson(element)).toList();
   }
 }
 
@@ -65,8 +38,7 @@ List<InvitationModel> indexRankingModel(List<InvitationModel> modelList) {
     );
     list.add(indexUpdateUser);
     if (modelList.length > i + 1) {
-      if (modelList[i].receiveUsers.length !=
-          modelList[i + 1].receiveUsers.length) {
+      if (modelList[i].sendCounts != modelList[i + 1].sendCounts) {
         count++;
       }
     }

@@ -9,7 +9,8 @@ class InvitationModel {
   final String userPhone;
   final String userSubdistrictId;
   final String? userContractCommunityId;
-  List<ReceiveUser> receiveUsers;
+  final int sendCounts;
+  List<String> receiveUsers;
 
   InvitationModel({
     this.index,
@@ -20,22 +21,21 @@ class InvitationModel {
     required this.userPhone,
     required this.userSubdistrictId,
     this.userContractCommunityId,
+    required this.sendCounts,
     required this.receiveUsers,
   });
 
   InvitationModel.fromJson(Map<String, dynamic> json)
       : index = 0,
-        userId = json["sendUserId"],
-        userName = json["sendUsers"]["name"],
-        userAge = userAgeCalculation(
-            json["sendUsers"]["birthYear"], json["sendUsers"]["birthDay"]),
-        userGender = json["sendUsers"]["gender"],
-        userPhone = json["sendUsers"]["phone"],
-        userSubdistrictId = json["sendUsers"]["subdistrictId"],
-        userContractCommunityId = json["sendUsers"]["contractCommunityId"],
-        receiveUsers = [
-          ReceiveUser.fromJson(json["receiveUsers"], json["createdAt"]),
-        ];
+        userId = json["userId"],
+        userName = json["name"],
+        userAge = userAgeCalculation(json["birthYear"], json["birthDay"]),
+        userGender = json["gender"],
+        userPhone = json["phone"],
+        userSubdistrictId = json["subdistrictId"],
+        userContractCommunityId = json["contractCommunityId"],
+        sendCounts = (json["invitationDate"]).length,
+        receiveUsers = removeReceiveNull(json["receiveUsers"]);
 
   InvitationModel copyWith({
     final int? index,
@@ -46,7 +46,8 @@ class InvitationModel {
     final String? userPhone,
     final String? userSubdistrictId,
     final String? userContractCommunityId,
-    final List<ReceiveUser>? receiveUsers,
+    final int? sendCounts,
+    final List<String>? receiveUsers,
   }) {
     return InvitationModel(
       index: index ?? this.index,
@@ -56,6 +57,7 @@ class InvitationModel {
       userGender: userGender ?? this.userGender,
       userPhone: userPhone ?? this.userPhone,
       userSubdistrictId: userSubdistrictId ?? this.userSubdistrictId,
+      sendCounts: sendCounts ?? this.sendCounts,
       receiveUsers: receiveUsers ?? this.receiveUsers,
     );
   }
@@ -74,11 +76,11 @@ class ReceiveUser {
     required this.receiveDate,
   });
 
-  ReceiveUser.fromJson(Map<String, dynamic> json, int createdAt)
+  ReceiveUser.fromJson(Map<String, dynamic> json)
       : index = 0,
-        receiveUserId = json["userId"],
-        receiveUserName = json["name"],
-        receiveDate = secondsToYearMonthDayHourMinute(createdAt);
+        receiveUserId = json["receiveUserId"],
+        receiveUserName = json["users"]["name"],
+        receiveDate = secondsToYearMonthDayHourMinute(json["createdAt"]);
 
   ReceiveUser copyWith({
     final int? index,
@@ -90,4 +92,11 @@ class ReceiveUser {
       receiveDate: receiveDate,
     );
   }
+}
+
+List<String> removeReceiveNull(List<dynamic> receiveUsers) {
+  return receiveUsers
+      .where((element) => element != null)
+      .cast<String>()
+      .toList();
 }

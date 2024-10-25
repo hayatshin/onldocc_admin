@@ -7,19 +7,14 @@ class InvitationRepository {
   Future<List<dynamic>> fetchInvitations(String userSubdistrictId) async {
     // int startSeconds = convertStartDateTimeToSeconds(startDate);
     // int endSeconds = convertEndDateTimeToSeconds(endDate);
+
     if (userSubdistrictId == "") {
-      final data = await _supabase.from("receive_invitations").select('''
-              *, 
-              sendUsers:sendUserId(userId, name, gender, phone, birthYear, birthDay, subdistrictId, contractCommunityId),
-              receiveUsers:receiveUserId(userId, name)
-              ''');
+      final data = await _supabase.rpc("get_invitations_master");
       return data;
     } else {
-      final data = await _supabase.from("receive_invitations").select('''
-              *, 
-              sendUsers:sendUserId!inner(userId, name, gender, phone, birthYear, birthDay, subdistrictId, contractCommunityId),
-              receiveUsers:receiveUserId(userId, name)
-              ''').eq("sendUserId.subdistrictId", userSubdistrictId);
+      final data = await _supabase.rpc("get_invitations_region", params: {
+        "usersubdistrictid": userSubdistrictId,
+      });
       return data;
     }
   }
@@ -27,13 +22,8 @@ class InvitationRepository {
   Future<List<dynamic>> fetchUserInvitation(String userId) async {
     final data = await _supabase
         .from("receive_invitations")
-        .select('''
-              *, 
-              sendUsers:sendUserId(userId, name, gender, phone, birthYear, birthDay, subdistrictId, contractCommunityId),
-              receiveUsers:receiveUserId(userId, name)
-              ''')
-        .eq("sendUserId", userId)
-        .order("createdAt", ascending: false);
+        .select('*, users!receive_invitations_receiveUserId_fkey(name)')
+        .eq('sendUserId', userId);
     return data;
   }
 }

@@ -19,6 +19,8 @@ class UploadTargetScoreWidget extends StatefulWidget {
   final Function(int) updateMaxCommentPoint;
   final Function(int) updateMaxLikePoint;
   final Function(int) updateMaxInvitationPoint;
+  final Function(String) updateInvitationType;
+
   final bool edit;
   final EventModel? eventModel;
   // final TextEditingController diaryPointController;
@@ -45,6 +47,7 @@ class UploadTargetScoreWidget extends StatefulWidget {
     required this.updateMaxCommentPoint,
     required this.updateMaxLikePoint,
     required this.updateMaxInvitationPoint,
+    required this.updateInvitationType,
     required this.edit,
     this.eventModel,
     // required this.diaryPointController,
@@ -192,6 +195,7 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
           updateMaxLikePoint: widget.updateMaxLikePoint,
           updateMaxInvitationPoint: widget.updateMaxInvitationPoint,
           updateMaxStepPoint: widget.updateMaxCommentPoint,
+          updateInvitationType: widget.updateInvitationType,
           edit: widget.edit,
           eventModel: widget.eventModel,
           // diaryPointController: widget.diaryPointController,

@@ -47,6 +47,8 @@ class EventModel {
   final int? maxLikeCount;
   final int? maxInvitationCount;
 
+  final String invitationType;
+
   // quiz-event
   final String? quizEventId;
   final String? quiz;
@@ -101,6 +103,7 @@ class EventModel {
     this.maxCommentCount,
     this.maxLikeCount,
     this.maxInvitationCount,
+    required this.invitationType,
     this.quizEventId,
     this.quiz,
     this.firstChoice,
@@ -148,6 +151,7 @@ class EventModel {
         maxCommentCount = 0,
         maxLikeCount = 0,
         maxInvitationCount = 0,
+        invitationType = "send",
         quizEventId = "",
         quiz = "",
         firstChoice = "",
@@ -191,6 +195,7 @@ class EventModel {
       "maxCommentCount": maxCommentCount,
       "maxLikeCount": maxLikeCount,
       "maxInvitationCount": maxInvitationCount,
+      "invitationType": invitationType,
     };
   }
 
@@ -226,6 +231,7 @@ class EventModel {
       "maxCommentCount": maxCommentCount,
       "maxLikeCount": maxLikeCount,
       "maxInvitationCount": maxInvitationCount,
+      "invitationType": invitationType,
     };
   }
 
@@ -274,6 +280,7 @@ class EventModel {
         maxCommentCount = json["maxCommentCount"] ?? 0,
         maxLikeCount = json["maxLikeCount"] ?? 0,
         maxInvitationCount = json["maxInvitationCount"] ?? 0,
+        invitationType = json["invitationType"] ?? "send",
         quizEventId = json["quiz_event_db"].isNotEmpty
             ? json["quiz_event_db"][0]["quizEventId"]
             : "",
@@ -339,6 +346,7 @@ class EventModel {
     final int? maxCommentCount,
     final int? maxLikeCount,
     final int? maxInvitationCount,
+    final String? invitationType,
     final String? quizEventId,
     final String? quiz,
     final String? firstChoice,
@@ -385,6 +393,7 @@ class EventModel {
       maxCommentCount: maxCommentCount ?? this.maxCommentCount,
       maxLikeCount: maxLikeCount ?? this.maxLikeCount,
       maxInvitationCount: maxInvitationCount ?? this.maxInvitationCount,
+      invitationType: invitationType ?? this.invitationType,
       quizEventId: quizEventId ?? this.quizEventId,
       quiz: quiz ?? this.quiz,
       firstChoice: firstChoice ?? this.firstChoice,

@@ -16,6 +16,7 @@ class UploadMultipleScoresWidget extends StatefulWidget {
   final Function(int) updateMaxCommentPoint;
   final Function(int) updateMaxLikePoint;
   final Function(int) updateMaxInvitationPoint;
+  final Function(String) updateInvitationType;
   final bool edit;
   final EventModel? eventModel;
 
@@ -32,6 +33,7 @@ class UploadMultipleScoresWidget extends StatefulWidget {
     required this.updateMaxCommentPoint,
     required this.updateMaxLikePoint,
     required this.updateMaxInvitationPoint,
+    required this.updateInvitationType,
     required this.edit,
     this.eventModel,
   });
@@ -228,6 +230,7 @@ class _UploadMultipleScoresWidgetState
           updateMaxLikePoint: widget.updateMaxLikePoint,
           updateMaxInvitationPoint: widget.updateMaxInvitationPoint,
           updateMaxStepPoint: widget.updateMaxStepPoint,
+          updateInvitationType: widget.updateInvitationType,
           edit: widget.edit,
           eventModel: widget.eventModel,
         ),
