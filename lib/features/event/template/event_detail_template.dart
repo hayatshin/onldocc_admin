@@ -89,115 +89,117 @@ class EventDetailTemplate extends ConsumerWidget {
                     Gaps.h40,
                     SizedBox(
                       width: 180,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const EventHeader(headerText: "행사 개요"),
-                          Row(
-                            children: [
-                              Text(
-                                "주최기관: ",
-                                style: headerTextStyle,
-                              ),
-                              Text(
-                                eventModel.orgName!.split(' ').last,
-                                style: headerTextStyle.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Gaps.v10,
-                          Row(
-                            children: [
-                              Text(
-                                "시작일:  ",
-                                style: headerTextStyle,
-                              ),
-                              Text(
-                                eventModel.startDate,
-                                style: headerTextStyle.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Gaps.v10,
-                          Row(
-                            children: [
-                              Text(
-                                "종료일:  ",
-                                style: headerTextStyle,
-                              ),
-                              Text(
-                                eventModel.endDate,
-                                style: headerTextStyle.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Gaps.v10,
-                          if (eventModel.eventType == "targetScore")
-                            Column(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const EventHeader(headerText: "행사 개요"),
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "목표 점수:  ",
-                                      style: headerTextStyle,
-                                    ),
-                                    Text(
-                                      "${eventModel.targetScore}점",
-                                      style: headerTextStyle.copyWith(
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  "주최기관: ",
+                                  style: headerTextStyle,
                                 ),
-                                Gaps.v10,
+                                Text(
+                                  eventModel.orgName!.split(' ').last,
+                                  style: headerTextStyle.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
                               ],
                             ),
-                          if (eventModel.achieversNumber != 0)
-                            Column(
+                            Gaps.v10,
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "달성자 수 제한:  ",
-                                      style: headerTextStyle,
-                                    ),
-                                    Text(
-                                      "${eventModel.achieversNumber}명",
-                                      style: headerTextStyle.copyWith(
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  "시작일:  ",
+                                  style: headerTextStyle,
                                 ),
-                                Gaps.v10,
+                                Text(
+                                  eventModel.startDate,
+                                  style: headerTextStyle.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
                               ],
                             ),
-                          Row(
-                            children: [
-                              Row(
+                            Gaps.v10,
+                            Row(
+                              children: [
+                                Text(
+                                  "종료일:  ",
+                                  style: headerTextStyle,
+                                ),
+                                Text(
+                                  eventModel.endDate,
+                                  style: headerTextStyle.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Gaps.v10,
+                            if (eventModel.eventType == "targetScore")
+                              Column(
                                 children: [
-                                  Text(
-                                    "진행 상황:  ",
-                                    style: headerTextStyle,
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "목표 점수:  ",
+                                        style: headerTextStyle,
+                                      ),
+                                      Text(
+                                        "${eventModel.targetScore}점",
+                                        style: headerTextStyle.copyWith(
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    "${eventModel.state}",
-                                    style: headerTextStyle.copyWith(
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
+                                  Gaps.v10,
                                 ],
                               ),
-                            ],
-                          ),
-                        ],
+                            if (eventModel.achieversNumber != 0)
+                              Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "달성자 수 제한:  ",
+                                        style: headerTextStyle,
+                                      ),
+                                      Text(
+                                        "${eventModel.achieversNumber}명",
+                                        style: headerTextStyle.copyWith(
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Gaps.v10,
+                                ],
+                              ),
+                            Row(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "진행 상황:  ",
+                                      style: headerTextStyle,
+                                    ),
+                                    Text(
+                                      "${eventModel.state}",
+                                      style: headerTextStyle.copyWith(
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     Column(

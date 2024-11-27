@@ -231,4 +231,16 @@ class ParticipantModel {
       photoTitle: photoTitle ?? this.photoTitle,
     );
   }
+
+  // Override equality operator to compare only userId
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ParticipantModel) return false;
+    return userId == other.userId;
+  }
+
+  // Override hashCode to match the equality logic
+  @override
+  int get hashCode => userId.hashCode;
 }

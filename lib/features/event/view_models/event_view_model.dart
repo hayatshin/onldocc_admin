@@ -154,7 +154,9 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
       }
     }).toList());
 
-    return modelList;
+    // remove duplicate row
+    List<ParticipantModel> exclusiveModels = modelList.toSet().toList();
+    return exclusiveModels;
   }
 
   Future<EventModel> getCertainEvent(String eventId) async {
