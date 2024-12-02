@@ -947,14 +947,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       testResult1: "정상",
                       testResult1Data:
                           "${_cognitionTestList.where((element) => element.testType == "alzheimer_test" && element.result == "정상").toList().length}회",
-                      testResult2: "치매 조기 검진 필요",
+                      testResult2: "치매 조기검진 필요",
                       testResult2Data:
-                          "${_cognitionTestList.where((element) => element.testType == "alzheimer_test" && element.result == "치매 조기 검진 필요").toList().length}회",
-                      listName: "치매 조기 검진 필요 대상자",
+                          "${_cognitionTestList.where((element) => element.testType == "alzheimer_test" && element.result == "치매 조기검진 필요").toList().length}회",
+                      listName: "치매 조기 검진필요 대상자",
                       list: _cognitionTestList
                           .where((element) =>
                               element.testType == "alzheimer_test" &&
-                              element.result == "치매 조기 검진 필요")
+                              element.result == "치매 조기검진 필요")
                           .toList(),
                     ),
                     Gaps.h20,
