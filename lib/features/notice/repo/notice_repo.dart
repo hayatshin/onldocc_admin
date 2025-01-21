@@ -119,7 +119,7 @@ class NoticeRepository {
       return data["popupId"];
     } catch (e) {
       // ignore: avoid_print
-      print("addPopupNotification -> $e");
+      print("[notice] addPopupNotification -> $e");
     }
     return "";
   }

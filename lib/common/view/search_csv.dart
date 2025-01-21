@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/common/widgets/searchby_dropdown_button.dart';
@@ -37,6 +38,7 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Column(
       children: [
         Row(
@@ -70,6 +72,7 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
                               setState(() {
                                 _setSearchBy = value;
                               });
+                              _searchUserController.clear();
                             }
                           },
                         ),
@@ -93,6 +96,9 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
                           ),
                           height: searchHeight,
                           child: TextFormField(
+                            inputFormatters: _setSearchBy == "핸드폰 번호"
+                                ? [MaskedInputFormatter("###-####-####")]
+                                : null,
                             onFieldSubmitted: (value) => submitSearch(),
                             controller: _searchUserController,
                             textAlignVertical: TextAlignVertical.center,

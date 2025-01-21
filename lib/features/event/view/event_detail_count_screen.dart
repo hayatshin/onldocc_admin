@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
@@ -210,6 +211,13 @@ class _EventDetailCountScreenState
                         style: _headerTextStyle,
                       ),
                     ),
+                    if (_eventModel != null && _eventModel!.allUsers)
+                      DataColumn(
+                        label: Text(
+                          "지역",
+                          style: _headerTextStyle,
+                        ),
+                      ),
                     DataColumn(
                       label: Text(
                         "참여일",
@@ -263,6 +271,22 @@ class _EventDetailCountScreenState
                               style: _contentTextStyle,
                             ),
                           ),
+                          if (_eventModel != null && _eventModel!.allUsers)
+                            DataCell(
+                              FutureBuilder(
+                                future: ref
+                                    .read(contractRepo)
+                                    .convertSubdistrictIdToName(
+                                        _participants[i].subdistrictId),
+                                builder: (context, snapshot) {
+                                  final subdistrictName = snapshot.data ?? "";
+                                  return Text(
+                                    subdistrictName,
+                                    style: _contentTextStyle,
+                                  );
+                                },
+                              ),
+                            ),
                           DataCell(
                             Text(
                               secondsToStringLine(_participants[i].createdAt),
