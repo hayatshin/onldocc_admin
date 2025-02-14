@@ -115,8 +115,9 @@ class NoticeRepository {
     try {
       final data = await _supabase
           .from("subdistricts_popup")
-          .upsert(popupModel.toJson());
-      return data["popupId"];
+          .upsert(popupModel.toJson())
+          .select('popupId');
+      return data[0]["popupId"];
     } catch (e) {
       // ignore: avoid_print
       print("[notice] addPopupNotification -> $e");
@@ -203,8 +204,18 @@ class NoticeRepository {
 
   Future<void> editPopupAdminSecret(String popupId, bool currentState) async {
     try {
-      print("currentState2: $currentState");
-
+      if (currentState) {
+        // 비밀 조치
+        await _supabase.from("subdistricts_popup").update({
+          "adminSecret": !currentState,
+        }).match({"popupId": popupId});
+      } else {
+        // 공개 조치
+        await _supabase.from("subdistricts_popup").update({
+          "adminSecret": !currentState,
+          "createdAt": getCurrentSeconds()
+        }).match({"popupId": popupId});
+      }
       await _supabase.from("subdistricts_popup").update({
         "adminSecret": !currentState,
         "createdAt": getCurrentSeconds()

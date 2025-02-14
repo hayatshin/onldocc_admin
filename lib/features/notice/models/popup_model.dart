@@ -6,7 +6,7 @@ class PopupModel {
   final int createdAt;
   final String diaryId;
   final bool adminSecret;
-  final bool master;
+  final bool? master;
 
   PopupModel({
     this.popupId,
