@@ -104,12 +104,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Gaps.v20,
-                                    Text(
+                                    SelectableText(
                                       "시니어들의 빅데이터",
                                       style: InjicareFont().headline01,
                                     ),
                                     Gaps.v10,
-                                    Text(
+                                    SelectableText(
                                       "인지케어 관리자페이지",
                                       style: InjicareFont().headline01,
                                     ),
@@ -176,7 +176,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           children: [
                             Row(
                               children: [
-                                Text(
+                                SelectableText(
                                   "이메일",
                                   style: InjicareFont().body03.copyWith(
                                         color: Palette().darkPurple,
@@ -265,7 +265,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             Gaps.v20,
                             Row(
                               children: [
-                                Text(
+                                SelectableText(
                                   "비밀번호",
                                   style: InjicareFont().body03.copyWith(
                                         color: Palette().darkPurple,

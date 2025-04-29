@@ -128,7 +128,7 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
           children: [
             Expanded(
               flex: 1,
-              child: Text(
+              child: SelectableText(
                 "2. 목표 점수를 설정해주세요.",
                 style: headerTextStyle,
                 textAlign: TextAlign.start,
@@ -159,7 +159,7 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
                     ),
                   ),
                   Gaps.h10,
-                  Text(
+                  SelectableText(
                     "점",
                     style: contentTextStyle,
                   ),
@@ -169,7 +169,7 @@ class _UploadTargetScoreWidgetState extends State<UploadTargetScoreWidget> {
           ],
         ),
         Gaps.v52,
-        Text(
+        SelectableText(
           "3. 점수 산출 방식을 설정해주세요.",
           style: headerTextStyle,
           textAlign: TextAlign.start,

@@ -166,7 +166,7 @@ class CountFieldBox extends StatelessWidget {
                                               updateState: updateDiaryCount,
                                             ),
                                             Gaps.h10,
-                                            Text(
+                                            SelectableText(
                                               "회",
                                               style: fieldContentTextStyle,
                                             ),
@@ -177,12 +177,12 @@ class CountFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1일 최대:",
                                               style: fieldContentTextStyle,
                                             ),
                                             Gaps.h20,
-                                            Text(
+                                            SelectableText(
                                               "1 회",
                                               style: fieldContentTextStyle,
                                             ),
@@ -213,7 +213,7 @@ class CountFieldBox extends StatelessWidget {
                                               updateState: updateQuizCount,
                                             ),
                                             Gaps.h10,
-                                            Text(
+                                            SelectableText(
                                               "회",
                                               style: fieldContentTextStyle,
                                             ),
@@ -224,12 +224,12 @@ class CountFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1일 최대:",
                                               style: fieldContentTextStyle,
                                             ),
                                             Gaps.h20,
-                                            Text(
+                                            SelectableText(
                                               "1 회",
                                               style: fieldContentTextStyle,
                                             ),
@@ -328,7 +328,7 @@ class FieldCountSetterTile extends StatelessWidget {
                           point: count,
                         ),
                         Gaps.h10,
-                        Text(
+                        SelectableText(
                           "회",
                           style: fieldContentTextStyle,
                         ),
@@ -352,7 +352,7 @@ class FieldCountSetterTile extends StatelessWidget {
                               },
                             ),
                             Gaps.h14,
-                            Text(
+                            SelectableText(
                               "1일 횟수 제한 없음",
                               style: fieldContentTextStyle,
                             )
@@ -369,7 +369,7 @@ class FieldCountSetterTile extends StatelessWidget {
                               ? Container()
                               : Row(
                                   children: [
-                                    Text(
+                                    SelectableText(
                                       "1일 최대:",
                                       style: fieldContentTextStyle,
                                     ),
@@ -380,7 +380,7 @@ class FieldCountSetterTile extends StatelessWidget {
                                       updateState: updateMaxState,
                                     ),
                                     Gaps.h10,
-                                    Text(
+                                    SelectableText(
                                       "회",
                                       style: fieldContentTextStyle,
                                     ),

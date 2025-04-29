@@ -55,7 +55,7 @@ class BottomModalButton extends StatelessWidget {
                 color: Colors.grey.shade700,
                 size: 12,
               )
-            : Text(
+            : SelectableText(
                 text,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,

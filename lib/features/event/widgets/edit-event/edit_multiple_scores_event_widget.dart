@@ -121,7 +121,7 @@ class _EditPointEventWidgetState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("오류가 발생했습니다."),
+          content: SelectableText("오류가 발생했습니다."),
         ),
       );
     }
@@ -142,7 +142,7 @@ class _EditPointEventWidgetState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("오류가 발생했습니다."),
+          content: SelectableText("오류가 발생했습니다."),
         ),
       );
     }
@@ -322,7 +322,7 @@ class _EditPointEventWidgetState
           color: Colors.black54,
           child: Center(
             child: AlertDialog(
-              title: Text(
+              title: SelectableText(
                 eventName.length > 10
                     ? "${eventName.substring(0, 11)}.."
                     : eventName,
@@ -335,13 +335,13 @@ class _EditPointEventWidgetState
               content: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  SelectableText(
                     "정말로 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: Sizes.size13,
                     ),
                   ),
-                  Text(
+                  SelectableText(
                     "삭제하면 다시 되돌릴 수 없습니다.",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -356,7 +356,7 @@ class _EditPointEventWidgetState
                     backgroundColor:
                         WidgetStateProperty.all(Colors.pink.shade100),
                   ),
-                  child: Text(
+                  child: SelectableText(
                     "취소",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -370,7 +370,7 @@ class _EditPointEventWidgetState
                     backgroundColor:
                         WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
-                  child: const Text(
+                  child: const SelectableText(
                     "삭제",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -445,7 +445,7 @@ class _EditPointEventWidgetState
                               alignment: Alignment.topLeft,
                               child: SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: const Text(
+                                child: const SelectableText(
                                   "행사 타이틀",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -530,7 +530,7 @@ class _EditPointEventWidgetState
                             children: [
                               SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: const Text(
+                                child: const SelectableText(
                                   "배너 이미지",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -580,7 +580,7 @@ class _EditPointEventWidgetState
                                           surfaceTintColor:
                                               Colors.pink.shade200,
                                         ),
-                                        child: Text(
+                                        child: SelectableText(
                                           '이미지 올리기',
                                           style: TextStyle(
                                             color: Colors.grey.shade800,
@@ -601,7 +601,7 @@ class _EditPointEventWidgetState
                             children: [
                               SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: const Text(
+                                child: const SelectableText(
                                   "행사 이미지",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -651,7 +651,7 @@ class _EditPointEventWidgetState
                                           surfaceTintColor:
                                               Colors.pink.shade200,
                                         ),
-                                        child: Text(
+                                        child: SelectableText(
                                           '이미지 올리기',
                                           style: TextStyle(
                                             color: Colors.grey.shade800,
@@ -675,7 +675,7 @@ class _EditPointEventWidgetState
                           children: [
                             SizedBox(
                               width: widget.size.width * 0.12,
-                              child: const Text(
+                              child: const SelectableText(
                                 "행사 설명",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
@@ -766,7 +766,7 @@ class _EditPointEventWidgetState
                               children: [
                                 SizedBox(
                                   width: widget.size.width * 0.12,
-                                  child: const Text(
+                                  child: const SelectableText(
                                     "시작일",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -784,7 +784,7 @@ class _EditPointEventWidgetState
                                       backgroundColor: Colors.grey.shade200,
                                       surfaceTintColor: Colors.pink.shade200,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       '날짜 선택하기',
                                       style: TextStyle(
                                         color: Colors.grey.shade800,
@@ -795,7 +795,7 @@ class _EditPointEventWidgetState
                                 ),
                                 Gaps.h20,
                                 if (_eventStartDate != null)
-                                  Text(
+                                  SelectableText(
                                     "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -813,7 +813,7 @@ class _EditPointEventWidgetState
                               children: [
                                 SizedBox(
                                   width: widget.size.width * 0.12,
-                                  child: const Text(
+                                  child: const SelectableText(
                                     "종료일",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -830,7 +830,7 @@ class _EditPointEventWidgetState
                                       backgroundColor: Colors.grey.shade200,
                                       surfaceTintColor: Colors.pink.shade200,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       '날짜 선택하기',
                                       style: TextStyle(
                                         color: Colors.grey.shade800,
@@ -841,7 +841,7 @@ class _EditPointEventWidgetState
                                 ),
                                 Gaps.h20,
                                 if (_eventEndDate != null)
-                                  Text(
+                                  SelectableText(
                                     "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -861,7 +861,7 @@ class _EditPointEventWidgetState
                         children: [
                           SizedBox(
                             width: widget.size.width * 0.12,
-                            child: const Text(
+                            child: const SelectableText(
                               "당첨자 수 제한",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -939,7 +939,7 @@ class _EditPointEventWidgetState
                                 ),
                               ),
                               Gaps.h10,
-                              Text(
+                              SelectableText(
                                 "명",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -961,7 +961,7 @@ class _EditPointEventWidgetState
                         children: [
                           SizedBox(
                             width: widget.size.width * 0.12,
-                            child: const Text(
+                            child: const SelectableText(
                               "연령 제한",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -1042,7 +1042,7 @@ class _EditPointEventWidgetState
                                 ),
                               ),
                               Gaps.h10,
-                              Text(
+                              SelectableText(
                                 "세 이상",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -1071,7 +1071,7 @@ class _EditPointEventWidgetState
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const Text(
+                              const SelectableText(
                                 "🥇🥈",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -1079,7 +1079,7 @@ class _EditPointEventWidgetState
                                 ),
                               ),
                               Gaps.h10,
-                              Text(
+                              SelectableText(
                                 "인지케어 행사 설정",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -1096,7 +1096,7 @@ class _EditPointEventWidgetState
                             children: [
                               SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: Text(
+                                child: SelectableText(
                                   "행사 유형 설정",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -1144,7 +1144,7 @@ class _EditPointEventWidgetState
                                 children: [
                                   SizedBox(
                                     width: widget.size.width * 0.12,
-                                    child: const Text(
+                                    child: const SelectableText(
                                       "최소 점수 설정",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
@@ -1235,7 +1235,7 @@ class _EditPointEventWidgetState
                                         ),
                                       ),
                                       Gaps.h10,
-                                      Text(
+                                      SelectableText(
                                         "점",
                                         style: TextStyle(
                                           fontSize: Sizes.size14,
@@ -1471,7 +1471,7 @@ class _DefaultCountTileState extends State<DefaultCountTile> {
       children: [
         SizedBox(
           width: widget.totalWidth * 0.12,
-          child: Text(
+          child: SelectableText(
             "❍   ${widget.header}",
             style: const TextStyle(
               fontWeight: FontWeight.w500,
@@ -1549,7 +1549,7 @@ class _DefaultCountTileState extends State<DefaultCountTile> {
               ),
             ),
             Gaps.h10,
-            Text(
+            SelectableText(
               "회",
               style: TextStyle(
                 fontSize: Sizes.size14,
@@ -1608,7 +1608,7 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
       children: [
         SizedBox(
           width: widget.totalWidth * 0.12,
-          child: Text(
+          child: SelectableText(
             "❍   ${widget.header}",
             style: const TextStyle(
               fontWeight: FontWeight.w500,
@@ -1686,7 +1686,7 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
               ),
             ),
             Gaps.h10,
-            Text(
+            SelectableText(
               "점",
               style: TextStyle(
                 fontSize: Sizes.size14,
@@ -1698,7 +1698,7 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
                 ? Row(
                     children: [
                       Gaps.h10,
-                      Text(
+                      SelectableText(
                         "/ 1,000보 당",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -1711,7 +1711,7 @@ class _DefaultPointTileState extends State<DefaultPointTile> {
                 : Row(
                     children: [
                       Gaps.h10,
-                      Text(
+                      SelectableText(
                         "/ 1회",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -1772,7 +1772,7 @@ class _MaxStepPointTileState extends State<MaxStepPointTile> {
       children: [
         SizedBox(
           // width: widget.totalWidth * 0.1,
-          child: Text(
+          child: SelectableText(
             "( ${widget.header}",
             style: TextStyle(
               fontSize: Sizes.size14,
@@ -1852,7 +1852,7 @@ class _MaxStepPointTileState extends State<MaxStepPointTile> {
               ),
             ),
             Gaps.h10,
-            Text(
+            SelectableText(
               "보 )",
               style: TextStyle(
                 fontSize: Sizes.size14,
@@ -1911,7 +1911,7 @@ class _MaxPointTileState extends State<MaxPointTile> {
       children: [
         SizedBox(
           // width: widget.totalWidth * 0.1,
-          child: Text(
+          child: SelectableText(
             "( ${widget.header}",
             style: TextStyle(
               fontSize: Sizes.size14,
@@ -1991,7 +1991,7 @@ class _MaxPointTileState extends State<MaxPointTile> {
               ),
             ),
             Gaps.h10,
-            Text(
+            SelectableText(
               "회 )",
               style: TextStyle(
                 fontSize: Sizes.size14,
@@ -2016,7 +2016,7 @@ class MaxPointTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return SelectableText(
       text,
       style: TextStyle(
         fontSize: Sizes.size14,
@@ -2033,7 +2033,7 @@ class CommentTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return SelectableText(
       text,
       style: TextStyle(
         fontSize: Sizes.size12,

@@ -272,7 +272,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                   children: [
                     SizedBox(
                       width: size.width * 0.12,
-                      child: Text(
+                      child: SelectableText(
                         "영상 제목",
                         style: _headerTextStyle,
                         textAlign: TextAlign.start,
@@ -320,7 +320,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                   children: [
                     SizedBox(
                       width: size.width * 0.12,
-                      child: Text(
+                      child: SelectableText(
                         "영상 타입",
                         style: _headerTextStyle,
                       ),
@@ -335,13 +335,13 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                           items: ["유투브", "파일"].map((String item) {
                             return DropdownMenuItem<String>(
                               value: item,
-                              child: Text(
+                              child: SelectableText(
                                 item,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Palette().normalGray,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             );
                           }).toList(),
@@ -401,7 +401,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                     children: [
                       SizedBox(
                         width: size.width * 0.12,
-                        child: Text(
+                        child: SelectableText(
                           "영상 링크",
                           style: _headerTextStyle,
                         ),
@@ -445,7 +445,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                     children: [
                       SizedBox(
                         width: size.width * 0.12,
-                        child: Text(
+                        child: SelectableText(
                           "영상 파일",
                           style: _headerTextStyle,
                         ),
@@ -457,7 +457,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                               modalText: '영상 선택하기', modalAction: pickVideoFile),
                           Gaps.h32,
                           if (_tvVideoFile != null)
-                            Text(
+                            SelectableText(
                               _tvTitle!,
                               style: _contentTextStyle.copyWith(
                                 color: Palette().darkBlue,
@@ -477,7 +477,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          SelectableText(
                             "썸네일 이미지",
                             style: _headerTextStyle,
                             textAlign: TextAlign.start,

@@ -239,7 +239,7 @@
 //                               : const SizedBox(
 //                                   height: 200,
 //                                   child: Center(
-//                                     child: Text(
+//                                     child: SelectableText(
 //                                       "인지 데이터가 없습니다.",
 //                                     ),
 //                                   ),
@@ -271,7 +271,7 @@
 //                                   DataColumn(
 //                                     label: SizedBox(
 //                                       width: indexWidth,
-//                                       child: const Text(
+//                                       child: const SelectableText(
 //                                         "#",
 //                                         textAlign: TextAlign.start,
 //                                       ),
@@ -280,7 +280,7 @@
 //                                   DataColumn(
 //                                     label: SizedBox(
 //                                       width: dateWidth,
-//                                       child: const Text(
+//                                       child: const SelectableText(
 //                                         "날짜",
 //                                         textAlign: TextAlign.center,
 //                                       ),
@@ -289,7 +289,7 @@
 //                                   DataColumn(
 //                                     label: SizedBox(
 //                                       width: resultWidth,
-//                                       child: const Text(
+//                                       child: const SelectableText(
 //                                         "인지 결과",
 //                                         textAlign: TextAlign.center,
 //                                       ),
@@ -298,7 +298,7 @@
 //                                   DataColumn(
 //                                     label: SizedBox(
 //                                       width: questionWidth,
-//                                       child: const Text(
+//                                       child: const SelectableText(
 //                                         "문제",
 //                                         textAlign: TextAlign.center,
 //                                       ),
@@ -307,7 +307,7 @@
 //                                   DataColumn(
 //                                     label: SizedBox(
 //                                       width: caWidth,
-//                                       child: const Text(
+//                                       child: const SelectableText(
 //                                         "정답",
 //                                         textAlign: TextAlign.center,
 //                                       ),
@@ -316,7 +316,7 @@
 //                                   DataColumn(
 //                                     label: SizedBox(
 //                                       width: usWidth,
-//                                       child: const Text(
+//                                       child: const SelectableText(
 //                                         "제출 답",
 //                                         textAlign: TextAlign.center,
 //                                       ),
@@ -333,7 +333,7 @@
 //                                         DataCell(
 //                                           Align(
 //                                             alignment: Alignment.centerLeft,
-//                                             child: Text(
+//                                             child: SelectableText(
 //                                               (index + 1).toString(),
 //                                               style: const TextStyle(
 //                                                 fontSize: Sizes.size13,
@@ -344,7 +344,7 @@
 //                                         DataCell(
 //                                           Align(
 //                                             alignment: Alignment.center,
-//                                             child: Text(
+//                                             child: SelectableText(
 //                                               secondsToStringLine(
 //                                                   rowData.createdAt),
 //                                               style: const TextStyle(
@@ -369,7 +369,7 @@
 //                                         DataCell(
 //                                           Align(
 //                                             alignment: Alignment.center,
-//                                             child: Text(
+//                                             child: SelectableText(
 //                                               rowData.quiz,
 //                                               textAlign: TextAlign.center,
 //                                               style: const TextStyle(
@@ -381,7 +381,7 @@
 //                                         DataCell(
 //                                           Align(
 //                                             alignment: Alignment.center,
-//                                             child: Text(
+//                                             child: SelectableText(
 //                                               rowData.quizAnswer.toString(),
 //                                               textAlign: TextAlign.center,
 //                                               style: const TextStyle(
@@ -393,7 +393,7 @@
 //                                         DataCell(
 //                                           Align(
 //                                             alignment: Alignment.center,
-//                                             child: Text(
+//                                             child: SelectableText(
 //                                               rowData.userAnswer.toString(),
 //                                               textAlign: TextAlign.center,
 //                                               style: const TextStyle(

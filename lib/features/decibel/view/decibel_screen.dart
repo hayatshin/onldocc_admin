@@ -43,7 +43,7 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
     "날짜",
     "데시벨",
     "이름",
-    "나이",
+    "연령",
     "성별",
     "핸드폰 번호",
   ];
@@ -224,41 +224,41 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
                       ),
                       columns: [
                         DataColumn2(
-                          label: Text(
+                          label: SelectableText(
                             "날짜",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           size: ColumnSize.L,
-                          label: Text(
+                          label: SelectableText(
                             "데시벨",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           size: ColumnSize.L,
-                          label: Text(
+                          label: SelectableText(
                             "이름",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           size: ColumnSize.S,
-                          label: Text(
-                            "나이",
+                          label: SelectableText(
+                            "연령",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           size: ColumnSize.S,
-                          label: Text(
+                          label: SelectableText(
                             "성별",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          label: Text(
+                          label: SelectableText(
                             "핸드폰 번호",
                             style: _headerTextStyle,
                           ),
@@ -269,20 +269,20 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
                           DataRow2(
                             cells: [
                               DataCell(
-                                Text(
+                                SelectableText(
                                   secondsToYearMonthDayHourMinute(
                                       _userDataList[i].createdAt),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i].decibel,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i].name.length > 8
                                       ? "${_userDataList[i].name.substring(0, 8)}.."
                                       : _userDataList[i].name,
@@ -290,19 +290,19 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i].age,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i].gender,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i].phone,
                                   style: _contentTextStyle,
                                 ),

@@ -148,7 +148,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
       body: Row(
         children: [
           Container(
-            width: size.width * 0.17,
+            width: size.width * 0.16,
             color: Colors.white,
             child: Column(
               children: [
@@ -260,14 +260,14 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                           ),
                           ChildTileModel(
                             index: 6,
-                            tileText: "온라인 치매 검사",
+                            tileText: "자가 검사",
                             tileColor: const Color(0xff696EFF),
                           ),
-                          ChildTileModel(
-                            index: 7,
-                            tileText: "노인 우울척도 검사",
-                            tileColor: const Color(0xffF8ACFF),
-                          ),
+                          // ChildTileModel(
+                          //   index: 7,
+                          //   tileText: "노인 우울척도 검사",
+                          //   tileColor: const Color(0xffF8ACFF),
+                          // ),
                         ],
                       ),
                       ParentSidebarTile(
@@ -275,24 +275,24 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                         title: "일상 관리",
                         children: [
                           ChildTileModel(
-                            index: 8,
+                            index: 7,
                             tileText: "영상 관리",
                             tileColor: const Color(0xffFFBA49),
                           ),
                           ChildTileModel(
-                            index: 9,
-                            tileText: "보호자 지정",
+                            index: 8,
+                            tileText: "보호자 케어",
                             tileColor: const Color(0xff20A39E),
                           ),
                           ChildTileModel(
-                            index: 10,
+                            index: 9,
                             tileText: "화풀기",
                             tileColor: const Color(0xffEF5B5B),
                           ),
                         ],
                       ),
                       const SingleSidebarTile(
-                        index: 11,
+                        index: 10,
                         assetPath: "assets/svg/envelope.svg",
                         title: "친구 초대",
                       ),

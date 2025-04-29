@@ -195,9 +195,9 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                               ),
                               columns: [
                                 DataColumn2(
-                                  fixedWidth: 80,
+                                  fixedWidth: 70,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "#",
                                       style: headerTextStyle,
                                     ),
@@ -206,7 +206,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                 DataColumn2(
                                   size: ColumnSize.L,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "행사",
                                       style: headerTextStyle,
                                     ),
@@ -214,25 +214,25 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                 ),
                                 DataColumn2(
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "주최 기관",
                                       style: headerTextStyle,
                                     ),
                                   ),
                                 ),
                                 DataColumn2(
-                                  size: ColumnSize.L,
+                                  // size: ColumnSize.L,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "시작일",
                                       style: headerTextStyle,
                                     ),
                                   ),
                                 ),
                                 DataColumn2(
-                                  size: ColumnSize.L,
+                                  // size: ColumnSize.L,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "종료일",
                                       style: headerTextStyle,
                                     ),
@@ -241,7 +241,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                 DataColumn2(
                                   fixedWidth: 100,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "상태",
                                       style: headerTextStyle,
                                     ),
@@ -249,7 +249,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                 ),
                                 DataColumn2(
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "공개 여부",
                                       style: headerTextStyle,
                                     ),
@@ -258,7 +258,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                 DataColumn2(
                                   fixedWidth: 80,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "수정",
                                       style: headerTextStyle,
                                     ),
@@ -267,7 +267,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                 DataColumn2(
                                   fixedWidth: 80,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "선택",
                                       style: headerTextStyle,
                                     ),
@@ -280,23 +280,23 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     cells: [
                                       DataCell(
                                         Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             "${i + 1}",
                                             style: contentTextStyle,
                                           ),
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           _eventList[i].title,
                                           style: contentTextStyle,
                                           maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                          // overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                       DataCell(
                                         Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             _eventList[i]
                                                 .orgName
                                                 .toString()
@@ -304,13 +304,13 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                                 .last,
                                             style: contentTextStyle,
                                             maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                            // overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ),
                                       DataCell(
                                         Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             _eventList[i].startDate,
                                             style: contentTextStyle,
                                             maxLines: 1,
@@ -319,7 +319,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                       ),
                                       DataCell(
                                         Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             _eventList[i].endDate,
                                             style: contentTextStyle,
                                             maxLines: 1,
@@ -328,7 +328,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                       ),
                                       DataCell(
                                         Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             _eventList[i].state ?? "-",
                                             style: contentTextStyle,
                                             maxLines: 1,

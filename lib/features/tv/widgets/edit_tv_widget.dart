@@ -60,7 +60,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
           color: Colors.black54,
           child: Center(
             child: AlertDialog(
-              title: Text(
+              title: SelectableText(
                 tvTitle.length > 10 ? "${tvTitle.substring(0, 11)}.." : tvTitle,
                 style: const TextStyle(
                   fontSize: Sizes.size20,
@@ -71,13 +71,13 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
               content: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  SelectableText(
                     "정말로 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: Sizes.size13,
                     ),
                   ),
-                  Text(
+                  SelectableText(
                     "삭제하면 다시 되돌릴 수 없습니다.",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -92,7 +92,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                     backgroundColor:
                         WidgetStateProperty.all(Colors.pink.shade100),
                   ),
-                  child: Text(
+                  child: SelectableText(
                     "취소",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -111,7 +111,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                     backgroundColor:
                         WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
-                  child: const Text(
+                  child: const SelectableText(
                     "삭제",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -214,7 +214,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                               children: [
                                 SizedBox(
                                   width: widget.totalWidth * 0.12,
-                                  child: const Text(
+                                  child: const SelectableText(
                                     "영상 제목",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -302,7 +302,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                               children: [
                                 SizedBox(
                                   width: widget.totalWidth * 0.12,
-                                  child: const Text(
+                                  child: const SelectableText(
                                     "영상 링크",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -313,7 +313,7 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                                 Gaps.h32,
                                 SizedBox(
                                   width: widget.totalWidth * 0.6,
-                                  child: Text(
+                                  child: SelectableText(
                                     widget.tvModel.videoType == "youtube"
                                         ? widget.tvModel.link
                                         : "파일 형식의 영상",

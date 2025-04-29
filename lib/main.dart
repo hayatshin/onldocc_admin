@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -30,6 +31,7 @@ void main() async {
       anonKey: supabaseAnonKeyDebug!,
     );
 
+    GoRouter.optionURLReflectsImperativeAPIs = true;
     await SystemChrome.setPreferredOrientations(
       [
         DeviceOrientation.portraitUp,

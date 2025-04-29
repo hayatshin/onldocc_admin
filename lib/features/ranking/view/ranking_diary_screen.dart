@@ -288,7 +288,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                               SizedBox(
                                 width: chartWidth,
                                 child: const Center(
-                                  child: Text(
+                                  child: SelectableText(
                                     "일기 데이터가 없습니다.",
                                   ),
                                 ),
@@ -321,7 +321,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                   children: [
                                     Expanded(
                                       flex: 1,
-                                      child: Text(
+                                      child: SelectableText(
                                         "#",
                                         style: TextStyle(
                                           // color: Colors.white,
@@ -333,7 +333,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     ),
                                     Expanded(
                                       flex: 3,
-                                      child: Text(
+                                      child: SelectableText(
                                         "날짜",
                                         style: TextStyle(
                                           // color: Colors.white,
@@ -345,7 +345,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     ),
                                     Expanded(
                                       flex: 8,
-                                      child: Text(
+                                      child: SelectableText(
                                         "일기",
                                         style: TextStyle(
                                           // color: Colors.white,
@@ -357,7 +357,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     ),
                                     Expanded(
                                       flex: 2,
-                                      child: Text(
+                                      child: SelectableText(
                                         "감정",
                                         style: TextStyle(
                                           // color: Colors.white,
@@ -369,7 +369,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     ),
                                     Expanded(
                                       flex: 2,
-                                      child: Text(
+                                      child: SelectableText(
                                         "비밀",
                                         style: TextStyle(
                                           // color: Colors.white,
@@ -381,7 +381,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: Text(
+                                      child: SelectableText(
                                         "",
                                         style: TextStyle(
                                           fontSize: Sizes.size13,
@@ -436,7 +436,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                               children: [
                                                 Expanded(
                                                   flex: 1,
-                                                  child: Text(
+                                                  child: SelectableText(
                                                     (index + 1).toString(),
                                                     style: const TextStyle(
                                                       fontSize: Sizes.size13,
@@ -446,7 +446,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                 ),
                                                 Expanded(
                                                   flex: 3,
-                                                  child: Text(
+                                                  child: SelectableText(
                                                     secondsToStringLine(
                                                         _diaryDataList[index]
                                                             .createdAt),
@@ -461,7 +461,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                         "전체 공개"
                                                     ? Expanded(
                                                         flex: 8,
-                                                        child: Text(
+                                                        child: SelectableText(
                                                           "비밀 글",
                                                           style: TextStyle(
                                                             color: Colors
@@ -473,7 +473,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                       )
                                                     : Expanded(
                                                         flex: 8,
-                                                        child: Text(
+                                                        child: SelectableText(
                                                           _diaryDataList[index]
                                                                       .todayDiary
                                                                       .length >
@@ -493,7 +493,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                       ),
                                                 Expanded(
                                                   flex: 2,
-                                                  child: Text(
+                                                  child: SelectableText(
                                                     moodeList
                                                         .firstWhere((element) =>
                                                             element.position ==
@@ -529,7 +529,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                             children: [
                                               const Expanded(
                                                 flex: 1,
-                                                child: Text(
+                                                child: SelectableText(
                                                   "",
                                                   style: TextStyle(
                                                     fontSize: Sizes.size13,
@@ -538,7 +538,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                               ),
                                               const Expanded(
                                                 flex: 2,
-                                                child: Text(
+                                                child: SelectableText(
                                                   "",
                                                   style: TextStyle(
                                                     fontSize: Sizes.size13,
@@ -559,7 +559,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                                 .only(
                                                           bottom: Sizes.size10,
                                                         ),
-                                                        child: Text(
+                                                        child: SelectableText(
                                                           _diaryDataList[index]
                                                               .todayDiary,
                                                           style:
@@ -572,7 +572,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                                     ),
                                               const Expanded(
                                                 flex: 2,
-                                                child: Text(
+                                                child: SelectableText(
                                                   "",
                                                   style: TextStyle(
                                                     fontSize: Sizes.size13,
@@ -581,7 +581,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                               ),
                                               const Expanded(
                                                 flex: 2,
-                                                child: Text(
+                                                child: SelectableText(
                                                   "",
                                                   style: TextStyle(
                                                     fontSize: Sizes.size13,

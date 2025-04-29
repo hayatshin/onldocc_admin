@@ -231,7 +231,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 DataColumn2(
                                   fixedWidth: 80,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "#",
                                       style: _headerTextStyle,
                                     ),
@@ -240,7 +240,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 DataColumn2(
                                   size: ColumnSize.L,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "공지",
                                       style: _headerTextStyle,
                                     ),
@@ -248,7 +248,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 ),
                                 DataColumn2(
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "이미지",
                                       style: _headerTextStyle,
                                     ),
@@ -256,7 +256,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 ),
                                 DataColumn2(
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "작성일",
                                       style: _headerTextStyle,
                                     ),
@@ -264,7 +264,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 ),
                                 DataColumn2(
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "공개 여부",
                                       style: _headerTextStyle,
                                     ),
@@ -273,7 +273,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 DataColumn2(
                                   fixedWidth: 100,
                                   label: Center(
-                                    child: Text(
+                                    child: SelectableText(
                                       "수정",
                                       style: _headerTextStyle,
                                     ),
@@ -286,14 +286,14 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                     cells: [
                                       DataCell(
                                         Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             "${i + 1}",
                                             style: _contentTextStyle,
                                           ),
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           _noticeList[i]
                                               .todayDiary
                                               .trim()
@@ -305,7 +305,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                       DataCell(
                                         _noticeList[i].images!.isEmpty
                                             ? Center(
-                                                child: Text(
+                                                child: SelectableText(
                                                   "",
                                                   style: _contentTextStyle,
                                                 ),
@@ -330,7 +330,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                       ),
                                       DataCell(
                                         Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             secondsToStringLine(
                                                 _noticeList[i].createdAt),
                                             style: _contentTextStyle,

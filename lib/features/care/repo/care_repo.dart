@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CareRepository {
@@ -17,6 +18,34 @@ class CareRepository {
       print("checkUserStepExists -> $e");
     }
     return false;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPartners(
+      AdminProfileModel adminProfileModel) async {
+    if (adminProfileModel.master) {
+      final query = await _supabase
+          .from("partners")
+          .select('*, users!public_partners_partnerUserId_fkey(*)')
+          .order(
+            'createdAt',
+            ascending: false,
+            nullsFirst: false,
+          );
+
+      return query;
+    } else {
+      final query = await _supabase
+          .from("partners")
+          .select('*, users!public_partners_partnerUserId_fkey(*)')
+          .eq('users.subdistrictId', adminProfileModel.subdistrictId)
+          .order(
+            'createdAt',
+            ascending: false,
+            nullsFirst: false,
+          );
+
+      return query;
+    }
   }
 }
 

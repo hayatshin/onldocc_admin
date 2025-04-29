@@ -17,7 +17,7 @@ class ErrorScreen extends StatelessWidget {
             color: Theme.of(context).primaryColor,
           ),
           Gaps.v40,
-          const Text(
+          const SelectableText(
             "문제가 발생했습니다.\n인지케어팀에 문의해주세요.",
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -34,7 +34,7 @@ class ErrorScreen extends StatelessWidget {
                 color: Colors.grey.shade600,
               ),
               Gaps.h10,
-              Text(
+              SelectableText(
                 "help@hayat.kr",
                 style: TextStyle(
                   color: Colors.grey.shade600,

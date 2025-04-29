@@ -44,7 +44,7 @@ class _EventDetailMultipleScoresScreenState
   final List<String> _listHeader = [
     "#",
     "이름",
-    "나이",
+    "연령",
     "성별",
     "핸드폰 번호",
     "참여일",
@@ -182,56 +182,56 @@ class _EventDetailMultipleScoresScreenState
                   ),
                   columns: [
                     DataColumn(
-                      label: Text(
+                      label: SelectableText(
                         "#",
                         style: _headerTextStyle,
                       ),
                     ),
                     DataColumn(
-                      label: Text(
+                      label: SelectableText(
                         "이름",
                         style: _headerTextStyle,
                       ),
                     ),
                     DataColumn(
-                      label: Text(
-                        "나이",
+                      label: SelectableText(
+                        "연령",
                         style: _headerTextStyle,
                       ),
                     ),
                     DataColumn(
-                      label: Text(
+                      label: SelectableText(
                         "성별",
                         style: _headerTextStyle,
                       ),
                     ),
                     DataColumn(
-                      label: Text(
+                      label: SelectableText(
                         "핸드폰 번호",
                         style: _headerTextStyle,
                       ),
                     ),
                     if (_eventModel != null && _eventModel!.allUsers)
                       DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "지역",
                           style: _headerTextStyle,
                         ),
                       ),
                     DataColumn(
-                      label: Text(
+                      label: SelectableText(
                         "참여일",
                         style: _headerTextStyle,
                       ),
                     ),
                     DataColumn(
-                      label: Text(
+                      label: SelectableText(
                         "점수",
                         style: _headerTextStyle,
                       ),
                     ),
                     DataColumn(
-                      label: Text(
+                      label: SelectableText(
                         "달성 여부",
                         style: _headerTextStyle,
                       ),
@@ -242,31 +242,31 @@ class _EventDetailMultipleScoresScreenState
                       DataRow(
                         cells: [
                           DataCell(
-                            Text(
+                            SelectableText(
                               (i + 1).toString(),
                               style: _contentTextStyle,
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _participants[i].name,
                               style: _contentTextStyle,
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _participants[i].userAge,
                               style: _contentTextStyle,
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _participants[i].gender,
                               style: _contentTextStyle,
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _participants[i].phone,
                               style: _contentTextStyle,
                             ),
@@ -280,7 +280,7 @@ class _EventDetailMultipleScoresScreenState
                                         _participants[i].subdistrictId),
                                 builder: (context, snapshot) {
                                   final subdistrictName = snapshot.data ?? "";
-                                  return Text(
+                                  return SelectableText(
                                     subdistrictName,
                                     style: _contentTextStyle,
                                   );
@@ -288,19 +288,19 @@ class _EventDetailMultipleScoresScreenState
                               ),
                             ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               secondsToStringLine(_participants[i].createdAt),
                               style: _contentTextStyle,
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _participants[i].userTotalPoint.toString(),
                               style: _contentTextStyle,
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _participants[i].userAchieveOrNot! ? "달성" : "미달성",
                               style: _contentTextStyle,
                             ),

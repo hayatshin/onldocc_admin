@@ -593,7 +593,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("행사 이름", style: headerTextStyle),
+                              SelectableText("행사 이름", style: headerTextStyle),
                               if (tapUploadEvent && _eventTitle.isEmpty)
                                 const InsufficientField(text: "행사 이름을 입력해주세요")
                             ],
@@ -632,7 +632,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            SelectableText(
                               "행사 설명",
                               style: headerTextStyle,
                               textAlign: TextAlign.start,
@@ -690,13 +690,13 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        SelectableText(
                                           "배너 이미지",
                                           style: headerTextStyle,
                                           textAlign: TextAlign.start,
                                         ),
                                         Gaps.v5,
-                                        Text(
+                                        SelectableText(
                                           "가로:세로 = 5:4 비율\n(ex. 1000px:800px)",
                                           style: headerInfoTextStyle,
                                           textAlign: TextAlign.start,
@@ -778,7 +778,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      SelectableText(
                                         "시작일",
                                         style: headerTextStyle,
                                         textAlign: TextAlign.start,
@@ -803,7 +803,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     ),
                                     Gaps.h20,
                                     if (_eventStartDate != null)
-                                      Text(
+                                      SelectableText(
                                         "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
                                         style: contentTextStyle,
                                       ),
@@ -822,7 +822,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      SelectableText(
                                         "당첨자 수 제한",
                                         style: headerTextStyle,
                                         textAlign: TextAlign.start,
@@ -862,14 +862,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           ),
                                         ),
                                         Gaps.h10,
-                                        Text(
+                                        SelectableText(
                                           "명",
                                           style: contentTextStyle,
                                         ),
                                       ],
                                     ),
                                     Gaps.v16,
-                                    Text(
+                                    SelectableText(
                                       "제한이 없을 경우 '0'을 기입해주세요.",
                                       style: headerInfoTextStyle,
                                     ),
@@ -907,7 +907,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        SelectableText(
                                           "행사 이미지",
                                           style: headerTextStyle,
                                           textAlign: TextAlign.start,
@@ -989,7 +989,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      SelectableText(
                                         "종료일",
                                         style: headerTextStyle,
                                         textAlign: TextAlign.start,
@@ -1014,7 +1014,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     ),
                                     Gaps.h20,
                                     if (_eventEndDate != null)
-                                      Text(
+                                      SelectableText(
                                         "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
                                         style: contentTextStyle,
                                       ),
@@ -1033,7 +1033,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      SelectableText(
                                         "연령 제한",
                                         style: headerTextStyle,
                                         textAlign: TextAlign.start,
@@ -1074,14 +1074,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                           ),
                                         ),
                                         Gaps.h10,
-                                        Text(
+                                        SelectableText(
                                           "세 이상",
                                           style: contentTextStyle,
                                         ),
                                       ],
                                     ),
                                     Gaps.v16,
-                                    Text(
+                                    SelectableText(
                                       "제한이 없을 경우 '0'을 기입해주세요.",
                                       style: headerInfoTextStyle,
                                     ),
@@ -1109,7 +1109,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
+                        SelectableText(
                           "행사 설정",
                           style: TextStyle(
                             color: Palette().darkBlue,
@@ -1121,13 +1121,13 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                           Row(
                             children: [
                               Gaps.h32,
-                              Text(
+                              SelectableText(
                                 "행사 설정의 빈칸을 채워주세요",
                                 style: headerTextStyle.copyWith(
                                   color: Colors.red,
                                 ),
-                                overflow: TextOverflow.visible,
-                                softWrap: true,
+                                // overflow: TextOverflow.visible,
+                                // softWrap: true,
                               )
                             ],
                           ),
@@ -1139,7 +1139,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                       children: [
                         Expanded(
                           flex: 1,
-                          child: Text(
+                          child: SelectableText(
                             "1. 행사 유형을 설정해주세요.",
                             style: headerTextStyle,
                           ),
@@ -1183,7 +1183,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      SelectableText(
                                         "${_eventType.eventTypeName}:",
                                         style: TextStyle(
                                           color: Palette().darkBlue,
@@ -1192,7 +1192,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                         ),
                                       ),
                                       Gaps.v6,
-                                      Text(
+                                      SelectableText(
                                         _eventType.eventTypeDescription,
                                         style: TextStyle(
                                           color: Palette().dashBlue,
@@ -1309,7 +1309,7 @@ class DefaultPointTile extends StatelessWidget {
       children: [
         SizedBox(
           width: totalWidth * 0.1,
-          child: Text(
+          child: SelectableText(
             "⚬ $header",
             style: const TextStyle(
               fontWeight: FontWeight.w500,
@@ -1340,7 +1340,7 @@ class DefaultPointTile extends StatelessWidget {
               ),
             ),
             Gaps.h10,
-            Text(
+            SelectableText(
               "점",
               style: TextStyle(
                 fontSize: Sizes.size14,
@@ -1352,7 +1352,7 @@ class DefaultPointTile extends StatelessWidget {
               const Row(
                 children: [
                   Gaps.h10,
-                  Text(
+                  SelectableText(
                     "/ 1000보 당",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -1375,7 +1375,7 @@ class CommentTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return SelectableText(
       text,
       style: TextStyle(
         fontSize: Sizes.size12,
@@ -1402,13 +1402,13 @@ class InsufficientField extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Flexible(
-              child: Text(
+              child: SelectableText(
                 text,
                 style: headerTextStyle.copyWith(
                   color: Colors.red,
                 ),
-                overflow: TextOverflow.visible,
-                softWrap: true,
+                // overflow: TextOverflow.visible,
+                // softWrap: true,
               ),
             ),
           ],

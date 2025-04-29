@@ -23,6 +23,17 @@ import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+// cognitionTestType
+final List<CognitionTestType> cognitionTestTypes = [
+  CognitionTestType(testId: "alzheimer_test", testName: "온라인 치매 검사"),
+  CognitionTestType(testId: "depression_test", testName: "우울척도 단축형 검사"),
+  CognitionTestType(testId: "stress_test", testName: "스트레스 척도 검사"),
+  CognitionTestType(testId: "anxiety_test", testName: "불안장애 척도 검사"),
+  CognitionTestType(testId: "trauma_test", testName: "외상 후 스트레스 검사"),
+  CognitionTestType(testId: "esteem_test", testName: "자아존중감 검사"),
+  CognitionTestType(testId: "sleep_test", testName: "수면(불면증) 검사"),
+];
+
 class DashboardScreen extends ConsumerStatefulWidget {
   static const routeURL = "/dashboard";
   static const routeName = "dashboard";
@@ -39,8 +50,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   List<UserModel?> _totalUserDataList = [];
   List<UserModel?> _periodUserDataList = [];
 
-  bool _loadingFinished = false;
-
   DateRange _selectedDateRange = DateRange(
     getThisWeekMonday(),
     DateTime.now(),
@@ -48,18 +57,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedStartSeconds =
       convertStartDateTimeToSeconds(getThisWeekMonday());
   int _selectedEndSeconds = convertDateTimeToSeconds(DateTime.now());
-
-  final TextStyle _headerTextStyle = TextStyle(
-    fontSize: Sizes.size12,
-    fontWeight: FontWeight.w600,
-    color: Palette().darkGray,
-  );
-
-  final TextStyle _contentTextStyle = TextStyle(
-    fontSize: Sizes.size10,
-    fontWeight: FontWeight.w500,
-    color: Palette().darkGray,
-  );
 
   GlobalKey diaryColumnKey = GlobalKey();
   double? diaryWidgetHeight = 300;
@@ -92,6 +89,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   String _chatSumTime = "";
   String _chatAvgTime = "";
   List<StepDataModel> _stepDataList = [];
+
+  String _selectedCognitionTestName = "온라인 치매 검사";
 
   @override
   void initState() {
@@ -189,7 +188,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               dateRange.startDate!);
                           _selectedEndSeconds = convertEndDateTimeToSeconds(
                               dateRange.endDate ?? dateRange.startDate!);
-                          _loadingFinished = false;
                         });
                         _removePeriodCalender();
                         _initializeDashboard();
@@ -394,30 +392,40 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return steps.isEmpty ? 0 : (sumStep / steps.length).roundToDouble();
   }
 
-  // void _generatePdf() async {
-  //   final pdf = pw.Document();
+  int getTraumaPriority(String result) {
+    switch (result) {
+      case "심한 수준":
+        return 0;
+      case "주의 요망":
+        return 1;
+      default:
+        return 999;
+    }
+  }
 
-  //   pdf.addPage(
-  //     pw.Page(
-  //       pageFormat: PdfPageFormat.a4,
-  //       build: (context) {
-  //         return pw.Center(
-  //           child: pw.Column(
-  //             children: [],
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
+  int getEsteemPriority(String result) {
+    switch (result) {
+      case "매우 낮음":
+        return 0;
+      case "낮음":
+        return 1;
+      default:
+        return 999;
+    }
+  }
 
-  //   var savedFile = await pdf.save();
-  //   List<int> fileInts = List.from(savedFile);
-  //   html.AnchorElement()
-  //     ..href =
-  //         "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(fileInts)}"
-  //     ..setAttribute("download", "${DateTime.now().millisecondsSinceEpoch}.pdf")
-  //     ..click();
-  // }
+  int getSleepPriority(String result) {
+    switch (result) {
+      case "심각한 수준":
+        return 0;
+      case "중한 수준":
+        return 1;
+      case "경미한 수준":
+        return 2;
+      default:
+        return 999;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -917,62 +925,277 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             const GrayDivider(height: 60),
                             SubHeaderBox(
                               subHeader: "온라인 치매 검사",
-                              subHeaderColor: Palette().dashBlue,
+                              subHeaderColor: Colors.blue,
                               contentData:
                                   "${_cognitionTestList.where((element) => element.testType == "alzheimer_test").toList().length} 회",
                             ),
                             const GrayDivider(height: 60),
                             SubHeaderBox(
-                              subHeader: "노인 우울척도 검사",
-                              subHeaderColor: Palette().dashGreen,
+                              subHeader: "우울척도 단축형 검사",
+                              subHeaderColor: Colors.orange,
                               contentData:
                                   "${_cognitionTestList.where((element) => element.testType == "depression_test").toList().length} 회",
+                            ),
+                            const GrayDivider(height: 60),
+                            const SubHeaderBox(
+                              subHeader: "스트레스 척도 검사",
+                              subHeaderColor: Colors.red,
+                              contentData: "0회",
+                            ),
+                            const GrayDivider(height: 60),
+                            const SubHeaderBox(
+                              subHeader: "불안장애 척도 검사",
+                              subHeaderColor: Colors.green,
+                              contentData: "0회",
+                            ),
+                            const GrayDivider(height: 60),
+                            SubHeaderBox(
+                              subHeader: "외상 후 스트레스 척도 검사",
+                              subHeaderColor: Colors.grey.shade700,
+                              contentData: "0회",
+                            ),
+                            const GrayDivider(height: 60),
+                            const SubHeaderBox(
+                              subHeader: "자아존중감 검사",
+                              subHeaderColor: Colors.teal,
+                              contentData: "0회",
+                            ),
+                            const GrayDivider(height: 60),
+                            const SubHeaderBox(
+                              subHeader: "수면(불면증) 검사",
+                              subHeaderColor: Colors.purple,
+                              contentData: "0회",
                             ),
                           ],
                         ),
                       ),
                     ),
-                    Gaps.h20,
-                    Expanded(
-                      child: Container(),
-                    ),
                   ],
                 ),
-                Gaps.v16,
+                Gaps.v32,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 300,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2<String>(
+                          isExpanded: true,
+                          items:
+                              cognitionTestTypes.map((CognitionTestType item) {
+                            return DropdownMenuItem<String>(
+                              value: item.testName,
+                              child: Text(
+                                item.testName,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Palette().normalGray,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          value: _selectedCognitionTestName,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedCognitionTestName = value;
+                              });
+                            }
+                          },
+                          buttonStyleData: ButtonStyleData(
+                            padding: const EdgeInsets.only(left: 14, right: 14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                              border: Border.all(
+                                color: Palette().darkBlue,
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                          iconStyleData: IconStyleData(
+                            icon: const Icon(
+                              Icons.expand_more_rounded,
+                            ),
+                            iconSize: 14,
+                            iconEnabledColor: Palette().darkBlue,
+                            iconDisabledColor: Palette().darkBlue,
+                          ),
+                          dropdownStyleData: DropdownStyleData(
+                            elevation: 2,
+                            width: 300,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            scrollbarTheme: ScrollbarThemeData(
+                              radius: const Radius.circular(10),
+                              thumbVisibility: WidgetStateProperty.all(true),
+                            ),
+                          ),
+                          menuItemStyleData: const MenuItemStyleData(
+                            height: 25,
+                            padding: EdgeInsets.only(
+                              left: 15,
+                              right: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Gaps.v20,
                 Row(
                   children: [
-                    // 온라인 치매 검사
-                    CognitionDetailTestBox(
-                      detailTest: "온라인 치매 검사",
-                      testResult1: "정상",
-                      testResult1Data:
-                          "${_cognitionTestList.where((element) => element.testType == "alzheimer_test" && element.result == "정상").toList().length}회",
-                      testResult2: "치매 조기검진 필요",
-                      testResult2Data:
-                          "${_cognitionTestList.where((element) => element.testType == "alzheimer_test" && element.result == "치매 조기검진 필요").toList().length}회",
-                      listName: "치매 조기 검진필요 대상자",
-                      list: _cognitionTestList
-                          .where((element) =>
-                              element.testType == "alzheimer_test" &&
-                              element.result == "치매 조기검진 필요")
-                          .toList(),
-                    ),
-                    Gaps.h20,
-                    CognitionDetailTestBox(
-                      detailTest: "노인 우울척도 검사",
-                      testResult1: "정상",
-                      testResult1Data:
-                          "${_cognitionTestList.where((element) => element.testType == "depression_test" && element.result == "정상").toList().length}회",
-                      testResult2: "우울",
-                      testResult2Data:
-                          "${_cognitionTestList.where((element) => element.testType == "depression_test" && element.result == "우울").toList().length}회",
-                      listName: "우울 대상자",
-                      list: _cognitionTestList
-                          .where((element) =>
-                              element.testType == "depression_test" &&
-                              element.result == "우울")
-                          .toList(),
-                    ),
+                    if (_selectedCognitionTestName ==
+                        cognitionTestTypes[0].testName)
+                      CognitionDetailTestBox(
+                        detailTest: cognitionTestTypes[0].testName,
+                        testResult1: "정상",
+                        testResult1Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[0].testId && element.result == "정상").toList().length}회",
+                        testResult2: "치매 조기검진 필요",
+                        testResult2Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[0].testId && element.result == "치매 조기검진 필요").toList().length}회",
+                        list: _cognitionTestList
+                            .where((element) =>
+                                element.testType ==
+                                    cognitionTestTypes[0].testId &&
+                                element.result == "치매 조기검진 필요")
+                            .toList(),
+                      ),
+                    if (_selectedCognitionTestName ==
+                        cognitionTestTypes[1].testName)
+                      CognitionDetailTestBox(
+                        detailTest: cognitionTestTypes[1].testName,
+                        testResult1: "정상",
+                        testResult1Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[1].testId && element.result == "정상").toList().length}회",
+                        testResult2: "우울",
+                        testResult2Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[1].testId && element.result == "우울").toList().length}회",
+                        list: _cognitionTestList
+                            .where((element) =>
+                                element.testType ==
+                                    cognitionTestTypes[1].testId &&
+                                element.result == "우울")
+                            .toList(),
+                      ),
+                    if (_selectedCognitionTestName ==
+                        cognitionTestTypes[2].testName)
+                      CognitionDetailTestBox(
+                        detailTest: cognitionTestTypes[2].testName,
+                        testResult1: "정상",
+                        testResult1Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[2].testId && element.result == "정상").toList().length}회",
+                        testResult2: "스트레스 경험",
+                        testResult2Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[2].testId && element.result == "스트레스 경험").toList().length}회",
+                        list: _cognitionTestList
+                            .where((element) =>
+                                element.testType ==
+                                    cognitionTestTypes[2].testId &&
+                                element.result == "스트레스 경험")
+                            .toList(),
+                      ),
+                    if (_selectedCognitionTestName ==
+                        cognitionTestTypes[3].testName)
+                      CognitionDetailTestBox(
+                        detailTest: cognitionTestTypes[3].testName,
+                        testResult1: "불안 아님",
+                        testResult1Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[3].testId && element.result == "불안 아님").toList().length}회",
+                        testResult2: "불안 시사됨",
+                        testResult2Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[3].testId && element.result == "불안 시사됨").toList().length}회",
+                        list: _cognitionTestList
+                            .where((element) =>
+                                element.testType ==
+                                    cognitionTestTypes[3].testId &&
+                                element.result == "불안 시사됨")
+                            .toList(),
+                      ),
+                    if (_selectedCognitionTestName ==
+                        cognitionTestTypes[4].testName)
+                      CognitionDetailTestBox(
+                        detailTest: cognitionTestTypes[4].testName,
+                        testResult1: "정상",
+                        testResult1Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[4].testId && element.result == "정상").toList().length}회",
+                        testResult2: "주의 요망",
+                        testResult2Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[4].testId && element.result == "주의 요망").toList().length}회",
+                        testResult3: "심한 수준",
+                        testResult3Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[4].testId && element.result == "심한 수준").toList().length}회",
+                        list: _cognitionTestList
+                            .where((element) =>
+                                element.testType ==
+                                    cognitionTestTypes[3].testId &&
+                                element.result == "주의 요망" &&
+                                element.result == "심한 수준")
+                            .toList()
+                          ..sort((a, b) => getTraumaPriority(a.result)
+                              .compareTo(getTraumaPriority(b.result))),
+                      ),
+                    if (_selectedCognitionTestName ==
+                        cognitionTestTypes[5].testName)
+                      CognitionDetailTestBox(
+                        detailTest: cognitionTestTypes[5].testName,
+                        testResult1: "매우 높음",
+                        testResult1Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[5].testId && element.result == "매우 높음").toList().length}회",
+                        testResult2: "높음",
+                        testResult2Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[5].testId && element.result == "높음").toList().length}회",
+                        testResult3: "보통",
+                        testResult3Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[5].testId && element.result == "보통").toList().length}회",
+                        testResult4: "낮음",
+                        testResult4Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[5].testId && element.result == "낮음").toList().length}회",
+                        testResult5: "매우 낮음",
+                        testResult5Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[5].testId && element.result == "매우 낮음").toList().length}회",
+                        list: _cognitionTestList
+                            .where((element) =>
+                                element.testType ==
+                                    cognitionTestTypes[5].testId &&
+                                element.result == "낮음" &&
+                                element.result == "매우 낮음")
+                            .toList()
+                          ..sort((a, b) => getEsteemPriority(a.result)
+                              .compareTo(getEsteemPriority(b.result))),
+                      ),
+                    if (_selectedCognitionTestName ==
+                        cognitionTestTypes[6].testName)
+                      CognitionDetailTestBox(
+                        detailTest: cognitionTestTypes[6].testName,
+                        testResult1: "불면증 아님",
+                        testResult1Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[6].testId && element.result == "불면증 아님").toList().length}회",
+                        testResult2: "경미한 수준",
+                        testResult2Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[6].testId && element.result == "경미한 수준").toList().length}회",
+                        testResult3: "중한 수준",
+                        testResult3Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[6].testId && element.result == "중한 수준").toList().length}회",
+                        testResult4: "심각한 수준",
+                        testResult4Data:
+                            "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[6].testId && element.result == "심각한 수준").toList().length}회",
+                        list: _cognitionTestList
+                            .where((element) =>
+                                element.testType ==
+                                    cognitionTestTypes[6].testId &&
+                                element.result == "경미한 수준" &&
+                                element.result == "중한 수준" &&
+                                element.result == "심각한 수준")
+                            .toList()
+                          ..sort((a, b) => getSleepPriority(a.result)
+                              .compareTo(getSleepPriority(b.result))),
+                      ),
                   ],
                 ),
                 // 걸음수 데이터
@@ -1224,14 +1447,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceAround,
                                         children: [
-                                          Text(
+                                          SelectableText(
                                             "기간 평균 걸음수",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: Sizes.size13,
                                                 color: Palette().darkPurple),
                                           ),
-                                          Text(
+                                          SelectableText(
                                             "${_getAvgStepDouble(_stepDataList)} 보",
                                             style: TextStyle(
                                               fontSize: Sizes.size16,
@@ -1447,7 +1670,7 @@ class WhiteBox extends StatelessWidget {
             if (boxTitle != "")
               Column(
                 children: [
-                  Text(
+                  SelectableText(
                     boxTitle,
                     style: TextStyle(
                       color: Palette().darkPurple,
@@ -1472,7 +1695,12 @@ class CognitionDetailTestBox extends StatelessWidget {
   final String testResult1Data;
   final String testResult2;
   final String testResult2Data;
-  final String listName;
+  final String? testResult3;
+  final String? testResult3Data;
+  final String? testResult4;
+  final String? testResult4Data;
+  final String? testResult5;
+  final String? testResult5Data;
   final List<CognitionDataTestModel> list;
   const CognitionDetailTestBox({
     super.key,
@@ -1481,7 +1709,12 @@ class CognitionDetailTestBox extends StatelessWidget {
     required this.testResult1Data,
     required this.testResult2,
     required this.testResult2Data,
-    required this.listName,
+    this.testResult3,
+    this.testResult3Data,
+    this.testResult4,
+    this.testResult4Data,
+    this.testResult5,
+    this.testResult5Data,
     required this.list,
   });
 
@@ -1501,63 +1734,43 @@ class CognitionDetailTestBox extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  CognitionTestResultHeader(
+                      result: testResult1, resultData: testResult1Data),
+                  const GrayDivider(
+                    height: 60,
+                  ),
+                  CognitionTestResultHeader(
+                      result: testResult2, resultData: testResult2Data),
+                  if (testResult3 != null)
+                    Row(
                       children: [
-                        Column(
-                          children: [
-                            Text(
-                              testResult1,
-                              style: TextStyle(
-                                color: Palette().normalGray,
-                                fontSize: Sizes.size12,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                            Gaps.v10,
-                            Text(
-                              testResult1Data,
-                              style: TextStyle(
-                                color: Palette().darkGray,
-                                fontSize: Sizes.size16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
                         const GrayDivider(
                           height: 60,
                         ),
-                        Column(
-                          children: [
-                            Text(
-                              testResult2,
-                              style: TextStyle(
-                                color: Palette().normalGray,
-                                fontSize: Sizes.size12,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                            Gaps.v10,
-                            Text(
-                              testResult2Data,
-                              style: TextStyle(
-                                color: Palette().darkGray,
-                                fontSize: Sizes.size16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
+                        CognitionTestResultHeader(
+                            result: testResult3!, resultData: testResult3Data!),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Container(),
-                  ),
+                  if (testResult4 != null)
+                    Row(
+                      children: [
+                        const GrayDivider(
+                          height: 60,
+                        ),
+                        CognitionTestResultHeader(
+                            result: testResult4!, resultData: testResult4Data!),
+                      ],
+                    ),
+                  if (testResult5 != null)
+                    Row(
+                      children: [
+                        const GrayDivider(
+                          height: 60,
+                        ),
+                        CognitionTestResultHeader(
+                            result: testResult5!, resultData: testResult5Data!),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -1580,8 +1793,8 @@ class CognitionDetailTestBox extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    listName,
+                  SelectableText(
+                    "관심군 목록",
                     style: TextStyle(
                       fontSize: Sizes.size13,
                       fontWeight: FontWeight.w600,
@@ -1602,7 +1815,7 @@ class CognitionDetailTestBox extends StatelessWidget {
                           children: [
                             Expanded(
                               flex: 1,
-                              child: Text(
+                              child: SelectableText(
                                 "${index + 1}",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -1613,38 +1826,50 @@ class CognitionDetailTestBox extends StatelessWidget {
                             ),
                             Expanded(
                               flex: 4,
-                              child: Text(
+                              child: SelectableText(
+                                list[index].result,
+                                style: TextStyle(
+                                  fontSize: Sizes.size14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Palette().darkPurple,
+                                ),
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 4,
+                              child: SelectableText(
                                 list[index].userName,
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   fontWeight: FontWeight.w600,
                                   color: Palette().darkGray,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Expanded(
                               flex: 2,
-                              child: Text(
+                              child: SelectableText(
                                 list[index].userGender,
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   fontWeight: FontWeight.w600,
                                   color: Palette().darkGray,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Expanded(
                               flex: 2,
-                              child: Text(
+                              child: SelectableText(
                                 list[index].userAge,
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
                                   fontWeight: FontWeight.w600,
                                   color: Palette().darkGray,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Expanded(
@@ -1652,7 +1877,7 @@ class CognitionDetailTestBox extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  Text(
+                                  SelectableText(
                                     list[index].userPhone,
                                     style: TextStyle(
                                       fontSize: Sizes.size14,
@@ -1671,6 +1896,49 @@ class CognitionDetailTestBox extends StatelessWidget {
                 ],
               ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CognitionTestResultHeader extends StatelessWidget {
+  const CognitionTestResultHeader({
+    super.key,
+    required this.result,
+    required this.resultData,
+  });
+
+  final String result;
+  final String resultData;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 180,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SelectableText(
+              result,
+              style: TextStyle(
+                color: Palette().normalGray,
+                fontSize: Sizes.size12,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            Gaps.v10,
+            SelectableText(
+              resultData,
+              style: TextStyle(
+                color: Palette().darkGray,
+                fontSize: Sizes.size16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),
@@ -1705,7 +1973,7 @@ class CognitionWhiteBox extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Text(
+                SelectableText(
                   boxTitle,
                   style: TextStyle(
                     color: Palette().darkPurple,
@@ -1737,7 +2005,7 @@ class DashType extends StatelessWidget {
         Gaps.v52,
         Row(
           children: [
-            Text(
+            SelectableText(
               type,
               style: TextStyle(
                 fontSize: Sizes.size14,
@@ -1772,7 +2040,7 @@ class SubHeader extends StatelessWidget {
               decoration: BoxDecoration(
                 color: containerColor.withOpacity(0.2),
               ),
-              child: Text(
+              child: SelectableText(
                 headerText,
                 style: TextStyle(
                   color: Palette().darkGray,
@@ -1811,7 +2079,7 @@ class HeaderBox extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: 20,
           ),
-          child: Text(
+          child: SelectableText(
             headerText,
             style: TextStyle(
               color: headerColor,
@@ -1821,7 +2089,7 @@ class HeaderBox extends StatelessWidget {
           ),
         ),
         Gaps.v10,
-        Text(
+        SelectableText(
           contentData,
           style: const TextStyle(
             fontSize: Sizes.size20,
@@ -1852,7 +2120,7 @@ class SubHeaderBox extends StatelessWidget {
       children: [
         Align(
           alignment: Alignment.centerLeft,
-          child: Text(
+          child: SelectableText(
             subHeader,
             style: TextStyle(
               color: subHeaderColor,
@@ -1864,7 +2132,7 @@ class SubHeaderBox extends StatelessWidget {
         Gaps.v20,
         Align(
           alignment: Alignment.centerRight,
-          child: Text(
+          child: SelectableText(
             contentData,
             style: TextStyle(
               fontSize: Sizes.size16,
@@ -2028,7 +2296,7 @@ class DashboardTable extends StatelessWidget {
                                   horizontal: 10,
                                   vertical: 3,
                                 ),
-                                child: Text(
+                                child: SelectableText(
                                   list[i].tableHeader,
                                   textAlign: TextAlign.center,
                                   style: contentTextStyle.copyWith(
@@ -2055,7 +2323,7 @@ class DashboardTable extends StatelessWidget {
                                   horizontal: 10,
                                   vertical: 3,
                                 ),
-                                child: Text(
+                                child: SelectableText(
                                   list[i].tableContent,
                                   textAlign: TextAlign.end,
                                   style: contentTextStyle,
@@ -2150,7 +2418,7 @@ class CognitionQuizTable extends StatelessWidget {
                               horizontal: 10,
                               vertical: 3,
                             ),
-                            child: Text(
+                            child: SelectableText(
                               textAlign: TextAlign.center,
                               "",
                               style: contentTextStyle,
@@ -2175,7 +2443,7 @@ class CognitionQuizTable extends StatelessWidget {
                               horizontal: 10,
                               vertical: 3,
                             ),
-                            child: Text(
+                            child: SelectableText(
                               textAlign: TextAlign.center,
                               tableHeaderOne,
                               style: contentTextStyle,
@@ -2188,7 +2456,7 @@ class CognitionQuizTable extends StatelessWidget {
                               horizontal: 10,
                               vertical: 3,
                             ),
-                            child: Text(
+                            child: SelectableText(
                               textAlign: TextAlign.center,
                               tableHeaderTwo,
                               style: contentTextStyle,
@@ -2201,7 +2469,7 @@ class CognitionQuizTable extends StatelessWidget {
                               horizontal: 10,
                               vertical: 3,
                             ),
-                            child: Text(
+                            child: SelectableText(
                               textAlign: TextAlign.center,
                               tableHeaderThree,
                               style: contentTextStyle,
@@ -2227,7 +2495,7 @@ class CognitionQuizTable extends StatelessWidget {
                                       horizontal: 10,
                                       vertical: 3,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       textAlign: TextAlign.center,
                                       list[i].tableContentZero,
                                       style: contentTextStyle,
@@ -2252,7 +2520,7 @@ class CognitionQuizTable extends StatelessWidget {
                                       horizontal: 10,
                                       vertical: 3,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       textAlign: TextAlign.end,
                                       list[i].tableContentOne,
                                       style: contentTextStyle,
@@ -2277,7 +2545,7 @@ class CognitionQuizTable extends StatelessWidget {
                                       horizontal: 10,
                                       vertical: 3,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       textAlign: TextAlign.end,
                                       list[i].tableContentTwo,
                                       style: contentTextStyle,
@@ -2302,7 +2570,7 @@ class CognitionQuizTable extends StatelessWidget {
                                       horizontal: 10,
                                       vertical: 3,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       textAlign: TextAlign.end,
                                       list[i].tableContentThree,
                                       style: contentTextStyle,
@@ -2369,7 +2637,7 @@ class CognitionQuizWidget extends StatelessWidget {
                 // 수학
                 Expanded(
                   flex: 3,
-                  child: Text(
+                  child: SelectableText(
                     "${quizlist.length} 회",
                     style: TextStyle(
                       fontSize: Sizes.size16,
@@ -2385,7 +2653,7 @@ class CognitionQuizWidget extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          Text(
+                          SelectableText(
                             "맞음",
                             style: TextStyle(
                               color: Palette().normalGray,
@@ -2394,7 +2662,7 @@ class CognitionQuizWidget extends StatelessWidget {
                             ),
                           ),
                           Gaps.v10,
-                          Text(
+                          SelectableText(
                             "${quizlist.where((element) => element.quizCorrect == true).toList().length} 회",
                             style: TextStyle(
                               color: Palette().darkGray,
@@ -2409,7 +2677,7 @@ class CognitionQuizWidget extends StatelessWidget {
                       ),
                       Column(
                         children: [
-                          Text(
+                          SelectableText(
                             "틀림",
                             style: TextStyle(
                               color: Palette().normalGray,
@@ -2418,7 +2686,7 @@ class CognitionQuizWidget extends StatelessWidget {
                             ),
                           ),
                           Gaps.v10,
-                          Text(
+                          SelectableText(
                             "${quizlist.where((element) => element.quizCorrect == false).toList().length} 회",
                             style: TextStyle(
                               color: Palette().darkGray,
@@ -2872,4 +3140,11 @@ class UserGenderAgeTable extends StatelessWidget {
       ],
     );
   }
+}
+
+class CognitionTestType {
+  final String testId;
+  final String testName;
+
+  CognitionTestType({required this.testId, required this.testName});
 }

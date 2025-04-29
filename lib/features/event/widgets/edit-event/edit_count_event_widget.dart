@@ -116,7 +116,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("오류가 발생했습니다."),
+          content: SelectableText("오류가 발생했습니다."),
         ),
       );
     }
@@ -137,7 +137,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("오류가 발생했습니다."),
+          content: SelectableText("오류가 발생했습니다."),
         ),
       );
     }
@@ -277,7 +277,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
           color: Colors.black54,
           child: Center(
             child: AlertDialog(
-              title: Text(
+              title: SelectableText(
                 eventName.length > 10
                     ? "${eventName.substring(0, 11)}.."
                     : eventName,
@@ -290,13 +290,13 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
               content: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  SelectableText(
                     "정말로 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: Sizes.size13,
                     ),
                   ),
-                  Text(
+                  SelectableText(
                     "삭제하면 다시 되돌릴 수 없습니다.",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -311,7 +311,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                     backgroundColor:
                         WidgetStateProperty.all(Colors.pink.shade100),
                   ),
-                  child: Text(
+                  child: SelectableText(
                     "취소",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -325,7 +325,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                     backgroundColor:
                         WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
-                  child: const Text(
+                  child: const SelectableText(
                     "삭제",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -400,7 +400,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                               alignment: Alignment.topLeft,
                               child: SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: const Text(
+                                child: const SelectableText(
                                   "행사 타이틀",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -485,7 +485,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                             children: [
                               SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: const Text(
+                                child: const SelectableText(
                                   "배너 이미지",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -535,7 +535,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                           surfaceTintColor:
                                               Colors.pink.shade200,
                                         ),
-                                        child: Text(
+                                        child: SelectableText(
                                           '이미지 올리기',
                                           style: TextStyle(
                                             color: Colors.grey.shade800,
@@ -556,7 +556,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                             children: [
                               SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: const Text(
+                                child: const SelectableText(
                                   "행사 이미지",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -606,7 +606,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                           surfaceTintColor:
                                               Colors.pink.shade200,
                                         ),
-                                        child: Text(
+                                        child: SelectableText(
                                           '이미지 올리기',
                                           style: TextStyle(
                                             color: Colors.grey.shade800,
@@ -630,7 +630,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                           children: [
                             SizedBox(
                               width: widget.size.width * 0.12,
-                              child: const Text(
+                              child: const SelectableText(
                                 "행사 설명",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
@@ -721,7 +721,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                               children: [
                                 SizedBox(
                                   width: widget.size.width * 0.12,
-                                  child: const Text(
+                                  child: const SelectableText(
                                     "시작일",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -739,7 +739,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                       backgroundColor: Colors.grey.shade200,
                                       surfaceTintColor: Colors.pink.shade200,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       '날짜 선택하기',
                                       style: TextStyle(
                                         color: Colors.grey.shade800,
@@ -750,7 +750,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 ),
                                 Gaps.h20,
                                 if (_eventStartDate != null)
-                                  Text(
+                                  SelectableText(
                                     "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -768,7 +768,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                               children: [
                                 SizedBox(
                                   width: widget.size.width * 0.12,
-                                  child: const Text(
+                                  child: const SelectableText(
                                     "종료일",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -785,7 +785,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                       backgroundColor: Colors.grey.shade200,
                                       surfaceTintColor: Colors.pink.shade200,
                                     ),
-                                    child: Text(
+                                    child: SelectableText(
                                       '날짜 선택하기',
                                       style: TextStyle(
                                         color: Colors.grey.shade800,
@@ -796,7 +796,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 ),
                                 Gaps.h20,
                                 if (_eventEndDate != null)
-                                  Text(
+                                  SelectableText(
                                     "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -816,7 +816,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                         children: [
                           SizedBox(
                             width: widget.size.width * 0.12,
-                            child: const Text(
+                            child: const SelectableText(
                               "당첨자 수 제한",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -897,7 +897,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 ),
                               ),
                               Gaps.h10,
-                              Text(
+                              SelectableText(
                                 "명",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -906,7 +906,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 ),
                               ),
                               Gaps.h40,
-                              Text(
+                              SelectableText(
                                 "제한이 없을 경우 '0'을 기입해주세요.",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -925,7 +925,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                         children: [
                           SizedBox(
                             width: widget.size.width * 0.12,
-                            child: const Text(
+                            child: const SelectableText(
                               "연령 제한",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -1006,7 +1006,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 ),
                               ),
                               Gaps.h10,
-                              Text(
+                              SelectableText(
                                 "세 이상",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -1015,7 +1015,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 ),
                               ),
                               Gaps.h40,
-                              Text(
+                              SelectableText(
                                 "제한이 없을 경우 '0'을 기입해주세요.",
                                 style: headerInfoTextStyle,
                               ),
@@ -1037,7 +1037,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const Text(
+                              const SelectableText(
                                 "🥇🥈",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -1045,7 +1045,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                                 ),
                               ),
                               Gaps.h10,
-                              Text(
+                              SelectableText(
                                 "인지케어 행사 설정",
                                 style: TextStyle(
                                   fontSize: Sizes.size14,
@@ -1062,7 +1062,7 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
                             children: [
                               SizedBox(
                                 width: widget.size.width * 0.12,
-                                child: Text(
+                                child: SelectableText(
                                   "행사 유형 설정",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w500,

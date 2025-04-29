@@ -10,9 +10,9 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/care/models/care_model.dart';
 import 'package:onldocc_admin/features/care/repo/care_repo.dart';
+import 'package:onldocc_admin/features/care/view_models/care_view_model.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
-import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -46,7 +46,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
   final List<String> _userListHeader = [
     "일수 지정",
     "이름",
-    "나이",
+    "연령",
     "성별",
     "핸드폰 번호",
     "마지막 방문일",
@@ -160,71 +160,66 @@ class _CareScreenState extends ConsumerState<CareScreen> {
 
   void generateExcel() {
     final csvData = exportToFullList(_userDataList);
-    final String fileName = "인지케어 보호자 지정 ${todayToStringDot()}.xlsx";
+    final String fileName = "인지케어 보호자케어 ${todayToStringDot()}.xlsx";
     exportExcel(csvData, fileName);
   }
 
   Future<void> _initializeUserCare() async {
-    List<UserModel?> userList = [];
-    List<CareModel?> careList = [];
+    List<CareModel?> totalPartnerList = [];
+    List<CareModel?> partnerList = [];
+
     AdminProfileModel? adminProfileModel =
         ref.read(adminProfileProvider).value ??
             await ref.read(adminProfileProvider.notifier).getAdminProfile();
-    final subdistrictId = adminProfileModel.master
-        ? selectContractRegion.value!.subdistrictId
-        : adminProfileModel.subdistrictId;
 
-    final totalList = ref.read(userProvider).value ??
-        await ref.read(userProvider.notifier).initializeUserList(subdistrictId);
+    final totalList =
+        await ref.read(careProvider.notifier).fetchPartners(adminProfileModel);
 
     if (selectContractRegion.value!.contractCommunityId == null) {
       // 전체보기
-      userList = totalList;
+      totalPartnerList = totalList;
     } else {
       // 기관 선택
-      userList = totalList
+      totalPartnerList = totalList
           .where((element) =>
-              element!.contractCommunityId ==
+              element.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
-          .cast<UserModel>()
+          .cast<CareModel>()
           .toList();
     }
-    for (UserModel? user in userList) {
-      if (user != null && user.partnerDates! > 0) {
+    for (int i = 0; i > totalPartnerList.length; i++) {
+      final partner = totalPartnerList[i];
+      if (partner != null && (partner.agreed ?? false)) {
         final now = DateTime.now();
-        final previousDay = now.subtract(Duration(days: user.partnerDates!));
-        final previousDateTime = DateTime(
-            previousDay.year, previousDay.month, previousDay.day, 0, 0, 0);
+        final yesterday = now.subtract(const Duration(days: 1));
+        final yesterdayTime =
+            DateTime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0);
 
-        int startSeconds = previousDateTime.millisecondsSinceEpoch ~/ 1000;
+        int startSeconds = yesterdayTime.millisecondsSinceEpoch ~/ 1000;
         final lastVisitCheck =
-            (user.lastVisit ?? 0) > startSeconds ? true : false;
+            (partner.lastVisit) > startSeconds ? true : false;
 
-        final iterateDays = interatePreviousDays(user.partnerDates! + 1);
-
+        final iterateDays = [
+          dateTimeToStringDateLine(yesterday),
+          dateTimeToStringDateLine(now)
+        ];
         final stepCheck = await ref
             .read(careRepo)
-            .checkUserStepExists(user.userId, iterateDays);
+            .checkUserStepExists(partner.userId, iterateDays);
+
         bool partnerContact = !lastVisitCheck && !stepCheck;
 
-        final newModel = CareModel(
-          partnerDates: user.partnerDates ?? 0,
-          name: user.name,
-          age: user.userAge!,
-          gender: user.gender,
-          phone: user.phone,
-          lastVisit: user.lastVisit!,
+        final newModel = partner.copyWith(
           partnerContact: partnerContact,
-          contractCommunityId: user.contractCommunityId,
         );
-        careList.add(newModel);
+        partnerList.add(newModel);
       }
     }
 
     setState(() {
       _loadingFinished = true;
-      _userDataList = careList;
-      _initialList = careList;
+      _userDataList = partnerList;
+      _initialList = partnerList;
     });
   }
 
@@ -266,8 +261,8 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                     ),
                   ),
                   Gaps.h20,
-                  Text(
-                    "지정한 일수 기간동안 인지케어 활동 기록과 걸음수 기록이 없는 사용자에게 [연락 필요] 열에 빨간 불이 들어옵니다",
+                  SelectableText(
+                    "서비스 이용약관에 동의한 사용자에 한해 1일동안 인지케어 활동 기록과 걸음수 기록이 없는 사용자에게 [연락 필요] 열에 빨간 불이 들어옵니다",
                     style: _contentTextStyle.copyWith(
                       color: Palette().darkPurple,
                     ),
@@ -297,50 +292,50 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                           ),
                         ),
                         columns: [
-                          DataColumn2(
-                            size: ColumnSize.S,
-                            label: Text(
-                              "일수 지정",
-                              style: _headerTextStyle,
-                            ),
-                          ),
+                          // DataColumn2(
+                          //   size: ColumnSize.S,
+                          //   label: SelectableText(
+                          //     "일수 지정",
+                          //     style: _headerTextStyle,
+                          //   ),
+                          // ),
                           DataColumn2(
                             size: ColumnSize.L,
-                            label: Text(
+                            label: SelectableText(
                               "이름",
                               style: _headerTextStyle,
                             ),
                           ),
                           DataColumn2(
                             size: ColumnSize.S,
-                            label: Text(
-                              "나이",
+                            label: SelectableText(
+                              "연령",
                               style: _headerTextStyle,
                             ),
                           ),
                           DataColumn2(
                             size: ColumnSize.S,
-                            label: Text(
+                            label: SelectableText(
                               "성별",
                               style: _headerTextStyle,
                             ),
                           ),
                           DataColumn2(
                             size: ColumnSize.L,
-                            label: Text(
+                            label: SelectableText(
                               "핸드폰 번호",
                               style: _headerTextStyle,
                             ),
                           ),
                           DataColumn2(
                             size: ColumnSize.L,
-                            label: Text(
+                            label: SelectableText(
                               "마지막 방문일",
                               style: _headerTextStyle,
                             ),
                           ),
                           DataColumn2(
-                            label: Text(
+                            label: SelectableText(
                               "연락 필요",
                               style: _headerTextStyle,
                             ),
@@ -350,14 +345,14 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                           for (int i = 0; i < _userDataList.length; i++)
                             DataRow2(
                               cells: [
+                                // DataCell(
+                                //   SelectableText(
+                                //     "${_userDataList[i]!.partnerDates}일",
+                                //     style: _contentTextStyle,
+                                //   ),
+                                // ),
                                 DataCell(
-                                  Text(
-                                    "${_userDataList[i]!.partnerDates}일",
-                                    style: _contentTextStyle,
-                                  ),
-                                ),
-                                DataCell(
-                                  Text(
+                                  SelectableText(
                                     _userDataList[i]!.name.length > 8
                                         ? "${_userDataList[i]!.name.substring(0, 8)}.."
                                         : _userDataList[i]!.name,
@@ -365,25 +360,25 @@ class _CareScreenState extends ConsumerState<CareScreen> {
                                   ),
                                 ),
                                 DataCell(
-                                  Text(
+                                  SelectableText(
                                     _userDataList[i]!.age,
                                     style: _contentTextStyle,
                                   ),
                                 ),
                                 DataCell(
-                                  Text(
+                                  SelectableText(
                                     _userDataList[i]!.gender,
                                     style: _contentTextStyle,
                                   ),
                                 ),
                                 DataCell(
-                                  Text(
+                                  SelectableText(
                                     _userDataList[i]!.phone,
                                     style: _contentTextStyle,
                                   ),
                                 ),
                                 DataCell(
-                                  Text(
+                                  SelectableText(
                                     _userDataList[i]!.lastVisit != 0
                                         ? secondsToStringLine(
                                             _userDataList[i]!.lastVisit)

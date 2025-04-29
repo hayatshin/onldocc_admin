@@ -14,6 +14,7 @@ import 'package:onldocc_admin/features/ca/view_models/quiz_view_model.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -108,7 +109,6 @@ class _DiaryCognitionQuizUserScreenState
         : await ref
             .read(caProvider.notifier)
             .getUserQuizMultipleChoicesData(widget.userId!, _selectedDateRange);
-    print("quizzes: $quizzes");
     setState(() {
       _loadingFinished = true;
       _quizzes = quizzes;
@@ -251,7 +251,7 @@ class _DiaryCognitionQuizUserScreenState
                         Gaps.v20,
                         Row(
                           children: [
-                            Text(
+                            SelectableText(
                               "문제 풀기 항목:",
                               style: TextStyle(
                                 fontSize: Sizes.size14,
@@ -338,7 +338,7 @@ class _DiaryCognitionQuizUserScreenState
                             columns: [
                               DataColumn2(
                                 size: ColumnSize.M,
-                                label: Text(
+                                label: SelectableText(
                                   "날짜",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -346,7 +346,7 @@ class _DiaryCognitionQuizUserScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.L,
-                                label: Text(
+                                label: SelectableText(
                                   "문제",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -354,7 +354,7 @@ class _DiaryCognitionQuizUserScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.M,
-                                label: Text(
+                                label: SelectableText(
                                   "정답",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -362,7 +362,7 @@ class _DiaryCognitionQuizUserScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.M,
-                                label: Text(
+                                label: SelectableText(
                                   "제출 답",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -370,7 +370,7 @@ class _DiaryCognitionQuizUserScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.M,
-                                label: Text(
+                                label: SelectableText(
                                   "정답 여부",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -382,23 +382,23 @@ class _DiaryCognitionQuizUserScreenState
                                 DataRow2(
                                   cells: [
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         secondsToStringDateComment(
                                             _quizzes[i].createdAt),
                                         style: _contentTextStyle,
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _quizzes[i].quiz,
                                         style: _contentTextStyle,
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _quizzes[i].quizAnswer,
                                         maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.start,
                                         style: _contentTextStyle.copyWith(
                                           fontWeight: FontWeight.w800,
@@ -406,10 +406,10 @@ class _DiaryCognitionQuizUserScreenState
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _quizzes[i].userAnswer,
                                         maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.start,
                                         style: _contentTextStyle.copyWith(
                                           fontWeight: FontWeight.w800,
@@ -417,16 +417,16 @@ class _DiaryCognitionQuizUserScreenState
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _quizzes[i].quizAnswer ==
                                                 _quizzes[i].userAnswer
                                             ? "정답"
-                                            : "",
+                                            : "틀림",
                                         style: _contentTextStyle.copyWith(
                                           color: _quizzes[i].quizAnswer ==
                                                   _quizzes[i].userAnswer
                                               ? Palette().darkBlue
-                                              : Palette().darkGray,
+                                              : InjicareColor().primary50,
                                           fontWeight: _quizzes[i].quizAnswer ==
                                                   _quizzes[i].userAnswer
                                               ? FontWeight.w800

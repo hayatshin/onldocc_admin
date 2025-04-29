@@ -39,7 +39,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
     "#",
     "친구 초대 수",
     "이름",
-    "나이",
+    "연령",
     "성별",
     "핸드폰 번호",
   ];
@@ -418,7 +418,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                       columns: [
                         DataColumn2(
                           fixedWidth: 50,
-                          label: Text(
+                          label: SelectableText(
                             "#",
                             style: _headerTextStyle,
                           ),
@@ -428,7 +428,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                           onSort: (columnIndex, sortAscending) {
                             updateOrderStandard(columnIndex);
                           },
-                          label: Text(
+                          label: SelectableText(
                             "초대 횟수",
                             style: _headerTextStyle.copyWith(
                               color: InjicareColor().secondary50,
@@ -440,7 +440,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                           onSort: (columnIndex, sortAscending) {
                             updateOrderStandard(columnIndex);
                           },
-                          label: Text(
+                          label: SelectableText(
                             "초대 친구\n가입자 수",
                             style: _headerTextStyle.copyWith(
                               color: InjicareColor().primary50,
@@ -448,25 +448,25 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                           ),
                         ),
                         DataColumn2(
-                          label: Text(
+                          label: SelectableText(
                             "이름",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          label: Text(
-                            "나이",
+                          label: SelectableText(
+                            "연령",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          label: Text(
+                          label: SelectableText(
                             "성별",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          label: Text(
+                          label: SelectableText(
                             "핸드폰 번호",
                             style: _headerTextStyle,
                           ),
@@ -478,7 +478,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                               _sortColumnIndex = columnIndex;
                             });
                           },
-                          label: Text(
+                          label: SelectableText(
                             "초대 친구\n가입자 목록",
                             style: _headerTextStyle.copyWith(
                               color: InjicareColor().primary50,
@@ -492,13 +492,13 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                           DataRow2(
                             cells: [
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.index.toString(),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.sendCounts.toString(),
                                   style: _contentTextStyle.copyWith(
                                     // color:
@@ -508,7 +508,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!
                                       .receiveUsers
                                       .length
@@ -521,25 +521,25 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.userName,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.userAge,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.userGender,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.userPhone,
                                   style: _contentTextStyle,
                                 ),

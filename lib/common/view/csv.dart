@@ -78,7 +78,7 @@ class _CsvState extends ConsumerState<Csv> {
                 ),
                 Gaps.h40,
                 if (widget.rankingType != "event")
-                  Text(
+                  SelectableText(
                     "${widget.userName} 님의 ${widget.rankingType} 데이터",
                     style: TextStyle(
                       color: Palette().darkGray,
@@ -87,7 +87,7 @@ class _CsvState extends ConsumerState<Csv> {
                     ),
                   ),
                 if (widget.rankingType == "event")
-                  Text(
+                  SelectableText(
                     widget.userName,
                     style: TextStyle(
                       color: Palette().darkGray,

@@ -76,30 +76,9 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                   width: 150,
                   height: searchHeight,
                   child: CustomDropdown(
-                    // borderSide: BorderSide(
-                    //   color: Colors.grey.shade300,
-                    // ),
-                    // borderRadius: BorderRadius.circular(
-                    //   Sizes.size4,
-                    // ),
                     onChanged: (value) => widget.updateOrderPeriod(value!),
                     hintText: "기간 선택",
-                    // hintStyle: TextStyle(
-                    //   color: Colors.grey.shade800,
-                    //   fontSize: Sizes.size14,
-                    //   fontWeight: FontWeight.w400,
-                    // ),
-                    // listItemStyle: const TextStyle(
-                    //   fontSize: Sizes.size14,
-                    //   fontWeight: FontWeight.w400,
-                    // ),
-                    // selectedStyle: const TextStyle(
-                    //   color: Colors.black87,
-                    //   fontSize: Sizes.size14,
-                    //   fontWeight: FontWeight.w500,
-                    // ),
                     items: const ["이번주", "이번달", "전체"],
-                    // controller: _sortPeriodControllder,
                   ),
                 ),
                 Align(
@@ -180,7 +159,7 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                               DropdownMenuItem(
                                 alignment: AlignmentDirectional.centerStart,
                                 value: "name",
-                                child: Text(
+                                child: SelectableText(
                                   "이름",
                                   style: TextStyle(
                                     fontSize: Sizes.size13,
@@ -191,7 +170,7 @@ class _SearchPeriodState extends ConsumerState<SearchPeriod> {
                               DropdownMenuItem(
                                 alignment: AlignmentDirectional.centerStart,
                                 value: "phone",
-                                child: Text(
+                                child: SelectableText(
                                   "핸드폰 번호",
                                   style: TextStyle(
                                     fontSize: Sizes.size13,

@@ -102,7 +102,7 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                   ),
                 ),
                 Gaps.h40,
-                Text(
+                SelectableText(
                   "${widget.userName} 님의 ${widget.rankingType} 데이터",
                   style: const TextStyle(
                     fontSize: 18,
@@ -120,7 +120,7 @@ class _CsvPeriodState extends ConsumerState<CsvPeriod> {
                         //   padding: const EdgeInsets.only(
                         //     left: Sizes.size10,
                         //   ),
-                        //   child: Text(
+                        //   child: SelectableText(
                         //     daterangeToSlashString(selectedDateRangeNotifier
                         //             .value ??
                         //         DateRange(getThisWeekMonday(), DateTime.now())),

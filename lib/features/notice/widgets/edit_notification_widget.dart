@@ -73,7 +73,7 @@ class _EditNotificationWidgetState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content: SelectableText(e.toString()),
         ),
       );
     }
@@ -121,7 +121,7 @@ class _EditNotificationWidgetState
           color: Colors.black54,
           child: Center(
             child: AlertDialog(
-              title: Text(
+              title: SelectableText(
                 notiDesc.length > 10
                     ? "${notiDesc.substring(0, 11)}.."
                     : notiDesc,
@@ -134,13 +134,13 @@ class _EditNotificationWidgetState
               content: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  SelectableText(
                     "정말로 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: Sizes.size13,
                     ),
                   ),
-                  Text(
+                  SelectableText(
                     "삭제하면 다시 되돌릴 수 없습니다.",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -155,7 +155,7 @@ class _EditNotificationWidgetState
                     backgroundColor:
                         WidgetStateProperty.all(Colors.pink.shade100),
                   ),
-                  child: Text(
+                  child: SelectableText(
                     "취소",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -169,7 +169,7 @@ class _EditNotificationWidgetState
                     backgroundColor:
                         WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
-                  child: const Text(
+                  child: const SelectableText(
                     "삭제",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -255,7 +255,7 @@ class _EditNotificationWidgetState
                   SizedBox(
                     width: widget.size.width * 0.12,
                     height: 50,
-                    child: Text(
+                    child: SelectableText(
                       "지역 보기\n상단 고정하기",
                       style: _headerTextStyle,
                       textAlign: TextAlign.start,
@@ -297,7 +297,7 @@ class _EditNotificationWidgetState
                         Gaps.h20,
                         Column(
                           children: [
-                            Text(
+                            SelectableText(
                               "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
                               style: _contentTextStyle,
                             ),
@@ -314,7 +314,7 @@ class _EditNotificationWidgetState
                   SizedBox(
                     width: widget.size.width * 0.12,
                     height: 200,
-                    child: Text(
+                    child: SelectableText(
                       "공지 내용",
                       style: _headerTextStyle,
                       textAlign: TextAlign.start,
@@ -388,7 +388,7 @@ class _EditNotificationWidgetState
                   children: [
                     SizedBox(
                       width: widget.size.width * 0.12,
-                      child: Text(
+                      child: SelectableText(
                         "이미지\n(선택)",
                         style: _headerTextStyle,
                         textAlign: TextAlign.start,

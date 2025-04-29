@@ -51,7 +51,7 @@ class _SearchState extends ConsumerState<Search> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
+                        SelectableText(
                           "검색 기준:",
                           style: TextStyle(
                             color: Palette().darkBlue,

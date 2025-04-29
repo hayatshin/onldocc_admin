@@ -5,7 +5,7 @@ class CognitionTestModel {
   final String testId;
   final String userId;
   final int createdAt;
-  final Map<String, bool> userAnswers;
+  final Map<String, dynamic> userAnswers;
   final int totalPoint;
   final String result;
   final String? userName;
@@ -37,7 +37,7 @@ class CognitionTestModel {
         userId = json.containsKey("userId") ? json["userId"] : "",
         createdAt = json["createdAt"],
         userAnswers = json.containsKey("userAnswers")
-            ? Map<String, bool>.from(json["userAnswers"])
+            ? Map<String, dynamic>.from(json["userAnswers"])
             : {},
         totalPoint = json.containsKey("totalPoint") ? json["totalPoint"] : 0,
         result = json.containsKey("result") ? json["result"] : "",

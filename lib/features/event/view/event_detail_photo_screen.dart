@@ -44,7 +44,7 @@ class _EventDetailPointScreenState
   final List<String> _listHeader = [
     "#",
     "이름",
-    "나이",
+    "연령",
     "성별",
     "핸드폰 번호",
     "참여일",
@@ -205,7 +205,7 @@ class _EventDetailPointScreenState
                                     flex: 1,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
+                                      child: SelectableText(
                                         "#",
                                         style: _headerTextStyle,
                                       ),
@@ -215,7 +215,7 @@ class _EventDetailPointScreenState
                                     flex: 2,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
+                                      child: SelectableText(
                                         "이름",
                                         style: _headerTextStyle,
                                       ),
@@ -225,8 +225,8 @@ class _EventDetailPointScreenState
                                     flex: 1,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
-                                        "나이",
+                                      child: SelectableText(
+                                        "연령",
                                         style: _headerTextStyle,
                                       ),
                                     ),
@@ -235,7 +235,7 @@ class _EventDetailPointScreenState
                                     flex: 1,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
+                                      child: SelectableText(
                                         "성별",
                                         style: _headerTextStyle,
                                       ),
@@ -245,7 +245,7 @@ class _EventDetailPointScreenState
                                     flex: 2,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
+                                      child: SelectableText(
                                         "핸드폰 번호",
                                         style: _headerTextStyle,
                                       ),
@@ -255,7 +255,7 @@ class _EventDetailPointScreenState
                                     flex: 2,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
+                                      child: SelectableText(
                                         "참여일",
                                         style: _headerTextStyle,
                                       ),
@@ -265,7 +265,7 @@ class _EventDetailPointScreenState
                                     flex: 3,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
+                                      child: SelectableText(
                                         "작품명",
                                         style: _headerTextStyle,
                                       ),
@@ -275,7 +275,7 @@ class _EventDetailPointScreenState
                                     flex: 2,
                                     child: Align(
                                       alignment: Alignment.center,
-                                      child: Text(
+                                      child: SelectableText(
                                         "사진",
                                         style: _headerTextStyle,
                                       ),
@@ -303,10 +303,10 @@ class _EventDetailPointScreenState
                                           ),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text(
+                                            child: SelectableText(
                                               (index + 1).toString(),
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                              // softWrap: true,
+                                              // overflow: TextOverflow.ellipsis,
                                               style: _contentTextStyle,
                                             ),
                                           ),
@@ -320,10 +320,10 @@ class _EventDetailPointScreenState
                                           ),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text(
+                                            child: SelectableText(
                                               _participants[index].name,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                              // softWrap: true,
+                                              // overflow: TextOverflow.ellipsis,
                                               style: _contentTextStyle,
                                             ),
                                           ),
@@ -337,10 +337,10 @@ class _EventDetailPointScreenState
                                           ),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text(
+                                            child: SelectableText(
                                               _participants[index].userAge,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                              // softWrap: true,
+                                              // overflow: TextOverflow.ellipsis,
                                               style: _contentTextStyle,
                                             ),
                                           ),
@@ -354,10 +354,10 @@ class _EventDetailPointScreenState
                                           ),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text(
+                                            child: SelectableText(
                                               _participants[index].gender,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                              // softWrap: true,
+                                              // overflow: TextOverflow.ellipsis,
                                               style: _contentTextStyle,
                                             ),
                                           ),
@@ -371,10 +371,10 @@ class _EventDetailPointScreenState
                                           ),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text(
+                                            child: SelectableText(
                                               _participants[index].phone,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                              // softWrap: true,
+                                              // overflow: TextOverflow.ellipsis,
                                               style: _contentTextStyle,
                                             ),
                                           ),
@@ -388,12 +388,12 @@ class _EventDetailPointScreenState
                                           ),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text(
+                                            child: SelectableText(
                                               secondsToStringDiaryTimeLine(
                                                   _participants[index]
                                                       .createdAt),
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                              // softWrap: true,
+                                              // overflow: TextOverflow.ellipsis,
                                               style: _contentTextStyle,
                                             ),
                                           ),
@@ -407,11 +407,11 @@ class _EventDetailPointScreenState
                                           ),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text(
+                                            child: SelectableText(
                                               _participants[index].photoTitle ??
                                                   "",
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                              // softWrap: true,
+                                              // overflow: TextOverflow.ellipsis,
                                               style: _contentTextStyle,
                                             ),
                                           ),

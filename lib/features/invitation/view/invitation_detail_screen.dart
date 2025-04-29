@@ -180,7 +180,7 @@ class _InvitationDetailScreenState
                             columns: [
                               DataColumn2(
                                 size: ColumnSize.S,
-                                label: Text(
+                                label: SelectableText(
                                   "#",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -188,7 +188,7 @@ class _InvitationDetailScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.M,
-                                label: Text(
+                                label: SelectableText(
                                   "날짜",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -196,7 +196,7 @@ class _InvitationDetailScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.M,
-                                label: Text(
+                                label: SelectableText(
                                   "초대 받은 사람",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -208,16 +208,16 @@ class _InvitationDetailScreenState
                                 DataRow2(
                                   cells: [
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         "${i + 1}",
                                         style: _contentTextStyle,
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _list[i].receiveDate,
                                         maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.start,
                                         style: _contentTextStyle.copyWith(
                                           fontWeight: FontWeight.w800,
@@ -225,10 +225,10 @@ class _InvitationDetailScreenState
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _list[i].receiveUserName,
                                         maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.start,
                                         style: _contentTextStyle.copyWith(
                                           fontWeight: FontWeight.w800,

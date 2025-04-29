@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:onldocc_admin/features/ca/view/alzheimer_test_screen.dart';
-import 'package:onldocc_admin/features/ca/view/depression_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view/diary_cognition_quiz_screen.dart';
+import 'package:onldocc_admin/features/ca/view/self_test_screen.dart';
 import 'package:onldocc_admin/features/care/view/care_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
@@ -95,22 +94,22 @@ final menuList = [
   ),
   Menu(
     index: 6,
-    name: "온라인 치매 검사",
-    routeName: AlzheimerTestScreen.routeName,
-    child: const AlzheimerTestScreen(),
+    name: "자가 검사",
+    routeName: SelfTestScreen.routeName,
+    child: const SelfTestScreen(),
     backButton: false,
     colorButton: const Color(0xff696EFF),
   ),
+  // Menu(
+  //   index: 7,
+  //   name: "노인 우울척도 검사",
+  //   routeName: DepressionTestScreen.routeName,
+  //   child: const DepressionTestScreen(),
+  //   backButton: false,
+  //   colorButton: const Color(0xffF8ACFF),
+  // ),
   Menu(
     index: 7,
-    name: "노인 우울척도 검사",
-    routeName: DepressionTestScreen.routeName,
-    child: const DepressionTestScreen(),
-    backButton: false,
-    colorButton: const Color(0xffF8ACFF),
-  ),
-  Menu(
-    index: 8,
     name: "영상 관리",
     routeName: TvScreen.routeName,
     child: const TvScreen(),
@@ -118,7 +117,7 @@ final menuList = [
     colorButton: const Color(0xffFFBA49),
   ),
   Menu(
-    index: 9,
+    index: 8,
     name: "보호자 지정",
     routeName: CareScreen.routeName,
     child: const CareScreen(),
@@ -126,7 +125,7 @@ final menuList = [
     colorButton: const Color(0xff20A39E),
   ),
   Menu(
-    index: 10,
+    index: 9,
     name: "화풀기",
     routeName: DecibelScreen.routeName,
     child: const DecibelScreen(),
@@ -134,7 +133,7 @@ final menuList = [
     colorButton: const Color(0xffEF5B5B),
   ),
   Menu(
-    index: 11,
+    index: 10,
     name: "친구 초대",
     routeName: InvitationScreen.routeName,
     child: const InvitationScreen(),

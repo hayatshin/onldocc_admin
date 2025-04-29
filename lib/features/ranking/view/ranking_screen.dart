@@ -53,8 +53,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
 
-  final _scrollController = ScrollController();
+  // page
   bool _filtered = false;
+  final _scrollController = ScrollController();
   int _pageCount = 0;
   final int _offset = 20;
   int _rowCount = 0;
@@ -155,46 +156,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         });
       }
     }
-
-    // if (selectContractRegion.value!.subdistrictId == "") {
-    //   if (mounted) {
-    //     setState(() {
-    //       _loadingFinished = true;
-    //       _filtered = false;
-    //       _userDataList = userDataList;
-    //       _initialPointList = userDataList;
-    //       _rowCount = rowCount;
-    //     });
-    //   }
-    // } else {
-    //   if (selectContractRegion.value!.contractCommunityId != "" &&
-    //       selectContractRegion.value!.contractCommunityId != null) {
-    //     final filterDataList = userDataList
-    //         .where((e) =>
-    //             e.contractCommunityId ==
-    //             selectContractRegion.value!.contractCommunityId)
-    //         .toList();
-    //     if (mounted) {
-    //       setState(() {
-    //         _loadingFinished = true;
-    //         _filtered = false;
-    //         _userDataList = filterDataList;
-    //         _initialPointList = userDataList;
-    //         _rowCount = rowCount;
-    //       });
-    //     }
-    //   } else {
-    //     if (mounted) {
-    //       setState(() {
-    //         _loadingFinished = true;
-    //         _filtered = false;
-    //         _userDataList = userDataList;
-    //         _initialPointList = userDataList;
-    //         _rowCount = rowCount;
-    //       });
-    //     }
-    //   }
-    // }
   }
 
   void _removePeriodCalender() {
@@ -499,7 +460,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          SelectableText(
                             "점수 계산 방법",
                             style: TextStyle(
                               fontSize: Sizes.size12,
@@ -508,7 +469,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             ),
                           ),
                           Gaps.v5,
-                          Text(
+                          SelectableText(
                             "걸음수: 1,000보당 10점 (하루 최대 7천보)",
                             style: TextStyle(
                               fontSize: Sizes.size11,
@@ -517,7 +478,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             ),
                           ),
                           Gaps.v5,
-                          Text(
+                          SelectableText(
                             "일기: 100점 / 댓글: 20점 / 좋아요: 10점",
                             style: TextStyle(
                               fontSize: Sizes.size11,
@@ -526,7 +487,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             ),
                           ),
                           // Gaps.v5,
-                          // Text(
+                          // SelectableText(
                           //   "내 초대로 가입한 친구 1명: 100점",
                           //   style: TextStyle(
                           //     fontSize: Sizes.size11,
@@ -562,21 +523,28 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             columns: [
                               DataColumn2(
                                 fixedWidth: 50,
-                                label: Text(
+                                label: SelectableText(
                                   "#",
                                   style: _headerTextStyle,
                                 ),
                               ),
                               DataColumn2(
                                 // size: ColumnSize.L,
-                                label: Text(
+                                label: SelectableText(
                                   "이름",
                                   style: _headerTextStyle,
                                 ),
                               ),
                               DataColumn2(
+                                size: ColumnSize.S,
+                                label: SelectableText(
+                                  "출생연도",
+                                  style: _headerTextStyle,
+                                ),
+                              ),
+                              DataColumn2(
                                 // size: ColumnSize.L,
-                                label: Text(
+                                label: SelectableText(
                                   "핸드폰 번호",
                                   style: _headerTextStyle,
                                 ),
@@ -588,7 +556,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                   updateOrderStandard(
                                       "totalPoint", columnIndex);
                                 },
-                                label: Text(
+                                label: SelectableText(
                                   "종합",
                                   style: _headerTextStyle,
                                 ),
@@ -599,7 +567,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 onSort: (columnIndex, sortAscending) {
                                   updateOrderStandard("stepPoint", columnIndex);
                                 },
-                                label: Text(
+                                label: SelectableText(
                                   "걸음수",
                                   style: _headerTextStyle,
                                 ),
@@ -611,7 +579,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                   updateOrderStandard(
                                       "diaryPoint", columnIndex);
                                 },
-                                label: Text(
+                                label: SelectableText(
                                   "일기",
                                   style: _headerTextStyle,
                                 ),
@@ -623,7 +591,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                   updateOrderStandard(
                                       "commentPoint", columnIndex);
                                 },
-                                label: Text(
+                                label: SelectableText(
                                   "댓글",
                                   style: _headerTextStyle,
                                 ),
@@ -634,7 +602,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                 onSort: (columnIndex, sortAscending) {
                                   updateOrderStandard("likePoint", columnIndex);
                                 },
-                                label: Text(
+                                label: SelectableText(
                                   "좋아요",
                                   style: _headerTextStyle,
                                 ),
@@ -646,7 +614,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               //     updateOrderStandard(
                               //         "invitationPoint", columnIndex);
                               //   },
-                              //   label: Text(
+                              //   label: SelectableText(
                               //     "친구초대",
                               //     style: _headerTextStyle,
                               //   ),
@@ -658,7 +626,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                     _sortColumnIndex = columnIndex;
                                   });
                                 },
-                                label: Text(
+                                label: SelectableText(
                                   "활동\n자세히 보기",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.end,
@@ -671,13 +639,13 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                   DataRow2(
                                     cells: [
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           (i + 1).toString(),
                                           style: _contentTextStyle,
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           _userDataList[i]!.name.length > 10
                                               ? "${_userDataList[i]!.name.substring(0, 10)}.."
                                               : _userDataList[i]!.name,
@@ -685,43 +653,49 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
+                                          _userDataList[i]!.birthYear,
+                                          style: _contentTextStyle,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        SelectableText(
                                           _userDataList[i]!.phone,
                                           style: _contentTextStyle,
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           "${_userDataList[i]!.totalPoint}",
                                           style: _contentTextStyle,
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           "${_userDataList[i]!.stepPoint}",
                                           style: _contentTextStyle,
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           "${_userDataList[i]!.diaryPoint}",
                                           style: _contentTextStyle,
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           "${_userDataList[i]!.commentPoint}",
                                           style: _contentTextStyle,
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
+                                        SelectableText(
                                           "${_userDataList[i]!.likePoint}",
                                           style: _contentTextStyle,
                                         ),
                                       ),
                                       // DataCell(
-                                      //   Text(
+                                      //   SelectableText(
                                       //     "${_userDataList[i]!.invitationPoint}",
                                       //     style: _contentTextStyle,
                                       //   ),

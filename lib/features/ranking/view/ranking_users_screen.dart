@@ -156,7 +156,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                   columns: [
                     const DataColumn2(
                       fixedWidth: 80,
-                      label: Text(
+                      label: SelectableText(
                         "#",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -165,7 +165,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                       ),
                     ),
                     const DataColumn2(
-                      label: Text(
+                      label: SelectableText(
                         "이름",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -175,8 +175,8 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                     ),
                     const DataColumn2(
                       fixedWidth: 80,
-                      label: Text(
-                        "나이",
+                      label: SelectableText(
+                        "연령",
                         style: TextStyle(
                           fontSize: Sizes.size13,
                           color: Colors.black,
@@ -185,7 +185,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                     ),
                     const DataColumn2(
                       fixedWidth: 120,
-                      label: Text(
+                      label: SelectableText(
                         "출생일",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -195,7 +195,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                     ),
                     const DataColumn2(
                       fixedWidth: 100,
-                      label: Text(
+                      label: SelectableText(
                         "성별",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -205,7 +205,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                     ),
                     const DataColumn2(
                       fixedWidth: 200,
-                      label: Text(
+                      label: SelectableText(
                         "핸드폰 번호",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -214,7 +214,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                       ),
                     ),
                     const DataColumn2(
-                      label: Text(
+                      label: SelectableText(
                         "거주 지역",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -224,7 +224,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                     ),
                     DataColumn2(
                       fixedWidth: 100,
-                      label: Text(
+                      label: SelectableText(
                         "선택",
                         style: TextStyle(
                           fontSize: Sizes.size13,
@@ -238,7 +238,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                       DataRow2(
                         cells: [
                           DataCell(
-                            Text(
+                            SelectableText(
                               (i + 1).toString(),
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
@@ -246,7 +246,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _userDataList[i]!.name.length > 20
                                   ? "${_userDataList[i]!.name.substring(0, 20)}.."
                                   : _userDataList[i]!.name,
@@ -256,7 +256,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _userDataList[i]!.userAge!,
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
@@ -264,7 +264,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _userDataList[i]!.birthYear,
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
@@ -272,7 +272,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _userDataList[i]!.gender,
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
@@ -280,7 +280,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _userDataList[i]!.phone,
                               style: const TextStyle(
                                 fontSize: Sizes.size13,
@@ -288,7 +288,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                             ),
                           ),
                           DataCell(
-                            Text(
+                            SelectableText(
                               _userDataList[i]!.fullRegion,
                               style: const TextStyle(
                                 fontSize: Sizes.size13,

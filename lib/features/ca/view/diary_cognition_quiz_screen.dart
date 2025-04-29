@@ -38,7 +38,7 @@ class _DiaryCognitionQuizScreenState
   final List<String> _userListHeader = [
     "#",
     "이름",
-    "나이",
+    "연령",
     "출생일",
     "성별",
     "핸드폰 번호",
@@ -156,40 +156,6 @@ class _DiaryCognitionQuizScreenState
         });
       }
     }
-
-    // if (selectContractRegion.value!.subdistrictId == "") {
-    //   if (mounted) {
-    //     setState(() {
-    //       _userDataList = userDataList;
-    //       _filtered = false;
-    //       _rowCount = rowCount;
-    //     });
-    //   }
-    // } else {
-    //   if (selectContractRegion.value!.contractCommunityId != "" &&
-    //       selectContractRegion.value!.contractCommunityId != null) {
-    //     final filterDataList = userDataList
-    //         .where((e) =>
-    //             e!.contractCommunityId ==
-    //             selectContractRegion.value!.contractCommunityId)
-    //         .toList();
-    //     if (mounted) {
-    //       setState(() {
-    //         _userDataList = filterDataList;
-    //         _filtered = false;
-    //         _rowCount = rowCount;
-    //       });
-    //     }
-    //   } else {
-    //     if (mounted) {
-    //       setState(() {
-    //         _userDataList = userDataList;
-    //         _filtered = false;
-    //         _rowCount = rowCount;
-    //       });
-    //     }
-    //   }
-    // }
   }
 
   void _initializeTable() async {
@@ -251,32 +217,6 @@ class _DiaryCognitionQuizScreenState
     }
     return list;
   }
-
-  // void generateUserCsv() {
-  //   final csvData = exportToFullList(_userDataList);
-  //   String csvContent = '';
-  //   for (var row in csvData) {
-  //     for (var i = 0; i < row.length; i++) {
-  //       if (row[i].toString().contains(',')) {
-  //         csvContent += '"${row[i]}"';
-  //       } else {
-  //         csvContent += row[i].toString();
-  //       }
-
-  //       if (i != row.length - 1) {
-  //         csvContent += ',';
-  //       }
-  //     }
-  //     csvContent += '\n';
-  //   }
-  //   final currentDate = DateTime.now();
-  //   final formatDate =
-  //       "${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')}";
-
-  //   final String fileName = "인지케어 회원관리 $formatDate.csv";
-
-  //   downloadCsv(csvContent, fileName);
-  // }
 
   void removeDeleteOverlay() {
     overlayEntry?.remove();
@@ -348,35 +288,35 @@ class _DiaryCognitionQuizScreenState
                     columns: [
                       DataColumn2(
                         fixedWidth: 80,
-                        label: Text(
+                        label: SelectableText(
                           "#",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.L,
-                        label: Text(
+                        label: SelectableText(
                           "이름",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.S,
-                        label: Text(
-                          "나이",
+                        label: SelectableText(
+                          "연령",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.S,
-                        label: Text(
+                        label: SelectableText(
                           "성별",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.L,
-                        label: Text(
+                        label: SelectableText(
                           "핸드폰 번호",
                           style: _headerTextStyle,
                         ),
@@ -384,7 +324,7 @@ class _DiaryCognitionQuizScreenState
                       if (_adminProfile.master)
                         DataColumn2(
                           size: ColumnSize.L,
-                          label: Text(
+                          label: SelectableText(
                             "거주 지역",
                             style: _headerTextStyle,
                           ),
@@ -406,7 +346,7 @@ class _DiaryCognitionQuizScreenState
                             setState(() {});
                           }
                         },
-                        label: Text(
+                        label: SelectableText(
                           "가입일",
                           style: _headerTextStyle,
                         ),
@@ -429,7 +369,7 @@ class _DiaryCognitionQuizScreenState
                             setState(() {});
                           }
                         },
-                        label: Text(
+                        label: SelectableText(
                           "최근 방문일",
                           style: _headerTextStyle,
                         ),
@@ -441,7 +381,7 @@ class _DiaryCognitionQuizScreenState
                             _sortColumnIndex = columnIndex;
                           });
                         },
-                        label: Text(
+                        label: SelectableText(
                           "문제 풀기 결과\n자세히 보기",
                           style: _headerTextStyle,
                           textAlign: TextAlign.end,
@@ -450,7 +390,7 @@ class _DiaryCognitionQuizScreenState
                       // DataColumn2(
                       //   fixedWidth: 80,
                       //   size: ColumnSize.S,
-                      //   label: Text(
+                      //   label: SelectableText(
                       //     "대시보드",
                       //     style: _headerTextStyle,
                       //   ),
@@ -462,13 +402,13 @@ class _DiaryCognitionQuizScreenState
                           DataRow2(
                             cells: [
                               DataCell(
-                                Text(
+                                SelectableText(
                                   (i + 1).toString(),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.name.length > 10
                                       ? "${_userDataList[i]!.name.substring(0, 10)}.."
                                       : _userDataList[i]!.name,
@@ -476,39 +416,39 @@ class _DiaryCognitionQuizScreenState
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.userAge!,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.gender,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.phone,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               if (_adminProfile.master)
                                 DataCell(
-                                  Text(
+                                  SelectableText(
                                     _userDataList[i]!.fullRegion,
                                     style: _contentTextStyle,
                                   ),
                                 ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   secondsToStringLine(
                                       _userDataList[i]!.createdAt),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.lastVisit != 0
                                       ? secondsToStringLine(
                                           _userDataList[i]!.lastVisit!)

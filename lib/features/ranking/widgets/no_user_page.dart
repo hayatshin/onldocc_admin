@@ -24,7 +24,7 @@ class NoUserPage extends StatelessWidget {
             ],
           ),
           Gaps.v40,
-          Text(
+          SelectableText(
             "일치하는 회원이 없습니다.",
             textAlign: TextAlign.center,
             style: TextStyle(

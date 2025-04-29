@@ -99,7 +99,7 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                                   //   padding: const EdgeInsets.only(
                                   //     left: Sizes.size10,
                                   //   ),
-                                  //   child: Text(
+                                  //   child: SelectableText(
                                   //     daterangeToSlashString(
                                   //         selectedDateRangeNotifier.value ??
                                   //             _selectedDateRange),
@@ -209,7 +209,7 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                                 DropdownMenuItem(
                                   alignment: AlignmentDirectional.centerStart,
                                   value: "name",
-                                  child: Text(
+                                  child: SelectableText(
                                     "이름",
                                     style: TextStyle(
                                       fontSize: Sizes.size13,
@@ -220,7 +220,7 @@ class _SearchPeriodOrderState extends ConsumerState<SearchPeriodOrder> {
                                 DropdownMenuItem(
                                   alignment: AlignmentDirectional.centerStart,
                                   value: "phone",
-                                  child: Text(
+                                  child: SelectableText(
                                     "핸드폰 번호",
                                     style: TextStyle(
                                       fontSize: Sizes.size13,

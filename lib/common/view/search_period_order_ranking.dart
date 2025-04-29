@@ -94,7 +94,7 @@ class _SearchPeriodOrderRankingState
                                   //   padding: const EdgeInsets.only(
                                   //     left: Sizes.size10,
                                   //   ),
-                                  //   child: Text(
+                                  //   child: SelectableText(
                                   //     daterangeToSlashString(
                                   //         selectedDateRangeNotifier.value ??
                                   //             _selectedDateRange),
@@ -204,7 +204,7 @@ class _SearchPeriodOrderRankingState
                                 DropdownMenuItem(
                                   alignment: AlignmentDirectional.centerStart,
                                   value: "name",
-                                  child: Text(
+                                  child: SelectableText(
                                     "이름",
                                     style: TextStyle(
                                       fontSize: Sizes.size13,
@@ -215,7 +215,7 @@ class _SearchPeriodOrderRankingState
                                 DropdownMenuItem(
                                   alignment: AlignmentDirectional.centerStart,
                                   value: "phone",
-                                  child: Text(
+                                  child: SelectableText(
                                     "핸드폰 번호",
                                     style: TextStyle(
                                       fontSize: Sizes.size13,
@@ -347,7 +347,7 @@ class _SearchPeriodOrderRankingState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
+                      SelectableText(
                         "점수 계산 방법",
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
@@ -355,7 +355,7 @@ class _SearchPeriodOrderRankingState
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const Text(
+                      const SelectableText(
                         "걸음수: 1,000보당 10점 (하루 최대 만보)",
                         textAlign: TextAlign.right,
                         style: TextStyle(
@@ -363,7 +363,7 @@ class _SearchPeriodOrderRankingState
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      const Text(
+                      const SelectableText(
                         "일기: 1회 100점 / 댓글 1회 20점",
                         textAlign: TextAlign.left,
                         style: TextStyle(

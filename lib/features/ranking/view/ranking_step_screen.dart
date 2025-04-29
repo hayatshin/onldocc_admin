@@ -178,7 +178,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
                             columns: const [
                               DataColumn(
                                 label: Expanded(
-                                  child: Text(
+                                  child: SelectableText(
                                     "날짜",
                                     textAlign: TextAlign.center,
                                   ),
@@ -186,7 +186,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
                               ),
                               DataColumn(
                                 label: Expanded(
-                                  child: Text(
+                                  child: SelectableText(
                                     "걸음수",
                                     textAlign: TextAlign.center,
                                   ),
@@ -200,7 +200,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
                                     DataCell(
                                       Align(
                                         alignment: Alignment.center,
-                                        child: Text(
+                                        child: SelectableText(
                                           _stepDataList[i].date,
                                           style: const TextStyle(
                                             fontSize: Sizes.size13,
@@ -211,7 +211,7 @@ class _RankingStepScreenState extends ConsumerState<RankingStepScreen> {
                                     DataCell(
                                       Align(
                                         alignment: Alignment.center,
-                                        child: Text(
+                                        child: SelectableText(
                                           numberDecimalCommans(
                                               _stepDataList[i].dailyStep!),
                                           textAlign: TextAlign.end,

@@ -3,9 +3,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CognitionTestRepository {
   final _supabase = Supabase.instance.client;
+  String? lastTestId;
+  final int offset = 20;
 
   Future<List<Map<String, dynamic>>> getTestData(
-      String testType, AdminProfileModel adminProfileModel) async {
+      String testType, AdminProfileModel adminProfileModel, int page) async {
     if (adminProfileModel.master) {
       final query = await _supabase
           .from("cognition_test")
@@ -14,7 +16,8 @@ class CognitionTestRepository {
           .order(
             'createdAt',
             ascending: false,
-          );
+          )
+          .range((page - 1) * offset, (page * offset) - 1);
 
       return query;
     } else {
@@ -26,9 +29,31 @@ class CognitionTestRepository {
           .order(
             'createdAt',
             ascending: false,
-          );
+          )
+          .range((page - 1) * offset, (page * offset) - 1);
 
       return query;
     }
+  }
+
+  Future<List<Map<String, dynamic>>> getUserTestData(
+    String testType,
+    String userId,
+    int startSeconds,
+    int endSeconds,
+  ) async {
+    final query = await _supabase
+        .from("cognition_test")
+        .select('*, users!inner(*)')
+        .eq('testType', testType)
+        .eq('userId', userId)
+        .gte("createdAt", startSeconds)
+        .lte("createdAt", endSeconds)
+        .order(
+          'createdAt',
+          ascending: false,
+        );
+
+    return query;
   }
 }

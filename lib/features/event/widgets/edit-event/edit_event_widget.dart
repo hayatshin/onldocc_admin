@@ -229,7 +229,7 @@
 //       if (!mounted) return;
 //       ScaffoldMessenger.of(context).showSnackBar(
 //         const SnackBar(
-//           content: Text("오류가 발생했습니다."),
+//           content: SelectableText("오류가 발생했습니다."),
 //         ),
 //       );
 //     }
@@ -251,7 +251,7 @@
 //       if (!mounted) return;
 //       ScaffoldMessenger.of(context).showSnackBar(
 //         const SnackBar(
-//           content: Text("오류가 발생했습니다."),
+//           content: SelectableText("오류가 발생했습니다."),
 //         ),
 //       );
 //     }
@@ -462,7 +462,7 @@
 //                           child: Column(
 //                             crossAxisAlignment: CrossAxisAlignment.start,
 //                             children: [
-//                               Text("행사 이름", style: headerTextStyle),
+//                               SelectableText("행사 이름", style: headerTextStyle),
 //                             ],
 //                           ),
 //                         ),
@@ -539,7 +539,7 @@
 //                         child: Column(
 //                           crossAxisAlignment: CrossAxisAlignment.start,
 //                           children: [
-//                             Text(
+//                             SelectableText(
 //                               "행사 설명",
 //                               style: headerTextStyle,
 //                               textAlign: TextAlign.start,
@@ -633,7 +633,7 @@
 //                                       crossAxisAlignment:
 //                                           CrossAxisAlignment.start,
 //                                       children: [
-//                                         Text(
+//                                         SelectableText(
 //                                           "배너 이미지",
 //                                           style: headerTextStyle,
 //                                           textAlign: TextAlign.start,
@@ -705,7 +705,7 @@
 //                                     crossAxisAlignment:
 //                                         CrossAxisAlignment.start,
 //                                     children: [
-//                                       Text(
+//                                       SelectableText(
 //                                         "시작일",
 //                                         style: headerTextStyle,
 //                                         textAlign: TextAlign.start,
@@ -730,7 +730,7 @@
 //                                     ),
 //                                     Gaps.h20,
 //                                     if (_eventStartDate != null)
-//                                       Text(
+//                                       SelectableText(
 //                                         "${_eventStartDate?.year}.${_eventStartDate?.month.toString().padLeft(2, '0')}.${_eventStartDate?.day.toString().padLeft(2, '0')}",
 //                                         style: TextStyle(
 //                                           fontWeight: FontWeight.w600,
@@ -753,7 +753,7 @@
 //                                     crossAxisAlignment:
 //                                         CrossAxisAlignment.start,
 //                                     children: [
-//                                       Text(
+//                                       SelectableText(
 //                                         "당첨자 수 제한",
 //                                         style: headerTextStyle,
 //                                         textAlign: TextAlign.start,
@@ -841,7 +841,7 @@
 //                                           ),
 //                                         ),
 //                                         Gaps.h10,
-//                                         Text(
+//                                         SelectableText(
 //                                           "명",
 //                                           style: contentTextStyle,
 //                                         ),
@@ -885,7 +885,7 @@
 //                                       crossAxisAlignment:
 //                                           CrossAxisAlignment.start,
 //                                       children: [
-//                                         Text(
+//                                         SelectableText(
 //                                           "행사 이미지",
 //                                           style: headerTextStyle,
 //                                           textAlign: TextAlign.start,
@@ -956,7 +956,7 @@
 //                                     crossAxisAlignment:
 //                                         CrossAxisAlignment.start,
 //                                     children: [
-//                                       Text(
+//                                       SelectableText(
 //                                         "종료일",
 //                                         style: headerTextStyle,
 //                                         textAlign: TextAlign.start,
@@ -981,7 +981,7 @@
 //                                     ),
 //                                     Gaps.h20,
 //                                     if (_eventEndDate != null)
-//                                       Text(
+//                                       SelectableText(
 //                                         "${_eventEndDate?.year}.${_eventEndDate?.month.toString().padLeft(2, '0')}.${_eventEndDate?.day.toString().padLeft(2, '0')}",
 //                                         style: TextStyle(
 //                                           fontWeight: FontWeight.w600,
@@ -1004,7 +1004,7 @@
 //                                     crossAxisAlignment:
 //                                         CrossAxisAlignment.start,
 //                                     children: [
-//                                       Text(
+//                                       SelectableText(
 //                                         "연령 제한",
 //                                         style: headerTextStyle,
 //                                         textAlign: TextAlign.start,
@@ -1091,7 +1091,7 @@
 //                                           ),
 //                                         ),
 //                                         Gaps.h10,
-//                                         Text(
+//                                         SelectableText(
 //                                           "세 이상",
 //                                           style: contentTextStyle,
 //                                         ),
@@ -1122,7 +1122,7 @@
 //                       ),
 //                     ),
 //                     Gaps.v52,
-//                     Text(
+//                     SelectableText(
 //                       "행사 설정",
 //                       style: TextStyle(
 //                         color: Palette().darkBlue,
@@ -1136,7 +1136,7 @@
 //                       children: [
 //                         Expanded(
 //                           flex: 1,
-//                           child: Text(
+//                           child: SelectableText(
 //                             "1. 행사 유형을 설정해주세요.",
 //                             style: headerTextStyle,
 //                           ),
@@ -1180,7 +1180,7 @@
 //                                     crossAxisAlignment:
 //                                         CrossAxisAlignment.start,
 //                                     children: [
-//                                       Text(
+//                                       SelectableText(
 //                                         "${_eventType.eventTypeName}:",
 //                                         style: TextStyle(
 //                                           color: Palette().darkBlue,
@@ -1189,7 +1189,7 @@
 //                                         ),
 //                                       ),
 //                                       Gaps.v6,
-//                                       Text(
+//                                       SelectableText(
 //                                         _eventType.eventTypeDescription,
 //                                         style: TextStyle(
 //                                           color: Palette().darkBlue,
@@ -1292,7 +1292,7 @@
 //       children: [
 //         SizedBox(
 //           width: totalWidth * 0.1,
-//           child: Text(
+//           child: SelectableText(
 //             "⚬ $header",
 //             style: const TextStyle(
 //               fontWeight: FontWeight.w500,
@@ -1369,7 +1369,7 @@
 //               ),
 //             ),
 //             Gaps.h10,
-//             Text(
+//             SelectableText(
 //               "점",
 //               style: TextStyle(
 //                 fontSize: Sizes.size14,
@@ -1381,7 +1381,7 @@
 //               const Row(
 //                 children: [
 //                   Gaps.h10,
-//                   Text(
+//                   SelectableText(
 //                     "/ 1000보 당",
 //                     style: TextStyle(
 //                       fontSize: Sizes.size13,
@@ -1404,7 +1404,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return Text(
+//     return SelectableText(
 //       text,
 //       style: TextStyle(
 //         fontSize: Sizes.size12,
@@ -1431,7 +1431,7 @@
 //           mainAxisAlignment: MainAxisAlignment.start,
 //           children: [
 //             Flexible(
-//               child: Text(
+//               child: SelectableText(
 //                 text,
 //                 style: const TextStyle(
 //                   color: Colors.red,
@@ -1471,7 +1471,7 @@
 //           items: items.map((String item) {
 //             return DropdownMenuItem<String>(
 //               value: item,
-//               child: Text(
+//               child: SelectableText(
 //                 item,
 //                 style: TextStyle(
 //                   fontSize: 12,

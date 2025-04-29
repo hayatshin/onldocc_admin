@@ -9,6 +9,7 @@ import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
+import 'package:onldocc_admin/features/ca/view/self_test_screen.dart';
 import 'package:onldocc_admin/features/ca/view_models/cognition_test_view_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -44,7 +45,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
     "점수",
     "이름",
     "성별",
-    "나이",
+    "연령",
     "핸드폰 번호",
     "자세히 보기"
   ];
@@ -111,7 +112,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
         ref.read(cognitionTestProvider).value ??
             await ref
                 .read(cognitionTestProvider.notifier)
-                .getCognitionTestData(alzheimer_test);
+                .getCognitionTestData(testTypes[0].testType, 0);
 
     List<CognitionTestModel> filterList = [];
     if (searchBy == "이름") {
@@ -150,7 +151,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
   Future<void> _initializeTableList() async {
     final testList = await ref
         .read(cognitionTestProvider.notifier)
-        .getCognitionTestData(alzheimer_test);
+        .getCognitionTestData(testTypes[0].testType, 0);
 
     if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
@@ -237,55 +238,55 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                       columns: [
                         DataColumn2(
                           fixedWidth: 140,
-                          label: Text(
+                          label: SelectableText(
                             "시행 날짜",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           fixedWidth: 200,
-                          label: Text(
+                          label: SelectableText(
                             "분류",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           fixedWidth: 80,
-                          label: Text(
+                          label: SelectableText(
                             "점수",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
-                          label: Text(
+                          label: SelectableText(
                             "이름",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           fixedWidth: 100,
-                          label: Text(
+                          label: SelectableText(
                             "성별",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           fixedWidth: 80,
-                          label: Text(
-                            "나이",
+                          label: SelectableText(
+                            "연령",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           fixedWidth: 190,
-                          label: Text(
+                          label: SelectableText(
                             "핸드폰 번호",
                             style: _headerTextStyle,
                           ),
                         ),
                         DataColumn2(
                           fixedWidth: 100,
-                          label: Text(
+                          label: SelectableText(
                             "자세히 보기",
                             style: _headerTextStyle,
                           ),
@@ -296,43 +297,43 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
                           DataRow2(
                             cells: [
                               DataCell(
-                                Text(
+                                SelectableText(
                                   secondsToStringLine(_testList[i].createdAt),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _testList[i].result,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _testList[i].totalPoint.toString(),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _testList[i].userName!,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _testList[i].userGender!,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _testList[i].userAge!.toString(),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _testList[i].userPhone!,
                                   style: _contentTextStyle,
                                 ),

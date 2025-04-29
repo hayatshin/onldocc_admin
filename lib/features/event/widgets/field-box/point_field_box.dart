@@ -176,7 +176,7 @@ class PointFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1회당 점수:",
                                               style: fieldContentTextStyle,
                                             ),
@@ -187,7 +187,7 @@ class PointFieldBox extends StatelessWidget {
                                               updateState: updateDiaryPoint,
                                             ),
                                             Gaps.h10,
-                                            Text(
+                                            SelectableText(
                                               "점",
                                               style: fieldContentTextStyle,
                                             ),
@@ -198,12 +198,12 @@ class PointFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1일 최대:",
                                               style: fieldContentTextStyle,
                                             ),
                                             Gaps.h20,
-                                            Text(
+                                            SelectableText(
                                               "1 회",
                                               style: fieldContentTextStyle,
                                             ),
@@ -228,7 +228,7 @@ class PointFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1회당 점수:",
                                               style: fieldContentTextStyle,
                                             ),
@@ -239,7 +239,7 @@ class PointFieldBox extends StatelessWidget {
                                               updateState: updateQuizPoint,
                                             ),
                                             Gaps.h10,
-                                            Text(
+                                            SelectableText(
                                               "점",
                                               style: fieldContentTextStyle,
                                             ),
@@ -250,12 +250,12 @@ class PointFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1일 최대:",
                                               style: fieldContentTextStyle,
                                             ),
                                             Gaps.h20,
-                                            Text(
+                                            SelectableText(
                                               "1 회",
                                               style: fieldContentTextStyle,
                                             ),
@@ -311,7 +311,7 @@ class PointFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1회당 점수:",
                                               style: fieldContentTextStyle,
                                             ),
@@ -322,7 +322,7 @@ class PointFieldBox extends StatelessWidget {
                                               updateState: updateStepPoint,
                                             ),
                                             Gaps.h10,
-                                            Text(
+                                            SelectableText(
                                               "점",
                                               style: fieldContentTextStyle,
                                             ),
@@ -335,7 +335,7 @@ class PointFieldBox extends StatelessWidget {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
+                                            SelectableText(
                                               "1일 최대:",
                                               style: fieldContentTextStyle,
                                             ),
@@ -347,7 +347,7 @@ class PointFieldBox extends StatelessWidget {
                                               step: true,
                                             ),
                                             Gaps.h10,
-                                            Text(
+                                            SelectableText(
                                               "보",
                                               style: fieldContentTextStyle,
                                             ),
@@ -433,7 +433,7 @@ class _InvitationFieldPointUsageTileState
                   ),
                 ),
                 Gaps.h10,
-                Text(
+                SelectableText(
                   widget.fieldName,
                   style: widget.fieldHeaderTextStyle,
                 ),
@@ -561,7 +561,7 @@ class FieldPointUsageTile extends StatelessWidget {
                   ),
                 ),
                 Gaps.h10,
-                Text(
+                SelectableText(
                   fieldName,
                   style: fieldHeaderTextStyle,
                 ),
@@ -613,7 +613,7 @@ class FieldPointSetterTile extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
+                        SelectableText(
                           "1회당 점수:",
                           style: fieldContentTextStyle,
                         ),
@@ -624,7 +624,7 @@ class FieldPointSetterTile extends StatelessWidget {
                           updateState: updateState,
                         ),
                         Gaps.h10,
-                        Text(
+                        SelectableText(
                           "점",
                           style: fieldContentTextStyle,
                         ),
@@ -648,7 +648,7 @@ class FieldPointSetterTile extends StatelessWidget {
                               },
                             ),
                             Gaps.h14,
-                            Text(
+                            SelectableText(
                               "1일 횟수 제한 없음",
                               style: fieldContentTextStyle,
                             )
@@ -665,7 +665,7 @@ class FieldPointSetterTile extends StatelessWidget {
                               ? Container()
                               : Row(
                                   children: [
-                                    Text(
+                                    SelectableText(
                                       "1일 최대:",
                                       style: fieldContentTextStyle,
                                     ),
@@ -676,7 +676,7 @@ class FieldPointSetterTile extends StatelessWidget {
                                       point: maxPoint,
                                     ),
                                     Gaps.h10,
-                                    Text(
+                                    SelectableText(
                                       "회",
                                       style: fieldContentTextStyle,
                                     ),

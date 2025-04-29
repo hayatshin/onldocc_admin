@@ -208,7 +208,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                   flex: 1,
                                   child: Align(
                                     alignment: Alignment.center,
-                                    child: Text(
+                                    child: SelectableText(
                                       "#",
                                       style: _headerTextStyle,
                                     ),
@@ -218,7 +218,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                   flex: 2,
                                   child: Align(
                                     alignment: Alignment.center,
-                                    child: Text(
+                                    child: SelectableText(
                                       "썸네일",
                                       style: _headerTextStyle,
                                     ),
@@ -228,7 +228,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                   flex: 3,
                                   child: Align(
                                     alignment: Alignment.center,
-                                    child: Text(
+                                    child: SelectableText(
                                       "제목",
                                       style: _headerTextStyle,
                                     ),
@@ -238,7 +238,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                   flex: 1,
                                   child: Align(
                                     alignment: Alignment.center,
-                                    child: Text(
+                                    child: SelectableText(
                                       "수정",
                                       style: _headerTextStyle,
                                     ),
@@ -266,10 +266,10 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                         ),
                                         child: Align(
                                           alignment: Alignment.center,
-                                          child: Text(
+                                          child: SelectableText(
                                             (index + 1).toString(),
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
+                                            // softWrap: true,
+                                            // overflow: TextOverflow.ellipsis,
                                             style: _contentTextStyle,
                                           ),
                                         ),
@@ -307,10 +307,10 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                                         ),
                                         child: Align(
                                           alignment: Alignment.center,
-                                          child: Text(
+                                          child: SelectableText(
                                             _tvList[index].title,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
+                                            // softWrap: true,
+                                            // overflow: TextOverflow.ellipsis,
                                             style: _contentTextStyle,
                                           ),
                                         ),

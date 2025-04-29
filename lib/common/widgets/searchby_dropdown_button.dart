@@ -66,7 +66,7 @@ class SearchByDropdownButton extends StatelessWidget {
             ),
             scrollbarTheme: ScrollbarThemeData(
               radius: const Radius.circular(10),
-              thumbVisibility: MaterialStateProperty.all(true),
+              thumbVisibility: WidgetStateProperty.all(true),
             ),
           ),
           menuItemStyleData: const MenuItemStyleData(

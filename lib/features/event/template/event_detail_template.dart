@@ -97,11 +97,11 @@ class EventDetailTemplate extends ConsumerWidget {
                             const EventHeader(headerText: "행사 개요"),
                             Row(
                               children: [
-                                Text(
+                                SelectableText(
                                   "주최기관: ",
                                   style: headerTextStyle,
                                 ),
-                                Text(
+                                SelectableText(
                                   eventModel.orgName!.split(' ').last,
                                   style: headerTextStyle.copyWith(
                                     fontWeight: FontWeight.w400,
@@ -112,11 +112,11 @@ class EventDetailTemplate extends ConsumerWidget {
                             Gaps.v10,
                             Row(
                               children: [
-                                Text(
+                                SelectableText(
                                   "시작일:  ",
                                   style: headerTextStyle,
                                 ),
-                                Text(
+                                SelectableText(
                                   eventModel.startDate,
                                   style: headerTextStyle.copyWith(
                                     fontWeight: FontWeight.w400,
@@ -127,11 +127,11 @@ class EventDetailTemplate extends ConsumerWidget {
                             Gaps.v10,
                             Row(
                               children: [
-                                Text(
+                                SelectableText(
                                   "종료일:  ",
                                   style: headerTextStyle,
                                 ),
-                                Text(
+                                SelectableText(
                                   eventModel.endDate,
                                   style: headerTextStyle.copyWith(
                                     fontWeight: FontWeight.w400,
@@ -145,11 +145,11 @@ class EventDetailTemplate extends ConsumerWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(
+                                      SelectableText(
                                         "목표 점수:  ",
                                         style: headerTextStyle,
                                       ),
-                                      Text(
+                                      SelectableText(
                                         "${eventModel.targetScore}점",
                                         style: headerTextStyle.copyWith(
                                           fontWeight: FontWeight.w400,
@@ -165,11 +165,11 @@ class EventDetailTemplate extends ConsumerWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(
+                                      SelectableText(
                                         "달성자 수 제한:  ",
                                         style: headerTextStyle,
                                       ),
-                                      Text(
+                                      SelectableText(
                                         "${eventModel.achieversNumber}명",
                                         style: headerTextStyle.copyWith(
                                           fontWeight: FontWeight.w400,
@@ -184,11 +184,11 @@ class EventDetailTemplate extends ConsumerWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
+                                    SelectableText(
                                       "진행 상황:  ",
                                       style: headerTextStyle,
                                     ),
-                                    Text(
+                                    SelectableText(
                                       "${eventModel.state}",
                                       style: headerTextStyle.copyWith(
                                         fontWeight: FontWeight.w400,
@@ -225,9 +225,9 @@ class EventDetailTemplate extends ConsumerWidget {
                           const EventHeader(headerText: "설명"),
                           Expanded(
                             child: SingleChildScrollView(
-                              child: Text(
+                              child: SelectableText(
                                 eventModel.description.replaceAll('\\n', '\n'),
-                                softWrap: true,
+                                // softWrap: true,
                                 style: headerTextStyle.copyWith(
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -274,7 +274,7 @@ class EventHeader extends StatelessWidget {
                   horizontal: 10,
                   vertical: 3,
                 ),
-                child: Text(
+                child: SelectableText(
                   headerText,
                   style: headerTextStyle.copyWith(
                     color: InjicareColor().gray80,

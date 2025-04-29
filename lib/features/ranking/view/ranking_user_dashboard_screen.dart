@@ -248,7 +248,7 @@ class _RankingUserDashboardScreenState
                         Gaps.v20,
                         Row(
                           children: [
-                            Text(
+                            SelectableText(
                               "점수 항목:",
                               style: TextStyle(
                                 fontSize: Sizes.size14,
@@ -335,7 +335,7 @@ class _RankingUserDashboardScreenState
                             columns: [
                               DataColumn2(
                                 size: ColumnSize.S,
-                                label: Text(
+                                label: SelectableText(
                                   "#",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -343,7 +343,7 @@ class _RankingUserDashboardScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.M,
-                                label: Text(
+                                label: SelectableText(
                                   "날짜",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -351,7 +351,7 @@ class _RankingUserDashboardScreenState
                               ),
                               DataColumn2(
                                 size: ColumnSize.L,
-                                label: Text(
+                                label: SelectableText(
                                   "내용",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
@@ -363,13 +363,13 @@ class _RankingUserDashboardScreenState
                                 DataRow2(
                                   cells: [
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         "${_rankings[i].index}",
                                         style: _contentTextStyle,
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _selectedRanking == "걸음수"
                                             ? _rankings[i].stepDate ?? ""
                                             : _rankings[i].createdAt != null
@@ -380,10 +380,10 @@ class _RankingUserDashboardScreenState
                                       ),
                                     ),
                                     DataCell(
-                                      Text(
+                                      SelectableText(
                                         _rankings[i].content,
                                         maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.start,
                                         style: _contentTextStyle.copyWith(
                                           fontWeight: FontWeight.w800,

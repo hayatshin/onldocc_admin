@@ -48,7 +48,7 @@ class ModalScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
+                  child: SelectableText(
                     modalTitle,
                     style: TextStyle(
                       color: Palette().darkBlue,

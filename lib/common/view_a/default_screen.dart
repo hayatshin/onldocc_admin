@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -118,7 +116,7 @@ class DefaultTemplate extends StatelessWidget {
                               Gaps.h10,
                             ],
                           ),
-                        Text(
+                        SelectableText(
                           menu.name,
                           style: TextStyle(
                             color: Palette().darkPurple,
@@ -157,9 +155,9 @@ class DefaultTemplate extends StatelessWidget {
                         ),
                         Gaps.h14,
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            SelectableText(
                               adminModel.name,
                               style: TextStyle(
                                 fontSize: Sizes.size14,
@@ -171,7 +169,7 @@ class DefaultTemplate extends StatelessWidget {
                               Column(
                                 children: [
                                   Gaps.v2,
-                                  Text(
+                                  SelectableText(
                                     adminModel.mail,
                                     style: TextStyle(
                                       fontSize: Sizes.size10,

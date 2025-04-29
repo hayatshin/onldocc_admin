@@ -107,13 +107,13 @@ class _UploadMultipleScoresWidgetState
         //           child: Column(
         //             crossAxisAlignment: CrossAxisAlignment.start,
         //             children: [
-        //               Text(
+        //               SelectableText(
         //                 "2. 최소 가이드 점수를 설정해주세요.",
         //                 style: headerTextStyle,
         //                 textAlign: TextAlign.start,
         //               ),
         //               Gaps.v16,
-        //               Text(
+        //               SelectableText(
         //                 "사용자가 대략의 점수 달성을 해야하는지 가이드를 주기 위한 점수입니다.\n설정을 안 하실 경우 ‘0’을 기입해주세요.",
         //                 style: headerInfoTextStyle,
         //                 textAlign: TextAlign.start,
@@ -185,7 +185,7 @@ class _UploadMultipleScoresWidgetState
         //                 ),
         //               ),
         //               Gaps.h10,
-        //               Text(
+        //               SelectableText(
         //                 "점",
         //                 style: contentTextStyle,
         //               ),
@@ -197,7 +197,7 @@ class _UploadMultipleScoresWidgetState
         //     Gaps.v52,
         //   ],
         // ),
-        Text(
+        SelectableText(
           "2. 점수 산출 방식을 설정해주세요.",
           style: headerTextStyle,
           textAlign: TextAlign.start,

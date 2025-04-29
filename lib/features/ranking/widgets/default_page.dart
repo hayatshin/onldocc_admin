@@ -30,7 +30,7 @@ class DefaultPage extends StatelessWidget {
             ],
           ),
           Gaps.v40,
-          Text(
+          SelectableText(
             "회원을 검색해주세요.",
             textAlign: TextAlign.center,
             style: TextStyle(

@@ -85,6 +85,7 @@ dependencies:
   excel: ^4.0.3
   flutter_multi_formatter: ^2.13.0
   pdf: ^3.11.1
+  dart_openai: ^5.1.0
   # firebase_auth_web: ^5.9.8
   # firebase_core: ^2.27.0
 

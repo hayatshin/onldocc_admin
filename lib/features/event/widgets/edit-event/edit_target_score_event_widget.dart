@@ -194,7 +194,7 @@ class _EditPointEventWidgetState
           color: Colors.black54,
           child: Center(
             child: AlertDialog(
-              title: Text(
+              title: SelectableText(
                 eventName.length > 10
                     ? "${eventName.substring(0, 11)}.."
                     : eventName,
@@ -207,13 +207,13 @@ class _EditPointEventWidgetState
               content: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  SelectableText(
                     "정말로 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: Sizes.size13,
                     ),
                   ),
-                  Text(
+                  SelectableText(
                     "삭제하면 다시 되돌릴 수 없습니다.",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -228,7 +228,7 @@ class _EditPointEventWidgetState
                     backgroundColor:
                         WidgetStateProperty.all(Colors.pink.shade100),
                   ),
-                  child: Text(
+                  child: SelectableText(
                     "취소",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -242,7 +242,7 @@ class _EditPointEventWidgetState
                     backgroundColor:
                         WidgetStateProperty.all(Theme.of(context).primaryColor),
                   ),
-                  child: const Text(
+                  child: const SelectableText(
                     "삭제",
                     style: TextStyle(
                       fontSize: Sizes.size13,
@@ -271,7 +271,7 @@ class _EditPointEventWidgetState
           children: [
             Expanded(
               flex: 1,
-              child: Text(
+              child: SelectableText(
                 "2. 목표 점수를 설정해주세요.",
                 style: headerTextStyle,
                 textAlign: TextAlign.start,
@@ -339,7 +339,7 @@ class _EditPointEventWidgetState
                     ),
                   ),
                   Gaps.h10,
-                  Text(
+                  SelectableText(
                     "점",
                     style: contentTextStyle,
                   ),
@@ -349,7 +349,7 @@ class _EditPointEventWidgetState
           ],
         ),
         Gaps.v52,
-        Text(
+        SelectableText(
           "3. 점수 산출 방식을 설정해주세요.",
           style: headerTextStyle,
           textAlign: TextAlign.start,

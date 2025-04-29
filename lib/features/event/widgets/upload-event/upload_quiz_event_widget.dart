@@ -81,7 +81,7 @@ class _UploadQuizEventWidgetStateState extends State<UploadQuizEventWidget> {
             children: [
               Expanded(
                 flex: 1,
-                child: Text(
+                child: SelectableText(
                   "2. 질문을 작성해주세요.",
                   style: headerTextStyle,
                   textAlign: TextAlign.start,
@@ -130,7 +130,7 @@ class _UploadQuizEventWidgetStateState extends State<UploadQuizEventWidget> {
             children: [
               Expanded(
                 flex: 1,
-                child: Text(
+                child: SelectableText(
                   "3. 사지선다 보기를 작성해주세요.",
                   style: headerTextStyle,
                   textAlign: TextAlign.start,
@@ -182,7 +182,7 @@ class _UploadQuizEventWidgetStateState extends State<UploadQuizEventWidget> {
             children: [
               Expanded(
                 flex: 1,
-                child: Text(
+                child: SelectableText(
                   "4. 정답을 작성해주세요.",
                   style: headerTextStyle,
                   textAlign: TextAlign.start,

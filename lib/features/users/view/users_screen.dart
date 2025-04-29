@@ -1,6 +1,7 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/path_extra.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
@@ -35,7 +36,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   final List<String> _userListHeader = [
     "#",
     "이름",
-    "나이",
+    "연령",
     "출생일",
     "성별",
     "핸드폰 번호",
@@ -81,6 +82,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
         _getUserModelList();
+        _initializeTable();
       }
     });
 
@@ -92,6 +94,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     removeDeleteOverlay();
     _scrollController.removeListener(_onDetectScroll);
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -153,40 +156,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         });
       }
     }
-
-    // if (selectContractRegion.value!.subdistrictId == "") {
-    //   if (mounted) {
-    //     setState(() {
-    //       _userDataList = userDataList;
-    //       _filtered = false;
-    //       _rowCount = rowCount;
-    //     });
-    //   }
-    // } else {
-    //   if (selectContractRegion.value!.contractCommunityId != "" &&
-    //       selectContractRegion.value!.contractCommunityId != null) {
-    //     final filterDataList = userDataList
-    //         .where((e) =>
-    //             e!.contractCommunityId ==
-    //             selectContractRegion.value!.contractCommunityId)
-    //         .toList();
-    //     if (mounted) {
-    //       setState(() {
-    //         _userDataList = filterDataList;
-    //         _filtered = false;
-    //         _rowCount = rowCount;
-    //       });
-    //     }
-    //   } else {
-    //     if (mounted) {
-    //       setState(() {
-    //         _userDataList = userDataList;
-    //         _filtered = false;
-    //         _rowCount = rowCount;
-    //       });
-    //     }
-    //   }
-    // }
   }
 
   void _initializeTable() async {
@@ -307,7 +276,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       "userId": userId,
       "userName": userName,
     };
-    context.go("/users/$userId", extra: PathExtra.fromJson(extraJson));
+    context.push("/users/$userId", extra: PathExtra.fromJson(extraJson));
   }
 
   @override
@@ -332,7 +301,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   child: DataTable2(
                     scrollController: _scrollController,
                     isVerticalScrollBarVisible: false,
-                    smRatio: 0.7,
+                    smRatio: 0.6,
                     lmRatio: 1.2,
                     dividerThickness: 0.1,
                     sortColumnIndex: _sortColumnIndex,
@@ -348,36 +317,36 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     ),
                     columns: [
                       DataColumn2(
-                        fixedWidth: 80,
-                        label: Text(
+                        fixedWidth: 60,
+                        label: SelectableText(
                           "#",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.L,
-                        label: Text(
+                        label: SelectableText(
                           "이름",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.S,
-                        label: Text(
-                          "나이",
+                        label: SelectableText(
+                          "연령",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.S,
-                        label: Text(
+                        label: SelectableText(
                           "성별",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         size: ColumnSize.L,
-                        label: Text(
+                        label: SelectableText(
                           "핸드폰 번호",
                           style: _headerTextStyle,
                         ),
@@ -385,7 +354,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                       if (_adminProfile.master)
                         DataColumn2(
                           size: ColumnSize.L,
-                          label: Text(
+                          label: SelectableText(
                             "거주 지역",
                             style: _headerTextStyle,
                           ),
@@ -407,49 +376,50 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                             setState(() {});
                           }
                         },
-                        label: Text(
+                        label: SelectableText(
                           "가입일",
                           style: _headerTextStyle,
                         ),
                       ),
-                      DataColumn2(
-                        tooltip: "클릭하면 '마지막 방문일'을 기준으로 정렬됩니다",
-                        onSort: (columnIndex, sortAsending) {
-                          _sortColumnIndex = columnIndex;
-                          final sortIndex = _adminProfile.master ? 7 : 6;
+                      if (_adminProfile.master)
+                        DataColumn2(
+                          tooltip: "클릭하면 '마지막 방문일'을 기준으로 정렬됩니다",
+                          onSort: (columnIndex, sortAsending) {
+                            _sortColumnIndex = columnIndex;
+                            final sortIndex = _adminProfile.master ? 7 : 6;
 
-                          if (columnIndex == sortIndex) {
-                            lastVisitSort = !lastVisitSort;
-                            if (lastVisitSort) {
-                              _userDataList.sort((a, b) =>
-                                  b!.lastVisit!.compareTo(a!.lastVisit!));
-                            } else {
-                              _userDataList.sort((a, b) =>
-                                  a!.lastVisit!.compareTo(b!.lastVisit!));
+                            if (columnIndex == sortIndex) {
+                              lastVisitSort = !lastVisitSort;
+                              if (lastVisitSort) {
+                                _userDataList.sort((a, b) =>
+                                    b!.lastVisit!.compareTo(a!.lastVisit!));
+                              } else {
+                                _userDataList.sort((a, b) =>
+                                    a!.lastVisit!.compareTo(b!.lastVisit!));
+                              }
+                              setState(() {});
                             }
-                            setState(() {});
-                          }
-                        },
-                        label: Text(
-                          "최근 방문일",
+                          },
+                          label: SelectableText(
+                            "최근 방문일",
+                            style: _headerTextStyle,
+                          ),
+                        ),
+                      DataColumn2(
+                        fixedWidth: 90,
+                        label: SelectableText(
+                          "삭제",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn2(
                         fixedWidth: 80,
-                        label: Text(
-                          "삭제",
+                        size: ColumnSize.S,
+                        label: SelectableText(
+                          "대시보드",
                           style: _headerTextStyle,
                         ),
                       ),
-                      // DataColumn2(
-                      //   fixedWidth: 80,
-                      //   size: ColumnSize.S,
-                      //   label: Text(
-                      //     "대시보드",
-                      //     style: _headerTextStyle,
-                      //   ),
-                      // ),
                     ],
                     rows: [
                       if (_userDataList.isNotEmpty)
@@ -457,13 +427,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                           DataRow2(
                             cells: [
                               DataCell(
-                                Text(
+                                SelectableText(
                                   (i + 1).toString(),
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.name.length > 10
                                       ? "${_userDataList[i]!.name.substring(0, 10)}.."
                                       : _userDataList[i]!.name,
@@ -471,46 +441,47 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.userAge!,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.gender,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   _userDataList[i]!.phone,
                                   style: _contentTextStyle,
                                 ),
                               ),
                               if (_adminProfile.master)
                                 DataCell(
-                                  Text(
+                                  SelectableText(
                                     _userDataList[i]!.fullRegion,
                                     style: _contentTextStyle,
                                   ),
                                 ),
                               DataCell(
-                                Text(
+                                SelectableText(
                                   secondsToStringLine(
                                       _userDataList[i]!.createdAt),
                                   style: _contentTextStyle,
                                 ),
                               ),
-                              DataCell(
-                                Text(
-                                  _userDataList[i]!.lastVisit != 0
-                                      ? secondsToStringLine(
-                                          _userDataList[i]!.lastVisit!)
-                                      : "-",
-                                  style: _contentTextStyle,
+                              if (_adminProfile.master)
+                                DataCell(
+                                  SelectableText(
+                                    _userDataList[i]!.lastVisit != 0
+                                        ? secondsToStringLine(
+                                            _userDataList[i]!.lastVisit!)
+                                        : "-",
+                                    style: _contentTextStyle,
+                                  ),
                                 ),
-                              ),
                               DataCell(
                                 MouseRegion(
                                   cursor: SystemMouseCursors.click,
@@ -528,27 +499,27 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   ),
                                 ),
                               ),
-                              // DataCell(
-                              //   MouseRegion(
-                              //     cursor: SystemMouseCursors.click,
-                              //     child: GestureDetector(
-                              //       onTap: () => goUserDashBoard(
-                              //         userId: _userDataList[i]!.userId,
-                              //         userName: _userDataList[i]!.name,
-                              //       ),
-                              //       child: ColorFiltered(
-                              //         colorFilter: ColorFilter.mode(
-                              //           Palette().darkBlue,
-                              //           BlendMode.srcIn,
-                              //         ),
-                              //         child: SvgPicture.asset(
-                              //           "assets/svg/pie-chart.svg",
-                              //           width: 15,
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
+                              DataCell(
+                                MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: GestureDetector(
+                                    onTap: () => goUserDashBoard(
+                                      userId: _userDataList[i]!.userId,
+                                      userName: _userDataList[i]!.name,
+                                    ),
+                                    child: ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                        Palette().darkBlue,
+                                        BlendMode.srcIn,
+                                      ),
+                                      child: SvgPicture.asset(
+                                        "assets/svg/pie-chart.svg",
+                                        width: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                     ],

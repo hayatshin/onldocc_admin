@@ -133,7 +133,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content: SelectableText(e.toString()),
         ),
       );
     }
@@ -312,7 +312,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                         SizedBox(
                           width: size.width * 0.12,
                           height: 50,
-                          child: Text(
+                          child: SelectableText(
                             "지역 보기\n상단 고정하기",
                             style: _headerTextStyle,
                             textAlign: TextAlign.start,
@@ -354,7 +354,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                               Gaps.h20,
                               Column(
                                 children: [
-                                  Text(
+                                  SelectableText(
                                     "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
                                     style: _contentTextStyle,
                                   ),
@@ -445,7 +445,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                         SizedBox(
                           width: size.width * 0.12,
                           height: 50,
-                          child: Text(
+                          child: SelectableText(
                             "팝업 공지\n올리기",
                             style: _headerTextStyle,
                             textAlign: TextAlign.start,
@@ -487,7 +487,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                               Gaps.h20,
                               Column(
                                 children: [
-                                  Text(
+                                  SelectableText(
                                     "${_noticePopupFixedAt.year}.${_noticePopupFixedAt.month.toString().padLeft(2, '0')}.${_noticePopupFixedAt.day.toString().padLeft(2, '0')}",
                                     style: _contentTextStyle,
                                   ),
@@ -567,7 +567,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                             ),
                           ),
                           Gaps.h16,
-                          Text(
+                          SelectableText(
                             "지역 내 사용자가 앱의 처음 진입할 때 팝업 기한동안 공지글을 팝업창으로 볼 수 있습니다",
                             style: headerInfoTextStyle,
                           )
@@ -586,7 +586,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            SelectableText(
                               "공지 내용",
                               style: _headerTextStyle,
                               textAlign: TextAlign.start,
@@ -626,7 +626,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                     children: [
                       SizedBox(
                         width: size.width * 0.12,
-                        child: Text(
+                        child: SelectableText(
                           "이미지\n(선택)",
                           style: _headerTextStyle,
                           textAlign: TextAlign.start,

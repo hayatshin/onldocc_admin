@@ -42,7 +42,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
   String gender = "";
   String age = "";
   String phone = "";
-  String testType = "";
+  String testName = "";
 
   void _initializeTestInfo() {
     testDate = "시행 날짜:  ${secondsToStringLine(widget.model.createdAt)}";
@@ -55,11 +55,41 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     age = "나이:  ${widget.model.userAge}세";
     phone = "번호:  ${widget.model.userPhone}";
 
-    testType =
-        widget.model.testType == "alzheimer_test" ? "치매 조기 검사" : "노인 우울척도 검사";
-    testQuestionnare = widget.model.testType == "alzheimer_test"
-        ? alzheimer_questionnaire_strings
-        : depression_questionnaire_strings;
+    switch (widget.model.testType) {
+      case "alzheimer_test":
+        testName = "온라인 치매 검사";
+        testQuestionnare = alzheimer_questionnaire_strings;
+        break;
+      case "depression_test":
+        testName = "우울척도 단축형 검사";
+        testQuestionnare = depression_questionnaire_strings;
+        break;
+      case "stress_test":
+        testName = "스트레스 척도 검사";
+        testQuestionnare = stressQuestionnaireStrings;
+        break;
+      case "anxiety_test":
+        testName = "불안장애 척도 검사";
+        testQuestionnare = anxietyQuestionnaireStrings;
+        break;
+      case "trauma_test":
+        testName = "외상 후 스트레스 검사";
+        testQuestionnare = traumaQuestionnaireStrings;
+        break;
+      case "esteem_test":
+        testName = "자아존중감 검사";
+        testQuestionnare = esteemQuestionnaireStrings;
+        break;
+      case "sleep_test":
+        testName = "수면(불면증) 검사";
+        testQuestionnare = sleepQuestionnaireStrings;
+        break;
+
+      default:
+        testName = "온라인 치매 검사";
+        testQuestionnare = alzheimer_questionnaire_strings;
+        break;
+    }
 
     setState(() {});
   }
@@ -77,7 +107,11 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     list.add(_listHeader);
 
     for (int i = 0; i < testQuestionnare.length; i++) {
-      String answer = widget.model.userAnswers["a$i"]! ? "예" : "아니오";
+      String answer = (widget.model.userAnswers["a$i"]!).runtimeType == bool
+          ? widget.model.userAnswers["a$i"]!
+              ? "예"
+              : "아니오"
+          : (widget.model.userAnswers["a$i"]!);
       final itemlist = exportToList(testQuestionnare[i], answer);
       list.add(itemlist);
     }
@@ -85,42 +119,9 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
     return list;
   }
 
-  // void generateUserCsv() {
-  //   String testInfo =
-  //       "$testDate\n$totalPoint\n$result\n\n$name\n$gender\n$age\n$phone";
-
-  //   final csvData = exportToFullList();
-  //   String csvContent = '';
-  //   for (var row in csvData) {
-  //     for (var i = 0; i < row.length; i++) {
-  //       if (row[i].toString().contains(',')) {
-  //         csvContent += '"${row[i]}"';
-  //       } else {
-  //         csvContent += row[i];
-  //       }
-  //       // csvContent += row[i].toString();
-
-  //       if (i != row.length - 1) {
-  //         csvContent += ',';
-  //       }
-  //     }
-  //     csvContent += '\n';
-  //   }
-
-  //   final String fileName = "인지케어 $testType ${widget.model.userName}.csv";
-
-  //   final encodedUri = Uri.dataFromString(
-  //     "$testInfo\n\n$csvContent",
-  //     encoding: Encoding.getByName(encodingType()),
-  //   ).toString();
-  //   final anchor = AnchorElement(href: encodedUri)
-  //     ..setAttribute('download', fileName)
-  //     ..click();
-  // }
-
   void generateExcel() {
     final csvData = exportToFullList();
-    final String fileName = "인지케어 $testType ${widget.model.userName}.xlsx";
+    final String fileName = "인지케어 $testName ${widget.model.userName}.xlsx";
     exportExcel(csvData, fileName);
   }
 
@@ -149,9 +150,9 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
               Gaps.v20,
               Csv(
                 generateCsv: generateExcel,
-                rankingType: testType,
+                rankingType: testName,
                 userName: widget.model.userName!,
-                menu: testType == "alzheimer_test" ? menuList[4] : menuList[5],
+                menu: menuList[4],
               ),
               Gaps.v40,
               Column(
@@ -212,7 +213,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                         columns: [
                           DataColumn(
                             label: Expanded(
-                              child: Text(
+                              child: SelectableText(
                                 "#",
                                 style: _headerTextStyle,
                                 textAlign: TextAlign.center,
@@ -221,7 +222,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                           ),
                           DataColumn(
                             label: Expanded(
-                              child: Text(
+                              child: SelectableText(
                                 "문항",
                                 style: _headerTextStyle,
                                 textAlign: TextAlign.center,
@@ -230,7 +231,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                           ),
                           DataColumn(
                             label: Expanded(
-                              child: Text(
+                              child: SelectableText(
                                 "답변",
                                 style: _headerTextStyle,
                                 textAlign: TextAlign.center,
@@ -245,7 +246,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                                 DataCell(
                                   Align(
                                     alignment: Alignment.center,
-                                    child: Text(
+                                    child: SelectableText(
                                       (i + 1).toString(),
                                       style: _contentTextStyle,
                                     ),
@@ -254,7 +255,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                                 DataCell(
                                   Align(
                                     alignment: Alignment.center,
-                                    child: Text(
+                                    child: SelectableText(
                                       testQuestionnare[i],
                                       style: _contentTextStyle,
                                     ),
@@ -263,10 +264,14 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                                 DataCell(
                                   Align(
                                     alignment: Alignment.center,
-                                    child: Text(
-                                      widget.model.userAnswers["a$i"]!
-                                          ? "예"
-                                          : "아니오",
+                                    child: SelectableText(
+                                      (widget.model.userAnswers["a$i"]!)
+                                                  .runtimeType ==
+                                              bool
+                                          ? widget.model.userAnswers["a$i"]
+                                              ? "예"
+                                              : "아니오"
+                                          : widget.model.userAnswers["a$i"],
                                       textAlign: TextAlign.end,
                                       style: _contentTextStyle.copyWith(
                                         fontWeight: FontWeight.w800,
@@ -293,6 +298,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
 
 class TestInfoText extends StatelessWidget {
   final String text;
+
   const TestInfoText({
     super.key,
     required this.text,
@@ -306,12 +312,12 @@ class TestInfoText extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
+            SelectableText(
               "▪︎   $header",
               style: caHeaderTextStyle,
             ),
             Gaps.h20,
-            Text(
+            SelectableText(
               contents,
               style: caContentTextStyle,
             ),
@@ -325,6 +331,7 @@ class TestInfoText extends StatelessWidget {
 
 class UserInfoText extends StatelessWidget {
   final String text;
+
   const UserInfoText({
     super.key,
     required this.text,
@@ -338,12 +345,12 @@ class UserInfoText extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
+            SelectableText(
               "▫︎   $header",
               style: caHeaderTextStyle,
             ),
             Gaps.h20,
-            Text(
+            SelectableText(
               contents,
               style: caContentTextStyle,
             ),

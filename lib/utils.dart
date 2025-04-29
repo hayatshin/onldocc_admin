@@ -287,14 +287,14 @@ void showCompletingSnackBar(BuildContext context, String error) {
               ),
               Gaps.h10,
               Flexible(
-                child: Text(
+                child: SelectableText(
                   error,
                   style: const TextStyle(
                     fontSize: Sizes.size14,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
-                  overflow: TextOverflow.visible,
+                  // overflow: TextOverflow.visible,
                 ),
               ),
             ],
@@ -337,14 +337,14 @@ void showWarningSnackBar(BuildContext context, String error) {
               ),
               Gaps.h10,
               Flexible(
-                child: Text(
+                child: SelectableText(
                   error,
                   style: const TextStyle(
                     fontSize: Sizes.size14,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
-                  overflow: TextOverflow.visible,
+                  // overflow: TextOverflow.visible,
                 ),
               ),
             ],
@@ -458,6 +458,11 @@ String convertTimettampToStringDate(DateTime date) {
   final dateString =
       "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   return dateString;
+}
+
+String dateTimeToStringDateLine(DateTime dateTime) {
+  final formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+  return formattedDate;
 }
 
 String convertTimettampToStringDateTime(DateTime date) {
@@ -678,7 +683,7 @@ void resultBottomModal(
 }
 
 Widget noAuthorizedWidget() {
-  return Text(
+  return SelectableText(
     "권한\n없음",
     style: TextStyle(
       color: Colors.grey.shade400,
@@ -724,7 +729,7 @@ Future<XFile?> fetchVideoUrlThumbnail(String videoUrl) async {
   return null;
 }
 
-List<String> interatePreviousDays(int days) {
+List<String> iteratePreviousDays(int days) {
   List<String> dates = [];
   DateTime currentDate = DateTime.now();
   for (int i = 0; i < days; i++) {

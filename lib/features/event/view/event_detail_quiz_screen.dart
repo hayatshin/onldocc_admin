@@ -44,7 +44,7 @@ class _EventDetailPointScreenState
   final List<String> _listHeader = [
     "#",
     "이름",
-    "나이",
+    "연령",
     "성별",
     "핸드폰 번호",
     "참여일",
@@ -176,37 +176,37 @@ class _EventDetailPointScreenState
                     ),
                     columns: [
                       DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "#",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "이름",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn(
-                        label: Text(
-                          "나이",
+                        label: SelectableText(
+                          "연령",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "성별",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "핸드폰 번호",
                           style: _headerTextStyle,
                         ),
                       ),
                       const DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "참여일",
                           style: TextStyle(
                             fontSize: Sizes.size12,
@@ -214,13 +214,13 @@ class _EventDetailPointScreenState
                         ),
                       ),
                       DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "제출 답",
                           style: _headerTextStyle,
                         ),
                       ),
                       DataColumn(
-                        label: Text(
+                        label: SelectableText(
                           "정답 여부",
                           style: _headerTextStyle,
                         ),
@@ -231,50 +231,50 @@ class _EventDetailPointScreenState
                         DataRow(
                           cells: [
                             DataCell(
-                              Text(
+                              SelectableText(
                                 (i + 1).toString(),
                                 style: _contentTextStyle,
                               ),
                             ),
                             DataCell(
-                              Text(
+                              SelectableText(
                                 _participants[i].name,
                                 style: _contentTextStyle,
                               ),
                             ),
                             DataCell(
-                              Text(
+                              SelectableText(
                                 _participants[i].userAge,
                                 style: _contentTextStyle,
                               ),
                             ),
                             DataCell(
-                              Text(
+                              SelectableText(
                                 _participants[i].gender,
                                 style: _contentTextStyle,
                               ),
                             ),
                             DataCell(
-                              Text(
+                              SelectableText(
                                 _participants[i].phone,
                                 style: _contentTextStyle,
                               ),
                             ),
                             DataCell(
-                              Text(
+                              SelectableText(
                                 secondsToStringDateComment(
                                     _participants[i].createdAt),
                                 style: _contentTextStyle,
                               ),
                             ),
                             DataCell(
-                              Text(
+                              SelectableText(
                                 _participants[i].quizAnswer.toString(),
                                 style: _contentTextStyle,
                               ),
                             ),
                             DataCell(
-                              Text(
+                              SelectableText(
                                 _participants[i].userAchieveOrNot! ? "정답" : "",
                                 style: _contentTextStyle.copyWith(
                                   color: _participants[i].userAchieveOrNot!
