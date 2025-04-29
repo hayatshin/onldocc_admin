@@ -477,7 +477,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
               ),
             ],
           ),
-          // AI 진단 **
+          // AI 진단
           Gaps.v52,
           Row(
             children: [
