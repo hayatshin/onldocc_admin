@@ -1,51 +1,25 @@
-name: Deploy Flutter Web to GitHub Pages
+name: gh-pages
 
 on:
   push:
     branches: [main]
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.22.2"
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build Flutter Web
+      - name: Generate env file
         run: |
-          flutter build web --release \
-            --base-href=/onldocc_admin/ \
-            --dart-define=SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }} \
-            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
-            --dart-define=CHATGPT_API_KEY=${{ secrets.CHATGPT_API_KEY }} \
-            --dart-define=CHATGPT_ORG_ID=${{ secrets.CHATGPT_ORG_ID }}
+          touch env
+          echo "SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }}" >> env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> env
+          echo "CHATGPT_API_KEY=${{ secrets.CHATGPT_API_KEY }}" >> env          
+          echo "CHATGPT_ORG_ID=${{ secrets.CHATGPT_ORG_ID  }}" >> env
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+      - uses: bluefireteam/flutter-gh-pages@v7
         with:
-          path: build/web
-
-  deploy:
-    needs: build
-    runs-on: macos-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          baseHref: /onldocc_admin/

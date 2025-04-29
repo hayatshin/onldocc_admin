@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +12,6 @@ import 'package:intl/intl.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
-import 'package:onldocc_admin/constants/appconfig.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/view/self_test_screen.dart';
@@ -143,10 +143,12 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
 
   // AI 진단
   void _getAIDiagnosisResult() async {
-    if (_userModel == null) return;
+    if (_userModel == null ||
+        dotenv.env["CHATGPT_API_KEY"] == null ||
+        dotenv.env["CHATGPT_ORG_ID"] == null) return;
 
-    OpenAI.apiKey = AppConfig.chatgptApiKey;
-    OpenAI.organization = AppConfig.chatgptOrgId;
+    OpenAI.apiKey = dotenv.env["CHATGPT_API_KEY"]!;
+    OpenAI.organization = dotenv.env["CHATGPT_ORG_ID"]!;
 
     // prepare data
     final systemMessage = OpenAIChatCompletionChoiceMessageModel(
