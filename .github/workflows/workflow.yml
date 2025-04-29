@@ -35,7 +35,7 @@ jobs:
             --dart-define=CHATGPT_ORG_ID=${{ secrets.CHATGPT_ORG_ID }}
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v1
         with:
           path: build/web
 
