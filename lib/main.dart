@@ -15,7 +15,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() async {
   try {
     // await dotenv.load();
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: "env");
 
     WidgetsFlutterBinding.ensureInitialized();
 
