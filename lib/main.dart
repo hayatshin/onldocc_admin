@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:onldocc_admin/constants/appconfig.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -23,12 +24,12 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
-    final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
+    const supabaseUrlDebug = AppConfig.supabaseUrl;
+    const supabaseAnonKeyDebug = AppConfig.supabaseAnonKey;
 
     await Supabase.initialize(
-      url: supabaseUrlDebug!,
-      anonKey: supabaseAnonKeyDebug!,
+      url: supabaseUrlDebug,
+      anonKey: supabaseAnonKeyDebug,
     );
 
     GoRouter.optionURLReflectsImperativeAPIs = true;
