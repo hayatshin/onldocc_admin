@@ -15,10 +15,10 @@ jobs:
       - name: Generate env file
         run: |
           touch env
-          echo "SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }}" >> env
-          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> env
-          echo "CHATGPT_API_KEY=${{ secrets.CHATGPT_API_KEY }}" >> env          
-          echo "CHATGPT_ORG_ID=${{ secrets.CHATGPT_ORG_ID  }}" >> env
+          echo "SUPABASE_ANONKEY=${{ secrets.SUPABASE_ANONKEY }}" >> .env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+          echo "CHATGPT_API_KEY=${{ secrets.CHATGPT_API_KEY }}" >> .env          
+          echo "CHATGPT_ORG_ID=${{ secrets.CHATGPT_ORG_ID  }}" >> .env
 
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
