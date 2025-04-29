@@ -1,7 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/path_extra.dart';
 import 'package:onldocc_admin/common/view/search_csv.dart';
@@ -412,14 +411,14 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                           style: _headerTextStyle,
                         ),
                       ),
-                      DataColumn2(
-                        fixedWidth: 80,
-                        size: ColumnSize.S,
-                        label: SelectableText(
-                          "대시보드",
-                          style: _headerTextStyle,
-                        ),
-                      ),
+                      // DataColumn2(
+                      //   fixedWidth: 80,
+                      //   size: ColumnSize.S,
+                      //   label: SelectableText(
+                      //     "대시보드",
+                      //     style: _headerTextStyle,
+                      //   ),
+                      // ),
                     ],
                     rows: [
                       if (_userDataList.isNotEmpty)
@@ -499,27 +498,27 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   ),
                                 ),
                               ),
-                              DataCell(
-                                MouseRegion(
-                                  cursor: SystemMouseCursors.click,
-                                  child: GestureDetector(
-                                    onTap: () => goUserDashBoard(
-                                      userId: _userDataList[i]!.userId,
-                                      userName: _userDataList[i]!.name,
-                                    ),
-                                    child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(
-                                        Palette().darkBlue,
-                                        BlendMode.srcIn,
-                                      ),
-                                      child: SvgPicture.asset(
-                                        "assets/svg/pie-chart.svg",
-                                        width: 15,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // DataCell(
+                              //   MouseRegion(
+                              //     cursor: SystemMouseCursors.click,
+                              //     child: GestureDetector(
+                              //       onTap: () => goUserDashBoard(
+                              //         userId: _userDataList[i]!.userId,
+                              //         userName: _userDataList[i]!.name,
+                              //       ),
+                              //       child: ColorFiltered(
+                              //         colorFilter: ColorFilter.mode(
+                              //           Palette().darkBlue,
+                              //           BlendMode.srcIn,
+                              //         ),
+                              //         child: SvgPicture.asset(
+                              //           "assets/svg/pie-chart.svg",
+                              //           width: 15,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                     ],
