@@ -150,7 +150,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
     OpenAI.apiKey = dotenv.env["CHATGPT_API_KEY"]!;
     OpenAI.organization = dotenv.env["CHATGPT_ORG_ID"]!;
 
-    // prepare data
+    // prepare data*
     final systemMessage = OpenAIChatCompletionChoiceMessageModel(
       content: [
         OpenAIChatCompletionChoiceMessageContentItemModel.text(
