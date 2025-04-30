@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dart_openai/dart_openai.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
+import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/view/self_test_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
@@ -141,33 +141,9 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
     ]);
   }
 
-  // AI 진단
-  void _getAIDiagnosisResult() async {
-    if (_userModel == null ||
-        dotenv.env["CHATGPT_API_KEY"] == null ||
-        dotenv.env["CHATGPT_ORG_ID"] == null) return;
-
-    OpenAI.apiKey = dotenv.env["CHATGPT_API_KEY"]!;
-    OpenAI.organization = dotenv.env["CHATGPT_ORG_ID"]!;
-
-    // prepare data*
-    final systemMessage = OpenAIChatCompletionChoiceMessageModel(
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "You will be acting as a medical asssiant to help assess ${_userModel!.name}'s physical, mental and cognitive health including discrimination of dementia based on state of mind, diary content, math problems, multiple choice problems, steps, self-examination data. ${_userModel!.name}'s gender is ${_userModel?.gender == "남성" ? "male" : "female"} and age is ${userAgeCalculation(_userModel!.birthYear, _userModel!.birthDay)}",
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "Please respond in Korean.",
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "You have to draw any conclusions regarding your health, and don't end with questions.",
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "Begin your response with the heading: ${_userModel?.name}님의 건강 진단",
-        ),
-      ],
-      role: OpenAIChatMessageRole.system,
-    );
+  Future<void> _getAIDiagnosisResult() async {
+    final sysPrompt =
+        "You will be acting as a medical asssiant to help assess ${_userModel!.name}'s physical, mental and cognitive health including discrimination of dementia based on state of mind, diary content, math problems, multiple choice problems, steps, self-examination data. Please respond in Korean. You have to draw any conclusions regarding your health, and don't end with questions. Begin your response with the heading: ${_userModel?.name}님의 건강 진단";
 
     final mindAndDiaryData =
         _diaryList.map((element) => element.toString()).toList();
@@ -181,82 +157,49 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
         .toList();
     final selfTestData =
         _cognitionTestList.map((element) => element.toString()).toList();
+    final mindAndDiaryMessage =
+        "*This is the data that shows the state of mind and diary content based on each date. Please at least summarize this data into one item from a mental health perspective:\n$mindAndDiaryData\n";
+    final mathQuizMessage =
+        "*This is the data that shows how much math problems have been solved by him/her based on each date. Please at least summarize this data into one item from a cognitive health perspective:\n$mathQuizData\n";
+    final multiipleQuizMessage =
+        "*This is the data that shows how much multiple-choices problems have been solved by him/her based on each date. Please at least summarize this data into one item from a cognitive health perspective:\n$multipleQuizData\n";
+    final stepMessage =
+        "This is the data that shows how much he/she has walked based on each date. Please at least summarize this data into one item from a physical health perspective:\n$stepData\n";
+    final selfTestMessage =
+        "This is the mental cognitive health self test examination data for each type of question. Please at least summarize this data into one item as self test examination:\n$selfTestData";
 
-    final mindAndDiaryMessage = OpenAIChatCompletionChoiceMessageModel(
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "This is the data that shows the state of mind and diary content based on each date. Please at least summarize this data into one item from a mental health perspective.",
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          json.encode(mindAndDiaryData),
-        ),
-      ],
-      role: OpenAIChatMessageRole.user,
+    Map<String, dynamic> requestBody = {
+      'sysPrompt': sysPrompt,
+      'userPrompt': mindAndDiaryMessage +
+          mathQuizMessage +
+          multiipleQuizMessage +
+          stepMessage +
+          selfTestMessage,
+    };
+
+    String requestBodyJson = jsonEncode(requestBody);
+
+    final response = await http.post(
+      Uri.parse(
+          "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/chatgpt-user-dashboard"),
+      body: requestBodyJson,
+      headers: headers,
     );
 
-    final quizMessage = OpenAIChatCompletionChoiceMessageModel(
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "This is the data that shows how much math problems have been solved by him/her based on each date. Please at least summarize this data into one item from a cognitive health perspective.",
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          json.encode(mathQuizData),
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          json.encode(multipleQuizData),
-        ),
-      ],
-      role: OpenAIChatMessageRole.user,
-    );
+    if (response.statusCode == 200) {
+      setState(() {
+        _loadingAiDiagnosis = false;
+      });
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      final content = data["choices"][0]["message"]["content"] as String;
+      String aiDiagnosis = "";
 
-    final stepQuizMessage = OpenAIChatCompletionChoiceMessageModel(
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "This is the data that shows how much he/she has walked based on each date. Please at least summarize this data into one item from a physical health perspective.",
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          json.encode(stepData),
-        ),
-      ],
-      role: OpenAIChatMessageRole.user,
-    );
-
-    final selfTestMessage = OpenAIChatCompletionChoiceMessageModel(
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "This is the mental cognitive health self-examination data for each type of question. Please at least summarize this data into one item as self-examination.",
-        ),
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          json.encode(selfTestData),
-        ),
-      ],
-      role: OpenAIChatMessageRole.user,
-    );
-
-    final chatStream = OpenAI.instance.chat.createStream(
-      model: "gpt-3.5-turbo",
-      messages: [
-        systemMessage,
-        mindAndDiaryMessage,
-        quizMessage,
-        stepQuizMessage,
-        selfTestMessage
-      ],
-    );
-    String aiDiagnosis = "";
-
-    setState(() {
-      _loadingAiDiagnosis = false;
-    });
-
-    chatStream.listen((streamChatDescription) {
-      final content = streamChatDescription.choices.first.delta.content;
-      final text = content?[0]?.text;
-      if (text != null && text.isNotEmpty) {
-        aiDiagnosis += text;
+      for (final char in content.characters) {
+        aiDiagnosis += char;
         _aiStreamControllder.add(aiDiagnosis);
+        await Future.delayed(const Duration(milliseconds: 1));
       }
-    });
+    }
   }
 
   // 일기 데이터
