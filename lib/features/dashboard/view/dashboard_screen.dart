@@ -927,44 +927,49 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               subHeader: "온라인 치매 검사",
                               subHeaderColor: Colors.blue,
                               contentData:
-                                  "${_cognitionTestList.where((element) => element.testType == "alzheimer_test").toList().length} 회",
+                                  "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[0].testId).toList().length} 회",
                             ),
                             const GrayDivider(height: 60),
                             SubHeaderBox(
                               subHeader: "우울척도 단축형 검사",
                               subHeaderColor: Colors.orange,
                               contentData:
-                                  "${_cognitionTestList.where((element) => element.testType == "depression_test").toList().length} 회",
+                                  "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[1].testId).toList().length} 회",
                             ),
                             const GrayDivider(height: 60),
-                            const SubHeaderBox(
+                            SubHeaderBox(
                               subHeader: "스트레스 척도 검사",
                               subHeaderColor: Colors.red,
-                              contentData: "0회",
+                              contentData:
+                                  "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[2].testId).toList().length} 회",
                             ),
                             const GrayDivider(height: 60),
-                            const SubHeaderBox(
+                            SubHeaderBox(
                               subHeader: "불안장애 척도 검사",
                               subHeaderColor: Colors.green,
-                              contentData: "0회",
+                              contentData:
+                                  "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[3].testId).toList().length} 회",
                             ),
                             const GrayDivider(height: 60),
                             SubHeaderBox(
                               subHeader: "외상 후 스트레스 척도 검사",
                               subHeaderColor: Colors.grey.shade700,
-                              contentData: "0회",
+                              contentData:
+                                  "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[4].testId).toList().length} 회",
                             ),
                             const GrayDivider(height: 60),
-                            const SubHeaderBox(
+                            SubHeaderBox(
                               subHeader: "자아존중감 검사",
                               subHeaderColor: Colors.teal,
-                              contentData: "0회",
+                              contentData:
+                                  "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[5].testId).toList().length} 회",
                             ),
                             const GrayDivider(height: 60),
-                            const SubHeaderBox(
+                            SubHeaderBox(
                               subHeader: "수면(불면증) 검사",
                               subHeaderColor: Colors.purple,
-                              contentData: "0회",
+                              contentData:
+                                  "${_cognitionTestList.where((element) => element.testType == cognitionTestTypes[6].testId).toList().length} 회",
                             ),
                           ],
                         ),
