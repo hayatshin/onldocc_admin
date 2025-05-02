@@ -1138,8 +1138,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         list: _cognitionTestList
                             .where((element) =>
                                 element.testType ==
-                                    cognitionTestTypes[3].testId &&
-                                element.result == "주의 요망" &&
+                                        cognitionTestTypes[4].testId &&
+                                    element.result == "주의 요망" ||
                                 element.result == "심한 수준")
                             .toList()
                           ..sort((a, b) => getTraumaPriority(a.result)
@@ -1167,8 +1167,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         list: _cognitionTestList
                             .where((element) =>
                                 element.testType ==
-                                    cognitionTestTypes[5].testId &&
-                                element.result == "낮음" &&
+                                        cognitionTestTypes[5].testId &&
+                                    element.result == "낮음" ||
                                 element.result == "매우 낮음")
                             .toList()
                           ..sort((a, b) => getEsteemPriority(a.result)
@@ -1193,9 +1193,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         list: _cognitionTestList
                             .where((element) =>
                                 element.testType ==
-                                    cognitionTestTypes[6].testId &&
-                                element.result == "경미한 수준" &&
-                                element.result == "중한 수준" &&
+                                        cognitionTestTypes[6].testId &&
+                                    element.result == "경미한 수준" ||
+                                element.result == "중한 수준" ||
                                 element.result == "심각한 수준")
                             .toList()
                           ..sort((a, b) => getSleepPriority(a.result)
