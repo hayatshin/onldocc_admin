@@ -127,6 +127,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   Future<void> _getScoreList(DateRange? range) async {
     final userDataList =
         await ref.read(rankingProvider.notifier).getUserPoints(range!);
+
     int rowCount =
         userDataList.length > 20 ? _pageCount + _offset : userDataList.length;
 

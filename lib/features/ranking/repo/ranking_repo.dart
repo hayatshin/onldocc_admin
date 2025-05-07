@@ -11,15 +11,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class RankingRepository {
   final _supabase = Supabase.instance.client;
   static final pointPFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-p-functions-6");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-p-functions-5");
 
   // supabase
   Future<List<dynamic>> getUserPoints(
       List<UserModel> userList, DateRange range) async {
     final startSeconds = convertStartDateTimeToSeconds(range.start);
     final endSeconds = convertEndDateTimeToSeconds(range.end);
-
+    final userIds = userList.map((user) => user.userId).toList();
     Map<String, dynamic> requestBody = {
+      'userIds': userIds,
       'userlist': userList,
       'startSeconds': startSeconds,
       'endSeconds': endSeconds,
