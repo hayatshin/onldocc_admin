@@ -369,7 +369,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
     final size = MediaQuery.of(context).size;
 
     return DefaultScreen(
-      menu: menuList[11],
+      menu: menuList[10],
       child: SizedBox(
         width: size.width,
         height: size.height,

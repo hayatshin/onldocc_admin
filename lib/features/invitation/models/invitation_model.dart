@@ -32,7 +32,7 @@ class InvitationModel {
         userAge = userAgeCalculation(json["birthYear"], json["birthDay"]),
         userGender = json["gender"],
         userPhone = json["phone"],
-        userSubdistrictId = json["subdistrictId"],
+        userSubdistrictId = json["subdistrictId"] ?? "",
         userContractCommunityId = json["contractCommunityId"],
         sendCounts = (json["invitationDate"]).length,
         receiveUsers = removeReceiveNull(json["receiveUsers"]);
