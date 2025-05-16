@@ -31,14 +31,12 @@ class UserRepository {
         final data = await _supabase
             .from("users")
             .select('*, subdistricts(*)')
-            .neq('loginType', '어드민')
             .order('createdAt', ascending: false, nullsFirst: false);
         userList = data;
       } else {
         final data = await _supabase
             .from("users")
             .select('*, subdistricts(*)')
-            .neq('loginType', '어드민')
             .eq('subdistrictId', userSubdistrictId)
             .order('createdAt', ascending: false, nullsFirst: false);
 
