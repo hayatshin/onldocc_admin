@@ -70,4 +70,9 @@ class AdminProfileModel {
       "mail": mail,
     };
   }
+
+  @override
+  String toString() {
+    return "AdminProfileModel(adminId: $adminId, master: $master, contractType: $contractType, contractRegionId: $contractRegionId, subdistrictId: $subdistrictId, name: $name, image: $image, phone: $phone, mail: $mail)";
+  }
 }

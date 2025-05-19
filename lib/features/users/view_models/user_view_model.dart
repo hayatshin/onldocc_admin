@@ -44,7 +44,18 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
   Future<List<UserModel?>> initializeUserList(String subdistrictId) async {
     final userlist = await _userRepo.initializeUserList(subdistrictId);
 
-    final modelList = userlist.map((e) => UserModel.fromJson(e)).toList();
+    final modelList = userlist.map((json) {
+      try {
+        return UserModel.fromJson(json);
+      } catch (e, stack) {
+        // ignore: avoid_print
+        print("에러 발생한 JSON: $json");
+        // ignore: avoid_print
+        print("에러 메시지: $e");
+        // ignore: avoid_print
+        print("스택: $stack");
+      }
+    }).toList();
 
     state = AsyncData(modelList);
     return modelList;

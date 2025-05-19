@@ -92,18 +92,20 @@ class UserModel {
   UserModel.fromJson(Map<String, dynamic> json)
       : index = json.containsKey("index") ? json["index"] : 0,
         userId = json.containsKey("userId") ? json["userId"] : "-",
-        name = json.containsKey("name") ? json["name"] : "-",
+        name = json.containsKey("name") && json["name"] != null
+            ? json["name"]
+            : "-",
         userAge = userAgeCalculation(json["birthYear"], json["birthDay"]),
         userAgeGroup =
             userAgeGroupCalculation(json["birthYear"], json["birthDay"]),
-        birthYear = json.containsKey("birthYear") ? json['birthYear'] : "-",
-        birthDay = json.containsKey("birthDay") ? json['birthDay'] : "-",
+        birthYear = json["birthYear"]?.toString() ?? "-",
+        birthDay = json["birthDay"]?.toString() ?? "-",
         gender = json.containsKey("gender") ? json["gender"] : "-",
         phone = json.containsKey("phone") ? json["phone"] : "-",
-        fullRegion =
-            json.containsKey("subdistricts") && json["subdistricts"] != null
-                ? json["subdistricts"]["subdistrict"]
-                : "-",
+        fullRegion = (json["subdistricts"] != null &&
+                json["subdistricts"]["subdistrict"] != null)
+            ? json["subdistricts"]["subdistrict"] as String
+            : "-",
         contractCommunityId = json["contractCommunityId"] ?? "",
         createdAt = json["createdAt"] ?? 0,
         lastVisit = json.containsKey("lastVisit") && json["lastVisit"] != null

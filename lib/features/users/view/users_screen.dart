@@ -172,12 +172,24 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     List<UserModel> filterList = [];
     if (searchBy == "이름") {
       filterList = userDataList
-          .where((element) => element!.name.contains(searchKeyword))
+          .where((element) {
+            if (element != null) {
+              return element.name.contains(searchKeyword);
+            } else {
+              return false;
+            }
+          })
           .cast<UserModel>()
           .toList();
     } else {
       filterList = userDataList
-          .where((element) => element!.phone.contains(searchKeyword))
+          .where((element) {
+            if (element != null) {
+              return element.phone.contains(searchKeyword);
+            } else {
+              return false;
+            }
+          })
           .cast<UserModel>()
           .toList();
     }

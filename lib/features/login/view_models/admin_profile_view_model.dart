@@ -55,6 +55,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
         Map<String, dynamic>? adminProfile =
             await _authRepository.getAdminProfile(_authRepository.user!.uid);
         final adminProfileModel = AdminProfileModel.fromJson(adminProfile!);
+
         await ref
             .read(userProvider.notifier)
             .initializeUserList(adminProfileModel.subdistrictId);
