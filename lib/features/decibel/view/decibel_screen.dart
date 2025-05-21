@@ -194,7 +194,7 @@ class _DecibelScreenState extends ConsumerState<DecibelScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return DefaultScreen(
-      menu: menuList[10],
+      menu: menuList[9],
       child: SizedBox(
         width: size.width,
         height: size.height,

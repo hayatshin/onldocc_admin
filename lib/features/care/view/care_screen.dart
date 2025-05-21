@@ -241,7 +241,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return DefaultScreen(
-        menu: menuList[9],
+        menu: menuList[8],
         child: SizedBox(
           width: size.width,
           height: size.height,
