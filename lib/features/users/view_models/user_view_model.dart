@@ -46,14 +46,16 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
 
     final modelList = userlist.map((json) {
       try {
-        return UserModel.fromJson(json);
+        final model = UserModel.fromJson(json);
+
+        return model;
       } catch (e, stack) {
-        // ignore: avoid_print
-        print("에러 발생한 JSON: $json");
-        // ignore: avoid_print
-        print("에러 메시지: $e");
-        // ignore: avoid_print
-        print("스택: $stack");
+        // // ignore: avoid_print
+        // print("에러 발생한 JSON: $json");
+        // // ignore: avoid_print
+        // print("에러 메시지: $e");
+        // // ignore: avoid_print
+        // print("스택: $stack");
       }
     }).toList();
 

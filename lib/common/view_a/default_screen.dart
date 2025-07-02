@@ -64,133 +64,131 @@ class DefaultTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return SingleChildScrollView(
-      child: Container(
-        width: size.width,
-        color: Palette().bgLightBlue,
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 25,
-            right: 25,
-            top: 20,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (menu.backButton)
-                          Row(
-                            children: [
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: FaIcon(
-                                    FontAwesomeIcons.solidCircleLeft,
-                                    color: Palette().darkPurple,
-                                    size: 35,
-                                  ),
-                                ),
-                              ),
-                              Gaps.h20,
-                            ],
-                          ),
-                        if (menu.colorButton != null)
-                          Row(
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: menu.colorButton,
-                                ),
-                              ),
-                              Gaps.h10,
-                            ],
-                          ),
-                        SelectableText(
-                          menu.name,
-                          style: TextStyle(
-                            color: Palette().darkPurple,
-                            fontWeight: FontWeight.w700,
-                            fontSize: Sizes.size20,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                          child: CachedNetworkImage(
-                            imageUrl: adminModel.image,
-                            errorWidget: (context, url, error) {
-                              return ColorFiltered(
-                                colorFilter: ColorFilter.mode(
-                                  InjicareColor().secondary20,
-                                  BlendMode.srcIn,
-                                ),
-                                child: SvgPicture.asset(
-                                  "assets/svg/profile-user.svg",
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        Gaps.h14,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      width: size.width,
+      color: Palette().bgLightBlue,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 25,
+          right: 25,
+          top: 20,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (menu.backButton)
+                        Row(
                           children: [
-                            SelectableText(
-                              adminModel.name,
-                              style: TextStyle(
-                                fontSize: Sizes.size14,
-                                fontWeight: FontWeight.w700,
-                                color: Palette().darkGray,
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: FaIcon(
+                                  FontAwesomeIcons.solidCircleLeft,
+                                  color: Palette().darkPurple,
+                                  size: 35,
+                                ),
                               ),
                             ),
-                            if (adminModel.mail.contains("@"))
-                              Column(
-                                children: [
-                                  Gaps.v2,
-                                  SelectableText(
-                                    adminModel.mail,
-                                    style: TextStyle(
-                                      fontSize: Sizes.size10,
-                                      fontWeight: FontWeight.w600,
-                                      color: Palette().normalGray,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            Gaps.h20,
                           ],
-                        )
-                      ],
-                    )
-                  ],
-                ),
-                Gaps.v32,
-                // child
-                child,
-                Gaps.v20,
-              ],
-            ),
+                        ),
+                      if (menu.colorButton != null)
+                        Row(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: menu.colorButton,
+                              ),
+                            ),
+                            Gaps.h10,
+                          ],
+                        ),
+                      SelectableText(
+                        menu.name,
+                        style: TextStyle(
+                          color: InjicareColor().gray100,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                        child: CachedNetworkImage(
+                          imageUrl: adminModel.image,
+                          errorWidget: (context, url, error) {
+                            return ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                InjicareColor().secondary20,
+                                BlendMode.srcIn,
+                              ),
+                              child: SvgPicture.asset(
+                                "assets/svg/profile-user.svg",
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Gaps.h14,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SelectableText(
+                            adminModel.name,
+                            style: TextStyle(
+                              fontSize: Sizes.size14,
+                              fontWeight: FontWeight.w700,
+                              color: Palette().darkGray,
+                            ),
+                          ),
+                          if (adminModel.mail.contains("@"))
+                            Column(
+                              children: [
+                                Gaps.v2,
+                                SelectableText(
+                                  adminModel.mail,
+                                  style: TextStyle(
+                                    fontSize: Sizes.size10,
+                                    fontWeight: FontWeight.w600,
+                                    color: Palette().normalGray,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              ),
+              Gaps.v32,
+              // child
+              child,
+              Gaps.v20,
+            ],
           ),
         ),
       ),

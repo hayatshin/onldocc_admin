@@ -6,6 +6,8 @@ import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/decibel/view/decibel_screen.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
+import 'package:onldocc_admin/features/medical/view/health-consult-screen.dart';
+import 'package:onldocc_admin/features/medical/view/health-story-screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/tv/view/tv_screen.dart';
@@ -137,6 +139,22 @@ final menuList = [
     name: "친구 초대",
     routeName: InvitationScreen.routeName,
     child: const InvitationScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 11,
+    name: "건강 상담실",
+    routeName: HealthConsultScreen.routeName,
+    child: const HealthConsultScreen(),
+    backButton: false,
+    colorButton: null,
+  ),
+  Menu(
+    index: 12,
+    name: "건강 이야기",
+    routeName: HealthStoryScreen.routeName,
+    child: const HealthStoryScreen(),
     backButton: false,
     colorButton: null,
   ),

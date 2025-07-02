@@ -239,14 +239,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
 // 회원 가입자 수 데이터
   Future<void> _initializeUserDashboard() async {
-    List<UserModel?> userDataList = ref.read(userProvider).value ??
+    List<UserModel?> userDataListFromDB = ref.read(userProvider).value ??
         await ref
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
+    List<UserModel> userDataListWithoutNull =
+        userDataListFromDB.whereType<UserModel>().toList();
 
-    final periodUserDataList = userDataList
+    final periodUserDataList = userDataListWithoutNull
         .where((element) =>
-            _selectedStartSeconds <= element!.createdAt &&
+            _selectedStartSeconds <= element.createdAt &&
             element.createdAt <= _selectedEndSeconds)
         .toList();
 
@@ -254,20 +256,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       // 전체보기
       if (mounted) {
         setState(() {
-          _totalUserDataList = userDataList;
+          _totalUserDataList = userDataListWithoutNull;
           _periodUserDataList = periodUserDataList;
         });
       }
     } else {
       // 기관 선택
-      final filterList = userDataList
+      final filterList = userDataListWithoutNull
           .where((e) =>
-              e!.contractCommunityId ==
+              e.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
       final filterPeriodList = periodUserDataList
           .where((e) =>
-              e!.contractCommunityId ==
+              e.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
       if (mounted) {

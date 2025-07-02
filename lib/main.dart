@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/firebase_options.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/router.dart';
@@ -74,7 +75,7 @@ class OnldoccAdmin extends ConsumerWidget {
       theme: ThemeData(
         fontFamily: "Pretendard",
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Palette().darkBlue,
+          cursorColor: InjicareColor().gray90,
           selectionColor: Palette().darkBlue.withOpacity(0.3),
         ),
         datePickerTheme: DatePickerThemeData(

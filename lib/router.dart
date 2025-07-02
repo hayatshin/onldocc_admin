@@ -23,6 +23,8 @@ import 'package:onldocc_admin/features/invitation/%08view/invitation_detail_scre
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
+import 'package:onldocc_admin/features/medical/view/health-consult-screen.dart';
+import 'package:onldocc_admin/features/medical/view/health-story-screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_screen.dart';
 import 'package:onldocc_admin/features/ranking/view/ranking_user_dashboard_screen.dart';
@@ -139,6 +141,14 @@ final routerProvider = Provider(
               case "${InvitationScreen.routeURL}/:userId":
                 menuNotifier.setSelectedMenu(10, context);
                 return SidebarTemplate(selectedMenuURL: 10, child: child);
+
+              case HealthConsultScreen.routeURL:
+                menuNotifier.setSelectedMenu(11, context);
+                return SidebarTemplate(selectedMenuURL: 11, child: child);
+
+              case HealthStoryScreen.routeURL:
+                menuNotifier.setSelectedMenu(12, context);
+                return SidebarTemplate(selectedMenuURL: 12, child: child);
             }
             return child;
           },
@@ -427,6 +437,22 @@ final routerProvider = Provider(
                     },
                   )
                 ]),
+            GoRoute(
+              name: HealthConsultScreen.routeName,
+              path: HealthConsultScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const HealthConsultScreen(),
+              ),
+            ),
+            GoRoute(
+              name: HealthStoryScreen.routeName,
+              path: HealthStoryScreen.routeURL,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const HealthStoryScreen(),
+              ),
+            ),
           ],
         ),
       ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 
 class ReportButton extends StatelessWidget {
   final bool iconExists;
@@ -24,11 +25,8 @@ class ReportButton extends StatelessWidget {
         onTap: action,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(
-              width: 1.5,
-              color: buttonColor,
-            ),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: InjicareColor().gray70),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -42,7 +40,7 @@ class ReportButton extends StatelessWidget {
                     children: [
                       ColorFiltered(
                         colorFilter: ColorFilter.mode(
-                          buttonColor,
+                          InjicareColor().gray90,
                           BlendMode.srcIn,
                         ),
                         child: SvgPicture.asset(
@@ -55,11 +53,9 @@ class ReportButton extends StatelessWidget {
                   ),
                 Text(
                   buttonText,
-                  style: TextStyle(
-                    color: buttonColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: Sizes.size14,
-                  ),
+                  style: InjicareFont()
+                      .body07
+                      .copyWith(color: InjicareColor().gray90),
                 ),
               ],
             ),

@@ -67,72 +67,92 @@ Widget deleteOverlay(
       color: Colors.black38,
       child: Center(
         child: AlertDialog(
-          title: Text(
-            title,
-            style: InjicareFont().headline03.copyWith(
-                  color: Palette().darkPurple,
-                ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 30,
+            vertical: 35,
           ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // 원하는 borderRadius
+          ),
+          // title: Text(
+          //   title,
+          //   style: InjicareFont().headline02.copyWith(
+          //         color: InjicareColor().secondary50,
+          //       ),
+          // ),
           backgroundColor: Colors.white,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "정말로 삭제하시겠습니까?",
-                style: InjicareFont().label03,
-              ),
-              Text(
-                "삭제하면 다시 되돌릴 수 없습니다.",
-                style: InjicareFont().label03,
-              ),
-            ],
+          content: SizedBox(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "$title님을 정말로 삭제하시겠습니까?",
+                  style: InjicareFont()
+                      .body01
+                      .copyWith(color: const Color(0xFF202020)),
+                ),
+                Gaps.v5,
+                Text(
+                  "삭제하면 다시 되돌릴 수 없습니다",
+                  style: InjicareFont().label01.copyWith(
+                        color: InjicareColor().gray80,
+                      ),
+                ),
+              ],
+            ),
           ),
           actions: [
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: removeOverlay,
-                child: Container(
-                  width: 60,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      width: 1.5,
-                      color: Palette().darkPurple,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "취소",
-                      style: InjicareFont().body07,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: delete,
-                child: Container(
-                  width: 60,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Palette().darkPurple,
-                  ),
-                  child: Center(
-                    child: Text(
-                      "삭제",
-                      style: InjicareFont().body07.copyWith(
-                            color: Colors.white,
+            Row(
+              children: [
+                Expanded(
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: removeOverlay,
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: InjicareColor().gray20,
+                        ),
+                        child: Center(
+                          child: Text(
+                            "취소",
+                            style: InjicareFont()
+                                .body06
+                                .copyWith(color: InjicareColor().gray80),
                           ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+                Gaps.h10,
+                Expanded(
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: delete,
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: InjicareColor().secondary50,
+                        ),
+                        child: Center(
+                          child: Text(
+                            "삭제",
+                            style: InjicareFont().body06.copyWith(
+                                  color: Colors.white,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -753,4 +773,8 @@ String secondsToYearMonthDayHourMinute(int seconds) {
   String formattedDate =
       '${dateTime.year.toString().substring(2)}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')} $diaryHour ${dateTime.minute}분';
   return formattedDate;
+}
+
+String numberFormat(int length) {
+  return NumberFormat("#,###").format(length);
 }
