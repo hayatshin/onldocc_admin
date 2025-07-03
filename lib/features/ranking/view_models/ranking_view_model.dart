@@ -34,6 +34,7 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
 
   List<UserModel> indexRankingModel(List<UserModel> userList) {
     int count = 1;
+    int samePoint = 0;
     List<UserModel> list = [];
 
     for (int i = 0; i < userList.length - 1; i++) {
@@ -43,7 +44,9 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
       list.add(indexUpdateUser);
       if (userList.length > i + 1) {
         if (userList[i].totalPoint != userList[i + 1].totalPoint) {
-          count++;
+          count = count + 1 + samePoint;
+        } else {
+          samePoint++;
         }
       }
     }

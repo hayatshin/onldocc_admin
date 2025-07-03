@@ -13,6 +13,7 @@ import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/ranking/view_models/ranking_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -249,12 +250,10 @@ class _RankingUserDashboardScreenState
                         Row(
                           children: [
                             SelectableText(
-                              "점수 항목:",
-                              style: TextStyle(
-                                fontSize: Sizes.size14,
-                                color: Palette().darkPurple,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              "점수 항목",
+                              style: InjicareFont()
+                                  .body07
+                                  .copyWith(color: InjicareColor().gray80),
                             ),
                             Gaps.h10,
                             PeriodDropdownMenu(

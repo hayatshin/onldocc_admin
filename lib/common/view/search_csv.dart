@@ -61,7 +61,7 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SelectableText(
+                            Text(
                               "검색 기준",
                               style: InjicareFont()
                                   .body07

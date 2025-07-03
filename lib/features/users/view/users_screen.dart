@@ -7,7 +7,6 @@ import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
@@ -15,7 +14,6 @@ import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
-import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
 final TextStyle contentTextStyle = TextStyle(
@@ -34,8 +32,6 @@ class UsersScreen extends ConsumerStatefulWidget {
 }
 
 class _UsersScreenState extends ConsumerState<UsersScreen> {
-  int _sortColumnIndex = 5;
-
   List<UserModel?> _userDataList = [];
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -59,12 +55,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   AdminProfileModel _adminProfile = AdminProfileModel.empty();
 
   bool _filtered = false;
-
-  final TextStyle _headerTextStyle = TextStyle(
-    fontSize: Sizes.size13,
-    fontWeight: FontWeight.w600,
-    color: Palette().darkGray,
-  );
 
   static const int _itemsPerPage = 20;
   int _currentPage = 0;
@@ -101,9 +91,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   Future<void> _initializeAdminProfile() async {
     final adminProfile = ref.read(adminProfileProvider).value ??
         await ref.read(adminProfileProvider.notifier).getAdminProfile();
-    final sortColumnIndex = adminProfile.master ? 6 : 5;
     setState(() {
-      _sortColumnIndex = sortColumnIndex;
       _adminProfile = adminProfile;
     });
   }
@@ -134,9 +122,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
               e!.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
+      int endPageItems = startPage + 20 > userDataList.length
+          ? userDataList.length
+          : startPage + 20;
       if (mounted) {
         setState(() {
-          _userDataList = filterList.sublist(startPage, startPage + 20);
+          _userDataList = filterList.sublist(startPage, endPageItems);
           _totalListLength = filterList.length;
           _endPage = endPage;
         });
@@ -453,26 +444,27 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                               ),
                             ),
                           ),
-                          Expanded(
-                            flex: 3,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 2,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "거주 지역",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
+                          if (_adminProfile.master)
+                            Expanded(
+                              flex: 3,
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    color: const Color(0xFFE9EDF9),
+                                    border: Border.all(
+                                      width: 2,
+                                      color: const Color(0xFFF3F6FD),
+                                    )),
+                                child: Center(
+                                  child: Text(
+                                    "거주 지역",
+                                    style: contentTextStyle,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
                           Expanded(
                             flex: 2,
                             child: Container(
@@ -602,14 +594,15 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: SelectableText(
-                                        _userDataList[i]!.fullRegion,
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
+                                    if (_adminProfile.master)
+                                      Expanded(
+                                        flex: 3,
+                                        child: SelectableText(
+                                          _userDataList[i]!.fullRegion,
+                                          style: contentTextStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
-                                    ),
                                     Expanded(
                                       flex: 2,
                                       child: SelectableText(

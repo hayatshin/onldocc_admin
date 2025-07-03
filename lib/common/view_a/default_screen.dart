@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -91,10 +90,13 @@ class DefaultTemplate extends StatelessWidget {
                                 onTap: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: FaIcon(
-                                  FontAwesomeIcons.solidCircleLeft,
-                                  color: Palette().darkPurple,
-                                  size: 35,
+                                child: ColorFiltered(
+                                  colorFilter: ColorFilter.mode(
+                                      InjicareColor().gray80, BlendMode.srcIn),
+                                  child: SvgPicture.asset(
+                                    "assets/svg/arrow-left.svg",
+                                    width: 30,
+                                  ),
                                 ),
                               ),
                             ),
