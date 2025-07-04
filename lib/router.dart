@@ -36,10 +36,13 @@ import 'package:onldocc_admin/features/user-dashboard/view/user_dashboard_screen
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/utils.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final routerProvider = Provider(
   (ref) {
     return GoRouter(
       initialLocation: "/",
+      navigatorKey: rootNavigatorKey,
       redirect: (context, state) {
         final isLoggedIn = ref.watch(authRepo).isLoggedIn;
         if (!isLoggedIn) {

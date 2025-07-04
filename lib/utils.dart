@@ -60,6 +60,104 @@ void exportExcel(
   excel.save(fileName: fileName);
 }
 
+Widget deleteUserOverlay(
+    String title, Function() removeOverlay, Function() delete) {
+  return Material(
+    color: Colors.black38,
+    child: Center(
+      child: AlertDialog(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 30,
+          vertical: 35,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20), // 원하는 borderRadius
+        ),
+        // title: Text(
+        //   title,
+        //   style: InjicareFont().headline02.copyWith(
+        //         color: InjicareColor().secondary50,
+        //       ),
+        // ),
+        backgroundColor: Colors.white,
+        content: SizedBox(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "$title을 정말로 삭제하시겠습니까?",
+                style: InjicareFont()
+                    .body01
+                    .copyWith(color: const Color(0xFF202020)),
+              ),
+              Gaps.v5,
+              Text(
+                "삭제하면 다시 되돌릴 수 없습니다",
+                style: InjicareFont().label01.copyWith(
+                      color: InjicareColor().gray80,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: removeOverlay,
+                    child: Container(
+                      height: 46,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: InjicareColor().gray20,
+                      ),
+                      child: Center(
+                        child: Text(
+                          "취소",
+                          style: InjicareFont()
+                              .body06
+                              .copyWith(color: InjicareColor().gray80),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Gaps.h10,
+              Expanded(
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: delete,
+                    child: Container(
+                      height: 46,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: InjicareColor().secondary50,
+                      ),
+                      child: Center(
+                        child: Text(
+                          "삭제",
+                          style: InjicareFont().body06.copyWith(
+                                color: Colors.white,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    ),
+  );
+}
+
 Widget deleteOverlay(
     String title, Function() removeOverlay, Function() delete) {
   return Positioned.fill(
@@ -74,19 +172,13 @@ Widget deleteOverlay(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20), // 원하는 borderRadius
           ),
-          // title: Text(
-          //   title,
-          //   style: InjicareFont().headline02.copyWith(
-          //         color: InjicareColor().secondary50,
-          //       ),
-          // ),
           backgroundColor: Colors.white,
           content: SizedBox(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "$title님을 정말로 삭제하시겠습니까?",
+                  "정말로 삭제하시겠습니까?",
                   style: InjicareFont()
                       .body01
                       .copyWith(color: const Color(0xFF202020)),
@@ -777,4 +869,54 @@ String secondsToYearMonthDayHourMinute(int seconds) {
 
 String numberFormat(int length) {
   return NumberFormat("#,###").format(length);
+}
+
+Widget gestureDetectorWithMouseClick(
+    {required Function() function, required Widget child}) {
+  return MouseRegion(
+    cursor: SystemMouseCursors.click,
+    child: GestureDetector(
+      onTap: function,
+      child: child,
+    ),
+  );
+}
+
+void showRightModal(BuildContext context, Widget child) {
+  showGeneralDialog(
+    context: context,
+    barrierColor: Colors.black38,
+    barrierDismissible: true,
+    barrierLabel: "닫기",
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return child;
+    },
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      final slideAnimation = Tween<Offset>(
+        begin: const Offset(1.0, 0.0),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(
+        parent: animation,
+        curve: Curves.linear,
+      ));
+
+      return Align(
+        alignment: Alignment.centerRight,
+        child: SlideTransition(
+          position: slideAnimation,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(40),
+              bottomLeft: Radius.circular(40),
+            ),
+            child: Material(
+              elevation: 0,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

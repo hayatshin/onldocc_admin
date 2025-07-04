@@ -121,9 +121,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
               e.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
-      int endPageItems = startPage + 20 > userDataList.length
+      int endPageItems = startPage + _itemsPerPage > userDataList.length
           ? userDataList.length
-          : startPage + 20;
+          : startPage + _itemsPerPage;
       if (mounted) {
         setState(() {
           _loadingFinished = true;
@@ -214,7 +214,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         );
       },
     );
-    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
+    Overlay.of(context, debugRequiredFor: widget, rootOverlay: true)
+        .insert(overlayEntry!);
   }
 
   Future<void> _filterUserDataList(
@@ -447,850 +448,817 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   @override
   @override
   Widget build(BuildContext context) {
-    return Overlay(
-      initialEntries: [
-        OverlayEntry(
-          builder: (context) => DefaultScreen(
-            menu: menuList[2],
-            child: Column(
-              children: [
-                SearchCsv(
-                  filterUserList: _filterUserDataList,
-                  resetInitialList: () => _getScoreList(_selectedDateRange),
-                  generateCsv: generateExcel,
+    return DefaultScreen(
+      menu: menuList[2],
+      child: Column(
+        children: [
+          SearchCsv(
+            filterUserList: _filterUserDataList,
+            resetInitialList: () => _getScoreList(_selectedDateRange),
+            generateCsv: generateExcel,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: _showPeriodCalender,
+                  child: PeriodButton(
+                    startDate: _selectedDateRange!.start,
+                    endDate: _selectedDateRange!.end,
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SelectableText(
+                    "점수 계산 방법",
+                    style: TextStyle(
+                      fontSize: Sizes.size12,
+                      color: Palette().normalGray,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Gaps.v5,
+                  SelectableText(
+                    "걸음수: 1,000보당 10점 (하루 최대 7천보)",
+                    style: TextStyle(
+                      fontSize: Sizes.size11,
+                      color: Palette().normalGray,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  Gaps.v5,
+                  SelectableText(
+                    "일기: 100점 / 댓글: 20점 / 좋아요: 10점",
+                    style: TextStyle(
+                      fontSize: Sizes.size11,
+                      color: Palette().normalGray,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Gaps.v32,
+          !_loadingFinished
+              ? const SkeletonLoadingScreen()
+              : Column(
                   children: [
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: _showPeriodCalender,
-                        child: PeriodButton(
-                          startDate: _selectedDateRange!.start,
-                          endDate: _selectedDateRange!.end,
-                        ),
-                      ),
-                    ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SelectableText(
-                          "점수 계산 방법",
-                          style: TextStyle(
-                            fontSize: Sizes.size12,
-                            color: Palette().normalGray,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Gaps.v5,
-                        SelectableText(
-                          "걸음수: 1,000보당 10점 (하루 최대 7천보)",
-                          style: TextStyle(
-                            fontSize: Sizes.size11,
-                            color: Palette().normalGray,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                        Gaps.v5,
-                        SelectableText(
-                          "일기: 100점 / 댓글: 20점 / 좋아요: 10점",
-                          style: TextStyle(
-                            fontSize: Sizes.size11,
-                            color: Palette().normalGray,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Gaps.v32,
-                !_loadingFinished
-                    ? const SkeletonLoadingScreen()
-                    : Column(
-                        children: [
-                          Column(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "총 ${numberFormat(_totalListLength)}개",
-                                    style: InjicareFont().label03.copyWith(
-                                          color: InjicareColor().gray70,
-                                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "총 ${numberFormat(_totalListLength)}개",
+                              style: InjicareFont().label03.copyWith(
+                                    color: InjicareColor().gray70,
                                   ),
-                                  Gaps.v14,
+                            ),
+                            Gaps.v14,
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                        ),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Center(
+                                      child: Text(
+                                        "#",
+                                        style: contentTextStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Center(
+                                      child: Text(
+                                        "이름",
+                                        style: contentTextStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Center(
+                                      child: Text(
+                                        "출생연도",
+                                        style: contentTextStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Center(
+                                      child: Text(
+                                        "핸드폰 번호",
+                                        style: contentTextStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "종합",
+                                          style: contentTextStyle,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Gaps.h5,
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => updateOrderStandard(
+                                                "totalPoint"),
+                                            child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  InjicareColor().gray70,
+                                                  BlendMode.srcIn),
+                                              child: SvgPicture.asset(
+                                                _sortOder == "totalPoint"
+                                                    ? "assets/svg/arrow-up.svg"
+                                                    : "assets/svg/arrow-down.svg",
+                                                width: 8,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 2,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "걸음수",
+                                          style: contentTextStyle,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Gaps.h5,
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => updateOrderStandard(
+                                                "stepPoint"),
+                                            child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  InjicareColor().gray70,
+                                                  BlendMode.srcIn),
+                                              child: SvgPicture.asset(
+                                                _sortOder == "stepPoint"
+                                                    ? "assets/svg/arrow-up.svg"
+                                                    : "assets/svg/arrow-down.svg",
+                                                width: 8,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "일기",
+                                          style: contentTextStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Gaps.h5,
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => updateOrderStandard(
+                                                "diaryPoint"),
+                                            child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  InjicareColor().gray70,
+                                                  BlendMode.srcIn),
+                                              child: SvgPicture.asset(
+                                                _sortOder == "diaryPoint"
+                                                    ? "assets/svg/arrow-up.svg"
+                                                    : "assets/svg/arrow-down.svg",
+                                                width: 8,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "댓글",
+                                          style: contentTextStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Gaps.h5,
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => updateOrderStandard(
+                                                "commentPoint"),
+                                            child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  InjicareColor().gray70,
+                                                  BlendMode.srcIn),
+                                              child: SvgPicture.asset(
+                                                _sortOder == "commentPoint"
+                                                    ? "assets/svg/arrow-up.svg"
+                                                    : "assets/svg/arrow-down.svg",
+                                                width: 8,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "좋아요",
+                                          style: contentTextStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Gaps.h5,
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () => updateOrderStandard(
+                                                "likePoint"),
+                                            child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  InjicareColor().gray70,
+                                                  BlendMode.srcIn),
+                                              child: SvgPicture.asset(
+                                                _sortOder == "likePoint"
+                                                    ? "assets/svg/arrow-up.svg"
+                                                    : "assets/svg/arrow-down.svg",
+                                                width: 8,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        borderRadius: const BorderRadius.only(
+                                          topRight: Radius.circular(16),
+                                        ),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Center(
+                                      child: Text(
+                                        "활동\n자세히 보기",
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            for (int i = 0; i < _userDataList.length; i++)
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    height: 50,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: SelectableText(
+                                            "${_userDataList[i]!.index ?? 0}",
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: SelectableText(
+                                            _userDataList[i]!.name,
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: SelectableText(
+                                            "${_userDataList[i]!.birthYear}년",
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: SelectableText(
+                                            _userDataList[i]!.phone,
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: SelectableText(
+                                            "${numberFormat(_userDataList[i]!.totalPoint ?? 0)}점",
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: SelectableText(
+                                            "${numberFormat(_userDataList[i]!.stepPoint ?? 0)}점",
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: SelectableText(
+                                            "${numberFormat(_userDataList[i]!.diaryPoint ?? 0)}점",
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: SelectableText(
+                                            "${numberFormat(_userDataList[i]!.commentPoint ?? 0)}점",
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: SelectableText(
+                                            "${numberFormat(_userDataList[i]!.likePoint ?? 0)}점",
+                                            style: contentTextStyle,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () =>
+                                                  goUserRankingDashboard(
+                                                userId:
+                                                    _userDataList[i]!.userId,
+                                                userName:
+                                                    _userDataList[i]!.name,
+                                                dateRange: _selectedDateRange ??
+                                                    DateRange(
+                                                      getThisWeekMonday(),
+                                                      DateTime.now(),
+                                                    ),
+                                              ),
+                                              child: Center(
+                                                child: FaIcon(
+                                                  FontAwesomeIcons.arrowRight,
+                                                  size: 14,
+                                                  color: InjicareColor()
+                                                      .secondary50,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                   Row(
                                     children: [
                                       Expanded(
-                                        flex: 1,
                                         child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                topLeft: Radius.circular(16),
-                                              ),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Center(
-                                            child: Text(
-                                              "#",
-                                              style: contentTextStyle,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
+                                          height: 1,
+                                          color: InjicareColor().gray30,
                                         ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Center(
-                                            child: Text(
-                                              "이름",
-                                              style: contentTextStyle,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Center(
-                                            child: Text(
-                                              "출생연도",
-                                              style: contentTextStyle,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Center(
-                                            child: Text(
-                                              "핸드폰 번호",
-                                              style: contentTextStyle,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "종합",
-                                                style: contentTextStyle,
-                                                overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              Gaps.h5,
-                                              MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () =>
-                                                      updateOrderStandard(
-                                                          "totalPoint"),
-                                                  child: ColorFiltered(
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            InjicareColor()
-                                                                .gray70,
-                                                            BlendMode.srcIn),
-                                                    child: SvgPicture.asset(
-                                                      _sortOder == "totalPoint"
-                                                          ? "assets/svg/arrow-up.svg"
-                                                          : "assets/svg/arrow-down.svg",
-                                                      width: 8,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 2,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "걸음수",
-                                                style: contentTextStyle,
-                                                overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              Gaps.h5,
-                                              MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () =>
-                                                      updateOrderStandard(
-                                                          "stepPoint"),
-                                                  child: ColorFiltered(
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            InjicareColor()
-                                                                .gray70,
-                                                            BlendMode.srcIn),
-                                                    child: SvgPicture.asset(
-                                                      _sortOder == "stepPoint"
-                                                          ? "assets/svg/arrow-up.svg"
-                                                          : "assets/svg/arrow-down.svg",
-                                                      width: 8,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "일기",
-                                                style: contentTextStyle,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              Gaps.h5,
-                                              MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () =>
-                                                      updateOrderStandard(
-                                                          "diaryPoint"),
-                                                  child: ColorFiltered(
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            InjicareColor()
-                                                                .gray70,
-                                                            BlendMode.srcIn),
-                                                    child: SvgPicture.asset(
-                                                      _sortOder == "diaryPoint"
-                                                          ? "assets/svg/arrow-up.svg"
-                                                          : "assets/svg/arrow-down.svg",
-                                                      width: 8,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "댓글",
-                                                style: contentTextStyle,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              Gaps.h5,
-                                              MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () =>
-                                                      updateOrderStandard(
-                                                          "commentPoint"),
-                                                  child: ColorFiltered(
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            InjicareColor()
-                                                                .gray70,
-                                                            BlendMode.srcIn),
-                                                    child: SvgPicture.asset(
-                                                      _sortOder ==
-                                                              "commentPoint"
-                                                          ? "assets/svg/arrow-up.svg"
-                                                          : "assets/svg/arrow-down.svg",
-                                                      width: 8,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "좋아요",
-                                                style: contentTextStyle,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              Gaps.h5,
-                                              MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: GestureDetector(
-                                                  onTap: () =>
-                                                      updateOrderStandard(
-                                                          "likePoint"),
-                                                  child: ColorFiltered(
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            InjicareColor()
-                                                                .gray70,
-                                                            BlendMode.srcIn),
-                                                    child: SvgPicture.asset(
-                                                      _sortOder == "likePoint"
-                                                          ? "assets/svg/arrow-up.svg"
-                                                          : "assets/svg/arrow-down.svg",
-                                                      width: 8,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFE9EDF9),
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                topRight: Radius.circular(16),
-                                              ),
-                                              border: Border.all(
-                                                width: 1,
-                                                color: const Color(0xFFF3F6FD),
-                                              )),
-                                          child: Center(
-                                            child: Text(
-                                              "활동\n자세히 보기",
-                                              style: contentTextStyle,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      )
                                     ],
-                                  ),
-                                  for (int i = 0; i < _userDataList.length; i++)
-                                    Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 50,
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                flex: 1,
-                                                child: SelectableText(
-                                                  "${_userDataList[i]!.index ?? 0}",
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 3,
-                                                child: SelectableText(
-                                                  _userDataList[i]!.name,
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: SelectableText(
-                                                  "${_userDataList[i]!.birthYear}년",
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 3,
-                                                child: SelectableText(
-                                                  _userDataList[i]!.phone,
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 3,
-                                                child: SelectableText(
-                                                  "${numberFormat(_userDataList[i]!.totalPoint ?? 0)}점",
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: SelectableText(
-                                                  "${numberFormat(_userDataList[i]!.stepPoint ?? 0)}점",
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: SelectableText(
-                                                  "${numberFormat(_userDataList[i]!.diaryPoint ?? 0)}점",
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: SelectableText(
-                                                  "${numberFormat(_userDataList[i]!.commentPoint ?? 0)}점",
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: SelectableText(
-                                                  "${numberFormat(_userDataList[i]!.likePoint ?? 0)}점",
-                                                  style: contentTextStyle,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: MouseRegion(
-                                                  cursor:
-                                                      SystemMouseCursors.click,
-                                                  child: GestureDetector(
-                                                    onTap: () =>
-                                                        goUserRankingDashboard(
-                                                      userId: _userDataList[i]!
-                                                          .userId,
-                                                      userName:
-                                                          _userDataList[i]!
-                                                              .name,
-                                                      dateRange:
-                                                          _selectedDateRange ??
-                                                              DateRange(
-                                                                getThisWeekMonday(),
-                                                                DateTime.now(),
-                                                              ),
-                                                    ),
-                                                    child: Center(
-                                                      child: FaIcon(
-                                                        FontAwesomeIcons
-                                                            .arrowRight,
-                                                        size: 14,
-                                                        color: InjicareColor()
-                                                            .secondary50,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Container(
-                                                height: 1,
-                                                color: InjicareColor().gray30,
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
+                                  )
                                 ],
-                              )
+                              ),
+                          ],
+                        )
+                      ],
+                    ),
+                    Gaps.v40,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: _previousPage,
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                  _pageIndication == 0
+                                      ? InjicareColor().gray50
+                                      : InjicareColor().gray100,
+                                  BlendMode.srcIn),
+                              child: SvgPicture.asset(
+                                "assets/svg/chevron-left.svg",
+                              ),
+                            ),
+                          ),
+                        ),
+                        Gaps.h10,
+                        for (int s = (_pageIndication * 5 + 1);
+                            s <
+                                (s >= _endPage + 1
+                                    ? _endPage + 1
+                                    : (_pageIndication * 5 + 1) + 5);
+                            s++)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Gaps.h10,
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () => _changePage(s),
+                                  child: Text(
+                                    "$s",
+                                    style: InjicareFont().body07.copyWith(
+                                        color: _currentPage + 1 == s
+                                            ? InjicareColor().gray100
+                                            : InjicareColor().gray60,
+                                        fontWeight: _currentPage + 1 == s
+                                            ? FontWeight.w900
+                                            : FontWeight.w400),
+                                  ),
+                                ),
+                              ),
+                              Gaps.h10,
                             ],
                           ),
-                          Gaps.v40,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: GestureDetector(
-                                  onTap: _previousPage,
-                                  child: ColorFiltered(
-                                    colorFilter: ColorFilter.mode(
-                                        _pageIndication == 0
-                                            ? InjicareColor().gray50
-                                            : InjicareColor().gray100,
-                                        BlendMode.srcIn),
-                                    child: SvgPicture.asset(
-                                      "assets/svg/chevron-left.svg",
-                                    ),
-                                  ),
-                                ),
+                        Gaps.h10,
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: _nextPage,
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                  _pageIndication + 5 > _endPage
+                                      ? InjicareColor().gray50
+                                      : InjicareColor().gray100,
+                                  BlendMode.srcIn),
+                              child: SvgPicture.asset(
+                                "assets/svg/chevron-right.svg",
                               ),
-                              Gaps.h10,
-                              for (int s = (_pageIndication * 5 + 1);
-                                  s <
-                                      (s >= _endPage + 1
-                                          ? _endPage + 1
-                                          : (_pageIndication * 5 + 1) + 5);
-                                  s++)
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Gaps.h10,
-                                    MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () => _changePage(s),
-                                        child: Text(
-                                          "$s",
-                                          style: InjicareFont().body07.copyWith(
-                                              color: _currentPage + 1 == s
-                                                  ? InjicareColor().gray100
-                                                  : InjicareColor().gray60,
-                                              fontWeight: _currentPage + 1 == s
-                                                  ? FontWeight.w900
-                                                  : FontWeight.w400),
-                                        ),
-                                      ),
-                                    ),
-                                    Gaps.h10,
-                                  ],
-                                ),
-                              Gaps.h10,
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: GestureDetector(
-                                  onTap: _nextPage,
-                                  child: ColorFiltered(
-                                    colorFilter: ColorFilter.mode(
-                                        _pageIndication + 5 > _endPage
-                                            ? InjicareColor().gray50
-                                            : InjicareColor().gray100,
-                                        BlendMode.srcIn),
-                                    child: SvgPicture.asset(
-                                      "assets/svg/chevron-right.svg",
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      )
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                )
 
-                //  DataTable2(
-                //     scrollController: _scrollController,
-                //     isVerticalScrollBarVisible: false,
-                //     smRatio: 0.8,
-                //     lmRatio: 1.2,
-                //     dividerThickness: 0.1,
-                //     sortColumnIndex: _sortColumnIndex,
-                //     sortArrowIcon: Icons.arrow_downward_rounded,
-                //     horizontalMargin: 0,
-                //     headingRowDecoration: BoxDecoration(
-                //       border: Border(
-                //         bottom: BorderSide(
-                //           color: Palette().lightGray,
-                //           width: 0.1,
-                //         ),
-                //       ),
-                //     ),
-                //     columns: [
-                //       DataColumn2(
-                //         fixedWidth: 50,
-                //         label: SelectableText(
-                //           "#",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         // size: ColumnSize.L,
-                //         label: SelectableText(
-                //           "이름",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         size: ColumnSize.S,
-                //         label: SelectableText(
-                //           "출생연도",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         // size: ColumnSize.L,
-                //         label: SelectableText(
-                //           "핸드폰 번호",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         size: ColumnSize.S,
-                //         tooltip: "클릭하면 '종합 점수'를 기준으로 정렬됩니다.",
-                //         onSort: (columnIndex, sortAscending) {
-                //           updateOrderStandard("totalPoint", columnIndex);
-                //         },
-                //         label: SelectableText(
-                //           "종합",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         size: ColumnSize.S,
-                //         tooltip: "클릭하면 '걸음수'를 기준으로 정렬됩니다.",
-                //         onSort: (columnIndex, sortAscending) {
-                //           updateOrderStandard("stepPoint", columnIndex);
-                //         },
-                //         label: SelectableText(
-                //           "걸음수",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         size: ColumnSize.S,
-                //         tooltip: "클릭하면 '일기'를 기준으로 정렬됩니다",
-                //         onSort: (columnIndex, sortAscending) {
-                //           updateOrderStandard("diaryPoint", columnIndex);
-                //         },
-                //         label: SelectableText(
-                //           "일기",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         size: ColumnSize.S,
-                //         tooltip: "클릭하면 '댓글'을 기준으로 정렬됩니다",
-                //         onSort: (columnIndex, sortAscending) {
-                //           updateOrderStandard("commentPoint", columnIndex);
-                //         },
-                //         label: SelectableText(
-                //           "댓글",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       DataColumn2(
-                //         size: ColumnSize.S,
-                //         tooltip: "클릭하면 '좋아요'를 기준으로 정렬됩니다",
-                //         onSort: (columnIndex, sortAscending) {
-                //           updateOrderStandard("likePoint", columnIndex);
-                //         },
-                //         label: SelectableText(
-                //           "좋아요",
-                //           style: _headerTextStyle,
-                //         ),
-                //       ),
-                //       // DataColumn2(
-                //       //   size: ColumnSize.S,
-                //       //   tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다",
-                //       //   onSort: (columnIndex, sortAscending) {
-                //       //     updateOrderStandard(
-                //       //         "invitationPoint", columnIndex);
-                //       //   },
-                //       //   label: SelectableText(
-                //       //     "친구초대",
-                //       //     style: _headerTextStyle,
-                //       //   ),
-                //       // ),
-                //       DataColumn2(
-                //         fixedWidth: 100,
-                //         onSort: (columnIndex, sortAscending) {
-                //           setState(() {
-                //             _sortColumnIndex = columnIndex;
-                //           });
-                //         },
-                //         label: SelectableText(
-                //           "활동\n자세히 보기",
-                //           style: _headerTextStyle,
-                //           textAlign: TextAlign.end,
-                //         ),
-                //       ),
-                //     ],
-                //     rows: [
-                //       if (_userDataList.isNotEmpty)
-                //         for (var i = 0; i < _rowCount; i++)
-                //           DataRow2(
-                //             cells: [
-                //               DataCell(
-                //                 SelectableText(
-                //                   (i + 1).toString(),
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   _userDataList[i]!.name.length > 10
-                //                       ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                //                       : _userDataList[i]!.name,
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   _userDataList[i]!.birthYear,
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   _userDataList[i]!.phone,
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   "${_userDataList[i]!.totalPoint}",
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   "${_userDataList[i]!.stepPoint}",
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   "${_userDataList[i]!.diaryPoint}",
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   "${_userDataList[i]!.commentPoint}",
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               DataCell(
-                //                 SelectableText(
-                //                   "${_userDataList[i]!.likePoint}",
-                //                   style: _contentTextStyle,
-                //                 ),
-                //               ),
-                //               // DataCell(
-                //               //   SelectableText(
-                //               //     "${_userDataList[i]!.invitationPoint}",
-                //               //     style: _contentTextStyle,
-                //               //   ),
-                //               // ),
-                //               DataCell(
-                //                 Center(
-                //                   child: MouseRegion(
-                //                     cursor: SystemMouseCursors.click,
-                //                     child: GestureDetector(
-                //                       onTap: () => goUserRankingDashboard(
-                //                         userId: _userDataList[i]!.userId,
-                //                         userName: _userDataList[i]!.name,
-                //                         dateRange: _selectedDateRange ??
-                //                             DateRange(
-                //                               getThisWeekMonday(),
-                //                               DateTime.now(),
-                //                             ),
-                //                       ),
-                //                       child: FaIcon(
-                //                         FontAwesomeIcons.arrowRight,
-                //                         color: Palette().darkGray,
-                //                         size: 14,
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ),
-                //               )
-                //             ],
-                //           ),
-                //     ],
-                //   ),
-              ],
-            ),
-          ),
-        )
-      ],
+          //  DataTable2(
+          //     scrollController: _scrollController,
+          //     isVerticalScrollBarVisible: false,
+          //     smRatio: 0.8,
+          //     lmRatio: 1.2,
+          //     dividerThickness: 0.1,
+          //     sortColumnIndex: _sortColumnIndex,
+          //     sortArrowIcon: Icons.arrow_downward_rounded,
+          //     horizontalMargin: 0,
+          //     headingRowDecoration: BoxDecoration(
+          //       border: Border(
+          //         bottom: BorderSide(
+          //           color: Palette().lightGray,
+          //           width: 0.1,
+          //         ),
+          //       ),
+          //     ),
+          //     columns: [
+          //       DataColumn2(
+          //         fixedWidth: 50,
+          //         label: SelectableText(
+          //           "#",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         // size: ColumnSize.L,
+          //         label: SelectableText(
+          //           "이름",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         size: ColumnSize.S,
+          //         label: SelectableText(
+          //           "출생연도",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         // size: ColumnSize.L,
+          //         label: SelectableText(
+          //           "핸드폰 번호",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         size: ColumnSize.S,
+          //         tooltip: "클릭하면 '종합 점수'를 기준으로 정렬됩니다.",
+          //         onSort: (columnIndex, sortAscending) {
+          //           updateOrderStandard("totalPoint", columnIndex);
+          //         },
+          //         label: SelectableText(
+          //           "종합",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         size: ColumnSize.S,
+          //         tooltip: "클릭하면 '걸음수'를 기준으로 정렬됩니다.",
+          //         onSort: (columnIndex, sortAscending) {
+          //           updateOrderStandard("stepPoint", columnIndex);
+          //         },
+          //         label: SelectableText(
+          //           "걸음수",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         size: ColumnSize.S,
+          //         tooltip: "클릭하면 '일기'를 기준으로 정렬됩니다",
+          //         onSort: (columnIndex, sortAscending) {
+          //           updateOrderStandard("diaryPoint", columnIndex);
+          //         },
+          //         label: SelectableText(
+          //           "일기",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         size: ColumnSize.S,
+          //         tooltip: "클릭하면 '댓글'을 기준으로 정렬됩니다",
+          //         onSort: (columnIndex, sortAscending) {
+          //           updateOrderStandard("commentPoint", columnIndex);
+          //         },
+          //         label: SelectableText(
+          //           "댓글",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       DataColumn2(
+          //         size: ColumnSize.S,
+          //         tooltip: "클릭하면 '좋아요'를 기준으로 정렬됩니다",
+          //         onSort: (columnIndex, sortAscending) {
+          //           updateOrderStandard("likePoint", columnIndex);
+          //         },
+          //         label: SelectableText(
+          //           "좋아요",
+          //           style: _headerTextStyle,
+          //         ),
+          //       ),
+          //       // DataColumn2(
+          //       //   size: ColumnSize.S,
+          //       //   tooltip: "클릭하면 '친구초대'를 기준으로 정렬됩니다",
+          //       //   onSort: (columnIndex, sortAscending) {
+          //       //     updateOrderStandard(
+          //       //         "invitationPoint", columnIndex);
+          //       //   },
+          //       //   label: SelectableText(
+          //       //     "친구초대",
+          //       //     style: _headerTextStyle,
+          //       //   ),
+          //       // ),
+          //       DataColumn2(
+          //         fixedWidth: 100,
+          //         onSort: (columnIndex, sortAscending) {
+          //           setState(() {
+          //             _sortColumnIndex = columnIndex;
+          //           });
+          //         },
+          //         label: SelectableText(
+          //           "활동\n자세히 보기",
+          //           style: _headerTextStyle,
+          //           textAlign: TextAlign.end,
+          //         ),
+          //       ),
+          //     ],
+          //     rows: [
+          //       if (_userDataList.isNotEmpty)
+          //         for (var i = 0; i < _rowCount; i++)
+          //           DataRow2(
+          //             cells: [
+          //               DataCell(
+          //                 SelectableText(
+          //                   (i + 1).toString(),
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   _userDataList[i]!.name.length > 10
+          //                       ? "${_userDataList[i]!.name.substring(0, 10)}.."
+          //                       : _userDataList[i]!.name,
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   _userDataList[i]!.birthYear,
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   _userDataList[i]!.phone,
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   "${_userDataList[i]!.totalPoint}",
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   "${_userDataList[i]!.stepPoint}",
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   "${_userDataList[i]!.diaryPoint}",
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   "${_userDataList[i]!.commentPoint}",
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               DataCell(
+          //                 SelectableText(
+          //                   "${_userDataList[i]!.likePoint}",
+          //                   style: _contentTextStyle,
+          //                 ),
+          //               ),
+          //               // DataCell(
+          //               //   SelectableText(
+          //               //     "${_userDataList[i]!.invitationPoint}",
+          //               //     style: _contentTextStyle,
+          //               //   ),
+          //               // ),
+          //               DataCell(
+          //                 Center(
+          //                   child: MouseRegion(
+          //                     cursor: SystemMouseCursors.click,
+          //                     child: GestureDetector(
+          //                       onTap: () => goUserRankingDashboard(
+          //                         userId: _userDataList[i]!.userId,
+          //                         userName: _userDataList[i]!.name,
+          //                         dateRange: _selectedDateRange ??
+          //                             DateRange(
+          //                               getThisWeekMonday(),
+          //                               DateTime.now(),
+          //                             ),
+          //                       ),
+          //                       child: FaIcon(
+          //                         FontAwesomeIcons.arrowRight,
+          //                         color: Palette().darkGray,
+          //                         size: 14,
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ),
+          //               )
+          //             ],
+          //           ),
+          //     ],
+          //   ),
+        ],
+      ),
     );
   }
 }

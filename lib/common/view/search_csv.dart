@@ -10,6 +10,8 @@ import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 
+const double searchHeight = 40;
+
 class SearchCsv extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
@@ -27,7 +29,6 @@ class SearchCsv extends ConsumerStatefulWidget {
 
 class _SearchCsvState extends ConsumerState<SearchCsv> {
   final TextEditingController _searchUserController = TextEditingController();
-  final double searchHeight = 40;
   String _setSearchBy = "이름";
 
   void submitSearch() {

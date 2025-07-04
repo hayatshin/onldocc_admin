@@ -697,7 +697,6 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                     ],
                   ),
                 ),
-                Gaps.v52,
               ],
             ),
           ),

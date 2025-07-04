@@ -122,9 +122,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
               e!.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
-      int endPageItems = startPage + 20 > userDataList.length
-          ? userDataList.length
-          : startPage + 20;
+      int endPageItems = startPage + _itemsPerPage > filterList.length
+          ? filterList.length
+          : startPage + _itemsPerPage;
       if (mounted) {
         setState(() {
           _userDataList = filterList.sublist(startPage, endPageItems);
@@ -259,13 +259,14 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     assert(overlayEntry == null);
 
     overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(userName, removeDeleteOverlay, () async {
+      return deleteUserOverlay("$userName님", removeDeleteOverlay, () async {
         await ref.read(userRepo).deleteUser(userId);
         removeDeleteOverlay();
         setState(() {});
       });
     });
-    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
+    Overlay.of(context, debugRequiredFor: widget, rootOverlay: true)
+        .insert(overlayEntry!);
   }
 
   void goUserDashBoard({String? userId, String? userName}) {
@@ -319,440 +320,436 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Overlay(initialEntries: [
-      OverlayEntry(
-        builder: (context) => DefaultScreen(
-          menu: menuList[1],
-          child: Column(
+    return DefaultScreen(
+      menu: menuList[1],
+      child: Column(
+        children: [
+          Column(
             children: [
+              SearchCsv(
+                filterUserList: _filterUserDataList,
+                resetInitialList: _getUserModelList,
+                generateCsv: generateExcel,
+              ),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SearchCsv(
-                    filterUserList: _filterUserDataList,
-                    resetInitialList: _getUserModelList,
-                    generateCsv: generateExcel,
+                  Text(
+                    "총 ${numberFormat(_totalListLength)}개",
+                    style: InjicareFont().label03.copyWith(
+                          color: InjicareColor().gray70,
+                        ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Gaps.v14,
+                  Row(
                     children: [
-                      Text(
-                        "총 ${numberFormat(_totalListLength)}개",
-                        style: InjicareFont().label03.copyWith(
-                              color: InjicareColor().gray70,
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                              ),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "#",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
                             ),
+                          ),
+                        ),
                       ),
-                      Gaps.v14,
-                      Row(
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "이름",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "연령",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "성별",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "핸드폰 번호",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (_adminProfile.master)
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 2,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "거주 지역",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "가입일",
+                              style: contentTextStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "방문일",
+                              style: contentTextStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "삭제",
+                              style: contentTextStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(16),
+                              ),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "대시보드",
+                              style: contentTextStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_userDataList.isNotEmpty)
+                    for (int i = 0; i < _userDataList.length; i++)
+                      Column(
                         children: [
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                  ),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "#",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "이름",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "연령",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "성별",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "핸드폰 번호",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (_adminProfile.master)
-                            Expanded(
-                              flex: 3,
-                              child: Container(
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    color: const Color(0xFFE9EDF9),
-                                    border: Border.all(
-                                      width: 2,
-                                      color: const Color(0xFFF3F6FD),
-                                    )),
-                                child: Center(
-                                  child: Text(
-                                    "거주 지역",
+                          SizedBox(
+                            height: 50,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: SelectableText(
+                                    "${_currentPage * _itemsPerPage + 1 + i}",
                                     style: contentTextStyle,
-                                    overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                              ),
-                            ),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "가입일",
-                                  style: contentTextStyle,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "방문일",
-                                  style: contentTextStyle,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "삭제",
-                                  style: contentTextStyle,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  borderRadius: const BorderRadius.only(
-                                    topRight: Radius.circular(16),
+                                Expanded(
+                                  flex: 3,
+                                  child: SelectableText(
+                                    _userDataList[i]!.name,
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
                                   ),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "대시보드",
-                                  style: contentTextStyle,
-                                  textAlign: TextAlign.center,
                                 ),
-                              ),
+                                Expanded(
+                                  flex: 1,
+                                  child: SelectableText(
+                                    "${_userDataList[i]!.userAge!}세",
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: SelectableText(
+                                    _userDataList[i]!.gender,
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: SelectableText(
+                                    _userDataList[i]!.phone,
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                if (_adminProfile.master)
+                                  Expanded(
+                                    flex: 3,
+                                    child: SelectableText(
+                                      _userDataList[i]!.fullRegion,
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                Expanded(
+                                  flex: 2,
+                                  child: SelectableText(
+                                    secondsToStringLine(
+                                        _userDataList[i]!.createdAt),
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: SelectableText(
+                                    secondsToStringLine(
+                                        _userDataList[i]!.lastVisit!),
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: GestureDetector(
+                                      onTap: () => showDeleteOverlay(
+                                        context,
+                                        _userDataList[i]!.userId,
+                                        _userDataList[i]!.name,
+                                      ),
+                                      child: Icon(
+                                        Icons.delete,
+                                        size: 16,
+                                        color: InjicareColor().gray80,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: GestureDetector(
+                                      onTap: () => goUserDashBoard(
+                                        userId: _userDataList[i]!.userId,
+                                        userName: _userDataList[i]!.name,
+                                      ),
+                                      child: ColorFiltered(
+                                        colorFilter: ColorFilter.mode(
+                                          InjicareColor().secondary50,
+                                          BlendMode.srcIn,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          "assets/svg/pie-chart.svg",
+                                          width: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                      if (_userDataList.isNotEmpty)
-                        for (int i = 0; i < _userDataList.length; i++)
-                          Column(
+                          Row(
                             children: [
-                              SizedBox(
-                                height: 50,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: SelectableText(
-                                        "${_currentPage * 20 + 1 + i}",
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: SelectableText(
-                                        _userDataList[i]!.name,
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: SelectableText(
-                                        "${_userDataList[i]!.userAge!}세",
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: SelectableText(
-                                        _userDataList[i]!.gender,
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: SelectableText(
-                                        _userDataList[i]!.phone,
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    if (_adminProfile.master)
-                                      Expanded(
-                                        flex: 3,
-                                        child: SelectableText(
-                                          _userDataList[i]!.fullRegion,
-                                          style: contentTextStyle,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: SelectableText(
-                                        secondsToStringLine(
-                                            _userDataList[i]!.createdAt),
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: SelectableText(
-                                        secondsToStringLine(
-                                            _userDataList[i]!.lastVisit!),
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: GestureDetector(
-                                          onTap: () => showDeleteOverlay(
-                                            context,
-                                            _userDataList[i]!.userId,
-                                            _userDataList[i]!.name,
-                                          ),
-                                          child: Icon(
-                                            Icons.delete,
-                                            size: 16,
-                                            color: InjicareColor().gray80,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: GestureDetector(
-                                          onTap: () => goUserDashBoard(
-                                            userId: _userDataList[i]!.userId,
-                                            userName: _userDataList[i]!.name,
-                                          ),
-                                          child: ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                              InjicareColor().secondary50,
-                                              BlendMode.srcIn,
-                                            ),
-                                            child: SvgPicture.asset(
-                                              "assets/svg/pie-chart.svg",
-                                              width: 15,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              Expanded(
+                                child: Container(
+                                  height: 1,
+                                  color: InjicareColor().gray30,
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      height: 1,
-                                      color: InjicareColor().gray30,
-                                    ),
-                                  )
-                                ],
                               )
                             ],
-                          ),
-                    ],
-                  )
-                ],
-              ),
-              Gaps.v40,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: _previousPage,
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                            _pageIndication == 0
-                                ? InjicareColor().gray50
-                                : InjicareColor().gray100,
-                            BlendMode.srcIn),
-                        child: SvgPicture.asset(
-                          "assets/svg/chevron-left.svg",
-                        ),
+                          )
+                        ],
                       ),
-                    ),
-                  ),
-                  Gaps.h10,
-                  for (int s = (_pageIndication * 5 + 1);
-                      s <
-                          (s >= _endPage + 1
-                              ? _endPage + 1
-                              : (_pageIndication * 5 + 1) + 5);
-                      s++)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Gaps.h10,
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () => _changePage(s),
-                            child: Text(
-                              "$s",
-                              style: InjicareFont().body07.copyWith(
-                                  color: _currentPage + 1 == s
-                                      ? InjicareColor().gray100
-                                      : InjicareColor().gray60,
-                                  fontWeight: _currentPage + 1 == s
-                                      ? FontWeight.w900
-                                      : FontWeight.w400),
-                            ),
-                          ),
-                        ),
-                        Gaps.h10,
-                      ],
-                    ),
-                  Gaps.h10,
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: _nextPage,
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                            _pageIndication + 5 > _endPage
-                                ? InjicareColor().gray50
-                                : InjicareColor().gray100,
-                            BlendMode.srcIn),
-                        child: SvgPicture.asset(
-                          "assets/svg/chevron-right.svg",
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               )
             ],
           ),
-        ),
+          Gaps.v40,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: _previousPage,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        _pageIndication == 0
+                            ? InjicareColor().gray50
+                            : InjicareColor().gray100,
+                        BlendMode.srcIn),
+                    child: SvgPicture.asset(
+                      "assets/svg/chevron-left.svg",
+                    ),
+                  ),
+                ),
+              ),
+              Gaps.h10,
+              for (int s = (_pageIndication * 5 + 1);
+                  s <
+                      (s >= _endPage + 1
+                          ? _endPage + 1
+                          : (_pageIndication * 5 + 1) + 5);
+                  s++)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Gaps.h10,
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () => _changePage(s),
+                        child: Text(
+                          "$s",
+                          style: InjicareFont().body07.copyWith(
+                              color: _currentPage + 1 == s
+                                  ? InjicareColor().gray100
+                                  : InjicareColor().gray60,
+                              fontWeight: _currentPage + 1 == s
+                                  ? FontWeight.w900
+                                  : FontWeight.w400),
+                        ),
+                      ),
+                    ),
+                    Gaps.h10,
+                  ],
+                ),
+              Gaps.h10,
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: _nextPage,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        _pageIndication + 5 > _endPage
+                            ? InjicareColor().gray50
+                            : InjicareColor().gray100,
+                        BlendMode.srcIn),
+                    child: SvgPicture.asset(
+                      "assets/svg/chevron-right.svg",
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
-    ]);
+    );
   }
 }

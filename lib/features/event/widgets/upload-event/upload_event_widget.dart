@@ -551,7 +551,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
   void showDeleteOverlay(String eventId, String eventName) async {
     removeDeleteOverlay();
     overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(
+      return deleteUserOverlay(
           eventName.length > 10 ? "${eventName.substring(0, 11)}.." : eventName,
           removeDeleteOverlay,
           () => deleteEvent(eventId));

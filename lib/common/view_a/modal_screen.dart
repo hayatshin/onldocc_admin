@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:onldocc_admin/common/widgets/report_button.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:onldocc_admin/common/view/search_csv.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class ModalScreen extends StatelessWidget {
   final Size size;
+
   final Widget child;
   final String modalTitle;
+
   final String modalButtonOneText;
   final Function() modalButtonOneFunction;
   final String? modalButtonTwoText;
   final Function()? modalButtonTwoFunction;
+
   const ModalScreen({
     super.key,
     required this.size,
@@ -26,86 +33,48 @@ class ModalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: size.height * 0.85,
-      width: size.width,
+      width: size.width * 0.5,
       decoration: BoxDecoration(
         color: Palette().bgLightBlue,
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(Sizes.size20),
-          topRight: Radius.circular(Sizes.size20),
+          topLeft: Radius.circular(40),
+          bottomLeft: Radius.circular(40),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(
-          top: Sizes.size32,
-          left: Sizes.size40,
-          right: Sizes.size40,
-        ),
+        padding: const EdgeInsets.all(30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Gaps.v20,
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  context.pop();
+                },
+                child: ColorFiltered(
+                  colorFilter: const ColorFilter.mode(
+                      Color(0xFF2A343D), BlendMode.srcIn),
+                  child: SvgPicture.asset(
+                    "assets/svg/close.svg",
+                    width: 16,
+                  ),
+                ),
+              ),
+            ),
+            Gaps.v32,
             Row(
               children: [
                 Expanded(
-                  child: SelectableText(
+                  child: Text(
                     modalTitle,
                     style: TextStyle(
-                      color: Palette().darkBlue,
+                      color: InjicareColor().gray100,
                       fontWeight: FontWeight.w700,
-                      fontSize: Sizes.size16,
+                      fontSize: 24,
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    ReportButton(
-                      iconExists: false,
-                      buttonText: modalButtonOneText,
-                      buttonColor: Palette().darkBlue,
-                      action: modalButtonOneFunction,
-                    ),
-                    if (modalButtonTwoText != null)
-                      Row(
-                        children: [
-                          Gaps.h20,
-                          MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              onTap: modalButtonTwoFunction!,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(
-                                    width: 1.5,
-                                    color: Palette().darkBlue,
-                                  ),
-                                  color: Palette().darkBlue,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 30,
-                                    vertical: 7,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        modalButtonTwoText!,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: Sizes.size14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                  ],
                 ),
               ],
             ),
@@ -114,6 +83,54 @@ class ModalScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: child,
               ),
+            ),
+            Gaps.v10,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                gestureDetectorWithMouseClick(
+                  function: () {
+                    context.pop();
+                  },
+                  child: Container(
+                    width: 200,
+                    height: searchHeight,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: InjicareColor().gray20,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "닫기",
+                        style: InjicareFont().body03.copyWith(
+                              color: InjicareColor().gray80,
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
+                Gaps.h10,
+                Expanded(
+                  child: gestureDetectorWithMouseClick(
+                    function: modalButtonOneFunction,
+                    child: Container(
+                      height: searchHeight,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: InjicareColor().secondary50,
+                      ),
+                      child: Center(
+                        child: Text(
+                          modalButtonOneText,
+                          style: InjicareFont().body03.copyWith(
+                                color: Colors.white,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

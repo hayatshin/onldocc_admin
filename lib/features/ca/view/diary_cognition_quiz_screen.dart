@@ -230,7 +230,7 @@ class _DiaryCognitionQuizScreenState
     assert(overlayEntry == null);
 
     overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(userName, removeDeleteOverlay, () async {
+      return deleteUserOverlay(userName, removeDeleteOverlay, () async {
         await ref.read(userRepo).deleteUser(userId);
         removeDeleteOverlay();
         setState(() {});
