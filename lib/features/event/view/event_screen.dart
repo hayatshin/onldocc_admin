@@ -246,7 +246,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                             ),
                           ),
                           Expanded(
-                            flex: 7,
+                            flex: 4,
                             child: Container(
                               decoration: BoxDecoration(
                                   color: const Color(0xFFE9EDF9),
@@ -256,7 +256,25 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   )),
                               child: Center(
                                 child: Text(
-                                  "공지",
+                                  "행사",
+                                  style: contentTextStyle,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFE9EDF9),
+                                  border: Border.all(
+                                    width: 1,
+                                    color: const Color(0xFFF3F6FD),
+                                  )),
+                              child: Center(
+                                child: Text(
+                                  "주최 기관",
                                   style: contentTextStyle,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -274,9 +292,10 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   )),
                               child: Center(
                                 child: Text(
-                                  "이미지",
+                                  "시작일",
                                   style: contentTextStyle,
                                   overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ),
@@ -292,7 +311,26 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   )),
                               child: Center(
                                 child: Text(
-                                  "작성일",
+                                  "종료일",
+                                  style: contentTextStyle,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFE9EDF9),
+                                  border: Border.all(
+                                    width: 1,
+                                    color: const Color(0xFFF3F6FD),
+                                  )),
+                              child: Center(
+                                child: Text(
+                                  "상태",
                                   style: contentTextStyle,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
@@ -324,6 +362,18 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                             child: Container(
                               decoration: BoxDecoration(
                                   color: const Color(0xFFE9EDF9),
+                                  border: Border.all(
+                                    width: 1,
+                                    color: const Color(0xFFF3F6FD),
+                                  )),
+                              child: Container(),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFE9EDF9),
                                   borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(16),
                                   ),
@@ -331,374 +381,401 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     width: 2,
                                     color: const Color(0xFFF3F6FD),
                                   )),
-                              child: Container(),
+                              child: Center(
+                                child: Text(
+                                  "행사 보기",
+                                  style: contentTextStyle,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    // if (_eventList.isNotEmpty)
-                    //   for (int i = 0; i < _eventList.length; i++)
-                    //     Column(
-                    //       children: [
-                    //         SizedBox(
-                    //           height: _tabHeight,
-                    //           child: Row(
-                    //             children: [
-                    //               Expanded(
-                    //                 flex: 1,
-                    //                 child: SelectableText(
-                    //                   "${_currentPage * _itemsPerPage + 1 + i}",
-                    //                   style: contentTextStyle,
-                    //                   textAlign: TextAlign.center,
-                    //                 ),
-                    //               ),
-                    //               Expanded(
-                    //                 flex: 7,
-                    //                 child: Padding(
-                    //                   padding: const EdgeInsets.symmetric(
-                    //                       horizontal: 5),
-                    //                   child: Text(
-                    //                     _noticeList[i]
-                    //                         .todayDiary
-                    //                         .trim()
-                    //                         .replaceAll("\n", " "),
-                    //                     style: contentTextStyle,
-                    //                     textAlign: TextAlign.center,
-                    //                     maxLines: 1,
-                    //                     overflow: TextOverflow.ellipsis,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               Expanded(
-                    //                 flex: 1,
-                    //                 child: _noticeList[i].images!.isNotEmpty
-                    //                     ? Center(
-                    //                         child: Image.network(
-                    //                           _noticeList[i].images![0],
-                    //                           fit: BoxFit.cover,
-                    //                           height: 35,
-                    //                         ),
-                    //                       )
-                    //                     : Container(),
-                    //               ),
-                    //               Expanded(
-                    //                 flex: 1,
-                    //                 child: SelectableText(
-                    //                   secondsToStringLine(
-                    //                       _noticeList[i].createdAt),
-                    //                   style: contentTextStyle,
-                    //                   textAlign: TextAlign.center,
-                    //                 ),
-                    //               ),
-                    //               Expanded(
-                    //                 flex: 1,
-                    //                 child: MouseRegion(
-                    //                   cursor: SystemMouseCursors.click,
-                    //                   child: GestureDetector(
-                    //                     onTap: () => _editAdminSecret(
-                    //                         _noticeList[i].diaryId),
-                    //                     child: Row(
-                    //                       mainAxisAlignment:
-                    //                           MainAxisAlignment.center,
-                    //                       children: [
-                    //                         MouseRegion(
-                    //                           cursor: SystemMouseCursors.click,
-                    //                           child: _noticeList[i]
-                    //                                       .diaryId
-                    //                                       .split(":")
-                    //                                       .last !=
-                    //                                   "true"
-                    //                               ? Container(
-                    //                                   width: 50,
-                    //                                   decoration: BoxDecoration(
-                    //                                     color: InjicareColor()
-                    //                                         .secondary50,
-                    //                                     borderRadius:
-                    //                                         BorderRadius
-                    //                                             .circular(6),
-                    //                                   ),
-                    //                                   child: Padding(
-                    //                                     padding:
-                    //                                         const EdgeInsets
-                    //                                             .symmetric(
-                    //                                       vertical: 5,
-                    //                                     ),
-                    //                                     child: Row(
-                    //                                       mainAxisAlignment:
-                    //                                           MainAxisAlignment
-                    //                                               .center,
-                    //                                       mainAxisSize:
-                    //                                           MainAxisSize.min,
-                    //                                       children: [
-                    //                                         Text(
-                    //                                           "공개",
-                    //                                           style: InjicareFont()
-                    //                                               .label02
-                    //                                               .copyWith(
-                    //                                                   color: Colors
-                    //                                                       .white),
-                    //                                         )
-                    //                                       ],
-                    //                                     ),
-                    //                                   ),
-                    //                                 )
-                    //                               : Container(
-                    //                                   width: 50,
-                    //                                   decoration: BoxDecoration(
-                    //                                     color: InjicareColor()
-                    //                                         .gray20,
-                    //                                     borderRadius:
-                    //                                         BorderRadius
-                    //                                             .circular(6),
-                    //                                   ),
-                    //                                   child: Padding(
-                    //                                     padding:
-                    //                                         const EdgeInsets
-                    //                                             .symmetric(
-                    //                                       vertical: 5,
-                    //                                     ),
-                    //                                     child: Row(
-                    //                                       mainAxisAlignment:
-                    //                                           MainAxisAlignment
-                    //                                               .center,
-                    //                                       mainAxisSize:
-                    //                                           MainAxisSize.min,
-                    //                                       children: [
-                    //                                         Text(
-                    //                                           "비공개",
-                    //                                           style: InjicareFont()
-                    //                                               .label02
-                    //                                               .copyWith(
-                    //                                                   color: InjicareColor()
-                    //                                                       .gray90),
-                    //                                         )
-                    //                                       ],
-                    //                                     ),
-                    //                                   ),
-                    //                                 ),
-                    //                         ),
-                    //                       ],
-                    //                     ),
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               Expanded(
-                    //                 flex: 1,
-                    //                 child: Column(
-                    //                   mainAxisAlignment:
-                    //                       MainAxisAlignment.center,
-                    //                   children: [
-                    //                     Row(
-                    //                       mainAxisAlignment:
-                    //                           MainAxisAlignment.center,
-                    //                       children: [
-                    //                         MouseRegion(
-                    //                           cursor: SystemMouseCursors.click,
-                    //                           child: GestureDetector(
-                    //                             onTap: () => editNotification(
-                    //                                 context,
-                    //                                 size,
-                    //                                 _noticeList[i]),
-                    //                             child: Container(
-                    //                               decoration: BoxDecoration(
-                    //                                 color: InjicareColor()
-                    //                                     .secondary20,
-                    //                                 borderRadius:
-                    //                                     BorderRadius.circular(
-                    //                                         6),
-                    //                               ),
-                    //                               child: Padding(
-                    //                                 padding: const EdgeInsets
-                    //                                     .symmetric(
-                    //                                   horizontal: 7,
-                    //                                   vertical: 5,
-                    //                                 ),
-                    //                                 child: Row(
-                    //                                   mainAxisAlignment:
-                    //                                       MainAxisAlignment
-                    //                                           .center,
-                    //                                   mainAxisSize:
-                    //                                       MainAxisSize.min,
-                    //                                   children: [
-                    //                                     ColorFiltered(
-                    //                                       colorFilter:
-                    //                                           ColorFilter.mode(
-                    //                                               InjicareColor()
-                    //                                                   .secondary50,
-                    //                                               BlendMode
-                    //                                                   .srcIn),
-                    //                                       child:
-                    //                                           SvgPicture.asset(
-                    //                                         "assets/svg/edit-icon.svg",
-                    //                                         width: 14,
-                    //                                       ),
-                    //                                     ),
-                    //                                     Gaps.h2,
-                    //                                     Text(
-                    //                                       "수정하기",
-                    //                                       style: InjicareFont()
-                    //                                           .label02
-                    //                                           .copyWith(
-                    //                                               color: InjicareColor()
-                    //                                                   .secondary50),
-                    //                                     )
-                    //                                   ],
-                    //                                 ),
-                    //                               ),
-                    //                             ),
-                    //                           ),
-                    //                         ),
-                    //                       ],
-                    //                     ),
-                    //                     Gaps.v3,
-                    //                     Row(
-                    //                       mainAxisAlignment:
-                    //                           MainAxisAlignment.center,
-                    //                       children: [
-                    //                         MouseRegion(
-                    //                           cursor: SystemMouseCursors.click,
-                    //                           child: GestureDetector(
-                    //                             onTap: () => showDeleteOverlay(
-                    //                                 context, _noticeList[i]),
-                    //                             child: Container(
-                    //                               decoration: BoxDecoration(
-                    //                                 color:
-                    //                                     InjicareColor().gray20,
-                    //                                 borderRadius:
-                    //                                     BorderRadius.circular(
-                    //                                         6),
-                    //                               ),
-                    //                               child: Padding(
-                    //                                 padding: const EdgeInsets
-                    //                                     .symmetric(
-                    //                                   horizontal: 7,
-                    //                                   vertical: 5,
-                    //                                 ),
-                    //                                 child: Row(
-                    //                                   mainAxisAlignment:
-                    //                                       MainAxisAlignment
-                    //                                           .center,
-                    //                                   mainAxisSize:
-                    //                                       MainAxisSize.min,
-                    //                                   children: [
-                    //                                     ColorFiltered(
-                    //                                       colorFilter:
-                    //                                           ColorFilter.mode(
-                    //                                               InjicareColor()
-                    //                                                   .primary50,
-                    //                                               BlendMode
-                    //                                                   .srcIn),
-                    //                                       child:
-                    //                                           SvgPicture.asset(
-                    //                                         "assets/svg/delete-icon.svg",
-                    //                                         width: 14,
-                    //                                       ),
-                    //                                     ),
-                    //                                     Gaps.h2,
-                    //                                     Text(
-                    //                                       "삭제하기",
-                    //                                       style: InjicareFont()
-                    //                                           .label02
-                    //                                           .copyWith(
-                    //                                               color: InjicareColor()
-                    //                                                   .primary50),
-                    //                                     )
-                    //                                   ],
-                    //                                 ),
-                    //                               ),
-                    //                             ),
-                    //                           ),
-                    //                         ),
-                    //                       ],
-                    //                     ),
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //         Row(
-                    //           children: [
-                    //             Expanded(
-                    //               child: Container(
-                    //                 height: 1,
-                    //                 color: InjicareColor().gray30,
-                    //               ),
-                    //             )
-                    //           ],
-                    //         )
-                    //       ],
-                    //     ),
-                    // Gaps.v40,
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     MouseRegion(
-                    //       cursor: SystemMouseCursors.click,
-                    //       child: GestureDetector(
-                    //         onTap: _previousPage,
-                    //         child: ColorFiltered(
-                    //           colorFilter: ColorFilter.mode(
-                    //               _pageIndication == 0
-                    //                   ? InjicareColor().gray50
-                    //                   : InjicareColor().gray100,
-                    //               BlendMode.srcIn),
-                    //           child: SvgPicture.asset(
-                    //             "assets/svg/chevron-left.svg",
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     Gaps.h10,
-                    //     for (int s = (_pageIndication * 5 + 1);
-                    //         s <
-                    //             (s >= _endPage + 1
-                    //                 ? _endPage + 1
-                    //                 : (_pageIndication * 5 + 1) + 5);
-                    //         s++)
-                    //       Row(
-                    //         mainAxisSize: MainAxisSize.min,
-                    //         children: [
-                    //           Gaps.h10,
-                    //           MouseRegion(
-                    //             cursor: SystemMouseCursors.click,
-                    //             child: GestureDetector(
-                    //               onTap: () => _changePage(s),
-                    //               child: Text(
-                    //                 "$s",
-                    //                 style: InjicareFont().body07.copyWith(
-                    //                     color: _currentPage + 1 == s
-                    //                         ? InjicareColor().gray100
-                    //                         : InjicareColor().gray60,
-                    //                     fontWeight: _currentPage + 1 == s
-                    //                         ? FontWeight.w900
-                    //                         : FontWeight.w400),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //           Gaps.h10,
-                    //         ],
-                    //       ),
-                    //     Gaps.h10,
-                    //     MouseRegion(
-                    //       cursor: SystemMouseCursors.click,
-                    //       child: GestureDetector(
-                    //         onTap: _nextPage,
-                    //         child: ColorFiltered(
-                    //           colorFilter: ColorFilter.mode(
-                    //               _pageIndication + 5 > _endPage
-                    //                   ? InjicareColor().gray50
-                    //                   : InjicareColor().gray100,
-                    //               BlendMode.srcIn),
-                    //           child: SvgPicture.asset(
-                    //             "assets/svg/chevron-right.svg",
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // )
+                    if (_eventList.isNotEmpty)
+                      for (int i = 0; i < _eventList.length; i++)
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: _tabHeight,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: SelectableText(
+                                      "${_currentPage * _itemsPerPage + 1 + i}",
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      child: Text(
+                                        _eventList[i].title,
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      _eventList[i]
+                                          .orgName
+                                          .toString()
+                                          .split(" ")
+                                          .last,
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      _eventList[i].startDate,
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      _eventList[i].endDate,
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      _eventList[i].state ?? "",
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      child: GestureDetector(
+                                        onTap: () => _editAdminSecret(
+                                            _noticeList[i].diaryId),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: _noticeList[i]
+                                                          .diaryId
+                                                          .split(":")
+                                                          .last !=
+                                                      "true"
+                                                  ? Container(
+                                                      width: 50,
+                                                      decoration: BoxDecoration(
+                                                        color: InjicareColor()
+                                                            .secondary50,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(6),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          vertical: 5,
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              "공개",
+                                                              style: InjicareFont()
+                                                                  .label02
+                                                                  .copyWith(
+                                                                      color: Colors
+                                                                          .white),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      width: 50,
+                                                      decoration: BoxDecoration(
+                                                        color: InjicareColor()
+                                                            .gray20,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(6),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          vertical: 5,
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              "비공개",
+                                                              style: InjicareFont()
+                                                                  .label02
+                                                                  .copyWith(
+                                                                      color: InjicareColor()
+                                                                          .gray90),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: GestureDetector(
+                                                onTap: () => editNotification(
+                                                    context,
+                                                    size,
+                                                    _noticeList[i]),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: InjicareColor()
+                                                        .secondary20,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 7,
+                                                      vertical: 5,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        ColorFiltered(
+                                                          colorFilter:
+                                                              ColorFilter.mode(
+                                                                  InjicareColor()
+                                                                      .secondary50,
+                                                                  BlendMode
+                                                                      .srcIn),
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            "assets/svg/edit-icon.svg",
+                                                            width: 14,
+                                                          ),
+                                                        ),
+                                                        Gaps.h2,
+                                                        Text(
+                                                          "수정하기",
+                                                          style: InjicareFont()
+                                                              .label02
+                                                              .copyWith(
+                                                                  color: InjicareColor()
+                                                                      .secondary50),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Gaps.v3,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: GestureDetector(
+                                                onTap: () => showDeleteOverlay(
+                                                    context, _noticeList[i]),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        InjicareColor().gray20,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 7,
+                                                      vertical: 5,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        ColorFiltered(
+                                                          colorFilter:
+                                                              ColorFilter.mode(
+                                                                  InjicareColor()
+                                                                      .primary50,
+                                                                  BlendMode
+                                                                      .srcIn),
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            "assets/svg/delete-icon.svg",
+                                                            width: 14,
+                                                          ),
+                                                        ),
+                                                        Gaps.h2,
+                                                        Text(
+                                                          "삭제하기",
+                                                          style: InjicareFont()
+                                                              .label02
+                                                              .copyWith(
+                                                                  color: InjicareColor()
+                                                                      .primary50),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    color: InjicareColor().gray30,
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                    Gaps.v40,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: _previousPage,
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                  _pageIndication == 0
+                                      ? InjicareColor().gray50
+                                      : InjicareColor().gray100,
+                                  BlendMode.srcIn),
+                              child: SvgPicture.asset(
+                                "assets/svg/chevron-left.svg",
+                              ),
+                            ),
+                          ),
+                        ),
+                        Gaps.h10,
+                        for (int s = (_pageIndication * 5 + 1);
+                            s <
+                                (s >= _endPage + 1
+                                    ? _endPage + 1
+                                    : (_pageIndication * 5 + 1) + 5);
+                            s++)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Gaps.h10,
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () => _changePage(s),
+                                  child: Text(
+                                    "$s",
+                                    style: InjicareFont().body07.copyWith(
+                                        color: _currentPage + 1 == s
+                                            ? InjicareColor().gray100
+                                            : InjicareColor().gray60,
+                                        fontWeight: _currentPage + 1 == s
+                                            ? FontWeight.w900
+                                            : FontWeight.w400),
+                                  ),
+                                ),
+                              ),
+                              Gaps.h10,
+                            ],
+                          ),
+                        Gaps.h10,
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: _nextPage,
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                  _pageIndication + 5 > _endPage
+                                      ? InjicareColor().gray50
+                                      : InjicareColor().gray100,
+                                  BlendMode.srcIn),
+                              child: SvgPicture.asset(
+                                "assets/svg/chevron-right.svg",
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
                     // Expanded(
                     //   child: Container(
                     //     decoration: BoxDecoration(
