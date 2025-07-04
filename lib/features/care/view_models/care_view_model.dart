@@ -13,7 +13,6 @@ class CareViewModel extends AsyncNotifier<void> {
   Future<List<CareModel>> fetchPartners(
       AdminProfileModel adminProfileModel) async {
     final data = await _careRepo.fetchPartners(adminProfileModel);
-
     return data.map((element) => CareModel.fromJson(element)).toList();
   }
 }

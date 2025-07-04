@@ -28,7 +28,7 @@ class CareModel {
   });
 
   CareModel.fromJson(Map<String, dynamic> json)
-      : userId = json["users"]["userId"],
+      : userId = json["users"]?["userId"] ?? "",
         name = json["users"]["name"],
         age = json["users"]["birthYear"] != null &&
                 json["users"]["birthDay"] != null
