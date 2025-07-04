@@ -113,6 +113,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
           ...communityItems
         ];
         _selectRegion = value;
+        _selectCommunity = "전체";
       });
     }
   }

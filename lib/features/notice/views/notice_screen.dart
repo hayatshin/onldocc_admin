@@ -33,7 +33,6 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
   OverlayEntry? overlayEntry;
 
   List<DiaryModel> _initialList = [];
-
   List<DiaryModel> _noticeList = [];
   bool loadingFinished = false;
   final double _tabHeight = 75;
@@ -103,7 +102,6 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
   Future<void> fetchAllNoticies() async {
     final noticeList =
         await ref.read(noticeProvider.notifier).fetchAllNotices();
-    int startPage = _currentPage * _itemsPerPage + 1;
     int endPage = noticeList.length ~/ _itemsPerPage + 1;
 
     if (selectContractRegion.value!.subdistrictId == "") {
@@ -126,29 +124,33 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                 e.userContractCommunityId ==
                 selectContractRegion.value!.contractCommunityId)
             .toList();
-        int endPageItems = startPage + 20 > filterList.length
-            ? filterList.length
-            : startPage + 20;
+        int endPage = filterList.length ~/ _itemsPerPage + 1;
+
         if (mounted) {
           setState(() {
             loadingFinished = true;
-            _noticeList = filterList.sublist(startPage, endPageItems);
-            _totalListLength = filterList.length;
+            _totalListLength = noticeList.length;
+            _initialList = noticeList;
             _endPage = endPage;
           });
+          _updateUserlistPerPage();
         }
       } else {
         // 지역 전체
-        final filterDataList = noticeList
+        final filterList = noticeList
             .where((e) =>
                 e.userContractCommunityId == null ||
                 e.userContractCommunityId == "")
             .toList();
+        int endPage = filterList.length ~/ _itemsPerPage + 1;
+
         if (mounted) {
           setState(() {
             loadingFinished = true;
-            _noticeList = filterDataList;
+            _initialList = noticeList;
+            _endPage = endPage;
           });
+          _updateUserlistPerPage();
         }
       }
     }
@@ -258,59 +260,12 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Gaps.v10,
-                  Row(
-                    children: [
-                      MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () => uploadNotification(
-                              context, size.width, size.height),
-                          child: Container(
-                            height: searchHeight,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: InjicareColor().secondary50,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              child: Row(
-                                children: [
-                                  ColorFiltered(
-                                    colorFilter: ColorFilter.mode(
-                                        InjicareColor().secondary50,
-                                        BlendMode.srcIn),
-                                    child: SvgPicture.asset(
-                                      "assets/svg/plus.svg",
-                                      width: 15,
-                                    ),
-                                  ),
-                                  Gaps.h10,
-                                  Text(
-                                    "공지 올리기",
-                                    style: InjicareFont().body03.copyWith(
-                                          color: InjicareColor().secondary50,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  HeaderWithButton(
+                    buttonAction: () =>
+                        uploadNotification(context, size.width, size.height),
+                    buttonText: "공지 올리기",
+                    listCount: _totalListLength,
                   ),
-                  Gaps.v20,
-                  Text(
-                    "총 ${numberFormat(_totalListLength)}개",
-                    style: InjicareFont().label03.copyWith(
-                          color: InjicareColor().gray70,
-                        ),
-                  ),
-                  Gaps.v10,
                   SizedBox(
                     height: 50,
                     child: Row(
@@ -785,6 +740,77 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+class HeaderWithButton extends StatelessWidget {
+  final Function() buttonAction;
+  final String buttonText;
+  final int listCount;
+  const HeaderWithButton({
+    super.key,
+    required this.buttonAction,
+    required this.buttonText,
+    required this.listCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Gaps.v10,
+        Row(
+          children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: buttonAction,
+                child: Container(
+                  height: searchHeight,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: InjicareColor().secondary50,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Row(
+                      children: [
+                        ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                              InjicareColor().secondary50, BlendMode.srcIn),
+                          child: SvgPicture.asset(
+                            "assets/svg/plus.svg",
+                            width: 15,
+                          ),
+                        ),
+                        Gaps.h10,
+                        Text(
+                          buttonText,
+                          style: InjicareFont().body03.copyWith(
+                                color: InjicareColor().secondary50,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Gaps.v20,
+        Text(
+          "총 ${numberFormat(listCount)}개",
+          style: InjicareFont().label03.copyWith(
+                color: InjicareColor().gray70,
+              ),
+        ),
+        Gaps.v10,
+      ],
     );
   }
 }

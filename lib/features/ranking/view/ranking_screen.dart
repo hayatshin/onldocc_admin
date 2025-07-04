@@ -99,12 +99,12 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   Future<void> _getScoreList(DateRange? range) async {
     final userDataList =
         await ref.read(rankingProvider.notifier).getUserPoints(range!);
-    int startPage = _currentPage * _itemsPerPage + 1;
     int endPage = userDataList.length ~/ _itemsPerPage + 1;
 
     if (selectContractRegion.value!.contractCommunityId == null ||
         selectContractRegion.value!.contractCommunityId == "") {
       // 전체보기
+
       if (mounted) {
         setState(() {
           _loadingFinished = true;
@@ -121,17 +121,19 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
               e.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
-      int endPageItems = startPage + _itemsPerPage > userDataList.length
-          ? userDataList.length
-          : startPage + _itemsPerPage;
+      final indexFilterList =
+          ref.read(rankingProvider.notifier).indexRankingModel(filterList);
+      int endPage = indexFilterList.length ~/ _itemsPerPage + 1;
+
       if (mounted) {
         setState(() {
           _loadingFinished = true;
-          _userDataList = filterList.sublist(startPage, endPageItems);
           _filtered = false;
-          _totalListLength = userDataList.length;
+          _initialPointList = indexFilterList;
+          _totalListLength = indexFilterList.length;
           _endPage = endPage;
         });
+        _updateUserlistPerPage();
       }
     }
   }
@@ -409,9 +411,9 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   void _updateUserlistPerPage() {
     int startPage = _currentPage * _itemsPerPage;
-    int endPage = startPage + 20 > _initialPointList.length
+    int endPage = startPage + _itemsPerPage > _initialPointList.length
         ? _initialPointList.length
-        : startPage + 20;
+        : startPage + _itemsPerPage;
 
     setState(() {
       _userDataList = _initialPointList.sublist(startPage, endPage);
