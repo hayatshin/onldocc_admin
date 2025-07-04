@@ -48,7 +48,7 @@ class UserDashboardScreen extends ConsumerStatefulWidget {
 class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
   UserModel? _userModel;
   final _periodList = ["이번달", "지난달", "이번주", "지난주"];
-  final String _selectedPeriod = "이번달";
+  String _selectedPeriod = "이번달";
   DateTime _startDatetime = DateTime.now();
   DateTime _endDatetime = DateTime.now();
   GlobalKey diaryColumnKey = GlobalKey();
@@ -57,7 +57,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
   double? aiWidgetHeight = 300;
 
   bool _loadingAiDiagnosis = true;
-  final StreamController _aiStreamControllder = StreamController<String>();
+  final _aiStreamControllder = StreamController<String>.broadcast();
 
   get data => null;
 
@@ -84,17 +84,22 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
   }
 
   void _initializeUserDashboard() async {
+    if (!mounted) return;
+    setState(() {
+      _loadingAiDiagnosis = true;
+    });
     await Future.wait([
       _initializeUser(),
       _updatePeriod(),
     ]);
     await _initializeDashboardData();
-    _getAIDiagnosisResult();
+    await _getAIDiagnosisResult();
   }
 
   Future<void> _initializeUser() async {
     final userModel =
         await ref.read(userProvider.notifier).getUserModel(widget.userId!);
+    if (!mounted) return;
     setState(() {
       _userModel = userModel;
     });
@@ -142,63 +147,70 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
   }
 
   Future<void> _getAIDiagnosisResult() async {
-    final sysPrompt =
-        "You will be acting as a medical asssiant to help assess ${_userModel!.name}'s physical, mental and cognitive health including discrimination of dementia based on state of mind, diary content, math problems, multiple choice problems, steps, self-examination data. Please respond in Korean. You have to draw any conclusions regarding your health, and don't end with questions. Begin your response with the heading: ${_userModel?.name}님의 건강 진단";
+    try {
+      final sysPrompt =
+          "You will be acting as a medical asssiant to help assess ${_userModel!.name}'s physical, mental and cognitive health including discrimination of dementia based on state of mind, diary content, math problems, multiple choice problems, steps, self-examination data. Please respond in Korean. You have to draw any conclusions regarding your health, and don't end with questions. Begin your response with the heading: ${_userModel?.name}님의 건강 진단";
 
-    final mindAndDiaryData =
-        _diaryList.map((element) => element.toString()).toList();
-    final mathQuizData =
-        _quizMathList.map((element) => element.toMathString()).toList();
-    final multipleQuizData = _quizMultipleChoicesList
-        .map((element) => element.toMultipleString())
-        .toList();
-    final stepData = _stepDataList
-        .map((element) => "Step(date:${element.x}, step:${element.y})")
-        .toList();
-    final selfTestData =
-        _cognitionTestList.map((element) => element.toString()).toList();
-    final mindAndDiaryMessage =
-        "*This is the data that shows the state of mind and diary content based on each date. Please at least summarize this data into one item from a mental health perspective:\n$mindAndDiaryData\n";
-    final mathQuizMessage =
-        "*This is the data that shows how much math problems have been solved by him/her based on each date. Please at least summarize this data into one item from a cognitive health perspective:\n$mathQuizData\n";
-    final multiipleQuizMessage =
-        "*This is the data that shows how much multiple-choices problems have been solved by him/her based on each date. Please at least summarize this data into one item from a cognitive health perspective:\n$multipleQuizData\n";
-    final stepMessage =
-        "This is the data that shows how much he/she has walked based on each date. Please at least summarize this data into one item from a physical health perspective:\n$stepData\n";
-    final selfTestMessage =
-        "This is the mental cognitive health self test examination data for each type of question. Please at least summarize this data into one item as self test examination:\n$selfTestData";
+      final mindAndDiaryData =
+          _diaryList.map((element) => element.toString()).toList();
+      final mathQuizData =
+          _quizMathList.map((element) => element.toMathString()).toList();
+      final multipleQuizData = _quizMultipleChoicesList
+          .map((element) => element.toMultipleString())
+          .toList();
+      final stepData = _stepDataList
+          .map((element) => "Step(date:${element.x}, step:${element.y})")
+          .toList();
+      final selfTestData =
+          _cognitionTestList.map((element) => element.toString()).toList();
+      final mindAndDiaryMessage =
+          "*This is the data that shows the state of mind and diary content based on each date. Please at least summarize this data into one item from a mental health perspective:\n$mindAndDiaryData\n";
+      final mathQuizMessage =
+          "*This is the data that shows how much math problems have been solved by him/her based on each date. Please at least summarize this data into one item from a cognitive health perspective:\n$mathQuizData\n";
+      final multiipleQuizMessage =
+          "*This is the data that shows how much multiple-choices problems have been solved by him/her based on each date. Please at least summarize this data into one item from a cognitive health perspective:\n$multipleQuizData\n";
+      final stepMessage =
+          "This is the data that shows how much he/she has walked based on each date. Please at least summarize this data into one item from a physical health perspective:\n$stepData\n";
+      final selfTestMessage =
+          "This is the mental cognitive health self test examination data for each type of question. Please at least summarize this data into one item as self test examination:\n$selfTestData";
 
-    Map<String, dynamic> requestBody = {
-      'sysPrompt': sysPrompt,
-      'userPrompt': mindAndDiaryMessage +
-          mathQuizMessage +
-          multiipleQuizMessage +
-          stepMessage +
-          selfTestMessage,
-    };
+      Map<String, dynamic> requestBody = {
+        'sysPrompt': sysPrompt,
+        'userPrompt': mindAndDiaryMessage +
+            mathQuizMessage +
+            multiipleQuizMessage +
+            stepMessage +
+            selfTestMessage,
+      };
 
-    String requestBodyJson = jsonEncode(requestBody);
+      String requestBodyJson = jsonEncode(requestBody);
 
-    final response = await http.post(
-      Uri.parse(
-          "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/chatgpt-user-dashboard"),
-      body: requestBodyJson,
-      headers: headers,
-    );
+      final response = await http.post(
+        Uri.parse(
+            "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/chatgpt-user-dashboard"),
+        body: requestBodyJson,
+        headers: headers,
+      );
 
-    if (response.statusCode == 200) {
-      setState(() {
-        _loadingAiDiagnosis = false;
-      });
-      final data = jsonDecode(utf8.decode(response.bodyBytes));
-      final content = data["choices"][0]["message"]["content"] as String;
-      String aiDiagnosis = "";
+      if (response.statusCode == 200) {
+        if (!mounted) return;
+        setState(() {
+          _loadingAiDiagnosis = false;
+        });
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        final content = data["choices"][0]["message"]["content"] as String;
+        String aiDiagnosis = "";
 
-      for (final char in content.characters) {
-        aiDiagnosis += char;
-        _aiStreamControllder.add(aiDiagnosis);
-        await Future.delayed(const Duration(milliseconds: 1));
+        for (final char in content.characters) {
+          if (!mounted) return;
+          aiDiagnosis += char;
+          _aiStreamControllder.add(aiDiagnosis);
+          await Future.delayed(const Duration(milliseconds: 1));
+        }
       }
+    } catch (e) {
+      // ignore: avoid_print
+      print("_getAIDiagnosisResult -> $e");
     }
   }
 
@@ -399,7 +411,31 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
                           );
                         }).toList(),
                         value: _selectedPeriod,
+                        onChangedFunction: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedPeriod = value;
+                            });
+                            _initializeUserDashboard();
+                          }
+                        },
                       ),
+                      // PeriodDropdownMenu(
+                      //   items: _periodList.map((String item) {
+                      //     return DropdownMenuItem<String>(
+                      //       value: item,
+                      //       child: Text(
+                      //         item,
+                      //         style: TextStyle(
+                      //           fontSize: 12,
+                      //           color: Palette().normalGray,
+                      //         ),
+                      //         overflow: TextOverflow.ellipsis,
+                      //       ),
+                      //     );
+                      //   }).toList(),
+                      //   value: _selectedPeriod,
+                      // ),
                     ],
                   ),
                   Gaps.h12,
@@ -1719,70 +1755,70 @@ class GrayDivider extends StatelessWidget {
   }
 }
 
-class PeriodDropdownMenu extends StatelessWidget {
-  final List<DropdownMenuItem<String>> items;
-  final String value;
-  const PeriodDropdownMenu({
-    super.key,
-    required this.items,
-    required this.value,
-  });
+// class PeriodDropdownMenu extends StatelessWidget {
+//   final List<DropdownMenuItem<String>> items;
+//   final String value;
+//   const PeriodDropdownMenu({
+//     super.key,
+//     required this.items,
+//     required this.value,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return SizedBox(
-      width: size.width * 0.1,
-      height: 35,
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton2<String>(
-          isExpanded: true,
-          items: items,
-          value: value,
-          onChanged: null,
-          buttonStyleData: ButtonStyleData(
-            padding: const EdgeInsets.only(left: 14, right: 14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: Colors.white,
-              border: Border.all(
-                color: Palette().lightGray,
-                width: 0.5,
-              ),
-            ),
-          ),
-          iconStyleData: IconStyleData(
-            icon: const Icon(
-              Icons.expand_more_rounded,
-            ),
-            iconSize: 14,
-            iconEnabledColor: Palette().normalGray,
-            iconDisabledColor: Palette().normalGray,
-          ),
-          dropdownStyleData: DropdownStyleData(
-            elevation: 2,
-            width: size.width * 0.1,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-            ),
-            scrollbarTheme: ScrollbarThemeData(
-              radius: const Radius.circular(10),
-              thumbVisibility: WidgetStateProperty.all(true),
-            ),
-          ),
-          menuItemStyleData: const MenuItemStyleData(
-            height: 25,
-            padding: EdgeInsets.only(
-              left: 15,
-              right: 15,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     final size = MediaQuery.of(context).size;
+//     return SizedBox(
+//       width: size.width * 0.1,
+//       height: 35,
+//       child: DropdownButtonHideUnderline(
+//         child: DropdownButton2<String>(
+//           isExpanded: true,
+//           items: items,
+//           value: value,
+//           onChanged: (value) {},
+//           buttonStyleData: ButtonStyleData(
+//             padding: const EdgeInsets.only(left: 14, right: 14),
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(30),
+//               color: Colors.white,
+//               border: Border.all(
+//                 color: Palette().lightGray,
+//                 width: 0.5,
+//               ),
+//             ),
+//           ),
+//           iconStyleData: IconStyleData(
+//             icon: const Icon(
+//               Icons.expand_more_rounded,
+//             ),
+//             iconSize: 14,
+//             iconEnabledColor: Palette().normalGray,
+//             iconDisabledColor: Palette().normalGray,
+//           ),
+//           dropdownStyleData: DropdownStyleData(
+//             elevation: 2,
+//             width: size.width * 0.1,
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(10),
+//               color: Colors.white,
+//             ),
+//             scrollbarTheme: ScrollbarThemeData(
+//               radius: const Radius.circular(10),
+//               thumbVisibility: WidgetStateProperty.all(true),
+//             ),
+//           ),
+//           menuItemStyleData: const MenuItemStyleData(
+//             height: 25,
+//             padding: EdgeInsets.only(
+//               left: 15,
+//               right: 15,
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class ChartData {
   ChartData(this.x, this.y);
