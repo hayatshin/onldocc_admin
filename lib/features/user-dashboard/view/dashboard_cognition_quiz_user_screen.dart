@@ -10,6 +10,7 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/models/quiz_model.dart';
 import 'package:onldocc_admin/features/ca/view_models/quiz_view_model.dart';
+import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
 import 'package:onldocc_admin/features/user-dashboard/view/user_dashboard_screen.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
@@ -231,7 +232,32 @@ class _DashboardCognitionQuizUserScreenState
                                 );
                               }).toList(),
                               value: _selectedQuizType,
+                              onChangedFunction: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _selectedQuizType = value;
+                                  });
+                                  _initializePeriod();
+                                  _initializeQuizData();
+                                }
+                              },
                             ),
+                            // PeriodDropdownMenu(
+                            //   items: _quizTypes.map((String item) {
+                            //     return DropdownMenuItem<String>(
+                            //       value: item,
+                            //       child: Text(
+                            //         item,
+                            //         style: TextStyle(
+                            //           fontSize: 12,
+                            //           color: Palette().normalGray,
+                            //         ),
+                            //         overflow: TextOverflow.ellipsis,
+                            //       ),
+                            //     );
+                            //   }).toList(),
+                            //   value: _selectedQuizType,
+                            // ),
                           ],
                         ),
                         Gaps.v16,
