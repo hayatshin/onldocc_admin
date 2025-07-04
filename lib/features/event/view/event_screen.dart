@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
+import 'package:onldocc_admin/features/event/repo/event_repo.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_event_widget.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/router.dart';
+import 'package:onldocc_admin/utils.dart';
 
 import '../../../constants/sizes.dart';
 
@@ -26,11 +34,12 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   List<EventModel> _initialList = [];
   List<EventModel> _eventList = [];
   bool loadingFinished = false;
+  OverlayEntry? overlayEntry;
 
   Map<String, dynamic> addedEventData = {};
 
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final double _tabHeight = 75;
+  final double _tabHeight = 80;
 
   static const int _itemsPerPage = 10;
   int _currentPage = 0;
@@ -54,54 +63,66 @@ class _EventScreenState extends ConsumerState<EventScreen> {
 
   @override
   void dispose() {
+    removeOverlay();
     super.dispose();
+  }
+
+  void removeOverlay() {
+    overlayEntry?.remove();
+    overlayEntry = null;
   }
 
   void refreshScreen() {
     getUserEvents();
   }
 
-  void addEventTap(BuildContext context, Size size) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      constraints: BoxConstraints(
-        minWidth: size.width,
+  void addEventTap(Size size) {
+    showRightModal(
+      rootNavigatorKey.currentContext ?? context,
+      UploadEventWidget(
+        pcontext: context,
+        size: size,
+        refreshScreen: refreshScreen,
+        edit: false,
       ),
-      builder: (context) {
-        return UploadEventWidget(
-          pcontext: context,
-          size: size,
-          refreshScreen: refreshScreen,
-          edit: false,
-        );
-      },
     );
   }
 
-  void editEventTap(BuildContext context, Size size, EventModel eventModel) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      constraints: BoxConstraints(
-        minWidth: size.width,
+  void editEventTap(Size size, EventModel eventModel) {
+    showRightModal(
+      rootNavigatorKey.currentContext ?? context,
+      UploadEventWidget(
+        pcontext: context,
+        size: size,
+        refreshScreen: refreshScreen,
+        edit: true,
+        eventModel: eventModel,
       ),
-      builder: (context) {
-        return UploadEventWidget(
-          pcontext: context,
-          size: size,
-          refreshScreen: refreshScreen,
-          edit: true,
-          eventModel: eventModel,
-        );
-        // return EditEventWidget(
-        //   context: context,
-        //   size: size,
-        //   refreshScreen: refreshScreen,
-        //   eventModel: eventModel,
-        // );
-      },
     );
+  }
+
+  void _showDeleteOverlay(EventModel model) async {
+    removeDeleteOverlay();
+
+    overlayEntry = OverlayEntry(builder: (context) {
+      return deleteTitleOverlay(
+          model.title, removeDeleteOverlay, () => _deleteEvent(model.eventId));
+    });
+    Overlay.of(context, debugRequiredFor: widget, rootOverlay: true)
+        .insert(overlayEntry!);
+  }
+
+  void removeDeleteOverlay() {
+    overlayEntry?.remove();
+    overlayEntry = null;
+  }
+
+  Future<void> _deleteEvent(String eventId) async {
+    await ref.read(eventRepo).deleteEvent(eventId);
+    await ref.read(eventRepo).deleteEventImageStorage(eventId);
+
+    if (!mounted) return;
+    resultBottomModal(context, "성공적으로 행사가 삭제되었습니다.", getUserEvents);
   }
 
   Future<void> getUserEvents() async {
@@ -175,6 +196,13 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     });
   }
 
+  void _updateEventAdminSecret(EventModel eventModel) async {
+    await ref
+        .read(eventRepo)
+        .editEventAdminSecret(eventModel.eventId, eventModel.adminSecret);
+    await getUserEvents();
+  }
+
   void _previousPage() {
     if (_pageIndication == 0) return;
 
@@ -216,9 +244,9 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                 child: Column(
                   children: [
                     HeaderWithButton(
-                      buttonAction: () => addEventTap(context, size),
+                      buttonAction: () => addEventTap(size),
                       buttonText: "행사 올리기",
-                      listCount: 0,
+                      listCount: _totalListLength,
                     ),
                     SizedBox(
                       height: 50,
@@ -425,7 +453,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 1,
+                                    flex: 2,
                                     child: Text(
                                       _eventList[i]
                                           .orgName
@@ -473,88 +501,15 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     child: MouseRegion(
                                       cursor: SystemMouseCursors.click,
                                       child: GestureDetector(
-                                        onTap: () => _editAdminSecret(
-                                            _noticeList[i].diaryId),
+                                        onTap: () => _updateEventAdminSecret(
+                                            _eventList[i]),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            MouseRegion(
-                                              cursor: SystemMouseCursors.click,
-                                              child: _noticeList[i]
-                                                          .diaryId
-                                                          .split(":")
-                                                          .last !=
-                                                      "true"
-                                                  ? Container(
-                                                      width: 50,
-                                                      decoration: BoxDecoration(
-                                                        color: InjicareColor()
-                                                            .secondary50,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(6),
-                                                      ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                          vertical: 5,
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Text(
-                                                              "공개",
-                                                              style: InjicareFont()
-                                                                  .label02
-                                                                  .copyWith(
-                                                                      color: Colors
-                                                                          .white),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : Container(
-                                                      width: 50,
-                                                      decoration: BoxDecoration(
-                                                        color: InjicareColor()
-                                                            .gray20,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(6),
-                                                      ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                          vertical: 5,
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Text(
-                                                              "비공개",
-                                                              style: InjicareFont()
-                                                                  .label02
-                                                                  .copyWith(
-                                                                      color: InjicareColor()
-                                                                          .gray90),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                            ),
+                                            _eventList[i].adminSecret
+                                                ? const PrivateButton()
+                                                : const PublicButton()
                                           ],
                                         ),
                                       ),
@@ -566,132 +521,35 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            MouseRegion(
-                                              cursor: SystemMouseCursors.click,
-                                              child: GestureDetector(
-                                                onTap: () => editNotification(
-                                                    context,
-                                                    size,
-                                                    _noticeList[i]),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: InjicareColor()
-                                                        .secondary20,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 7,
-                                                      vertical: 5,
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        ColorFiltered(
-                                                          colorFilter:
-                                                              ColorFilter.mode(
-                                                                  InjicareColor()
-                                                                      .secondary50,
-                                                                  BlendMode
-                                                                      .srcIn),
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            "assets/svg/edit-icon.svg",
-                                                            width: 14,
-                                                          ),
-                                                        ),
-                                                        Gaps.h2,
-                                                        Text(
-                                                          "수정하기",
-                                                          style: InjicareFont()
-                                                              .label02
-                                                              .copyWith(
-                                                                  color: InjicareColor()
-                                                                      .secondary50),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                        gestureDetectorWithMouseClick(
+                                          function: () =>
+                                              editEventTap(size, _eventList[i]),
+                                          child: const EditButton(),
                                         ),
                                         Gaps.v3,
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            MouseRegion(
-                                              cursor: SystemMouseCursors.click,
-                                              child: GestureDetector(
-                                                onTap: () => showDeleteOverlay(
-                                                    context, _noticeList[i]),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        InjicareColor().gray20,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 7,
-                                                      vertical: 5,
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        ColorFiltered(
-                                                          colorFilter:
-                                                              ColorFilter.mode(
-                                                                  InjicareColor()
-                                                                      .primary50,
-                                                                  BlendMode
-                                                                      .srcIn),
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            "assets/svg/delete-icon.svg",
-                                                            width: 14,
-                                                          ),
-                                                        ),
-                                                        Gaps.h2,
-                                                        Text(
-                                                          "삭제하기",
-                                                          style: InjicareFont()
-                                                              .label02
-                                                              .copyWith(
-                                                                  color: InjicareColor()
-                                                                      .primary50),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                        gestureDetectorWithMouseClick(
+                                          function: () =>
+                                              _showDeleteOverlay(_eventList[i]),
+                                          child: const DeleteButton(),
                                         ),
                                       ],
                                     ),
                                   ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: gestureDetectorWithMouseClick(
+                                      function: () =>
+                                          goDetailEvent(_eventList[i]),
+                                      child: ColorFiltered(
+                                        colorFilter: ColorFilter.mode(
+                                            InjicareColor().gray100,
+                                            BlendMode.srcIn),
+                                        child: SvgPicture.asset(
+                                            "assets/svg/arrow-small-right.svg",
+                                            width: 20),
+                                      ),
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
@@ -1047,11 +905,11 @@ final TextStyle headerInfoTextStyle = TextStyle(
   color: Palette().normalGray,
 );
 
-final TextStyle contentTextStyle = TextStyle(
-  fontSize: Sizes.size14,
-  fontWeight: FontWeight.w500,
-  color: Palette().darkGray,
-);
+// final TextStyle contentTextStyle = TextStyle(
+//   fontSize: Sizes.size14,
+//   fontWeight: FontWeight.w500,
+//   color: Palette().darkGray,
+// );
 
 final TextStyle fieldHeaderTextStyle = TextStyle(
   fontSize: Sizes.size13,

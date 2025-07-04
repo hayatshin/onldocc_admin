@@ -17,7 +17,7 @@ class ContractConfigRepository {
             .from("subdistricts")
             .select('subdistrict')
             .eq('subdistrictId', subdistrictId);
-        return data[0]["subdistrict"];
+        return data.isEmpty ? "인지케어" : data[0]["subdistrict"];
       } else {
         return "";
       }

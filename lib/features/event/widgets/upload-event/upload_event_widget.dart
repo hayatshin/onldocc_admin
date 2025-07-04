@@ -17,6 +17,7 @@ import 'package:onldocc_admin/features/event/widgets/upload-event/upload_quiz_ev
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_target_score_widget.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:uuid/uuid.dart';
@@ -567,6 +568,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     return StatefulBuilder(builder: (context, setState) {
       return ModalScreen(
         size: size,
+        widthPercentage: 0.7,
         modalTitle: !widget.edit ? "행사 올리기" : "행사 수정하기",
         modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
         modalButtonOneFunction: !widget.edit

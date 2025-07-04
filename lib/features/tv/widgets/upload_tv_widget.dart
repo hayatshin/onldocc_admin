@@ -239,12 +239,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
     _removeDeleteOverlay();
     final description = widget.tvModel!.title;
     overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(
-          description.length > 10
-              ? "${description.substring(0, 11)}.."
-              : description,
-          _removeDeleteOverlay,
-          _deleteTv);
+      return deleteTitleOverlay(description, _removeDeleteOverlay, _deleteTv);
     });
 
     Overlay.of(widget.pcontext, debugRequiredFor: widget).insert(overlayEntry!);
@@ -258,6 +253,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       builder: (context, setState) {
         return ModalScreen(
           size: size,
+          widthPercentage: 0.5,
           modalTitle: !widget.edit ? "영상 올리기" : "영상 수정하기",
           modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
           modalButtonOneFunction: !widget.edit ? _submitTv : _showDeleteOverlay,

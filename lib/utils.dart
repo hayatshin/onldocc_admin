@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -158,7 +159,7 @@ Widget deleteUserOverlay(
   );
 }
 
-Widget deleteOverlay(
+Widget deleteTitleOverlay(
     String title, Function() removeOverlay, Function() delete) {
   return Positioned.fill(
     child: Material(
@@ -173,10 +174,22 @@ Widget deleteOverlay(
             borderRadius: BorderRadius.circular(20), // 원하는 borderRadius
           ),
           backgroundColor: Colors.white,
-          content: SizedBox(
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 400,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Text(
+                  title.trim().replaceAll('\n', ' '),
+                  style: InjicareFont().label01.copyWith(
+                        color: InjicareColor().secondary50,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                Gaps.v3,
                 Text(
                   "정말로 삭제하시겠습니까?",
                   style: InjicareFont()

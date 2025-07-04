@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/models/participant_model.dart';
 import 'package:onldocc_admin/features/event/template/event_detail_template.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
-import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/utils.dart';
+
+const double eventTableTabHeight = 40;
 
 class EventDetailCountScreen extends ConsumerStatefulWidget {
   final String? eventId;
@@ -28,18 +30,6 @@ class _EventDetailCountScreenState
     extends ConsumerState<EventDetailCountScreen> {
   EventModel? _eventModel;
 
-  final TextStyle _headerTextStyle = TextStyle(
-    fontSize: Sizes.size13,
-    fontWeight: FontWeight.w600,
-    color: Palette().darkGray,
-  );
-
-  final TextStyle _contentTextStyle = TextStyle(
-    fontSize: Sizes.size12,
-    fontWeight: FontWeight.w500,
-    color: Palette().darkGray,
-  );
-
   List<ParticipantModel> _participants = [];
   bool _initializeParticipants = false;
   final List<String> _listHeader = [
@@ -49,7 +39,8 @@ class _EventDetailCountScreenState
     "성별",
     "핸드폰 번호",
     "참여일",
-    "달성 여부"
+    "달성 여부",
+    "선물 신청"
   ];
 
   @override
@@ -72,6 +63,7 @@ class _EventDetailCountScreenState
       participantModel.phone.toString(),
       secondsToStringLine(participantModel.createdAt),
       participantModel.userAchieveOrNot! ? "달성" : "미달성",
+      participantModel.gift ? "O" : "X",
     ];
   }
 
@@ -150,168 +142,321 @@ class _EventDetailCountScreenState
     return EventDetailTemplate(
       eventModel: _eventModel ?? EventModel.empty(),
       generateCsv: _generateExcel,
-      child: _initializeParticipants
-          ? Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1.0,
-                    color: Colors.black,
-                  ),
-                  borderRadius: BorderRadius.circular(
-                    Sizes.size5,
-                  ),
-                  color: Colors.white,
-                ),
-                child: DataTable(
-                  dividerThickness: 0.1,
-                  border: TableBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    top: BorderSide(
-                      color: Palette().darkPurple,
-                      width: 1.5,
-                    ),
-                    bottom: BorderSide(
-                      color: Palette().darkPurple,
-                      width: 1.5,
-                    ),
-                    horizontalInside: BorderSide(
-                      color: Palette().lightGray,
-                      width: 0.1,
-                    ),
-                  ),
-                  columns: [
-                    DataColumn(
-                      label: SelectableText(
-                        "#",
-                        style: _headerTextStyle,
-                      ),
-                    ),
-                    DataColumn(
-                      label: SelectableText(
-                        "이름",
-                        style: _headerTextStyle,
-                      ),
-                    ),
-                    DataColumn(
-                      label: SelectableText(
-                        "연령",
-                        style: _headerTextStyle,
-                      ),
-                    ),
-                    DataColumn(
-                      label: SelectableText(
-                        "성별",
-                        style: _headerTextStyle,
-                      ),
-                    ),
-                    DataColumn(
-                      label: SelectableText(
-                        "핸드폰 번호",
-                        style: _headerTextStyle,
-                      ),
-                    ),
-                    if (_eventModel != null && _eventModel!.allUsers)
-                      DataColumn(
-                        label: SelectableText(
-                          "지역",
-                          style: _headerTextStyle,
+      child: !_initializeParticipants
+          ? const SkeletonLoadingScreen()
+          : Column(
+              children: [
+                SizedBox(
+                  height: eventTableTabHeight,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                              ),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "#",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
                       ),
-                    DataColumn(
-                      label: SelectableText(
-                        "참여일",
-                        style: _headerTextStyle,
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "이름",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    DataColumn(
-                      label: SelectableText(
-                        "달성 여부",
-                        style: _headerTextStyle,
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "연령",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    DataColumn(
-                      label: SelectableText(
-                        "선물 신청",
-                        style: _headerTextStyle,
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "성별",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                  rows: [
-                    for (var i = 0; i < _participants.length; i++)
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            SelectableText(
-                              (i + 1).toString(),
-                              style: _contentTextStyle,
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "핸드폰 번호",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          DataCell(
-                            SelectableText(
-                              _participants[i].name,
-                              style: _contentTextStyle,
-                            ),
-                          ),
-                          DataCell(
-                            SelectableText(
-                              _participants[i].userAge,
-                              style: _contentTextStyle,
-                            ),
-                          ),
-                          DataCell(
-                            SelectableText(
-                              _participants[i].gender,
-                              style: _contentTextStyle,
-                            ),
-                          ),
-                          DataCell(
-                            SelectableText(
-                              _participants[i].phone,
-                              style: _contentTextStyle,
-                            ),
-                          ),
-                          if (_eventModel != null && _eventModel!.allUsers)
-                            DataCell(
-                              FutureBuilder(
-                                future: ref
-                                    .read(contractRepo)
-                                    .convertSubdistrictIdToName(
-                                        _participants[i].subdistrictId),
-                                builder: (context, snapshot) {
-                                  final subdistrictName = snapshot.data ?? "";
-                                  return SelectableText(
-                                    subdistrictName,
-                                    style: _contentTextStyle,
-                                  );
-                                },
+                        ),
+                      ),
+                      if (_eventModel != null && _eventModel!.allUsers)
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "지역",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                          DataCell(
-                            SelectableText(
-                              secondsToStringLine(_participants[i].createdAt),
-                              style: _contentTextStyle,
+                          ),
+                        ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "참여일",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          DataCell(
-                            SelectableText(
-                              _participants[i].userAchieveOrNot! ? "달성" : "미달성",
-                              style: _contentTextStyle,
-                            ),
-                          ),
-                          DataCell(
-                            SelectableText(
-                              _participants[i].gift ? "○" : "",
-                              style: _contentTextStyle,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                  ],
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 1,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "달성 여부",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(16),
+                              ),
+                              border: Border.all(
+                                width: 2,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "선물 신청",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          : const SkeletonLoadingScreen(),
+                for (int i = 0; i < _participants.length; i++)
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: eventTableTabHeight,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: SelectableText(
+                                "${i + 1}",
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: Text(
+                                  _participants[i].name,
+                                  style: contentTextStyle,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                "${_participants[i].userAge}세",
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                _participants[i].gender,
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                _participants[i].phone,
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (_eventModel != null && _eventModel!.allUsers)
+                              Expanded(
+                                flex: 1,
+                                child: FutureBuilder(
+                                  future: ref
+                                      .read(contractRepo)
+                                      .convertSubdistrictIdToName(
+                                          _participants[i].subdistrictId),
+                                  builder: (context, snapshot) {
+                                    final subdistrictName = snapshot.data ?? "";
+
+                                    return Text(
+                                      subdistrictName,
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    );
+                                  },
+                                ),
+                              ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                secondsToStringLine(_participants[i].createdAt),
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                _participants[i].userAchieveOrNot ?? false
+                                    ? "달성"
+                                    : "미달성",
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                _participants[i].gift ? "O" : "X",
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: InjicareColor().gray30,
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+              ],
+            ),
     );
   }
 }

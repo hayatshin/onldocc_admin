@@ -5,7 +5,7 @@ import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
-import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/palette.dart';
 
@@ -41,13 +41,13 @@ class EventDetailTemplate extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Palette().bgLightBlue,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
-        child: SingleChildScrollView(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 30,
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Gaps.v20,
               Csv(
@@ -58,22 +58,17 @@ class EventDetailTemplate extends ConsumerWidget {
               ),
               Gaps.v40,
               SizedBox(
-                width: size.width * 0.7,
-                height: 200,
+                height: 250,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
-                      width: 150,
-                      height: 200,
+                      width: 250,
+                      height: 250,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        // border: Border.all(
-                        //   width: 2,
-                        //   color: Palette().lightGray,
-                        // ),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(18),
@@ -210,9 +205,8 @@ class EventDetailTemplate extends ConsumerWidget {
                               horizontal: 30,
                             ),
                             child: Container(
-                              width: 0.5,
-                              color:
-                                  InjicareColor().secondary20.withOpacity(0.5),
+                              width: 1,
+                              color: InjicareColor().secondary20,
                             ),
                           ),
                         )
@@ -240,7 +234,7 @@ class EventDetailTemplate extends ConsumerWidget {
                   ],
                 ),
               ),
-              Gaps.v96,
+              Gaps.v40,
               child,
               Gaps.v40,
             ],
@@ -276,7 +270,7 @@ class EventHeader extends StatelessWidget {
                 ),
                 child: SelectableText(
                   headerText,
-                  style: headerTextStyle.copyWith(
+                  style: contentTextStyle.copyWith(
                     color: InjicareColor().gray80,
                   ),
                 ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/palette.dart';
 
 class Csv extends ConsumerStatefulWidget {
@@ -40,7 +41,6 @@ class _CsvState extends ConsumerState<Csv> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return SizedBox(
       height: searchHeight + Sizes.size40,
       // decoration: BoxDecoration(
@@ -60,23 +60,23 @@ class _CsvState extends ConsumerState<Csv> {
           children: [
             Row(
               children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: FaIcon(
-                        FontAwesomeIcons.solidCircleLeft,
-                        color: Palette().darkPurple,
-                        size: 35,
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                          InjicareColor().gray80, BlendMode.srcIn),
+                      child: SvgPicture.asset(
+                        "assets/svg/arrow-left.svg",
+                        width: 30,
                       ),
                     ),
                   ),
                 ),
-                Gaps.h40,
+                Gaps.h20,
                 if (widget.rankingType != "event")
                   SelectableText(
                     "${widget.userName} 님의 ${widget.rankingType} 데이터",

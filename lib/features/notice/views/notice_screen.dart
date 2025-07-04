@@ -233,11 +233,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
     removeDeleteOverlay();
 
     overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(
-          model.todayDiary.length > 10
-              ? "${model.todayDiary.substring(0, 11)}.."
-              : model.todayDiary,
-          removeDeleteOverlay,
+      return deleteTitleOverlay(model.todayDiary, removeDeleteOverlay,
           () => _deleteFeedNotification(model));
     });
     Overlay.of(context, debugRequiredFor: widget, rootOverlay: true)
@@ -448,80 +444,13 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          MouseRegion(
-                                            cursor: SystemMouseCursors.click,
-                                            child: _noticeList[i]
-                                                        .diaryId
-                                                        .split(":")
-                                                        .last !=
-                                                    "true"
-                                                ? Container(
-                                                    width: 50,
-                                                    decoration: BoxDecoration(
-                                                      color: InjicareColor()
-                                                          .secondary50,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6),
-                                                    ),
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        vertical: 5,
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Text(
-                                                            "공개",
-                                                            style: InjicareFont()
-                                                                .label02
-                                                                .copyWith(
-                                                                    color: Colors
-                                                                        .white),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  )
-                                                : Container(
-                                                    width: 50,
-                                                    decoration: BoxDecoration(
-                                                      color: InjicareColor()
-                                                          .gray20,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6),
-                                                    ),
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        vertical: 5,
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Text(
-                                                            "비공개",
-                                                            style: InjicareFont()
-                                                                .label02
-                                                                .copyWith(
-                                                                    color: InjicareColor()
-                                                                        .gray90),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                          ),
+                                          _noticeList[i]
+                                                      .diaryId
+                                                      .split(":")
+                                                      .last !=
+                                                  "true"
+                                              ? const PublicButton()
+                                              : const PrivateButton(),
                                         ],
                                       ),
                                     ),
@@ -543,51 +472,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                                   context,
                                                   size,
                                                   _noticeList[i]),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: InjicareColor()
-                                                      .secondary20,
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 7,
-                                                    vertical: 5,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      ColorFiltered(
-                                                        colorFilter:
-                                                            ColorFilter.mode(
-                                                                InjicareColor()
-                                                                    .secondary50,
-                                                                BlendMode
-                                                                    .srcIn),
-                                                        child: SvgPicture.asset(
-                                                          "assets/svg/edit-icon.svg",
-                                                          width: 14,
-                                                        ),
-                                                      ),
-                                                      Gaps.h2,
-                                                      Text(
-                                                        "수정하기",
-                                                        style: InjicareFont()
-                                                            .label02
-                                                            .copyWith(
-                                                                color: InjicareColor()
-                                                                    .secondary50),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                              child: const EditButton(),
                                             ),
                                           ),
                                         ],
@@ -602,50 +487,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                             child: GestureDetector(
                                               onTap: () => showDeleteOverlay(
                                                   context, _noticeList[i]),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: InjicareColor().gray20,
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 7,
-                                                    vertical: 5,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      ColorFiltered(
-                                                        colorFilter:
-                                                            ColorFilter.mode(
-                                                                InjicareColor()
-                                                                    .primary50,
-                                                                BlendMode
-                                                                    .srcIn),
-                                                        child: SvgPicture.asset(
-                                                          "assets/svg/delete-icon.svg",
-                                                          width: 14,
-                                                        ),
-                                                      ),
-                                                      Gaps.h2,
-                                                      Text(
-                                                        "삭제하기",
-                                                        style: InjicareFont()
-                                                            .label02
-                                                            .copyWith(
-                                                                color: InjicareColor()
-                                                                    .primary50),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                              child: const DeleteButton(),
                                             ),
                                           ),
                                         ],
@@ -740,6 +582,158 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+class DeleteButton extends StatelessWidget {
+  const DeleteButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: InjicareColor().gray20,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 7,
+          vertical: 5,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ColorFiltered(
+              colorFilter:
+                  ColorFilter.mode(InjicareColor().primary50, BlendMode.srcIn),
+              child: SvgPicture.asset(
+                "assets/svg/delete-icon.svg",
+                width: 14,
+              ),
+            ),
+            Gaps.h2,
+            Text(
+              "삭제하기",
+              style: InjicareFont()
+                  .label02
+                  .copyWith(color: InjicareColor().primary50),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditButton extends StatelessWidget {
+  const EditButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: InjicareColor().secondary20,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 7,
+          vertical: 5,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                  InjicareColor().secondary50, BlendMode.srcIn),
+              child: SvgPicture.asset(
+                "assets/svg/edit-icon.svg",
+                width: 14,
+              ),
+            ),
+            Gaps.h2,
+            Text(
+              "수정하기",
+              style: InjicareFont()
+                  .label02
+                  .copyWith(color: InjicareColor().secondary50),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PrivateButton extends StatelessWidget {
+  const PrivateButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      decoration: BoxDecoration(
+        color: InjicareColor().gray20,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 5,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "비공개",
+              style: InjicareFont()
+                  .label02
+                  .copyWith(color: InjicareColor().gray90),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PublicButton extends StatelessWidget {
+  const PublicButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      decoration: BoxDecoration(
+        color: InjicareColor().secondary50,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 5,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "공개",
+              style: InjicareFont().label02.copyWith(color: Colors.white),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:onldocc_admin/utils.dart';
 
 class ModalScreen extends StatelessWidget {
   final Size size;
+  final double widthPercentage;
 
   final Widget child;
   final String modalTitle;
@@ -22,6 +23,7 @@ class ModalScreen extends StatelessWidget {
   const ModalScreen({
     super.key,
     required this.size,
+    required this.widthPercentage,
     required this.child,
     required this.modalTitle,
     required this.modalButtonOneText,
@@ -33,7 +35,7 @@ class ModalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: size.width * 0.5,
+      width: size.width * widthPercentage,
       decoration: BoxDecoration(
         color: Palette().bgLightBlue,
         borderRadius: const BorderRadius.only(

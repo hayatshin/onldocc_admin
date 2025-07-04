@@ -273,12 +273,8 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
   void showDeleteOverlay(String description) async {
     _removeDeleteOverlay();
     overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(
-          description.length > 10
-              ? "${description.substring(0, 11)}.."
-              : description,
-          _removeDeleteOverlay,
-          _deleteFeedNotification);
+      return deleteTitleOverlay(
+          description, _removeDeleteOverlay, _deleteFeedNotification);
     });
 
     Overlay.of(widget.pcontext, debugRequiredFor: widget).insert(overlayEntry!);
@@ -291,6 +287,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
       builder: (context, setState) {
         return ModalScreen(
           size: size,
+          widthPercentage: 0.5,
           modalTitle: !widget.edit ? "공지 올리기" : "공지 수정하기",
           modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
           modalButtonOneFunction: !widget.edit
