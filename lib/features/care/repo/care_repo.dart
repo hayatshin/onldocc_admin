@@ -34,17 +34,26 @@ class CareRepository {
 
       return query;
     } else {
-      final query = await _supabase
-          .from("partners")
-          .select('*, users!public_partners_partnerUserId_fkey(*)')
-          .eq('users.subdistrictId', adminProfileModel.subdistrictId)
-          .order(
-            'createdAt',
-            ascending: false,
-            nullsFirst: false,
-          );
+      final partners = await _supabase.from("partners").select('''
+      *,
+      users:partnerUserId(*),
+      sender:userId("subdistrictId")
+    ''');
 
-      return query;
+      final results = partners
+          .where((e) =>
+              e["sender"]["subdistrictId"] == adminProfileModel.subdistrictId)
+          .toList();
+      return results;
+      // final query = await _supabase
+      //     .from("partners")
+      //     .select('*, users!inner(subdistrictId), users:partnerUserId(*)')
+      //     .eq('users.subdistrictId', adminProfileModel.subdistrictId)
+      //     .order(
+      //       'createdAt',
+      //       ascending: false,
+      //       nullsFirst: false,
+      //     );
     }
   }
 }
