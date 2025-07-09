@@ -107,7 +107,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
       if (mounted) {
         setState(() {
-          _loadingFinished = true;
           _filtered = false;
           _initialPointList = userDataList;
           _totalListLength = userDataList.length;
@@ -127,7 +126,6 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
       if (mounted) {
         setState(() {
-          _loadingFinished = true;
           _filtered = false;
           _initialPointList = indexFilterList;
           _totalListLength = indexFilterList.length;
@@ -136,6 +134,11 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         _updateUserlistPerPage();
       }
     }
+    setState(() {
+      _loadingFinished = true;
+      _currentPage = 0;
+      _pageIndication = 0;
+    });
   }
 
   void _removePeriodCalender() {

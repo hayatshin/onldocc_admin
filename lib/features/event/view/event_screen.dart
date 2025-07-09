@@ -122,13 +122,16 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     await ref.read(eventRepo).deleteEventImageStorage(eventId);
 
     if (!mounted) return;
-    resultBottomModal(context, "성공적으로 행사가 삭제되었습니다.", getUserEvents);
+    removeDeleteOverlay();
+    showCompletingSnackBar(context, "성공적으로 행사가 삭제되었습니다.");
+    setState(() {
+      _eventList.removeWhere((user) => user.eventId == eventId);
+    });
   }
 
   Future<void> getUserEvents() async {
     List<EventModel> eventList =
         await ref.read(eventProvider.notifier).getUserEvents();
-    int startPage = _currentPage * _itemsPerPage + 1;
     int endPage = eventList.length ~/ _itemsPerPage + 1;
 
     if (selectContractRegion.value!.subdistrictId == "") {
@@ -149,35 +152,39 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                 e.contractCommunityId ==
                 selectContractRegion.value!.contractCommunityId)
             .toList();
-        int endPageItems = startPage + _itemsPerPage > filterList.length
-            ? filterList.length
-            : startPage + _itemsPerPage;
+        int endPage = filterList.length ~/ _itemsPerPage + 1;
+
         if (mounted) {
           setState(() {
             loadingFinished = true;
-            _eventList = filterList.sublist(startPage, endPageItems);
             _totalListLength = filterList.length;
+            _initialList = filterList;
             _endPage = endPage;
           });
+          _updateUserlistPerPage();
         }
       } else {
         final filterList = eventList
             .where((e) =>
                 e.contractCommunityId == null || e.contractCommunityId == "")
             .toList();
-        int endPageItems = startPage + _itemsPerPage > filterList.length
-            ? filterList.length
-            : startPage + _itemsPerPage;
+        int endPage = filterList.length ~/ _itemsPerPage + 1;
+
         if (mounted) {
           setState(() {
             loadingFinished = true;
-            _eventList = filterList.sublist(startPage, endPageItems);
             _totalListLength = filterList.length;
+            _initialList = filterList;
             _endPage = endPage;
           });
+          _updateUserlistPerPage();
         }
       }
     }
+    setState(() {
+      _currentPage = 0;
+      _pageIndication = 0;
+    });
   }
 
   void goDetailEvent(EventModel eventModel) {
@@ -235,658 +242,404 @@ class _EventScreenState extends ConsumerState<EventScreen> {
     final size = MediaQuery.of(context).size;
     return DefaultScreen(
       menu: menuList[4],
-      child: SizedBox(
-        width: size.width,
-        height: size.height,
-        child: !loadingFinished
-            ? const SkeletonLoadingScreen()
-            : SingleChildScrollView(
-                child: Column(
-                  children: [
-                    HeaderWithButton(
-                      buttonAction: () => addEventTap(size),
-                      buttonText: "행사 올리기",
-                      listCount: _totalListLength,
-                    ),
-                    SizedBox(
-                      height: 50,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                  ),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "#",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "행사",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "주최 기관",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "시작일",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "종료일",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "상태",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "공개 여부",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Container(),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  borderRadius: const BorderRadius.only(
-                                    topRight: Radius.circular(16),
-                                  ),
-                                  border: Border.all(
-                                    width: 2,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
-                                  "행사 보기",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (_eventList.isNotEmpty)
-                      for (int i = 0; i < _eventList.length; i++)
-                        Column(
-                          children: [
-                            SizedBox(
-                              height: _tabHeight,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: SelectableText(
-                                      "${_currentPage * _itemsPerPage + 1 + i}",
-                                      style: contentTextStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      child: Text(
-                                        _eventList[i].title,
-                                        style: contentTextStyle,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      _eventList[i]
-                                          .orgName
-                                          .toString()
-                                          .split(" ")
-                                          .last,
-                                      style: contentTextStyle,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Text(
-                                      _eventList[i].startDate,
-                                      style: contentTextStyle,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Text(
-                                      _eventList[i].endDate,
-                                      style: contentTextStyle,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Text(
-                                      _eventList[i].state ?? "",
-                                      style: contentTextStyle,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: GestureDetector(
-                                        onTap: () => _updateEventAdminSecret(
-                                            _eventList[i]),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            _eventList[i].adminSecret
-                                                ? const PrivateButton()
-                                                : const PublicButton()
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        gestureDetectorWithMouseClick(
-                                          function: () =>
-                                              editEventTap(size, _eventList[i]),
-                                          child: const EditButton(),
-                                        ),
-                                        Gaps.v3,
-                                        gestureDetectorWithMouseClick(
-                                          function: () =>
-                                              _showDeleteOverlay(_eventList[i]),
-                                          child: const DeleteButton(),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: gestureDetectorWithMouseClick(
-                                      function: () =>
-                                          goDetailEvent(_eventList[i]),
-                                      child: ColorFiltered(
-                                        colorFilter: ColorFilter.mode(
-                                            InjicareColor().gray100,
-                                            BlendMode.srcIn),
-                                        child: SvgPicture.asset(
-                                            "assets/svg/arrow-small-right.svg",
-                                            width: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    height: 1,
-                                    color: InjicareColor().gray30,
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                    Gaps.v40,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      child: !loadingFinished
+          ? const SkeletonLoadingScreen()
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  HeaderWithButton(
+                    buttonAction: () => addEventTap(size),
+                    buttonText: "행사 올리기",
+                    listCount: _totalListLength,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    child: Row(
                       children: [
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: _previousPage,
-                            child: ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                  _pageIndication == 0
-                                      ? InjicareColor().gray50
-                                      : InjicareColor().gray100,
-                                  BlendMode.srcIn),
-                              child: SvgPicture.asset(
-                                "assets/svg/chevron-left.svg",
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                ),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "#",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),
                         ),
-                        Gaps.h10,
-                        for (int s = (_pageIndication * 5 + 1);
-                            s <
-                                (s >= _endPage + 1
-                                    ? _endPage + 1
-                                    : (_pageIndication * 5 + 1) + 5);
-                            s++)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Gaps.h10,
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: GestureDetector(
-                                  onTap: () => _changePage(s),
-                                  child: Text(
-                                    "$s",
-                                    style: InjicareFont().body07.copyWith(
-                                        color: _currentPage + 1 == s
-                                            ? InjicareColor().gray100
-                                            : InjicareColor().gray60,
-                                        fontWeight: _currentPage + 1 == s
-                                            ? FontWeight.w900
-                                            : FontWeight.w400),
-                                  ),
-                                ),
+                        Expanded(
+                          flex: 4,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "행사",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              Gaps.h10,
-                            ],
+                            ),
                           ),
-                        Gaps.h10,
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: _nextPage,
-                            child: ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                  _pageIndication + 5 > _endPage
-                                      ? InjicareColor().gray50
-                                      : InjicareColor().gray100,
-                                  BlendMode.srcIn),
-                              child: SvgPicture.asset(
-                                "assets/svg/chevron-right.svg",
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "주최 기관",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "시작일",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "종료일",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "상태",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "공개 여부",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Container(),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(16),
+                                ),
+                                border: Border.all(
+                                  width: 2,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "행사 보기",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
                         ),
                       ],
-                    )
-                    // Expanded(
-                    //   child: Container(
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.white,
-                    //       borderRadius: BorderRadius.circular(
-                    //         Sizes.size10,
-                    //       ),
-                    //     ),
-                    //     child: DataTable2(
-                    //       isVerticalScrollBarVisible: false,
-                    //       isHorizontalScrollBarVisible: false,
-                    //       dataRowHeight: 80,
-                    //       lmRatio: 2,
-                    //       dividerThickness: 0.1,
-                    //       horizontalMargin: 5,
-                    //       headingRowDecoration: BoxDecoration(
-                    //         border: Border(
-                    //           bottom: BorderSide(
-                    //             color: Palette().lightGray,
-                    //             width: 0.1,
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       columns: [
-                    //         DataColumn2(
-                    //           fixedWidth: 70,
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "#",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           size: ColumnSize.L,
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "행사",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "주최 기관",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           // size: ColumnSize.L,
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "시작일",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           // size: ColumnSize.L,
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "종료일",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           fixedWidth: 100,
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "상태",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "공개 여부",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           fixedWidth: 80,
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "수정",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         DataColumn2(
-                    //           fixedWidth: 80,
-                    //           label: Center(
-                    //             child: SelectableText(
-                    //               "선택",
-                    //               style: headerTextStyle,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ],
-                    //       rows: [
-                    //         for (var i = 0; i < _eventList.length; i++)
-                    //           DataRow2(
-                    //             cells: [
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: SelectableText(
-                    //                     "${i + 1}",
-                    //                     style: contentTextStyle,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 SelectableText(
-                    //                   _eventList[i].title,
-                    //                   style: contentTextStyle,
-                    //                   maxLines: 1,
-                    //                   // overflow: TextOverflow.ellipsis,
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: SelectableText(
-                    //                     _eventList[i]
-                    //                         .orgName
-                    //                         .toString()
-                    //                         .split(" ")
-                    //                         .last,
-                    //                     style: contentTextStyle,
-                    //                     maxLines: 1,
-                    //                     // overflow: TextOverflow.ellipsis,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: SelectableText(
-                    //                     _eventList[i].startDate,
-                    //                     style: contentTextStyle,
-                    //                     maxLines: 1,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: SelectableText(
-                    //                     _eventList[i].endDate,
-                    //                     style: contentTextStyle,
-                    //                     maxLines: 1,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: SelectableText(
-                    //                     _eventList[i].state ?? "-",
-                    //                     style: contentTextStyle,
-                    //                     maxLines: 1,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: MouseRegion(
-                    //                     cursor: SystemMouseCursors.click,
-                    //                     child: GestureDetector(
-                    //                       onTap: () async {
-                    //                         await ref
-                    //                             .read(eventRepo)
-                    //                             .editEventAdminSecret(
-                    //                                 _eventList[i].eventId,
-                    //                                 _eventList[i].adminSecret);
-                    //                         await getUserEvents();
-                    //                       },
-                    //                       child: _eventList[i].adminSecret
-                    //                           ? Text(
-                    //                               "비공개",
-                    //                               style:
-                    //                                   contentTextStyle.copyWith(
-                    //                                 color: Palette().darkBlue,
-                    //                               ),
-                    //                             )
-                    //                           : Container(
-                    //                               decoration: BoxDecoration(
-                    //                                 color: Palette().darkBlue,
-                    //                                 borderRadius:
-                    //                                     BorderRadius.circular(5),
-                    //                               ),
-                    //                               child: Padding(
-                    //                                 padding: const EdgeInsets
-                    //                                     .symmetric(
-                    //                                   horizontal: 8,
-                    //                                   vertical: 2,
-                    //                                 ),
-                    //                                 child: Text(
-                    //                                   "공개",
-                    //                                   style: contentTextStyle
-                    //                                       .copyWith(
-                    //                                     color: Colors.white,
-                    //                                   ),
-                    //                                 ),
-                    //                               ),
-                    //                             ),
-                    //                     ),
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: MouseRegion(
-                    //                     cursor: SystemMouseCursors.click,
-                    //                     child: GestureDetector(
-                    //                       onTap: () => editEventTap(
-                    //                           context, size, _eventList[i]),
-                    //                       child: Icon(
-                    //                         Icons.create,
-                    //                         size: Sizes.size16,
-                    //                         color: Palette().darkGray,
-                    //                       ),
-                    //                     ),
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               DataCell(
-                    //                 Center(
-                    //                   child: MouseRegion(
-                    //                     cursor: SystemMouseCursors.click,
-                    //                     child: GestureDetector(
-                    //                       onTap: () =>
-                    //                           goDetailEvent(_eventList[i]),
-                    //                       child: Icon(
-                    //                         Icons.arrow_forward_ios,
-                    //                         size: Sizes.size16,
-                    //                         color: Palette().darkGray,
-                    //                       ),
-                    //                     ),
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
+                    ),
+                  ),
+                  if (_eventList.isNotEmpty)
+                    for (int i = 0; i < _eventList.length; i++)
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: _tabHeight,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: SelectableText(
+                                    "${_currentPage * _itemsPerPage + 1 + i}",
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    child: Text(
+                                      _eventList[i].title,
+                                      style: contentTextStyle,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    _eventList[i]
+                                        .orgName
+                                        .toString()
+                                        .split(" ")
+                                        .last,
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    _eventList[i].startDate,
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    _eventList[i].endDate,
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    _eventList[i].state ?? "",
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: GestureDetector(
+                                      onTap: () => _updateEventAdminSecret(
+                                          _eventList[i]),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          _eventList[i].adminSecret
+                                              ? const PrivateButton()
+                                              : const PublicButton()
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      gestureDetectorWithMouseClick(
+                                        function: () =>
+                                            editEventTap(size, _eventList[i]),
+                                        child: const EditButton(),
+                                      ),
+                                      Gaps.v3,
+                                      gestureDetectorWithMouseClick(
+                                        function: () =>
+                                            _showDeleteOverlay(_eventList[i]),
+                                        child: const DeleteButton(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: gestureDetectorWithMouseClick(
+                                    function: () =>
+                                        goDetailEvent(_eventList[i]),
+                                    child: ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                          InjicareColor().gray100,
+                                          BlendMode.srcIn),
+                                      child: SvgPicture.asset(
+                                          "assets/svg/arrow-small-right.svg",
+                                          width: 20),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 1,
+                                  color: InjicareColor().gray30,
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                  Gaps.v40,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: _previousPage,
+                          child: ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                                _pageIndication == 0
+                                    ? InjicareColor().gray50
+                                    : InjicareColor().gray100,
+                                BlendMode.srcIn),
+                            child: SvgPicture.asset(
+                              "assets/svg/chevron-left.svg",
+                            ),
+                          ),
+                        ),
+                      ),
+                      Gaps.h10,
+                      for (int s = (_pageIndication * 5 + 1);
+                          s <
+                              (s >= _endPage + 1
+                                  ? _endPage + 1
+                                  : (_pageIndication * 5 + 1) + 5);
+                          s++)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Gaps.h10,
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () => _changePage(s),
+                                child: Text(
+                                  "$s",
+                                  style: InjicareFont().body07.copyWith(
+                                      color: _currentPage + 1 == s
+                                          ? InjicareColor().gray100
+                                          : InjicareColor().gray60,
+                                      fontWeight: _currentPage + 1 == s
+                                          ? FontWeight.w900
+                                          : FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                            Gaps.h10,
+                          ],
+                        ),
+                      Gaps.h10,
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: _nextPage,
+                          child: ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                                _pageIndication + 5 > _endPage
+                                    ? InjicareColor().gray50
+                                    : InjicareColor().gray100,
+                                BlendMode.srcIn),
+                            child: SvgPicture.asset(
+                              "assets/svg/chevron-right.svg",
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
-      ),
+            ),
     );
   }
 }

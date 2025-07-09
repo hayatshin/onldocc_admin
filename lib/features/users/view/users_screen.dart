@@ -54,8 +54,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   bool lastVisitSort = false;
   AdminProfileModel _adminProfile = AdminProfileModel.empty();
 
-  bool _filtered = false;
-
   static const int _itemsPerPage = 20;
   int _currentPage = 0;
   int _pageIndication = 0;
@@ -102,14 +100,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
 
-    int startPage = _currentPage * _itemsPerPage + 1;
     int endPage = userDataList.length ~/ _itemsPerPage + 1;
+
     if (selectContractRegion.value!.contractCommunityId == null ||
         selectContractRegion.value!.contractCommunityId == "") {
       // 전체보기
       if (mounted) {
         setState(() {
-          _filtered = false;
           _totalListLength = userDataList.length;
           _endPage = endPage;
         });
@@ -122,15 +119,14 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
               e!.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
-      int endPageItems = startPage + _itemsPerPage > filterList.length
-          ? filterList.length
-          : startPage + _itemsPerPage;
+      int endPage = filterList.length ~/ _itemsPerPage + 1;
+
       if (mounted) {
         setState(() {
-          _userDataList = filterList.sublist(startPage, endPageItems);
           _totalListLength = filterList.length;
           _endPage = endPage;
         });
+        _updateUserlistPerPage();
       }
     }
 
@@ -178,7 +174,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     int endPage = filterList.length ~/ _itemsPerPage + 1;
 
     setState(() {
-      _filtered = true;
       _userDataList = filterList;
       _currentPage = 0;
       _pageIndication = 0;
@@ -262,7 +257,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       return deleteUserOverlay("$userName님", removeDeleteOverlay, () async {
         await ref.read(userRepo).deleteUser(userId);
         removeDeleteOverlay();
-        setState(() {});
+        if (!context.mounted) return;
+        showCompletingSnackBar(context, "성공적으로 $userName님이 삭제되었습니다.");
+
+        setState(() {
+          _userDataList.removeWhere((user) => user?.userId == userId);
+        });
       });
     });
     Overlay.of(context, debugRequiredFor: widget, rootOverlay: true)
@@ -282,9 +282,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     if (userDataList == null) return;
 
     int startPage = _currentPage * _itemsPerPage;
-    int endPage = startPage + 20 > userDataList.length
+    int endPage = startPage + _itemsPerPage > userDataList.length
         ? userDataList.length
-        : startPage + 20;
+        : startPage + _itemsPerPage;
 
     setState(() {
       _userDataList = userDataList.sublist(startPage, endPage);

@@ -41,7 +41,7 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
     return userModel;
   }
 
-  Future<List<UserModel?>> initializeUserList(String subdistrictId) async {
+  Future<List<UserModel>> initializeUserList(String subdistrictId) async {
     final userlist = await _userRepo.initializeUserList(subdistrictId);
 
     final modelList = userlist.map((json) {
@@ -58,9 +58,9 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
         // print("스택: $stack");
       }
     }).toList();
-
-    state = AsyncData(modelList);
-    return modelList;
+    final nonNullModelList = modelList.whereType<UserModel>().toList();
+    state = AsyncData(nonNullModelList);
+    return nonNullModelList;
   }
 }
 

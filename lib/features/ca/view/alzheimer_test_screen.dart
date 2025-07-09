@@ -112,7 +112,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
         ref.read(cognitionTestProvider).value ??
             await ref
                 .read(cognitionTestProvider.notifier)
-                .getCognitionTestData(testTypes[0].testType, 0);
+                .getCognitionTestData(testTypes[0].testType);
 
     List<CognitionTestModel> filterList = [];
     if (searchBy == "이름") {
@@ -151,7 +151,7 @@ class _AlzheimerTestScreenState extends ConsumerState<AlzheimerTestScreen> {
   Future<void> _initializeTableList() async {
     final testList = await ref
         .read(cognitionTestProvider.notifier)
-        .getCognitionTestData(testTypes[0].testType, 0);
+        .getCognitionTestData(testTypes[0].testType);
 
     if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {

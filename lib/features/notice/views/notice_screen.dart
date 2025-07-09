@@ -147,6 +147,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
         if (mounted) {
           setState(() {
             loadingFinished = true;
+            _totalListLength = filterList.length;
             _initialList = noticeList;
             _endPage = endPage;
           });
@@ -222,7 +223,11 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
     try {
       await ref.read(noticeRepo).deleteFeedNotification(model.diaryId);
       if (!mounted) return;
-      resultBottomModal(context, "성공적으로 공지가 삭제되었습니다", () {});
+      removeDeleteOverlay();
+      showCompletingSnackBar(context, "성공적으로 영상을 삭제하였습니다.");
+      setState(() {
+        _noticeList.removeWhere((user) => user.diaryId == model.diaryId);
+      });
     } catch (e) {
       // ignore: avoid_print
       print("_deleteFeedNotification -> $e");

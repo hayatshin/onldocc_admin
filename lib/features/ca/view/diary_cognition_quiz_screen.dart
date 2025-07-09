@@ -1,19 +1,21 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/path_extra.dart';
 import 'package:onldocc_admin/common/view/search.dart';
+import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
+import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
-import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class DiaryCognitionQuizScreen extends ConsumerStatefulWidget {
@@ -28,9 +30,6 @@ class DiaryCognitionQuizScreen extends ConsumerStatefulWidget {
 
 class _DiaryCognitionQuizScreenState
     extends ConsumerState<DiaryCognitionQuizScreen> {
-  final _scrollController = ScrollController();
-  int _sortColumnIndex = 5;
-
   List<UserModel?> _userDataList = [];
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
@@ -53,22 +52,13 @@ class _DiaryCognitionQuizScreenState
   bool lastVisitSort = false;
   AdminProfileModel _adminProfile = AdminProfileModel.empty();
 
-  bool _filtered = false;
-  int _pageCount = 0;
-  final int _offset = 20;
-  int _rowCount = 0;
+  bool _loadingFinished = false;
 
-  final TextStyle _headerTextStyle = TextStyle(
-    fontSize: Sizes.size13,
-    fontWeight: FontWeight.w600,
-    color: Palette().darkGray,
-  );
-
-  final TextStyle _contentTextStyle = TextStyle(
-    fontSize: Sizes.size12,
-    fontWeight: FontWeight.w500,
-    color: Palette().darkGray,
-  );
+  static const int _itemsPerPage = 20;
+  int _currentPage = 0;
+  int _pageIndication = 0;
+  int _totalListLength = 0;
+  int _endPage = 0;
 
   @override
   void initState() {
@@ -86,40 +76,19 @@ class _DiaryCognitionQuizScreenState
         _getUserModelList();
       }
     });
-
-    _scrollController.addListener(_onDetectScroll);
   }
 
   @override
   void dispose() {
     removeDeleteOverlay();
-    _scrollController.removeListener(_onDetectScroll);
-    _scrollController.dispose();
+
     super.dispose();
-  }
-
-  void _onDetectScroll() {
-    if (_filtered) return;
-    if (_scrollController.position.atEdge) {
-      bool isTop = _scrollController.position.pixels == 0;
-      _pageCount += _offset;
-
-      if (!isTop) {
-        setState(() {
-          _rowCount = (_pageCount + _offset) > _userDataList.length
-              ? _userDataList.length
-              : _pageCount + _offset;
-        });
-      }
-    }
   }
 
   Future<void> _initializeAdminProfile() async {
     final adminProfile = ref.read(adminProfileProvider).value ??
         await ref.read(adminProfileProvider.notifier).getAdminProfile();
-    final sortColumnIndex = adminProfile.master ? 6 : 5;
     setState(() {
-      _sortColumnIndex = sortColumnIndex;
       _adminProfile = adminProfile;
     });
   }
@@ -130,17 +99,17 @@ class _DiaryCognitionQuizScreenState
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
 
-    int rowCount =
-        userDataList.length > 20 ? _pageCount + _offset : userDataList.length;
+    int endPage = userDataList.length ~/ _itemsPerPage + 1;
+
     if (selectContractRegion.value!.contractCommunityId == null) {
       // 전체보기
       if (mounted) {
         setState(() {
-          _userDataList = userDataList;
-          _filtered = false;
-          _rowCount = rowCount;
+          _totalListLength = userDataList.length;
+          _endPage = endPage;
         });
       }
+      _updateUserlistPerPage();
     } else {
       // 기관 선택
       final filterList = userDataList
@@ -148,14 +117,21 @@ class _DiaryCognitionQuizScreenState
               e!.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
+      int endPage = filterList.length ~/ _itemsPerPage + 1;
+
       if (mounted) {
         setState(() {
-          _userDataList = filterList;
-          _filtered = false;
-          _rowCount = filterList.length;
+          _totalListLength = filterList.length;
+          _endPage = endPage;
+          _updateUserlistPerPage();
         });
       }
     }
+    setState(() {
+      _loadingFinished = true;
+      _currentPage = 0;
+      _pageIndication = 0;
+    });
   }
 
   void _initializeTable() async {
@@ -181,11 +157,13 @@ class _DiaryCognitionQuizScreenState
           .cast<UserModel>()
           .toList();
     }
+    int endPage = filterList.length ~/ _itemsPerPage + 1;
 
     setState(() {
-      _filtered = true;
       _userDataList = filterList;
-      _rowCount = filterList.length;
+      _currentPage = 0;
+      _pageIndication = 0;
+      _endPage = endPage;
     });
   }
 
@@ -250,240 +228,379 @@ class _DiaryCognitionQuizScreenState
     context.go("/diary-quiz/$userId", extra: PathExtra.fromJson(extraJson));
   }
 
+  void _updateUserlistPerPage() {
+    List<UserModel?>? userDataList = ref.read(userProvider).value;
+    if (userDataList == null) return;
+
+    int startPage = _currentPage * _itemsPerPage;
+    int endPage = startPage + 20 > userDataList.length
+        ? userDataList.length
+        : startPage + 20;
+
+    setState(() {
+      _userDataList = userDataList.sublist(startPage, endPage);
+    });
+  }
+
+  void _previousPage() {
+    if (_pageIndication == 0) return;
+
+    setState(() {
+      _pageIndication--;
+      _currentPage = _pageIndication * 5;
+    });
+    _updateUserlistPerPage();
+  }
+
+  void _nextPage() {
+    int endIndication = _endPage ~/ 5;
+    if (_pageIndication >= endIndication) return;
+    setState(() {
+      _pageIndication++;
+      _currentPage = _pageIndication * 5;
+    });
+    _updateUserlistPerPage();
+  }
+
+  void _changePage(int s) {
+    setState(() {
+      _currentPage = s - 1;
+    });
+    _updateUserlistPerPage();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return Overlay(initialEntries: [
-      OverlayEntry(
-        builder: (context) => DefaultScreen(
-          menu: menuList[5],
-          child: SizedBox(
-            width: size.width,
-            height: size.height,
-            child: Column(
-              children: [
-                Search(
-                  filterUserList: _filterUserDataList,
-                  resetInitialList: _getUserModelList,
-                ),
-                Expanded(
-                  child: DataTable2(
-                    scrollController: _scrollController,
-                    isVerticalScrollBarVisible: false,
-                    smRatio: 0.7,
-                    lmRatio: 1.2,
-                    dividerThickness: 0.1,
-                    sortColumnIndex: _sortColumnIndex,
-                    sortArrowIcon: Icons.arrow_downward_rounded,
-                    horizontalMargin: 0,
-                    headingRowDecoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Palette().lightGray,
-                          width: 0.1,
-                        ),
-                      ),
+    return DefaultScreen(
+      menu: menuList[5],
+      child: Column(
+        children: [
+          Search(
+            filterUserList: _filterUserDataList,
+            resetInitialList: _getUserModelList,
+          ),
+          !_loadingFinished
+              ? const SkeletonLoadingScreen()
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "총 ${numberFormat(_totalListLength)}개",
+                      style: InjicareFont().label03.copyWith(
+                            color: InjicareColor().gray70,
+                          ),
                     ),
-                    columns: [
-                      DataColumn2(
-                        fixedWidth: 80,
-                        label: SelectableText(
-                          "#",
-                          style: _headerTextStyle,
-                        ),
-                      ),
-                      DataColumn2(
-                        size: ColumnSize.L,
-                        label: SelectableText(
-                          "이름",
-                          style: _headerTextStyle,
-                        ),
-                      ),
-                      DataColumn2(
-                        size: ColumnSize.S,
-                        label: SelectableText(
-                          "연령",
-                          style: _headerTextStyle,
-                        ),
-                      ),
-                      DataColumn2(
-                        size: ColumnSize.S,
-                        label: SelectableText(
-                          "성별",
-                          style: _headerTextStyle,
-                        ),
-                      ),
-                      DataColumn2(
-                        size: ColumnSize.L,
-                        label: SelectableText(
-                          "핸드폰 번호",
-                          style: _headerTextStyle,
-                        ),
-                      ),
-                      if (_adminProfile.master)
-                        DataColumn2(
-                          size: ColumnSize.L,
-                          label: SelectableText(
-                            "거주 지역",
-                            style: _headerTextStyle,
+                    Gaps.v14,
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                ),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "#",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
                         ),
-                      DataColumn2(
-                        tooltip: "클릭하면 '가입일'을 기준으로 정렬됩니다",
-                        onSort: (columnIndex, sortAscending) {
-                          _sortColumnIndex = columnIndex;
-                          final sortIndex = _adminProfile.master ? 6 : 5;
-                          if (columnIndex == sortIndex) {
-                            createdAtSort = !createdAtSort;
-                            if (createdAtSort) {
-                              _userDataList.sort((a, b) =>
-                                  b!.createdAt.compareTo(a!.createdAt));
-                            } else {
-                              _userDataList.sort((a, b) =>
-                                  a!.createdAt.compareTo(b!.createdAt));
-                            }
-                            setState(() {});
-                          }
-                        },
-                        label: SelectableText(
-                          "가입일",
-                          style: _headerTextStyle,
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "이름",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      DataColumn2(
-                        tooltip: "클릭하면 '마지막 방문일'을 기준으로 정렬됩니다",
-                        onSort: (columnIndex, sortAsending) {
-                          _sortColumnIndex = columnIndex;
-                          final sortIndex = _adminProfile.master ? 7 : 6;
-
-                          if (columnIndex == sortIndex) {
-                            lastVisitSort = !lastVisitSort;
-                            if (lastVisitSort) {
-                              _userDataList.sort((a, b) =>
-                                  b!.lastVisit!.compareTo(a!.lastVisit!));
-                            } else {
-                              _userDataList.sort((a, b) =>
-                                  a!.lastVisit!.compareTo(b!.lastVisit!));
-                            }
-                            setState(() {});
-                          }
-                        },
-                        label: SelectableText(
-                          "최근 방문일",
-                          style: _headerTextStyle,
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "연령",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      DataColumn2(
-                        fixedWidth: 150,
-                        onSort: (columnIndex, sortAscending) {
-                          setState(() {
-                            _sortColumnIndex = columnIndex;
-                          });
-                        },
-                        label: SelectableText(
-                          "문제 풀기 결과\n자세히 보기",
-                          style: _headerTextStyle,
-                          textAlign: TextAlign.end,
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "성별",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      // DataColumn2(
-                      //   fixedWidth: 80,
-                      //   size: ColumnSize.S,
-                      //   label: SelectableText(
-                      //     "대시보드",
-                      //     style: _headerTextStyle,
-                      //   ),
-                      // ),
-                    ],
-                    rows: [
-                      if (_userDataList.isNotEmpty)
-                        for (var i = 0; i < _rowCount; i++)
-                          DataRow2(
-                            cells: [
-                              DataCell(
-                                SelectableText(
-                                  (i + 1).toString(),
-                                  style: _contentTextStyle,
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "핸드폰 번호",
+                                style: contentTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (_adminProfile.master)
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFE9EDF9),
+                                  border: Border.all(
+                                    width: 2,
+                                    color: const Color(0xFFF3F6FD),
+                                  )),
+                              child: Center(
+                                child: Text(
+                                  "거주 지역",
+                                  style: contentTextStyle,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                              DataCell(
-                                SelectableText(
-                                  _userDataList[i]!.name.length > 10
-                                      ? "${_userDataList[i]!.name.substring(0, 10)}.."
-                                      : _userDataList[i]!.name,
-                                  style: _contentTextStyle,
+                            ),
+                          ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFE9EDF9),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(16),
                                 ),
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xFFF3F6FD),
+                                )),
+                            child: Center(
+                              child: Text(
+                                "문제 풀기 결과",
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
                               ),
-                              DataCell(
-                                SelectableText(
-                                  _userDataList[i]!.userAge!,
-                                  style: _contentTextStyle,
-                                ),
-                              ),
-                              DataCell(
-                                SelectableText(
-                                  _userDataList[i]!.gender,
-                                  style: _contentTextStyle,
-                                ),
-                              ),
-                              DataCell(
-                                SelectableText(
-                                  _userDataList[i]!.phone,
-                                  style: _contentTextStyle,
-                                ),
-                              ),
-                              if (_adminProfile.master)
-                                DataCell(
-                                  SelectableText(
-                                    _userDataList[i]!.fullRegion,
-                                    style: _contentTextStyle,
-                                  ),
-                                ),
-                              DataCell(
-                                SelectableText(
-                                  secondsToStringLine(
-                                      _userDataList[i]!.createdAt),
-                                  style: _contentTextStyle,
-                                ),
-                              ),
-                              DataCell(
-                                SelectableText(
-                                  _userDataList[i]!.lastVisit != 0
-                                      ? secondsToStringLine(
-                                          _userDataList[i]!.lastVisit!)
-                                      : "-",
-                                  style: _contentTextStyle,
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: MouseRegion(
-                                    cursor: SystemMouseCursors.click,
-                                    child: GestureDetector(
-                                      onTap: () => goUserDashBoard(
-                                        userId: _userDataList[i]!.userId,
-                                        userName: _userDataList[i]!.name,
-                                      ),
-                                      child: FaIcon(
-                                        FontAwesomeIcons.arrowRight,
-                                        color: Palette().darkGray,
-                                        size: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (_userDataList.isNotEmpty)
+                      for (int i = 0; i < 20; i++)
+                        if (_userDataList[i] != null)
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 50,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: SelectableText(
+                                        "${_currentPage * _itemsPerPage + 1 + i}",
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
                                       ),
                                     ),
-                                  ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: SelectableText(
+                                        _userDataList[i]!.name,
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: SelectableText(
+                                        "${_userDataList[i]!.userAge ?? 0}세",
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: SelectableText(
+                                        _userDataList[i]!.gender,
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: SelectableText(
+                                        _userDataList[i]!.phone,
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    if (_adminProfile.master)
+                                      Expanded(
+                                        flex: 3,
+                                        child: SelectableText(
+                                          _userDataList[i]!.fullRegion,
+                                          style: contentTextStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: gestureDetectorWithMouseClick(
+                                        function: () => goUserDashBoard(
+                                          userId: _userDataList[i]!.userId,
+                                          userName: _userDataList[i]!.name,
+                                        ),
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                              InjicareColor().gray100,
+                                              BlendMode.srcIn),
+                                          child: SvgPicture.asset(
+                                              "assets/svg/arrow-small-right.svg",
+                                              width: 20),
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 1,
+                                      color: InjicareColor().gray30,
+                                    ),
+                                  )
+                                ],
                               )
                             ],
                           ),
-                    ],
+                  ],
+                ),
+          Gaps.v40,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: _previousPage,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        _pageIndication == 0
+                            ? InjicareColor().gray50
+                            : InjicareColor().gray100,
+                        BlendMode.srcIn),
+                    child: SvgPicture.asset(
+                      "assets/svg/chevron-left.svg",
+                    ),
                   ),
-                )
-              ],
-            ),
-          ),
-        ),
+                ),
+              ),
+              Gaps.h10,
+              for (int s = (_pageIndication * 5 + 1);
+                  s <
+                      (s >= _endPage + 1
+                          ? _endPage + 1
+                          : (_pageIndication * 5 + 1) + 5);
+                  s++)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Gaps.h10,
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () => _changePage(s),
+                        child: Text(
+                          "$s",
+                          style: InjicareFont().body07.copyWith(
+                              color: _currentPage + 1 == s
+                                  ? InjicareColor().gray100
+                                  : InjicareColor().gray60,
+                              fontWeight: _currentPage + 1 == s
+                                  ? FontWeight.w900
+                                  : FontWeight.w400),
+                        ),
+                      ),
+                    ),
+                    Gaps.h10,
+                  ],
+                ),
+              Gaps.h10,
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: _nextPage,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        _pageIndication + 5 > _endPage
+                            ? InjicareColor().gray50
+                            : InjicareColor().gray100,
+                        BlendMode.srcIn),
+                    child: SvgPicture.asset(
+                      "assets/svg/chevron-right.svg",
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
-    ]);
+    );
   }
 }

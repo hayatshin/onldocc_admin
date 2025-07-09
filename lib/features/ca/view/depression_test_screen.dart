@@ -111,7 +111,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
         ref.read(cognitionTestProvider).value ??
             await ref
                 .read(cognitionTestProvider.notifier)
-                .getCognitionTestData(testTypes[1].testType, 0);
+                .getCognitionTestData(testTypes[1].testType);
 
     List<CognitionTestModel> filterList = [];
     if (searchBy == "이름") {
@@ -134,7 +134,7 @@ class _DepressionTestScreenState extends ConsumerState<DepressionTestScreen> {
   Future<void> _initializeTableList() async {
     final testList = await ref
         .read(cognitionTestProvider.notifier)
-        .getCognitionTestData(testTypes[1].testType, 0);
+        .getCognitionTestData(testTypes[1].testType);
 
     if (selectContractRegion.value!.subdistrictId == "") {
       if (mounted) {
