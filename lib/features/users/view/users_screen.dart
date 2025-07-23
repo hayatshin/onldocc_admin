@@ -37,7 +37,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
   final List<String> _userListHeader = [
-    "#",
+    "번호",
     "이름",
     "연령",
     "출생일",
@@ -258,7 +258,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         await ref.read(userRepo).deleteUser(userId);
         removeDeleteOverlay();
         if (!context.mounted) return;
-        showCompletingSnackBar(context, "성공적으로 $userName님이 삭제되었습니다.");
+        showTopCompletingSnackBar(context, "성공적으로 $userName님이 삭제되었습니다.");
 
         setState(() {
           _userDataList.removeWhere((user) => user?.userId == userId);
@@ -358,7 +358,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                               )),
                           child: Center(
                             child: Text(
-                              "#",
+                              "번호",
                               style: contentTextStyle,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -580,7 +580,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 Expanded(
                                   flex: 1,
                                   child: SelectableText(
-                                    _userDataList[i]!.gender,
+                                    _userDataList[i]!.gender.substring(0, 1),
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),

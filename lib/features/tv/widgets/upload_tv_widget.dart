@@ -112,7 +112,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       });
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -128,7 +128,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       });
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -160,7 +160,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
   void _submitTv() async {
     if (_tvType == "파일" && _tvVideoBytes == null) {
-      showWarningSnackBar(context, "영상 파일을 선택해주세요");
+      showTopWarningSnackBar(context, "영상 파일을 선택해주세요");
     } else {
       setState(() {
         tapUploadTv = true;
@@ -230,7 +230,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
     return StatefulBuilder(
       builder: (context, setState) {
         return ModalScreen(
-          size: size,
           widthPercentage: 0.5,
           modalTitle: !widget.edit ? "영상 올리기" : "영상 수정하기",
           modalButtonOneText: !widget.edit ? "확인" : "수정하기",

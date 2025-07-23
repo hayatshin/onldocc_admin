@@ -258,7 +258,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -277,7 +277,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -563,11 +563,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return StatefulBuilder(builder: (context, setState) {
       return ModalScreen(
-        size: size,
         widthPercentage: 0.7,
         modalTitle: !widget.edit ? "행사 올리기" : "행사 수정하기",
         modalButtonOneText: !widget.edit ? "확인" : "삭제하기",

@@ -157,7 +157,7 @@ class _RankingUsersScreenState extends ConsumerState<RankingUsersScreen> {
                     const DataColumn2(
                       fixedWidth: 80,
                       label: SelectableText(
-                        "#",
+                        "번호",
                         style: TextStyle(
                           fontSize: Sizes.size13,
                           color: Colors.black,

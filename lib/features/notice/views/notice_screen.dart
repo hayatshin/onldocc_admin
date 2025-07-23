@@ -224,7 +224,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
       await ref.read(noticeRepo).deleteFeedNotification(model.diaryId);
       if (!mounted) return;
       removeDeleteOverlay();
-      showCompletingSnackBar(context, "성공적으로 영상을 삭제하였습니다.");
+      showTopCompletingSnackBar(context, "성공적으로 영상을 삭제하였습니다.");
       setState(() {
         _noticeList.removeWhere((user) => user.diaryId == model.diaryId);
       });
@@ -285,7 +285,7 @@ class _NoticeScreenState extends ConsumerState<NoticeScreen> {
                                 )),
                             child: Center(
                               child: Text(
-                                "#",
+                                "번호",
                                 style: contentTextStyle,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -747,11 +747,13 @@ class HeaderWithButton extends StatelessWidget {
   final Function() buttonAction;
   final String buttonText;
   final int listCount;
+  final String svgName;
   const HeaderWithButton({
     super.key,
     required this.buttonAction,
     required this.buttonText,
     required this.listCount,
+    this.svgName = "plus",
   });
 
   @override
@@ -782,7 +784,7 @@ class HeaderWithButton extends StatelessWidget {
                           colorFilter: ColorFilter.mode(
                               InjicareColor().secondary50, BlendMode.srcIn),
                           child: SvgPicture.asset(
-                            "assets/svg/plus.svg",
+                            "assets/svg/$svgName.svg",
                             width: 15,
                           ),
                         ),

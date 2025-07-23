@@ -189,7 +189,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
     await ref.read(tvRepo).deleteTv(tvModel.videoId);
     _removeDeleteOverlay();
     if (!mounted) return;
-    showCompletingSnackBar(context, "성공적으로 영상을 삭제하였습니다.");
+    showTopCompletingSnackBar(context, "성공적으로 영상을 삭제하였습니다.");
     setState(() {
       _tvList.removeWhere((user) => user.videoId == tvModel.videoId);
     });
@@ -218,8 +218,9 @@ class _TvScreenState extends ConsumerState<TvScreen> {
           children: [
             HeaderWithButton(
               buttonAction: () => uploadVideoTap(context),
-              buttonText: "공지 올리기",
+              buttonText: "영상 올리기",
               listCount: _totalListLength,
+              svgName: "video",
             ),
             SizedBox(
               height: 50,
@@ -239,7 +240,7 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                           )),
                       child: Center(
                         child: Text(
-                          "#",
+                          "번호",
                           style: contentTextStyle,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -467,166 +468,6 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                 ),
               ],
             ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   children: [
-            //     ReportButton(
-            //       iconExists: false,
-            //       buttonText: "영상 올리기",
-            //       buttonColor: Palette().darkPurple,
-            //       action: () => uploadVideoTap(
-            //         context,
-            //         size.width,
-            //         size.height,
-            //       ),
-            //     ),
-            //   ],
-            // ),
-            // SizedBox(
-            //   height: 50,
-            //   child: Row(
-            //     children: [
-            //       Expanded(
-            //         flex: 1,
-            //         child: Align(
-            //           alignment: Alignment.center,
-            //           child: SelectableText(
-            //             "#",
-            //             style: _headerTextStyle,
-            //           ),
-            //         ),
-            //       ),
-            //       Expanded(
-            //         flex: 2,
-            //         child: Align(
-            //           alignment: Alignment.center,
-            //           child: SelectableText(
-            //             "썸네일",
-            //             style: _headerTextStyle,
-            //           ),
-            //         ),
-            //       ),
-            //       Expanded(
-            //         flex: 3,
-            //         child: Align(
-            //           alignment: Alignment.center,
-            //           child: SelectableText(
-            //             "제목",
-            //             style: _headerTextStyle,
-            //           ),
-            //         ),
-            //       ),
-            //       Expanded(
-            //         flex: 1,
-            //         child: Align(
-            //           alignment: Alignment.center,
-            //           child: SelectableText(
-            //             "수정",
-            //             style: _headerTextStyle,
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // Column(
-            //   children: [
-            //     Gaps.v16,
-            //     Expanded(
-            //       child: ListView.builder(
-            //         shrinkWrap: true,
-            //         itemCount: _tvList.length,
-            //         itemBuilder: (context, index) {
-            //           return Row(
-            //             children: [
-            //               Expanded(
-            //                 flex: 1,
-            //                 child: Padding(
-            //                   padding: const EdgeInsets.all(
-            //                     Sizes.size3,
-            //                   ),
-            //                   child: Align(
-            //                     alignment: Alignment.center,
-            //                     child: SelectableText(
-            //                       (index + 1).toString(),
-            //                       // softWrap: true,
-            //                       // overflow: TextOverflow.ellipsis,
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //               Expanded(
-            //                 flex: 2,
-            //                 child: Padding(
-            //                   padding: const EdgeInsets.all(
-            //                     Sizes.size3,
-            //                   ),
-            //                   child: Align(
-            //                     alignment: Alignment.center,
-            //                     child: ClipRRect(
-            //                       borderRadius: BorderRadius.circular(
-            //                         Sizes.size5,
-            //                       ),
-            //                       child: SizedBox(
-            //                         width: 150,
-            //                         height: 100,
-            //                         child: Image.network(
-            //                           _tvList[index].thumbnail,
-            //                           fit: BoxFit.cover,
-            //                         ),
-            //                       ),
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //               Expanded(
-            //                 flex: 3,
-            //                 child: Padding(
-            //                   padding: const EdgeInsets.all(
-            //                     Sizes.size3,
-            //                   ),
-            //                   child: Align(
-            //                     alignment: Alignment.center,
-            //                     child: SelectableText(
-            //                       _tvList[index].title,
-            //                       // softWrap: true,
-            //                       // overflow: TextOverflow.ellipsis,
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //               Expanded(
-            //                 flex: 1,
-            //                 child: Align(
-            //                   alignment: Alignment.center,
-            //                   child: MouseRegion(
-            //                     cursor: SystemMouseCursors.click,
-            //                     child: GestureDetector(
-            //                       onTap: () => editVideoTap(
-            //                         context,
-            //                         size.width,
-            //                         size.height,
-            //                         _tvList[index],
-            //                       ),
-            //                       child: FaIcon(
-            //                         FontAwesomeIcons.pen,
-            //                         size: 14,
-            //                         color: Palette().darkGray,
-            //                       ),
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //             ],
-            //           );
-            //         },
-            //       ),
-            //     ),
-            //     Gaps.v16,
-            //   ],
-            // ),
           ],
         ),
       ),

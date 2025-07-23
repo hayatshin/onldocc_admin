@@ -240,7 +240,7 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                   width: 7,
                   height: 7,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.2),
                     color: mainColor,
                   ),
                 ),
@@ -256,14 +256,26 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton2<String>(
                       isExpanded: true,
+                      selectedItemBuilder: (context) {
+                        return testTypes.map((SelfTestModel item) {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              item.testName,
+                              style: InjicareFont().body07.copyWith(
+                                    color: InjicareColor().gray90,
+                                  ),
+                            ),
+                          );
+                        }).toList();
+                      },
                       items: testTypes.map((SelfTestModel item) {
                         return DropdownMenuItem<String>(
                           value: item.testName,
                           child: Text(
                             item.testName,
-                            style: InjicareFont().body07.copyWith(
+                            style: InjicareFont().label03.copyWith(
                                   color: InjicareColor().gray80,
-                                  fontWeight: FontWeight.w600,
                                 ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -349,25 +361,6 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                                   )),
                               child: Center(
                                 child: Text(
-                                  "#",
-                                  style: contentTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFE9EDF9),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFF3F6FD),
-                                  )),
-                              child: Center(
-                                child: Text(
                                   "검사 시행 날짜",
                                   style: contentTextStyle,
                                   overflow: TextOverflow.ellipsis,
@@ -415,7 +408,7 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                             ),
                           ),
                           Expanded(
-                            flex: 1,
+                            flex: 2,
                             child: Container(
                               height: 50,
                               decoration: BoxDecoration(
@@ -446,7 +439,7 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                                   )),
                               child: Center(
                                 child: Text(
-                                  "성별",
+                                  "연령",
                                   style: contentTextStyle,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
@@ -466,7 +459,7 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                                   )),
                               child: Center(
                                 child: Text(
-                                  "연령",
+                                  "성별",
                                   style: contentTextStyle,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
@@ -529,13 +522,30 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: SelectableText(
-                                        "${_currentPage * _itemsPerPage + 1 + i}",
+                                        secondsToStringLine(
+                                            _testList[i].createdAt),
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                     Expanded(
-                                      flex: 3,
+                                      flex: 2,
+                                      child: SelectableText(
+                                        _testList[i].result,
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: SelectableText(
+                                        "${_testList[i].totalPoint}점",
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
                                       child: SelectableText(
                                         _testList[i].userName ?? "-",
                                         style: contentTextStyle,
@@ -553,7 +563,9 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: SelectableText(
-                                        _testList[i].userGender ?? "-",
+                                        _testList[i]
+                                            .userGender!
+                                            .substring(0, 1),
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                       ),
@@ -671,152 +683,6 @@ class _SelfTestScreenState extends ConsumerState<SelfTestScreen> {
                       )
                     ],
                   ),
-            // !_loadingFinished
-            //     ? const SkeletonLoadingScreen()
-            //     : Expanded(
-            //         child: DataTable2(
-            //           scrollController: _scrollController,
-            //           isVerticalScrollBarVisible: false,
-            //           smRatio: 0.7,
-            //           lmRatio: 1.2,
-            //           dividerThickness: 0.1,
-            //           horizontalMargin: 0,
-            //           headingRowDecoration: BoxDecoration(
-            //             border: Border(
-            //               bottom: BorderSide(
-            //                 color: Palette().lightGray,
-            //                 width: 0.1,
-            //               ),
-            //             ),
-            //           ),
-            //           columns: [
-            //             DataColumn2(
-            //               fixedWidth: 140,
-            //               label: SelectableText(
-            //                 "시행 날짜",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //             DataColumn2(
-            //               fixedWidth: 200,
-            //               label: SelectableText(
-            //                 "분류",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //             DataColumn2(
-            //               fixedWidth: 80,
-            //               label: SelectableText(
-            //                 "점수",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //             DataColumn2(
-            //               label: SelectableText(
-            //                 "이름",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //             DataColumn2(
-            //               fixedWidth: 100,
-            //               label: SelectableText(
-            //                 "성별",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //             DataColumn2(
-            //               fixedWidth: 80,
-            //               label: SelectableText(
-            //                 "연령",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //             DataColumn2(
-            //               fixedWidth: 190,
-            //               label: SelectableText(
-            //                 "핸드폰 번호",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //             DataColumn2(
-            //               fixedWidth: 100,
-            //               label: SelectableText(
-            //                 "자세히 보기",
-            //                 style: _headerTextStyle,
-            //               ),
-            //             ),
-            //           ],
-            //           rows: [
-            //             for (int i = 0; i < _testList.length; i++)
-            //               DataRow2(
-            //                 cells: [
-            //                   DataCell(
-            //                     SelectableText(
-            //                       secondsToStringLine(_testList[i].createdAt),
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                   DataCell(
-            //                     SelectableText(
-            //                       _testList[i].result,
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                   DataCell(
-            //                     SelectableText(
-            //                       _testList[i].totalPoint.toString(),
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                   DataCell(
-            //                     SelectableText(
-            //                       _testList[i].userName!,
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                   DataCell(
-            //                     SelectableText(
-            //                       _testList[i].userGender!,
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                   DataCell(
-            //                     SelectableText(
-            //                       _testList[i].userAge!.toString(),
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                   DataCell(
-            //                     SelectableText(
-            //                       _testList[i].userPhone!,
-            //                       style: _contentTextStyle,
-            //                     ),
-            //                   ),
-            //                   DataCell(
-            //                     Center(
-            //                       child: MouseRegion(
-            //                         cursor: SystemMouseCursors.click,
-            //                         child: GestureDetector(
-            //                           onTap: () {
-            //                             context.go(
-            //                               "/self-test/${_testList[i].testId}",
-            //                               extra: _testList[i],
-            //                             );
-            //                           },
-            //                           child: FaIcon(
-            //                             FontAwesomeIcons.arrowRight,
-            //                             color: Palette().darkGray,
-            //                             size: 14,
-            //                           ),
-            //                         ),
-            //                       ),
-            //                     ),
-            //                   )
-            //                 ],
-            //               )
-            //           ],
-            //         ),
-            //       ),
           ],
         ),
       ),

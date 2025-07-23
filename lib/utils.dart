@@ -361,7 +361,7 @@ InputDecoration inputDecorationStyle() {
       ),
       borderSide: BorderSide(
         width: 1.5,
-        color: Palette().darkGray.withOpacity(0.5),
+        color: Palette().darkGray.withValues(alpha: 0.5),
       ),
     ),
     focusedBorder: OutlineInputBorder(
@@ -370,7 +370,7 @@ InputDecoration inputDecorationStyle() {
       ),
       borderSide: BorderSide(
         width: 1.5,
-        color: Palette().darkGray.withOpacity(0.5),
+        color: Palette().darkGray.withValues(alpha: 0.5),
       ),
     ),
     contentPadding: const EdgeInsets.symmetric(
@@ -384,6 +384,8 @@ void showCompletingSnackBar(BuildContext context, String error) {
   if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.fromLTRB(16, kToolbarHeight + 16, 16, 0),
       backgroundColor: Colors.transparent,
       elevation: 0,
       padding: const EdgeInsets.symmetric(
@@ -395,7 +397,7 @@ void showCompletingSnackBar(BuildContext context, String error) {
       ),
       content: Container(
         decoration: BoxDecoration(
-          color: InjicareColor().gray100.withOpacity(0.8),
+          color: InjicareColor().gray100.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -407,7 +409,7 @@ void showCompletingSnackBar(BuildContext context, String error) {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset(
-                "assets/svg/circle-check.svg",
+                "assets/svg/circle-check1.svg",
                 width: 20,
               ),
               Gaps.h10,
@@ -434,6 +436,8 @@ void showWarningSnackBar(BuildContext context, String error) {
   if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.fromLTRB(16, kToolbarHeight + 16, 16, 0),
       backgroundColor: Colors.transparent,
       elevation: 0,
       padding: const EdgeInsets.symmetric(
@@ -445,7 +449,7 @@ void showWarningSnackBar(BuildContext context, String error) {
       ),
       content: Container(
         decoration: BoxDecoration(
-          color: InjicareColor().gray100.withOpacity(0.8),
+          color: InjicareColor().gray100.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -478,6 +482,97 @@ void showWarningSnackBar(BuildContext context, String error) {
       ),
     ),
   );
+}
+
+void showTopWarningSnackBar(BuildContext context, String message) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) => Positioned.fill(
+      top: MediaQuery.of(context).padding.top + 16,
+      child: Material(
+        color: Colors.transparent,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: IntrinsicWidth(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: InjicareColor().gray100.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    "assets/svg/warning.svg",
+                    width: 20,
+                  ),
+                  Gaps.h10,
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
+
+  Future.delayed(const Duration(seconds: 2), () {
+    overlayEntry.remove();
+  });
+}
+
+void showTopCompletingSnackBar(BuildContext context, String message) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) => Positioned.fill(
+      top: MediaQuery.of(context).padding.top + 16,
+      child: Material(
+        color: Colors.transparent,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: IntrinsicWidth(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: InjicareColor().gray100.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    "assets/svg/circle-check1.svg",
+                    width: 20,
+                  ),
+                  Gaps.h10,
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
+
+  Future.delayed(const Duration(seconds: 2), () {
+    overlayEntry.remove();
+  });
 }
 
 bool isDatePassed(String certainBirthday) {

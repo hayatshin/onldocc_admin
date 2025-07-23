@@ -33,7 +33,7 @@ class _EventDetailCountScreenState
   List<ParticipantModel> _participants = [];
   bool _initializeParticipants = false;
   final List<String> _listHeader = [
-    "#",
+    "번호",
     "이름",
     "연령",
     "성별",
@@ -164,7 +164,7 @@ class _EventDetailCountScreenState
                               )),
                           child: Center(
                             child: Text(
-                              "#",
+                              "번호",
                               style: contentTextStyle,
                               overflow: TextOverflow.ellipsis,
                             ),

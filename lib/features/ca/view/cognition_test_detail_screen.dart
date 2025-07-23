@@ -214,7 +214,7 @@ class _CognitionTestDetailScreenState extends State<CognitionTestDetailScreen> {
                           DataColumn(
                             label: Expanded(
                               child: SelectableText(
-                                "#",
+                                "번호",
                                 style: _headerTextStyle,
                                 textAlign: TextAlign.center,
                               ),

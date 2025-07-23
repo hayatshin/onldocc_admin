@@ -77,16 +77,16 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
       if (state.error.toString().contains(emailFirebaseError)) {
         if (!context.mounted) return null;
 
-        showWarningSnackBar(context, emailErrorMessage);
+        showTopWarningSnackBar(context, emailErrorMessage);
       } else if (state.error.toString().contains(passwordFirebaseError)) {
         if (!context.mounted) return null;
 
-        showWarningSnackBar(context, passwordErrorMessage);
+        showTopWarningSnackBar(context, passwordErrorMessage);
       } else {
         // ignore: avoid_print
         print("로그인 에러 -> ${state.error.toString()}");
         if (!context.mounted) return null;
-        showWarningSnackBar(context, defaultErrorMessage);
+        showTopWarningSnackBar(context, defaultErrorMessage);
       }
     }
     return null;

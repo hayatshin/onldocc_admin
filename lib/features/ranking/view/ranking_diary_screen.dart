@@ -32,7 +32,7 @@ class RankingDiaryScreen extends ConsumerStatefulWidget {
 }
 
 class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
-  final List<String> _listHeader = ["#", "날짜", "일기", "감정", "비밀"];
+  final List<String> _listHeader = ["번호", "날짜", "일기", "감정", "비밀"];
   List<DiaryModel> _diaryDataList = [];
   bool loadingFinished = false;
   Map<int, bool> expandMap = {};
@@ -322,7 +322,7 @@ class _RankingDiaryScreenState extends ConsumerState<RankingDiaryScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: SelectableText(
-                                        "#",
+                                        "번호",
                                         style: TextStyle(
                                           // color: Colors.white,
                                           fontSize: Sizes.size13,

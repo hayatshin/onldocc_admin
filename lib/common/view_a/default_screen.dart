@@ -139,7 +139,9 @@ class DefaultTemplate extends StatelessWidget {
                         ),
                         clipBehavior: Clip.hardEdge,
                         child: CachedNetworkImage(
-                          imageUrl: adminModel.image,
+                          imageUrl: adminModel.doctor == null
+                              ? adminModel.image
+                              : adminModel.doctor!.avatar,
                           errorWidget: (context, url, error) {
                             return ColorFiltered(
                               colorFilter: ColorFilter.mode(
@@ -159,27 +161,30 @@ class DefaultTemplate extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SelectableText(
-                            adminModel.name,
+                            adminModel.doctor == null
+                                ? adminModel.name
+                                : adminModel.doctor!.name,
                             style: TextStyle(
                               fontSize: Sizes.size14,
                               fontWeight: FontWeight.w700,
                               color: Palette().darkGray,
                             ),
                           ),
-                          if (adminModel.mail.contains("@"))
-                            Column(
-                              children: [
-                                Gaps.v2,
-                                SelectableText(
-                                  adminModel.mail,
-                                  style: TextStyle(
-                                    fontSize: Sizes.size10,
-                                    fontWeight: FontWeight.w600,
-                                    color: Palette().normalGray,
-                                  ),
+                          Column(
+                            children: [
+                              Gaps.v2,
+                              SelectableText(
+                                adminModel.doctor == null
+                                    ? adminModel.mail
+                                    : adminModel.doctor!.profile,
+                                style: TextStyle(
+                                  fontSize: Sizes.size10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Palette().normalGray,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
+                          ),
                         ],
                       )
                     ],

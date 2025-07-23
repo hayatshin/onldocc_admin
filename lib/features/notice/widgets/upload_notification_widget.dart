@@ -286,7 +286,6 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
     return StatefulBuilder(
       builder: (context, setState) {
         return ModalScreen(
-          size: size,
           widthPercentage: 0.5,
           modalTitle: !widget.edit ? "공지 올리기" : "공지 수정하기",
           modalButtonOneText: !widget.edit ? "확인" : "삭제하기",

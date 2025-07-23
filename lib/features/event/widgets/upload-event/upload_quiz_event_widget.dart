@@ -218,7 +218,7 @@ class _UploadQuizEventWidgetStateState extends State<UploadQuizEventWidget> {
                         textAlignVertical: TextAlignVertical.top,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
-                          MaskedInputFormatter("#"),
+                          MaskedInputFormatter("번호"),
                         ],
                         style: contentTextStyle,
                         decoration: eventSettingInputDecorationStyle(),

@@ -1,4 +1,5 @@
 import 'package:onldocc_admin/constants/const.dart';
+import 'package:onldocc_admin/features/login/models/doctor_model.dart';
 
 class AdminProfileModel {
   final String adminId;
@@ -10,6 +11,7 @@ class AdminProfileModel {
   final String image;
   final String phone;
   final String mail;
+  final DoctorModel? doctor;
 
   AdminProfileModel({
     required this.adminId,
@@ -21,6 +23,7 @@ class AdminProfileModel {
     required this.image,
     required this.phone,
     required this.mail,
+    this.doctor,
   });
 
   AdminProfileModel.empty()
@@ -32,7 +35,8 @@ class AdminProfileModel {
         name = "",
         image = "",
         phone = "",
-        mail = "";
+        mail = "",
+        doctor = null;
 
   AdminProfileModel.fromJson(Map<String, dynamic> json)
       : adminId = json["adminId"],
@@ -55,7 +59,10 @@ class AdminProfileModel {
             : "",
         mail = json["contract_regions"] != null
             ? json["contract_regions"]["mail"]
-            : "help@hayat.kr";
+            : "help@hayat.kr",
+        doctor = json["doctors"] != null
+            ? DoctorModel.fromJson(json["doctors"])
+            : null;
 
   Map<String, dynamic> toJson() {
     return {
@@ -73,6 +80,6 @@ class AdminProfileModel {
 
   @override
   String toString() {
-    return "AdminProfileModel(adminId: $adminId, master: $master, contractType: $contractType, contractRegionId: $contractRegionId, subdistrictId: $subdistrictId, name: $name, image: $image, phone: $phone, mail: $mail)";
+    return "AdminProfileModel(adminId: $adminId, master: $master, contractType: $contractType, contractRegionId: $contractRegionId, subdistrictId: $subdistrictId, name: $name, image: $image, phone: $phone, mail: $mail, doctor: ${doctor?.toString()})";
   }
 }

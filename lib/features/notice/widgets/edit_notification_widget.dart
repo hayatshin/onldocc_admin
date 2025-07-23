@@ -163,7 +163,6 @@ class _EditNotificationWidgetState
     return StatefulBuilder(
       builder: (context, setState) {
         return ModalScreen(
-          size: widget.size,
           widthPercentage: 0.7,
           modalTitle: "공지 수정하기",
           modalButtonOneText: "삭제하기",

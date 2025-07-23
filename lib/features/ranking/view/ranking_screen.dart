@@ -38,7 +38,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
   List<UserModel?> _initialPointList = [];
 
   final List<String> _userListHeader = [
-    "#",
+    "번호",
     "이름",
     "핸드폰 번호",
     "종합",
@@ -417,7 +417,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
     int endPage = startPage + _itemsPerPage > _initialPointList.length
         ? _initialPointList.length
         : startPage + _itemsPerPage;
-
+    if (!mounted) return;
     setState(() {
       _userDataList = _initialPointList.sublist(startPage, endPage);
     });
@@ -542,7 +542,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                                         )),
                                     child: Center(
                                       child: Text(
-                                        "#",
+                                        "순위",
                                         style: contentTextStyle,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -1062,7 +1062,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
           //       DataColumn2(
           //         fixedWidth: 50,
           //         label: SelectableText(
-          //           "#",
+          //           "번호",
           //           style: _headerTextStyle,
           //         ),
           //       ),

@@ -39,7 +39,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
   OverlayEntry? overlayEntry;
 
   final List<String> _userListHeader = [
-    "#",
+    "번호",
     "친구 초대 수",
     "이름",
     "연령",
@@ -387,7 +387,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                                 )),
                             child: Center(
                               child: Text(
-                                "#",
+                                "번호",
                                 style: contentTextStyle,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -803,7 +803,7 @@ class _InvitationScreenState extends ConsumerState<InvitationScreen> {
                         DataColumn2(
                           fixedWidth: 50,
                           label: SelectableText(
-                            "#",
+                            "번호",
                             style: _headerTextStyle,
                           ),
                         ),

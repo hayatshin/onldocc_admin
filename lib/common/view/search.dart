@@ -10,10 +10,12 @@ import 'package:onldocc_admin/injicare_font.dart';
 class Search extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
+  final bool bottomGap;
   const Search({
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
+    this.bottomGap = true,
   });
 
   @override
@@ -157,7 +159,7 @@ class _SearchState extends ConsumerState<Search> {
             ),
           ],
         ),
-        Gaps.v40,
+        if (widget.bottomGap) Gaps.v40,
       ],
     );
   }

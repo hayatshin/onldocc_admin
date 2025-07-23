@@ -214,24 +214,21 @@ class EventRepository {
 
   Future<String> uploadSingleImageToStorage(
       String eventId, dynamic image) async {
-    if (!image.toString().startsWith("https://")) {
-      // await deleteEventImageStorage(eventId);
-      final uuid = const Uuid().v4();
-      final fileStoragePath = "$eventId/$uuid";
+    // await deleteEventImageStorage(eventId);
+    final uuid = const Uuid().v4();
+    final fileStoragePath = "$eventId/$uuid";
 
-      XFile xFile = XFile.fromData(image);
-      final imageBytes = await xFile.readAsBytes();
+    XFile xFile = XFile.fromData(image);
+    final imageBytes = await xFile.readAsBytes();
 
-      await _supabase.storage.from("events").uploadBinary(
-          fileStoragePath, imageBytes,
-          fileOptions: const FileOptions(upsert: true));
+    await _supabase.storage.from("events").uploadBinary(
+        fileStoragePath, imageBytes,
+        fileOptions: const FileOptions(upsert: true));
 
-      final fileUrl =
-          _supabase.storage.from("events").getPublicUrl(fileStoragePath);
+    final fileUrl =
+        _supabase.storage.from("events").getPublicUrl(fileStoragePath);
 
-      return fileUrl;
-    }
-    return image;
+    return fileUrl;
   }
 
   Future<void> addEvent(EventModel eventModel) async {

@@ -21,7 +21,8 @@ class AuthenticationRepository {
   Future<Map<String, dynamic>?> getAdminProfile(String uid) async {
     final doc = await _supabase
         .from("admins")
-        .select('*, subdistricts(*), contract_regions(*)')
+        .select(
+            '*, subdistricts(*), contract_regions(*), doctors(doctorId, name, avatar, profile, role)')
         .eq('adminId', uid)
         .single();
     return doc;

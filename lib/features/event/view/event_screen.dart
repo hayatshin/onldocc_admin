@@ -123,7 +123,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
 
     if (!mounted) return;
     removeDeleteOverlay();
-    showCompletingSnackBar(context, "성공적으로 행사가 삭제되었습니다.");
+    showTopCompletingSnackBar(context, "성공적으로 행사가 삭제되었습니다.");
     setState(() {
       _eventList.removeWhere((user) => user.eventId == eventId);
     });
@@ -270,7 +270,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                 )),
                             child: Center(
                               child: Text(
-                                "#",
+                                "번호",
                                 style: contentTextStyle,
                                 overflow: TextOverflow.ellipsis,
                               ),

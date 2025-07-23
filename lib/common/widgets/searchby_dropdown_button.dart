@@ -24,15 +24,28 @@ class SearchByDropdownButton extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton2<String>(
           isExpanded: true,
+          selectedItemBuilder: (context) {
+            return items.map((item) {
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  item,
+                  style: InjicareFont().body07.copyWith(
+                        color: InjicareColor().gray90,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            }).toList();
+          },
           items: items.map((String item) {
             return DropdownMenuItem<String>(
               value: item,
               child: Text(
                 item,
-                style: InjicareFont().body07.copyWith(
-                      color: InjicareColor().gray90,
+                style: InjicareFont().label03.copyWith(
+                      color: InjicareColor().gray80,
                     ),
-                overflow: TextOverflow.ellipsis,
               ),
             );
           }).toList(),

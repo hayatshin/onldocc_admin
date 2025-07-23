@@ -35,7 +35,7 @@ class _DiaryCognitionQuizScreenState
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
   final List<String> _userListHeader = [
-    "#",
+    "번호",
     "이름",
     "연령",
     "출생일",
@@ -308,7 +308,7 @@ class _DiaryCognitionQuizScreenState
                                 )),
                             child: Center(
                               child: Text(
-                                "#",
+                                "번호",
                                 style: contentTextStyle,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -474,7 +474,9 @@ class _DiaryCognitionQuizScreenState
                                     Expanded(
                                       flex: 1,
                                       child: SelectableText(
-                                        _userDataList[i]!.gender,
+                                        _userDataList[i]!
+                                            .gender
+                                            .substring(0, 1),
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                       ),

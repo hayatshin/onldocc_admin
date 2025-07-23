@@ -51,7 +51,7 @@ class _RankingUserDashboardScreenState
   );
 
   final List<String> _listHeader = [
-    "#",
+    "번호",
     "날짜",
     "내용",
   ];
@@ -335,7 +335,7 @@ class _RankingUserDashboardScreenState
                               DataColumn2(
                                 size: ColumnSize.S,
                                 label: SelectableText(
-                                  "#",
+                                  "번호",
                                   style: _headerTextStyle,
                                   textAlign: TextAlign.center,
                                 ),
