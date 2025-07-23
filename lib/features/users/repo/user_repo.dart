@@ -39,7 +39,6 @@ class UserRepository {
             .select('*, subdistricts(*)')
             .eq('subdistrictId', userSubdistrictId)
             .order('createdAt', ascending: false, nullsFirst: false);
-
         userList = data;
       }
 

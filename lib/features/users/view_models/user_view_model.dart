@@ -56,9 +56,10 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
         print("스택: $stack");
       }
     }).toList();
+    final nonNullModelList = modelList.where((e) => e != null).toList();
 
-    state = AsyncData(modelList);
-    return modelList;
+    state = AsyncData(nonNullModelList);
+    return nonNullModelList;
   }
 }
 
