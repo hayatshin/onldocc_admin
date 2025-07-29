@@ -252,7 +252,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             element.createdAt <= _selectedEndSeconds)
         .toList();
 
-    if (selectContractRegion.value!.contractCommunityId == null) {
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
       // 전체보기
       if (mounted) {
         setState(() {

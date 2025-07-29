@@ -572,8 +572,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
             ? _submitEvent
             : () => showDeleteOverlay(
                 widget.eventModel!.eventId, widget.eventModel!.title),
-        modalButtonTwoText: !widget.edit ? null : "수정하기",
-        modalButtonTwoFunction: _submitEvent,
+        // modalButtonTwoText: !widget.edit ? null : "수정하기",
+        // modalButtonTwoFunction: _submitEvent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

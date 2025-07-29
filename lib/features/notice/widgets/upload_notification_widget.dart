@@ -294,8 +294,8 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
               : () => showDeleteOverlay(
                     widget.notificationModel!.todayDiary,
                   ),
-          modalButtonTwoText: !widget.edit ? null : "수정하기",
-          modalButtonTwoFunction: _editFeedNotification,
+          // modalButtonTwoText: !widget.edit ? null : "수정하기",
+          // modalButtonTwoFunction: _editFeedNotification,
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,

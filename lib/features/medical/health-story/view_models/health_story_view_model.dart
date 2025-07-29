@@ -6,9 +6,7 @@ import 'package:onldocc_admin/features/medical/health-story/repo/health_story_re
 
 class HealthStoryViewModel extends AsyncNotifier<void> {
   @override
-  FutureOr<void> build() {
-    throw UnimplementedError();
-  }
+  FutureOr<void> build() {}
 
   Future<void> insertHealthStory(HealthStoryModel model) async {
     await ref.read(healthStoryRepo).insertHealthStory(model.toJson());

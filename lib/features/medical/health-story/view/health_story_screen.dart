@@ -61,7 +61,7 @@ class _HealthStoryScreenState extends ConsumerState<HealthStoryScreen> {
       context,
       UploadHealthStory(
         model: model,
-        updateHealthStoreis: _initializeStories,
+        updateHealthStories: _initializeStories,
       ),
     );
   }
@@ -70,7 +70,7 @@ class _HealthStoryScreenState extends ConsumerState<HealthStoryScreen> {
     showRightModal(
       context,
       UploadHealthStory(
-        updateHealthStoreis: _initializeStories,
+        updateHealthStories: _initializeStories,
       ),
     );
   }

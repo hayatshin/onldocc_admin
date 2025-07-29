@@ -167,8 +167,8 @@ class _EditNotificationWidgetState
           modalTitle: "공지 수정하기",
           modalButtonOneText: "삭제하기",
           modalButtonOneFunction: () {},
-          modalButtonTwoText: "수정하기",
-          modalButtonTwoFunction: () {},
+          // modalButtonTwoText: "수정하기",
+          // modalButtonTwoFunction: () {},
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

@@ -1,43 +1,113 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/view/search.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/const.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
+import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/features/medical/health-consult/models/health_consult_inquiry_model.dart';
+import 'package:onldocc_admin/features/medical/health-consult/view_models/health_consult_view_model.dart';
+import 'package:onldocc_admin/features/medical/health-consult/widgets/response_health_consult.dart';
+import 'package:onldocc_admin/features/medical/health-story/view/health_story_screen.dart';
 import 'package:onldocc_admin/features/notice/views/notice_screen.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class HealthConsultScreen extends StatefulWidget {
+class HealthConsultScreen extends ConsumerStatefulWidget {
   static const routeURL = "/health-consult";
   static const routeName = "healthConsult";
   const HealthConsultScreen({super.key});
 
   @override
-  State<HealthConsultScreen> createState() => _HealthConsultScreenState();
+  ConsumerState<HealthConsultScreen> createState() =>
+      _HealthConsultScreenState();
 }
 
-class _HealthConsultScreenState extends State<HealthConsultScreen> {
+class _HealthConsultScreenState extends ConsumerState<HealthConsultScreen> {
   final _testTypes = ["전체", "답변완료", "답변대기"];
   String _selectedTestType = "전체";
 
-  List _list = [];
-  final List _initialList = [];
-
-  Future<void> _filterUserDataList(
-      String? searchBy, String searchKeyword) async {}
-
-  Future<void> _getUserModelList() async {}
+  List<HealthConsultInquiryModel> _list = [];
+  List<HealthConsultInquiryModel> _initialList = [];
 
   static const int _itemsPerPage = 20;
   int _currentPage = 0;
   int _pageIndication = 0;
-  final int _totalListLength = 0;
-  final int _endPage = 0;
+  int _totalListLength = 0;
+  int _endPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeHealthConsults();
+  }
+
+  Future<void> _filterUserDataList(
+      String? searchBy, String searchKeyword) async {
+    List<HealthConsultInquiryModel> filterList = [];
+    if (searchBy == "이름") {
+      filterList = _initialList
+          .where((element) => element.userName!.contains(searchKeyword))
+          .cast<HealthConsultInquiryModel>()
+          .toList();
+    } else {
+      filterList = _initialList
+          .where((element) => element.userPhone!.contains(searchKeyword))
+          .cast<HealthConsultInquiryModel>()
+          .toList();
+    }
+    int endPage = filterList.length ~/ _itemsPerPage + 1;
+
+    setState(() {
+      _list = filterList;
+      _currentPage = 0;
+      _pageIndication = 0;
+      _endPage = endPage;
+    });
+  }
+
+  Future<void> _initializeHealthConsults() async {
+    final data =
+        await ref.read(healthConsultProvider.notifier).fetchAllHealthConsults();
+    int endPage = data.length ~/ _itemsPerPage + 1;
+
+    setState(() {
+      _initialList = data;
+      _list = data;
+      _totalListLength = data.length;
+      _endPage = endPage;
+    });
+  }
+
+  void _classifyHealthConsults(String? value) {
+    List<HealthConsultInquiryModel> inquires = [];
+
+    switch (value) {
+      case "전체":
+        inquires = _initialList;
+      case "답변완료":
+        inquires =
+            _initialList.where((inquiry) => inquiry.response != null).toList();
+      case "답변대기":
+        inquires =
+            _initialList.where((inquiry) => inquiry.response == null).toList();
+
+      default:
+        inquires = _initialList;
+    }
+
+    if (value != null) {
+      setState(() {
+        _selectedTestType = value;
+        _list = inquires;
+      });
+    }
+  }
 
   void _updateUserlistPerPage() {
     int startPage = _currentPage * _itemsPerPage;
@@ -75,6 +145,43 @@ class _HealthConsultScreenState extends State<HealthConsultScreen> {
       _currentPage = s - 1;
     });
     _updateUserlistPerPage();
+  }
+
+  void _respondHealthConsult(HealthConsultInquiryModel model) {
+    final adminProfile = ref.read(adminProfileProvider).value;
+    if (adminProfile == null) return;
+    if (adminProfile.doctor == null ||
+        adminProfile.doctor?.role != "counseling") {
+      showTopWarningSnackBar(context, "작성 권한을 가진 의사가 아닙니다");
+      return;
+    }
+
+    showRightModal(
+      context,
+      ResponseHealthConsult(
+        model: model,
+        updateHealthConsults: _initializeHealthConsults,
+      ),
+    );
+  }
+
+  void _editHealthConsult(HealthConsultInquiryModel model) {
+    final adminProfile = ref.read(adminProfileProvider).value;
+    if (adminProfile == null) return;
+    if (adminProfile.doctor == null ||
+        adminProfile.doctor?.role != "counseling") {
+      showTopWarningSnackBar(context, "수정 권한을 가진 의사가 아닙니다");
+      return;
+    }
+
+    showRightModal(
+      context,
+      ResponseHealthConsult(
+        model: model,
+        updateHealthConsults: _initializeHealthConsults,
+        response: model.response!,
+      ),
+    );
   }
 
   @override
@@ -131,13 +238,8 @@ class _HealthConsultScreenState extends State<HealthConsultScreen> {
                               );
                             }).toList(),
                             value: _selectedTestType,
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _selectedTestType = value;
-                                });
-                              }
-                            },
+                            onChanged: (value) =>
+                                _classifyHealthConsults(value),
                             buttonStyleData: ButtonStyleData(
                               padding:
                                   const EdgeInsets.only(left: 14, right: 14),
@@ -184,7 +286,7 @@ class _HealthConsultScreenState extends State<HealthConsultScreen> {
                   ),
                   Search(
                     filterUserList: _filterUserDataList,
-                    resetInitialList: _getUserModelList,
+                    resetInitialList: _initializeHealthConsults,
                     bottomGap: false,
                   ),
                 ],
@@ -387,7 +489,7 @@ class _HealthConsultScreenState extends State<HealthConsultScreen> {
                     ],
                   ),
                   if (_list.isNotEmpty)
-                    for (int i = 0; i < 20; i++)
+                    for (int i = 0; i < _list.length; i++)
                       Column(
                         children: [
                           SizedBox(
@@ -429,7 +531,7 @@ class _HealthConsultScreenState extends State<HealthConsultScreen> {
                                 Expanded(
                                   flex: 10,
                                   child: SelectableText(
-                                    "상담 내용",
+                                    _list[i].title,
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -437,37 +539,54 @@ class _HealthConsultScreenState extends State<HealthConsultScreen> {
                                 Expanded(
                                   flex: 2,
                                   child: SelectableText(
-                                    "질문 일자",
+                                    createdAtToDateDot(_list[i].createdAt),
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
-                                  child: SelectableText(
-                                    "답변 여부",
-                                    style: contentTextStyle,
-                                    textAlign: TextAlign.center,
-                                  ),
+                                  child: _list[i].response == null
+                                      ? Text(
+                                          "답변대기",
+                                          style: contentTextStyle.copyWith(
+                                            color: InjicareColor().primary40,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        )
+                                      : Text(
+                                          "답변완료",
+                                          style: contentTextStyle.copyWith(
+                                            color: InjicareColor().gray60,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
                                 ),
                                 Expanded(
                                   flex: 2,
-                                  child: SelectableText(
-                                    "답변 완료일자",
-                                    style: contentTextStyle,
-                                    textAlign: TextAlign.center,
-                                  ),
+                                  child: _list[i].response == null
+                                      ? Container()
+                                      : Text(
+                                          createdAtToDateDot(
+                                              _list[i].response!.createdAt),
+                                          style: contentTextStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
                                 ),
                                 Expanded(
                                   flex: 2,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      gestureDetectorWithMouseClick(
-                                        function: () {},
-                                        child: const EditButton(),
-                                      ),
-                                    ],
+                                  child: Center(
+                                    child: _list[i].response == null
+                                        ? gestureDetectorWithMouseClick(
+                                            function: () =>
+                                                _respondHealthConsult(_list[i]),
+                                            child: const ResponseButton(),
+                                          )
+                                        : gestureDetectorWithMouseClick(
+                                            function: () =>
+                                                _editHealthConsult(_list[i]),
+                                            child: const EditButton(),
+                                          ),
                                   ),
                                 ),
                               ],

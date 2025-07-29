@@ -17,11 +17,11 @@ import 'package:onldocc_admin/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class UploadHealthStory extends ConsumerStatefulWidget {
-  final Function() updateHealthStoreis;
+  final Function() updateHealthStories;
   final HealthStoryModel? model;
   const UploadHealthStory({
     super.key,
-    required this.updateHealthStoreis,
+    required this.updateHealthStories,
     this.model,
   });
 
@@ -129,7 +129,7 @@ class _UploadHealthStoryState extends ConsumerState<UploadHealthStory> {
         .read(healthStoryProvider.notifier)
         .insertHealthStory(contentModel);
     if (!mounted) return;
-    widget.updateHealthStoreis();
+    widget.updateHealthStories();
     context.pop();
     final snackBarText =
         widget.model == null ? "콘텐츠가 성공적으로 등록되었어요" : "콘텐츠가 성공적으로 수정되었어요";

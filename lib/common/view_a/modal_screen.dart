@@ -13,9 +13,9 @@ class ModalScreen extends StatefulWidget {
   final Widget child;
   final String modalTitle;
   final String modalButtonOneText;
+  final bool enableModelButton;
   final Function() modalButtonOneFunction;
-  final String? modalButtonTwoText;
-  final Function()? modalButtonTwoFunction;
+
   final bool scroll;
   final bool addBtn;
   final Function()? addAction;
@@ -27,9 +27,8 @@ class ModalScreen extends StatefulWidget {
     required this.child,
     required this.modalTitle,
     required this.modalButtonOneText,
+    this.enableModelButton = true,
     required this.modalButtonOneFunction,
-    this.modalButtonTwoText,
-    this.modalButtonTwoFunction,
     this.scroll = true,
     this.addBtn = false,
     this.addAction,
@@ -142,7 +141,9 @@ class _ModalScreenState extends State<ModalScreen> {
                           height: searchHeight,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: InjicareColor().secondary50,
+                            color: widget.enableModelButton
+                                ? InjicareColor().secondary50
+                                : InjicareColor().gray30,
                           ),
                           child: Center(
                             child: Text(
