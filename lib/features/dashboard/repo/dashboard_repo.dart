@@ -225,6 +225,33 @@ class DashboardRepository {
       return data;
     }
   }
+
+  Future<List<Map<String, dynamic>>> visitCount(
+      int selectedStartSeconds, int selectedEndSeconds) async {
+    final userSubdistrictId = selectContractRegion.value!.subdistrictId;
+    if (userSubdistrictId != "") {
+      // 지역
+      final data = await _supabase
+          .from("visit_logs")
+          .select(
+              '*, users!inner(userId, subdistrictId, contractCommunityId, gender, birthYear, birthDay)')
+          .eq("users.subdistrictId", userSubdistrictId)
+          .gte("visitedAt", selectedStartSeconds)
+          .lt("visitedAt", selectedEndSeconds);
+      return data;
+    } else {
+      // 마스터
+      final data = await _supabase
+          .from("visit_logs")
+          .select(
+              '*, users!inner(userId, subdistrictId, contractCommunityId, gender, birthYear, birthDay)')
+          .gte("visitedAt", selectedStartSeconds)
+          .lt("visitedAt", selectedEndSeconds);
+
+      print("data: ${data.length}");
+      return data;
+    }
+  }
 }
 
 final dashboardRepo = Provider((ref) => DashboardRepository());
