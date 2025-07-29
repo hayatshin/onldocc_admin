@@ -44,7 +44,8 @@ class DashboardViewModel extends AsyncNotifier<void> {
     final modelList =
         data.map((element) => DashboardCountModel.from(element)).toList();
 
-    if (selectContractRegion.value!.contractCommunityId == null) {
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
       // 전체보기
       return modelList;
     } else {

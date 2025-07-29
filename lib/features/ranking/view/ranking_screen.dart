@@ -101,8 +101,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
         await ref.read(rankingProvider.notifier).getUserPoints(range!);
     int endPage = userDataList.length ~/ _itemsPerPage + 1;
 
-    if (selectContractRegion.value!.contractCommunityId == null ||
-        selectContractRegion.value!.contractCommunityId == "") {
+    if (selectContractRegion.value!.contractCommunityId == null) {
       // 전체보기
 
       if (mounted) {

@@ -1,9 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
+import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/const.dart';
@@ -14,6 +16,7 @@ import 'package:onldocc_admin/features/login/view_models/admin_profile_view_mode
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/utils.dart';
 
 const double menuHeight = 50;
 const double borderRadius = 13;
@@ -48,6 +51,49 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   ];
   String _selectRegion = "전체";
   String _selectCommunity = "전체";
+
+  bool _enableCognitionQuiz = true;
+  bool _enableMedicalFeature = true;
+
+  bool _openCognitionQuizDescription = false;
+  bool _openMedicalFeatureDescription = false;
+
+  void _initializeAppFeatures() async {
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+
+    _enableCognitionQuiz = adminProfileModel.hasCognitionQuiz;
+    _enableMedicalFeature = adminProfileModel.hasMedicalFeature;
+  }
+
+  void _updateCognitionQuiz(bool value) async {
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+
+    setState(() {
+      _enableCognitionQuiz = value;
+    });
+    await ref.read(contractRepo).updateContractRegionSetting(
+        adminProfileModel.contractRegionId, "hasCognitionQuiz", value);
+    if (!mounted) return;
+    showTopCompletingSnackBar(context, "두뇌 문제 풀기 설정이 반영되었습니다");
+  }
+
+  void _updateMedicalFeature(bool value) async {
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+
+    setState(() {
+      _enableMedicalFeature = value;
+    });
+    await ref.read(contractRepo).updateContractRegionSetting(
+        adminProfileModel.contractRegionId, "hasMedicalFeature", value);
+    if (!mounted) return;
+    showTopCompletingSnackBar(context, "건강 기능 설정이 반영되었습니다");
+  }
 
   Future<void> _initializeAdminMasterSetting() async {
     AdminProfileModel? adminProfileModel =
@@ -134,6 +180,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     super.initState();
 
     _initializeAdminMasterSetting();
+    _initializeAppFeatures();
   }
 
   @override
@@ -191,6 +238,108 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   ],
                                 ),
                                 Gaps.v20,
+                                if (!_adminProfileModel.master)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: InjicareColor().primary20,
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 14,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "지역/기관 기능 설정",
+                                            style: InjicareFont()
+                                                .label02
+                                                .copyWith(
+                                                    color: InjicareColor()
+                                                        .primary50),
+                                          ),
+                                          Gaps.v10,
+                                          Column(
+                                            children: [
+                                              RegionFeatureSetting(
+                                                setting: "두뇌 문제 풀기",
+                                                enableSetting:
+                                                    _enableCognitionQuiz,
+                                                updateSetting:
+                                                    _updateCognitionQuiz,
+                                                openDescription:
+                                                    _openCognitionQuizDescription,
+                                                updateDescription: () {
+                                                  setState(() {
+                                                    _openCognitionQuizDescription =
+                                                        !_openCognitionQuizDescription;
+                                                  });
+                                                },
+                                              ),
+                                              if (_openCognitionQuizDescription)
+                                                Text(
+                                                  "두뇌 문제 풀기 기능을 끄면 사용자는 문제를 풀지 않고도 일기를 작성할 수 있습니다",
+                                                  style: InjicareFont()
+                                                      .label03
+                                                      .copyWith(
+                                                          color: InjicareColor()
+                                                              .gray70),
+                                                )
+                                                    .animate()
+                                                    .slideY(
+                                                        begin: -0.15,
+                                                        end: 0,
+                                                        duration: Duration(
+                                                            milliseconds: 400))
+                                                    .fadeIn(
+                                                      duration: Duration(
+                                                          milliseconds: 300),
+                                                    ),
+                                              Gaps.v10,
+                                              RegionFeatureSetting(
+                                                setting: "건강 기능",
+                                                enableSetting:
+                                                    _enableMedicalFeature,
+                                                updateSetting:
+                                                    _updateMedicalFeature,
+                                                openDescription:
+                                                    _openMedicalFeatureDescription,
+                                                updateDescription: () {
+                                                  setState(() {
+                                                    _openMedicalFeatureDescription =
+                                                        !_openMedicalFeatureDescription;
+                                                  });
+                                                },
+                                              ),
+                                              if (_openMedicalFeatureDescription)
+                                                Text(
+                                                  "사용자의 건강 메뉴 사용 여부를 설정합니다",
+                                                  style: InjicareFont()
+                                                      .label03
+                                                      .copyWith(
+                                                          color: InjicareColor()
+                                                              .gray70),
+                                                )
+                                                    .animate()
+                                                    .slideY(
+                                                        begin: -0.15,
+                                                        end: 0,
+                                                        duration: Duration(
+                                                            milliseconds: 400))
+                                                    .fadeIn(
+                                                      duration: Duration(
+                                                          milliseconds: 300),
+                                                    ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                Gaps.v10,
                                 Container(
                                   decoration: BoxDecoration(
                                     color: Palette().lightPurple,
@@ -388,6 +537,75 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
           ),
         );
       },
+    );
+  }
+}
+
+class RegionFeatureSetting extends StatelessWidget {
+  final String setting;
+  final bool enableSetting;
+  final Function(bool) updateSetting;
+  final bool openDescription;
+  final Function() updateDescription;
+  const RegionFeatureSetting({
+    super.key,
+    required this.setting,
+    required this.enableSetting,
+    required this.updateSetting,
+    required this.openDescription,
+    required this.updateDescription,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          setting,
+          style: TextStyle(
+            fontSize: Sizes.size13,
+            fontWeight: FontWeight.w700,
+            color: InjicareColor().gray90,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Row(
+          children: [
+            Transform.scale(
+              scale: 0.8,
+              child: Switch(
+                value: enableSetting,
+                onChanged: updateSetting,
+                activeTrackColor: Colors.transparent,
+                inactiveThumbColor: InjicareColor().gray80,
+                activeColor: InjicareColor().primary50,
+                inactiveTrackColor: Colors.transparent,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                trackOutlineColor: WidgetStateProperty.resolveWith(
+                  (states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return InjicareColor().primary50;
+                    }
+                    return InjicareColor().gray80;
+                  },
+                ),
+              ),
+            ),
+            Gaps.h5,
+            gestureDetectorWithMouseClick(
+              function: updateDescription,
+              child: Icon(
+                !openDescription
+                    ? Icons.expand_more_rounded
+                    : Icons.expand_less_rounded,
+                size: 14,
+                color: Palette().normalGray,
+              ),
+            )
+          ],
+        )
+      ],
     );
   }
 }

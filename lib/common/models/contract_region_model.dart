@@ -17,23 +17,23 @@ class ContractRegionModel {
 
   ContractRegionModel.empty()
       : name = "전체",
-        contractRegionId = "",
-        contractCommunityId = "",
+        contractRegionId = null,
+        contractCommunityId = null,
         subdistrictId = "",
-        image = "";
+        image = null;
 
   ContractRegionModel.total(
       String adminContractRegionId, String adminSubdistrictId)
       : name = "전체",
         contractRegionId = adminContractRegionId,
-        contractCommunityId = "",
+        contractCommunityId = null,
         subdistrictId = adminSubdistrictId,
         image = injicareAvatar;
 
   ContractRegionModel.fromJsonRegion(Map<String, dynamic> json)
       : name = json["subdistricts"]["subdistrict"],
-        contractRegionId = json["contractRegionId"] ?? "",
-        contractCommunityId = json["contractCommunityId"] ?? "",
+        contractRegionId = json["contractRegionId"],
+        contractCommunityId = json["contractCommunityId"],
         subdistrictId = json["subdistrictId"] ?? "",
         image = json["contractRegions"] != null
             ? json["contractRegions"]["image"]
@@ -41,8 +41,8 @@ class ContractRegionModel {
 
   ContractRegionModel.fromJsonCommunity(Map<String, dynamic> json)
       : name = json["name"],
-        contractRegionId = json["contractRegionId"] ?? "",
-        contractCommunityId = json["contractCommunityId"] ?? "",
+        contractRegionId = json["contractRegionId"],
+        contractCommunityId = json["contractCommunityId"],
         subdistrictId = json["subdistrictId"] ?? "",
         image = json["image"] ?? injicareAvatar;
 }

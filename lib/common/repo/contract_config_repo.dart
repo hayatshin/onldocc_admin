@@ -51,6 +51,20 @@ class ContractConfigRepository {
 
     return contractCommunities;
   }
+
+  Future<void> updateContractRegionSetting(
+      String contractRegionId, String column, bool value) async {
+    await _supabase
+        .from("contract_regions")
+        .update({column: value}).eq('contractRegionId', contractRegionId);
+  }
+
+  Future<void> updateContractCommunitySetting(
+      String contractCommunityId, String column, bool value) async {
+    await _supabase
+        .from("contract_communities")
+        .update({column: value}).eq('contractCommunityId', contractCommunityId);
+  }
 }
 
 final contractRepo = Provider((ref) => ContractConfigRepository());
