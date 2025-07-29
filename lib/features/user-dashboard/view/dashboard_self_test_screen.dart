@@ -25,7 +25,7 @@ class DashboardSelfTestScreen extends ConsumerStatefulWidget {
   final String? userId;
   final String? userName;
   final String? quizType;
-  final String? periodType;
+  final DateRange? periodType;
 
   const DashboardSelfTestScreen({
     super.key,
@@ -98,42 +98,11 @@ class _DashboardSelfTestScreenState
   }
 
   void _initializePeriod() {
-    switch (widget.periodType) {
-      case "이번달":
-        _selectedDateRange = DateRange(
+    _selectedDateRange = widget.periodType ??
+        DateRange(
           getThisMonth1stdayStartDatetime(),
           getThisMonthLastdayEndDatetime(),
         );
-
-        break;
-      case "지난달":
-        _selectedDateRange = DateRange(
-          getLastMonth1stdayStartDatetime(),
-          getLastMonthLastdayEndDatetime(),
-        );
-
-        break;
-      case "이번주":
-        _selectedDateRange = DateRange(
-          getThisWeekMondayStartDatetime(),
-          getThisWeekSundayEndtDatetime(),
-        );
-
-        break;
-      case "지난주":
-        _selectedDateRange = DateRange(
-          getLastWeekMondayStartDateTime(),
-          getLastWeekSundayEndDateTime(),
-        );
-
-        break;
-      default:
-        _selectedDateRange = DateRange(
-          getThisMonth1stdayStartDatetime(),
-          getThisMonthLastdayEndDatetime(),
-        );
-        break;
-    }
   }
 
   void _initializeTestType() async {

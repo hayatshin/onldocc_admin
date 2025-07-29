@@ -1,8 +1,10 @@
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+
 class DahsboardDetailPathModel {
   final String? userId;
   final String? userName;
   final String? quizType;
-  final String? periodType;
+  final DateRange? periodType;
 
   DahsboardDetailPathModel({
     required this.userId,
@@ -15,5 +17,5 @@ class DahsboardDetailPathModel {
       : userId = json["userId"],
         userName = json["userName"],
         quizType = json["quizType"],
-        periodType = json["periodType"];
+        periodType = (json["periodType"] as DateRange);
 }

@@ -69,8 +69,12 @@ class AdminProfileModel {
         doctor = json["doctors"] != null
             ? DoctorModel.fromJson(json["doctors"])
             : null,
-        hasMedicalFeature = json["contract_regions"]["hasMedicalFeature"],
-        hasCognitionQuiz = json["contract_regions"]["hasCognitionQuiz"];
+        hasMedicalFeature = json["contract_regions"] != null
+            ? json["contract_regions"]["hasMedicalFeature"]
+            : true,
+        hasCognitionQuiz = json["contract_regions"] != null
+            ? json["contract_regions"]["hasCognitionQuiz"]
+            : true;
 
   Map<String, dynamic> toJson() {
     return {

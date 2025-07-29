@@ -203,11 +203,11 @@ final routerProvider = Provider(
                             : "",
                         quizType: state.extra != null
                             ? (state.extra as DahsboardDetailPathModel).quizType
-                            : "",
+                            : null,
                         periodType: state.extra != null
                             ? (state.extra as DahsboardDetailPathModel)
                                 .periodType
-                            : "",
+                            : null,
                       ),
                     ),
                   ),
@@ -224,11 +224,11 @@ final routerProvider = Provider(
                               quizType: state.extra != null
                                   ? (state.extra as DahsboardDetailPathModel)
                                       .quizType
-                                  : "",
+                                  : null,
                               periodType: state.extra != null
                                   ? (state.extra as DahsboardDetailPathModel)
                                       .periodType
-                                  : "",
+                                  : null,
                             ),
                           ),
                       routes: [

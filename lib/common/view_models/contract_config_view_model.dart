@@ -19,6 +19,7 @@ class ContractConfigViewModel extends AsyncNotifier<void> {
     final userId = _authRepository.user!.uid;
     final adminData = await _authRepository.getAdminProfile(userId);
     final adminProfile = AdminProfileModel.fromJson(adminData!);
+
     return adminProfile;
   }
 

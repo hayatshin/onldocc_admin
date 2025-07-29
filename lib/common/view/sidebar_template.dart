@@ -254,7 +254,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "지역/기관 기능 설정",
+                                            "지역 기능 설정",
                                             style: InjicareFont()
                                                 .label02
                                                 .copyWith(

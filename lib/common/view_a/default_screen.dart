@@ -79,7 +79,7 @@ class DefaultTemplate extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (menu.backButton)
                         Row(
@@ -95,7 +95,7 @@ class DefaultTemplate extends StatelessWidget {
                                       InjicareColor().gray80, BlendMode.srcIn),
                                   child: SvgPicture.asset(
                                     "assets/svg/arrow-left.svg",
-                                    width: 30,
+                                    width: 20,
                                   ),
                                 ),
                               ),
