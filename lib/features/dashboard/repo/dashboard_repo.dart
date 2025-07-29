@@ -248,7 +248,6 @@ class DashboardRepository {
           .gte("visitedAt", selectedStartSeconds)
           .lt("visitedAt", selectedEndSeconds);
 
-      print("data: ${data.length}");
       return data;
     }
   }

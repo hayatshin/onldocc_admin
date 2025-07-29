@@ -11,7 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class RankingRepository {
   final _supabase = Supabase.instance.client;
   static final pointPFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-p-functions-5");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-p-functions-6");
 
   // supabase
   Future<List<dynamic>> getUserPoints(
@@ -33,6 +33,7 @@ class RankingRepository {
       body: requestBodyJson,
       headers: headers,
     );
+    print("response.statusCode: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));

@@ -6,7 +6,6 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
-import 'package:onldocc_admin/palette.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   static const routeURL = "/";
@@ -23,6 +22,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   bool _isPasswordInvisible = true;
   final double? formWidth = 300;
   final double? formHeight = 42;
+  final double borderRadius = 10;
 
   Map<String, String> formData = {};
   bool forwardAnimation = true;
@@ -56,113 +56,109 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: Opacity(
-              opacity: 0.12,
-              child: Image.asset(
-                "assets/images/gradient-back.png",
-              ),
-            ),
-          ),
           Positioned(
             left: 120,
             bottom: 80,
             child: Opacity(
               opacity: 1,
               child: Image.asset(
-                "assets/images/doctor-senior.png",
-                width: 250,
+                "assets/images/appcomputer.png",
+                width: size.width * 0.4,
               ),
             ),
           ),
           Center(
             child: SizedBox(
-              width: 800,
+              width: size.width * 0.7,
               height: 500,
               child: Stack(
                 children: [
                   Positioned(
-                    left: 0,
+                    right: 0,
                     top: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Gaps.v20,
-                                    SelectableText(
-                                      "시니어들의 빅데이터",
-                                      style: InjicareFont().headline01,
-                                    ),
-                                    Gaps.v10,
-                                    SelectableText(
-                                      "인지케어 관리자페이지",
-                                      style: InjicareFont().headline01,
-                                    ),
-                                  ],
-                                ),
-                                Gaps.h20,
-                                Image.asset(
-                                  "assets/images/icon_line.png",
-                                  width: 65,
-                                ),
-                              ],
-                            ),
-                            Gaps.v40,
-                            RichText(
-                              text: TextSpan(
-                                  text: "인지 검사, AI 대화, 일기, 걸음수 등 시니어들의 활동 ",
-                                  style: InjicareFont().body03.copyWith(
-                                        color: InjicareColor().gray90,
-                                        fontWeight: FontWeight.w400,
+                    child: SizedBox(
+                      width: size.width * 0.4,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Gaps.v20,
+                                      SelectableText(
+                                        "시니어들의 빅데이터",
+                                        style: InjicareFont()
+                                            .headline01
+                                            .copyWith(
+                                                color: InjicareColor().gray100),
                                       ),
-                                  children: const [
-                                    TextSpan(
-                                      text: "빅데이터 ",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
+                                      Gaps.v10,
+                                      SelectableText(
+                                        "인지케어 관리자페이지",
+                                        style: InjicareFont()
+                                            .headline01
+                                            .copyWith(
+                                                color: InjicareColor().gray100),
                                       ),
-                                    ),
-                                    TextSpan(
-                                      text: "제공부터\n지자체의 ",
-                                    ),
-                                    TextSpan(
-                                      text: "월별 리포트 발행",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Gaps.v40,
+                              RichText(
+                                text: TextSpan(
+                                    text: "인지 검사, AI 대화, 일기, 걸음수 등 시니어들의 활동 ",
+                                    style: InjicareFont().body03.copyWith(
+                                          color: InjicareColor().gray90,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                    children: const [
+                                      TextSpan(
+                                        text: "빅데이터 ",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    ),
-                                    TextSpan(
-                                      text: "과 다양한 ",
-                                    ),
-                                    TextSpan(
-                                      text: "행사 주관",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
+                                      TextSpan(
+                                        text: "제공부터\n지자체의 ",
                                       ),
-                                    ),
-                                    TextSpan(
-                                      text: "까지!\n인지케어에서 한번에 관리하세요.",
-                                    ),
-                                  ]),
-                            ),
-                          ],
-                        ),
-                      ],
+                                      TextSpan(
+                                        text: "월별 리포트 발행",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: "과 다양한 ",
+                                      ),
+                                      TextSpan(
+                                        text: "행사 주관",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: "까지!\n인지케어에서 한번에 관리하세요",
+                                      ),
+                                    ]),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Form(
@@ -179,7 +175,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                 SelectableText(
                                   "이메일",
                                   style: InjicareFont().body03.copyWith(
-                                        color: Palette().darkPurple,
+                                        color: InjicareColor().gray90,
                                       ),
                                 ),
                                 const Spacer(),
@@ -187,55 +183,50 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                   width: formWidth,
                                   height: 50,
                                   child: TextFormField(
-                                    cursorColor: Palette().darkPurple,
+                                    cursorColor: InjicareColor().gray90,
                                     onFieldSubmitted: (value) => _onSubmitTap(),
                                     textAlignVertical: TextAlignVertical.center,
                                     style: InjicareFont().body06.copyWith(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                         ),
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
@@ -268,7 +259,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                 SelectableText(
                                   "비밀번호",
                                   style: InjicareFont().body03.copyWith(
-                                        color: Palette().darkPurple,
+                                        color: InjicareColor().gray90,
                                       ),
                                 ),
                                 const Spacer(),
@@ -276,56 +267,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                   width: formWidth,
                                   height: 50,
                                   child: TextFormField(
-                                    cursorColor: Palette().darkPurple,
+                                    cursorColor: InjicareColor().gray90,
                                     onFieldSubmitted: (value) => _onSubmitTap(),
                                     textAlignVertical: TextAlignVertical.center,
                                     style: InjicareFont().body06.copyWith(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                         ),
                                     obscureText: _isPasswordInvisible,
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
                                       errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          Sizes.size5,
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(borderRadius),
                                         borderSide: BorderSide(
-                                          color: Palette().darkPurple,
+                                          color: InjicareColor().gray90,
                                           width: 2,
                                         ),
                                       ),
@@ -352,7 +338,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                                     ? FontAwesomeIcons.eye
                                                     : FontAwesomeIcons.eyeSlash,
                                                 size: Sizes.size16,
-                                                color: Palette().darkPurple,
+                                                color: InjicareColor().gray90,
                                               ),
                                             ),
                                           ),
@@ -389,10 +375,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                               const Duration(milliseconds: 500),
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
-                                            color: Palette().darkPurple,
-                                            borderRadius: BorderRadius.circular(
-                                              Sizes.size5,
-                                            ),
+                                            color: InjicareColor().gray100,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                           ),
                                           child: Text(
                                             "로그인",
