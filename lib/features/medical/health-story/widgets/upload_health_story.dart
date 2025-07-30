@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -15,6 +16,7 @@ import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:uuid/uuid.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class UploadHealthStory extends ConsumerStatefulWidget {
   final Function() updateHealthStories;
@@ -228,7 +230,9 @@ class _UploadHealthStoryState extends ConsumerState<UploadHealthStory> {
                         config: QuillEditorConfig(
                           placeholder: '콘텐츠 내용을 작성해주세요',
                           embedBuilders: [
-                            ...FlutterQuillEmbeds.editorWebBuilders(),
+                            CustomVideoEmbedBuilder(),
+                            ...FlutterQuillEmbeds.editorWebBuilders()
+                                .where((b) => b.key != 'video'),
                           ],
                           customStyles: DefaultStyles(
                             placeHolder: DefaultTextBlockStyle(
@@ -259,5 +263,148 @@ class _UploadHealthStoryState extends ConsumerState<UploadHealthStory> {
         ),
       ),
     );
+  }
+}
+
+class CustomImageEmbedBuilder extends EmbedBuilder {
+  const CustomImageEmbedBuilder();
+
+  @override
+  String get key => 'image';
+
+  @override
+  Widget build(BuildContext context, EmbedContext embedContext) {
+    final data = embedContext.node.value.data;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Image.network(
+            data,
+            width: constraints.maxWidth,
+            fit: BoxFit.contain,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class CustomVideoEmbedBuilder extends EmbedBuilder {
+  const CustomVideoEmbedBuilder();
+
+  @override
+  String get key => 'video';
+
+  @override
+  Widget build(BuildContext context, EmbedContext embedContext) {
+    final data = embedContext.node.value.data;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: _VideoPlayerWidget(url: data),
+    );
+  }
+}
+
+class _VideoPlayerWidget extends StatefulWidget {
+  final String url;
+
+  const _VideoPlayerWidget({required this.url});
+
+  @override
+  State<_VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<_VideoPlayerWidget> {
+  bool _isLoaded = false;
+  bool _isYoutube = false;
+
+  Uint8List? _videoThumbnail;
+  @override
+  void initState() {
+    super.initState();
+    _initializeYoutube();
+    _loadThumbnail();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void _initializeYoutube() {
+    final isYoutube = widget.url.contains("youtu");
+    setState(() {
+      _isLoaded = true;
+      _isYoutube = isYoutube;
+    });
+  }
+
+  Future<void> _loadThumbnail() async {
+    if (widget.url.contains("youtu")) {
+      return;
+    }
+    final thumbnail = await getVideoFileThumbnail(widget.url);
+
+    if (mounted) {
+      setState(() {
+        _videoThumbnail = thumbnail;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isLoaded) {
+      return Container();
+    }
+    if (_isYoutube) {
+      final videoId = YoutubePlayer.convertUrlToId(widget.url);
+      final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/0.jpg';
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.network(thumbnailUrl, fit: BoxFit.cover),
+            const Icon(Icons.play_arrow, color: Colors.white, size: 64),
+          ],
+        ),
+      );
+    } else {
+      if (_videoThumbnail == null) {
+        return Padding(
+          padding: const EdgeInsetsGeometry.symmetric(vertical: 30),
+          child: Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(
+                  InjicareColor().gray20,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox.expand(
+                child: Padding(
+              padding:
+                  EdgeInsetsGeometry.symmetric(horizontal: 80, vertical: 30),
+              child: Image.memory(_videoThumbnail!, fit: BoxFit.cover),
+            )),
+            const Icon(Icons.play_arrow, color: Colors.white, size: 64),
+          ],
+        ),
+      );
+    }
   }
 }

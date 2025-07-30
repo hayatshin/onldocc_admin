@@ -43,6 +43,8 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   final contractCommunityController = TextEditingController();
   AdminProfileModel _adminProfileModel = AdminProfileModel.empty();
 
+  bool _initialized = false;
+
   List<ContractRegionModel> _contractRegionItems = [
     ContractRegionModel.empty()
   ];
@@ -137,6 +139,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     }
 
     setState(() {
+      _initialized = true;
       _adminProfileModel = adminProfileModel;
     });
   }
@@ -238,144 +241,141 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   ],
                                 ),
                                 Gaps.v20,
-                                if (!_adminProfileModel.master)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: InjicareColor().primary20,
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 14,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "지역 기능 설정",
-                                            style: InjicareFont()
-                                                .label02
-                                                .copyWith(
-                                                    color: InjicareColor()
-                                                        .primary50),
-                                          ),
-                                          Gaps.v10,
-                                          Column(
-                                            children: [
-                                              RegionFeatureSetting(
-                                                setting: "두뇌 문제 풀기",
-                                                enableSetting:
-                                                    _enableCognitionQuiz,
-                                                updateSetting:
-                                                    _updateCognitionQuiz,
-                                                openDescription:
-                                                    _openCognitionQuizDescription,
-                                                updateDescription: () {
-                                                  setState(() {
-                                                    _openCognitionQuizDescription =
-                                                        !_openCognitionQuizDescription;
-                                                  });
-                                                },
-                                              ),
-                                              if (_openCognitionQuizDescription)
-                                                Text(
-                                                  "두뇌 문제 풀기 기능을 끄면 사용자는 문제를 풀지 않고도 일기를 작성할 수 있습니다",
-                                                  style: InjicareFont()
-                                                      .label03
-                                                      .copyWith(
-                                                          color: InjicareColor()
-                                                              .gray70),
-                                                )
-                                                    .animate()
-                                                    .slideY(
-                                                        begin: -0.15,
-                                                        end: 0,
-                                                        duration: Duration(
-                                                            milliseconds: 400))
-                                                    .fadeIn(
-                                                      duration: Duration(
-                                                          milliseconds: 300),
-                                                    ),
-                                              Gaps.v10,
-                                              RegionFeatureSetting(
-                                                setting: "건강 기능",
-                                                enableSetting:
-                                                    _enableMedicalFeature,
-                                                updateSetting:
-                                                    _updateMedicalFeature,
-                                                openDescription:
-                                                    _openMedicalFeatureDescription,
-                                                updateDescription: () {
-                                                  setState(() {
-                                                    _openMedicalFeatureDescription =
-                                                        !_openMedicalFeatureDescription;
-                                                  });
-                                                },
-                                              ),
-                                              if (_openMedicalFeatureDescription)
-                                                Text(
-                                                  "사용자의 건강 메뉴 사용 여부를 설정합니다",
-                                                  style: InjicareFont()
-                                                      .label03
-                                                      .copyWith(
-                                                          color: InjicareColor()
-                                                              .gray70),
-                                                )
-                                                    .animate()
-                                                    .slideY(
-                                                        begin: -0.15,
-                                                        end: 0,
-                                                        duration: Duration(
-                                                            milliseconds: 400))
-                                                    .fadeIn(
-                                                      duration: Duration(
-                                                          milliseconds: 300),
-                                                    ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                Gaps.v10,
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Palette().lightPurple,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 16,
-                                    ),
+                                if (_initialized)
+                                  ClipRRect(
                                     child: Column(
                                       children: [
-                                        if (_adminProfileModel.master)
-                                          Column(
-                                            children: [
-                                              CustomDropdownMenu(
-                                                type: "지역",
-                                                items: _contractRegionItems,
-                                                value: _selectRegion,
-                                                onChangedFunction: (value) =>
-                                                    setContractRegion(value),
+                                        if (!_adminProfileModel.master)
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: InjicareColor().primary20,
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 14,
                                               ),
-                                              Gaps.v10,
-                                            ],
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "지역 기능 설정",
+                                                    style: InjicareFont()
+                                                        .label02
+                                                        .copyWith(
+                                                            color:
+                                                                InjicareColor()
+                                                                    .primary50),
+                                                  ),
+                                                  Gaps.v10,
+                                                  Column(
+                                                    children: [
+                                                      RegionFeatureSetting(
+                                                        setting: "두뇌 문제 풀기",
+                                                        enableSetting:
+                                                            _enableCognitionQuiz,
+                                                        updateSetting:
+                                                            _updateCognitionQuiz,
+                                                        openDescription:
+                                                            _openCognitionQuizDescription,
+                                                        updateDescription: () {
+                                                          setState(() {
+                                                            _openCognitionQuizDescription =
+                                                                !_openCognitionQuizDescription;
+                                                          });
+                                                        },
+                                                      ),
+                                                      AnimatedDescriptionText(
+                                                          visible:
+                                                              _openCognitionQuizDescription,
+                                                          description:
+                                                              "두뇌 문제 풀기 기능을 끄면 사용자는 문제를 풀지 않고도 일기를 작성할 수 있습니다"),
+                                                      Gaps.v10,
+                                                      RegionFeatureSetting(
+                                                        setting: "건강 기능",
+                                                        enableSetting:
+                                                            _enableMedicalFeature,
+                                                        updateSetting:
+                                                            _updateMedicalFeature,
+                                                        openDescription:
+                                                            _openMedicalFeatureDescription,
+                                                        updateDescription: () {
+                                                          setState(() {
+                                                            _openMedicalFeatureDescription =
+                                                                !_openMedicalFeatureDescription;
+                                                          });
+                                                        },
+                                                      ),
+                                                      AnimatedDescriptionText(
+                                                          visible:
+                                                              _openMedicalFeatureDescription,
+                                                          description:
+                                                              "사용자의 건강 메뉴 사용 여부를 설정합니다"),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                        CustomDropdownMenu(
-                                          type: "기관",
-                                          items: _contractCommunityItems,
-                                          value: _selectCommunity,
-                                          onChangedFunction: (value) =>
-                                              setContractCommunity(value),
+                                        Gaps.v10,
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Palette().lightPurple,
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 16,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                if (_adminProfileModel.master)
+                                                  Column(
+                                                    children: [
+                                                      CustomDropdownMenu(
+                                                        type: "지역",
+                                                        items:
+                                                            _contractRegionItems,
+                                                        value: _selectRegion,
+                                                        onChangedFunction:
+                                                            (value) =>
+                                                                setContractRegion(
+                                                                    value),
+                                                      ),
+                                                      Gaps.v10,
+                                                    ],
+                                                  ),
+                                                CustomDropdownMenu(
+                                                  type: "기관",
+                                                  items:
+                                                      _contractCommunityItems,
+                                                  value: _selectCommunity,
+                                                  onChangedFunction: (value) =>
+                                                      setContractCommunity(
+                                                          value),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
                                       ],
-                                    ),
+                                    )
+                                        .animate()
+                                        .slideY(
+                                          begin: -0.5,
+                                          end: 0,
+                                          duration: Duration(milliseconds: 200),
+                                        )
+                                        .fadeIn(
+                                            duration:
+                                                Duration(milliseconds: 200)),
                                   ),
-                                ),
                               ],
                             ),
                             Gaps.v20,
@@ -541,6 +541,69 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   }
 }
 
+class AnimatedDescriptionText extends StatefulWidget {
+  final bool visible;
+  final String description;
+
+  const AnimatedDescriptionText({
+    super.key,
+    required this.visible,
+    required this.description,
+  });
+
+  @override
+  State<AnimatedDescriptionText> createState() =>
+      _AnimatedDescriptionTextState();
+}
+
+class _AnimatedDescriptionTextState extends State<AnimatedDescriptionText> {
+  bool _shouldRender = false;
+
+  @override
+  void didUpdateWidget(covariant AnimatedDescriptionText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.visible && !_shouldRender) {
+      setState(() {
+        _shouldRender = true;
+      });
+    } else if (!widget.visible && _shouldRender) {
+      // 300ms 후 제거
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted && !widget.visible) {
+          setState(() {
+            _shouldRender = false;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: _shouldRender
+            ? Text(
+                widget.description,
+                style: InjicareFont().label03.copyWith(
+                      color: InjicareColor().gray70,
+                    ),
+              )
+                .animate(
+                  target: widget.visible ? 1 : 0,
+                  onComplete: (controller) {
+                    // 애니메이션 끝나고 위에서 제거되므로 여기선 필요 없음
+                  },
+                )
+                .fadeIn(duration: 300.ms)
+                .slideY(begin: -0.15, end: 0, duration: 400.ms)
+            : const SizedBox.shrink(),
+      ),
+    );
+  }
+}
+
 class RegionFeatureSetting extends StatelessWidget {
   final String setting;
   final bool enableSetting;
@@ -690,8 +753,53 @@ class ParentSidebarTile extends StatefulWidget {
   State<ParentSidebarTile> createState() => _ParentSidebarTileState();
 }
 
-class _ParentSidebarTileState extends State<ParentSidebarTile> {
+class _ParentSidebarTileState extends State<ParentSidebarTile>
+    with SingleTickerProviderStateMixin {
   bool expanded = false;
+  bool shouldShowChildren = false;
+
+  late final AnimationController _controllder;
+  late final Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controllder =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+
+    _slideAnimation = Tween<Offset>(begin: Offset(0, -0.1), end: Offset.zero)
+        .animate(
+            CurvedAnimation(parent: _controllder, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controllder.dispose();
+    super.dispose();
+  }
+
+  void _toggleExpanded() {
+    if (expanded) {
+      _controllder.reverse();
+      setState(() {
+        expanded = false;
+      });
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            shouldShowChildren = false;
+          });
+        }
+      });
+    } else {
+      setState(() {
+        shouldShowChildren = true;
+        expanded = true;
+      });
+      _controllder.forward();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -737,11 +845,7 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        expanded = !expanded;
-                      });
-                    },
+                    onTap: _toggleExpanded,
                     child: ColorFiltered(
                       colorFilter: ColorFilter.mode(
                         InjicareColor().gray70,
@@ -763,12 +867,55 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
             ),
           ),
         ),
-        if (expanded)
-          for (int i = 0; i < widget.children.length; i++)
-            ChildSidebarTile(
-              model: widget.children[i],
-              parentSelected: widget.selected,
+        AnimatedSize(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          child: ClipRRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: expanded ? 1.0 : 0.0,
+              child: shouldShowChildren
+                  ? SlideTransition(
+                      position: _slideAnimation,
+                      child: Column(
+                        children: [
+                          for (int i = 0; i < widget.children.length; i++)
+                            ChildSidebarTile(
+                              model: widget.children[i],
+                              parentSelected: widget.selected,
+                            )
+                        ],
+                      ),
+                    )
+                  : SizedBox.shrink(),
             ),
+          ),
+        ),
+        // if (expanded)
+        //   for (int i = 0; i < widget.children.length; i++)
+        //     AnimatedSize(
+        //       duration: Duration(milliseconds: 300),
+        //       curve: Curves.easeInOut,
+        //       alignment: Alignment.topCenter,
+        //       child: ClipRRect(
+        //         child: Align(
+        //           alignment: Alignment.topCenter,
+        //           heightFactor: expanded ? 1.0 : 0.0,
+        //           child: SlideTransition(
+        //             position: _slideAnimation,
+        //             child: Column(
+        //               children: [
+        //                 ChildSidebarTile(
+        //                   model: widget.children[i],
+        //                   parentSelected: widget.selected,
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
       ],
     );
   }

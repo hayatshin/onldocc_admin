@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:excel/excel.dart' hide Border;
 import 'package:flutter/material.dart';
@@ -1027,4 +1028,19 @@ void showRightModal(BuildContext context, Widget child) {
       );
     },
   );
+}
+
+Future<Uint8List?> getVideoFileThumbnail(String filePath) async {
+  try {
+    final thumbnailPath = await VideoThumbnail.thumbnailData(
+      video: filePath,
+      imageFormat: ImageFormat.JPEG,
+      quality: 100,
+    );
+    return thumbnailPath;
+  } catch (e) {
+    // ignore: avoid_print
+    print(e);
+  }
+  return null;
 }
