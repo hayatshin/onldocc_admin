@@ -33,7 +33,6 @@ class RankingRepository {
       body: requestBodyJson,
       headers: headers,
     );
-    print("response.statusCode: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
