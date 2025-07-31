@@ -74,6 +74,7 @@ class _HealthConsultScreenState extends ConsumerState<HealthConsultScreen> {
   Future<void> _initializeHealthConsults() async {
     final data =
         await ref.read(healthConsultProvider.notifier).fetchAllHealthConsults();
+
     int endPage = data.length ~/ _itemsPerPage + 1;
 
     setState(() {

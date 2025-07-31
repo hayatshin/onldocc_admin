@@ -1029,64 +1029,66 @@ class CustomDropdownMenu extends StatelessWidget {
             color: InjicareColor().gray90,
           ),
         ),
-        SizedBox(
-          width: size.width * 0.1,
-          height: buttonHeight,
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton2<String>(
-              isExpanded: true,
-              items: items.map((ContractRegionModel item) {
-                final lastName = item.name.split(' ').last;
-                return DropdownMenuItem<String>(
-                  value: item.name,
-                  child: Text(
-                    lastName,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Palette().normalGray,
+        Gaps.h10,
+        Expanded(
+          child: SizedBox(
+            height: buttonHeight,
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton2<String>(
+                isExpanded: true,
+                items: items.map((ContractRegionModel item) {
+                  final lastName = item.name.split(' ').last;
+                  return DropdownMenuItem<String>(
+                    value: item.name,
+                    child: Text(
+                      lastName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Palette().normalGray,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
+                  );
+                }).toList(),
+                value: value,
+                onChanged: (value) => onChangedFunction(value),
+                buttonStyleData: ButtonStyleData(
+                  padding: const EdgeInsets.only(left: 14, right: 14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    border: Border.all(
+                      color: InjicareColor().gray20,
+                      width: 1,
+                    ),
                   ),
-                );
-              }).toList(),
-              value: value,
-              onChanged: (value) => onChangedFunction(value),
-              buttonStyleData: ButtonStyleData(
-                padding: const EdgeInsets.only(left: 14, right: 14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                  border: Border.all(
-                    color: InjicareColor().gray20,
-                    width: 1,
+                ),
+                iconStyleData: IconStyleData(
+                  icon: const Icon(
+                    Icons.expand_more_rounded,
+                  ),
+                  iconSize: 14,
+                  iconEnabledColor: Palette().normalGray,
+                  iconDisabledColor: Palette().normalGray,
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  elevation: 2,
+                  width: size.width * 0.1,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  scrollbarTheme: ScrollbarThemeData(
+                    radius: const Radius.circular(10),
+                    thumbVisibility: WidgetStateProperty.all(true),
                   ),
                 ),
-              ),
-              iconStyleData: IconStyleData(
-                icon: const Icon(
-                  Icons.expand_more_rounded,
-                ),
-                iconSize: 14,
-                iconEnabledColor: Palette().normalGray,
-                iconDisabledColor: Palette().normalGray,
-              ),
-              dropdownStyleData: DropdownStyleData(
-                elevation: 2,
-                width: size.width * 0.1,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                scrollbarTheme: ScrollbarThemeData(
-                  radius: const Radius.circular(10),
-                  thumbVisibility: WidgetStateProperty.all(true),
-                ),
-              ),
-              menuItemStyleData: const MenuItemStyleData(
-                height: 25,
-                padding: EdgeInsets.only(
-                  left: 15,
-                  right: 15,
+                menuItemStyleData: const MenuItemStyleData(
+                  height: 25,
+                  padding: EdgeInsets.only(
+                    left: 15,
+                    right: 15,
+                  ),
                 ),
               ),
             ),

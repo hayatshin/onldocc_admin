@@ -132,6 +132,26 @@ class _ResponseHealthConsultState extends ConsumerState<ResponseHealthConsult> {
                   ),
             ),
             Gaps.v20,
+            for (int i = 0; i < widget.model.images.length; i++)
+              Column(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      clipBehavior: Clip.hardEdge,
+                      child: CachedNetworkImage(
+                        imageUrl: widget.model.images[i],
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  if (i < widget.model.images.length) Gaps.v10,
+                ],
+              ),
+            Gaps.v20,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

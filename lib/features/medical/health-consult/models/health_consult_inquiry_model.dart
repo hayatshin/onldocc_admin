@@ -11,7 +11,6 @@ class HealthConsultInquiryModel {
   final String? userPhone;
   final String title;
   final String inquiry;
-  final int views;
   final int createdAt;
   final bool public;
   final List<String> images;
@@ -27,7 +26,6 @@ class HealthConsultInquiryModel {
     this.userPhone,
     required this.title,
     required this.inquiry,
-    required this.views,
     required this.createdAt,
     required this.public,
     required this.images,
@@ -40,7 +38,6 @@ class HealthConsultInquiryModel {
       "userId": userId,
       "title": title,
       "inquiry": inquiry,
-      "views": views,
       "createdAt": createdAt,
       "public": public,
     };
@@ -57,7 +54,6 @@ class HealthConsultInquiryModel {
         userPhone = json["users"]["phone"],
         title = json["title"],
         inquiry = json["inquiry"],
-        views = json["views"],
         createdAt = json["createdAt"],
         public = json["public"],
         images = spreadDiaryImages(json["health_consult_inquiry_images"]),
