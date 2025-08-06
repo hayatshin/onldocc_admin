@@ -65,8 +65,25 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
         ref.read(adminProfileProvider).value ??
             await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
-    _enableCognitionQuiz = adminProfileModel.hasCognitionQuiz;
-    _enableMedicalFeature = adminProfileModel.hasMedicalFeature;
+    if (selectContractRegion.value?.contractCommunityId == null ||
+        selectContractRegion.value?.contractCommunityId == "") {
+      // 전체 보기
+      if (!mounted) return;
+      setState(() {
+        _enableCognitionQuiz = adminProfileModel.hasCognitionQuiz;
+        _enableMedicalFeature = adminProfileModel.hasMedicalFeature;
+      });
+    } else {
+      final contractCommunity = await ref
+          .read(contractConfigProvider.notifier)
+          .getcontractCommunity(
+              selectContractRegion.value!.contractCommunityId!);
+      if (!mounted) return;
+      setState(() {
+        _enableCognitionQuiz = contractCommunity!.hasCognitionQuiz;
+        _enableMedicalFeature = contractCommunity.hasMedicalFeature;
+      });
+    }
   }
 
   void _updateCognitionQuiz(bool value) async {
@@ -77,8 +94,19 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     setState(() {
       _enableCognitionQuiz = value;
     });
-    await ref.read(contractRepo).updateContractRegionSetting(
-        adminProfileModel.contractRegionId, "hasCognitionQuiz", value);
+
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
+      // 전체 보기
+      await ref.read(contractRepo).updateContractRegionSetting(
+          adminProfileModel.contractRegionId, "hasCognitionQuiz", value);
+    } else {
+      await ref.read(contractRepo).updateContractCommunitySetting(
+          selectContractRegion.value!.contractCommunityId!,
+          "hasCognitionQuiz",
+          value);
+    }
+
     if (!mounted) return;
     showTopCompletingSnackBar(context, "두뇌 문제 풀기 설정이 반영되었습니다");
   }
@@ -91,8 +119,19 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     setState(() {
       _enableMedicalFeature = value;
     });
-    await ref.read(contractRepo).updateContractRegionSetting(
-        adminProfileModel.contractRegionId, "hasMedicalFeature", value);
+
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
+      // 전체 보기
+      await ref.read(contractRepo).updateContractRegionSetting(
+          adminProfileModel.contractRegionId, "hasMedicalFeature", value);
+    } else {
+      await ref.read(contractRepo).updateContractCommunitySetting(
+          selectContractRegion.value!.contractCommunityId!,
+          "hasMedicalFeature",
+          value);
+    }
+
     if (!mounted) return;
     showTopCompletingSnackBar(context, "건강 기능 설정이 반영되었습니다");
   }
@@ -184,6 +223,15 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
 
     _initializeAdminMasterSetting();
     _initializeAppFeatures();
+
+    selectContractRegion.addListener(() async {
+      if (selectContractRegion.value?.contractCommunityId != null &&
+          selectContractRegion.value?.contractCommunityId != "") {
+        _updateContractCommunityFeature();
+      } else {
+        _initializeAppFeatures();
+      }
+    });
   }
 
   @override
@@ -192,6 +240,18 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     contractCommunityController.dispose();
 
     super.dispose();
+  }
+
+  Future<void> _updateContractCommunityFeature() async {
+    final contractCommunity = await ref
+        .read(contractConfigProvider.notifier)
+        .getcontractCommunity(selectContractRegion.value!.contractCommunityId!);
+
+    if (!mounted) return;
+    setState(() {
+      _enableCognitionQuiz = contractCommunity!.hasCognitionQuiz;
+      _enableMedicalFeature = contractCommunity.hasMedicalFeature;
+    });
   }
 
   @override
@@ -245,6 +305,49 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                   ClipRRect(
                                     child: Column(
                                       children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Palette().lightPurple,
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 16,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                if (_adminProfileModel.master)
+                                                  Column(
+                                                    children: [
+                                                      CustomDropdownMenu(
+                                                        type: "지역",
+                                                        items:
+                                                            _contractRegionItems,
+                                                        value: _selectRegion,
+                                                        onChangedFunction:
+                                                            (value) =>
+                                                                setContractRegion(
+                                                                    value),
+                                                      ),
+                                                      Gaps.v10,
+                                                    ],
+                                                  ),
+                                                CustomDropdownMenu(
+                                                  type: "기관",
+                                                  items:
+                                                      _contractCommunityItems,
+                                                  value: _selectCommunity,
+                                                  onChangedFunction: (value) =>
+                                                      setContractCommunity(
+                                                          value),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Gaps.v10,
                                         if (!_adminProfileModel.master)
                                           Container(
                                             decoration: BoxDecoration(
@@ -263,7 +366,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    "지역 기능 설정",
+                                                    "지역/기관 기능 설정",
                                                     style: InjicareFont()
                                                         .label02
                                                         .copyWith(
@@ -321,49 +424,6 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
                                               ),
                                             ),
                                           ),
-                                        Gaps.v10,
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Palette().lightPurple,
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 16,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                if (_adminProfileModel.master)
-                                                  Column(
-                                                    children: [
-                                                      CustomDropdownMenu(
-                                                        type: "지역",
-                                                        items:
-                                                            _contractRegionItems,
-                                                        value: _selectRegion,
-                                                        onChangedFunction:
-                                                            (value) =>
-                                                                setContractRegion(
-                                                                    value),
-                                                      ),
-                                                      Gaps.v10,
-                                                    ],
-                                                  ),
-                                                CustomDropdownMenu(
-                                                  type: "기관",
-                                                  items:
-                                                      _contractCommunityItems,
-                                                  value: _selectCommunity,
-                                                  onChangedFunction: (value) =>
-                                                      setContractCommunity(
-                                                          value),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
                                       ],
                                     )
                                         .animate()

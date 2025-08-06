@@ -65,6 +65,15 @@ class ContractConfigRepository {
         .from("contract_communities")
         .update({column: value}).eq('contractCommunityId', contractCommunityId);
   }
+
+  Future<List<Map<String, dynamic>>> getcontractCommunity(
+      String contractCommunityId) async {
+    final contractCommunities = await _supabase
+        .from("contract_communities")
+        .select('*')
+        .eq('contractCommunityId', contractCommunityId);
+    return contractCommunities;
+  }
 }
 
 final contractRepo = Provider((ref) => ContractConfigRepository());
