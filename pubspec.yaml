@@ -91,6 +91,7 @@ dependencies:
   youtube_player_iframe: ^5.2.1
   youtube_player_flutter: ^9.1.1
   video_player: ^2.10.0
+  googleapis_auth: ^2.0.0
 
   # firebase_auth_web: ^5.9.8
   # firebase_core: ^2.27.0

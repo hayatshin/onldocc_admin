@@ -27,11 +27,12 @@ class RankingRepository {
     };
 
     String requestBodyJson = jsonEncode(requestBody);
+    final tokenHeaders = await firebaseTokenHeaders();
 
     final response = await http.post(
       pointPFunctions,
       body: requestBodyJson,
-      headers: headers,
+      headers: tokenHeaders,
     );
 
     if (response.statusCode == 200) {

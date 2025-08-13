@@ -1,12 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:excel/excel.dart' hide Border;
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_thumbnail_video/index.dart';
 import 'package:get_thumbnail_video/video_thumbnail.dart';
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
@@ -1043,4 +1047,77 @@ Future<Uint8List?> getVideoFileThumbnail(String filePath) async {
     print(e);
   }
   return null;
+}
+
+Future<String> generateFCMAccessToken() async {
+  try {
+    await dotenv.load(fileName: "env");
+    final credentials = ServiceAccountCredentials.fromJson({
+      "type": '${dotenv.env["GOOGLE_API_SERVICE_TYPE"]}',
+      "project_id": '${dotenv.env["GOOGLE_API_SERVICE_PROJECT_ID"]}',
+      "private_key_id": '${dotenv.env["GOOGLE_API_SERVICE_PRIVATE_KEY_ID"]}',
+      "private_key": '${dotenv.env["GOOGLE_API_SERVICE_PRIVATE_KEY"]}',
+      "client_email": '${dotenv.env["GOOGLE_API_SERVICE_CLIENT_EMAIL"]}',
+      "client_id": '${dotenv.env["GOOGLE_API_SERVICE_CLIENT_ID"]}',
+      "auth_uri": '${dotenv.env["GOOGLE_API_SERVICE_AUTH_URI"]}',
+      "token_uri": '${dotenv.env["GOOGLE_API_SERVICE_TOKEN_URI"]}',
+      "auth_provider_x509_cert_url":
+          '${dotenv.env["GOOGLE_API_SERVICE_AUTH_PROVIDER_X509_CERT_URL"]}',
+      "client_x509_cert_url":
+          '${dotenv.env["GOOGLE_API_SERVICE_CLIENT_X509_CERT_URL"]}',
+      "universe_domain": '${dotenv.env["GOOGLE_API_SERVICE_UNIVERSE_DOMAIN"]}',
+    });
+    List<String> scopes = [
+      "https://www.googleapis.com/auth/firebase.messaging"
+    ];
+    final client = await obtainAccessCredentialsViaServiceAccount(
+        credentials, scopes, http.Client());
+    final accessToken = client;
+
+    Timer.periodic(const Duration(minutes: 59), (timer) {
+      accessToken.refreshToken;
+    });
+    return accessToken.accessToken.data;
+  } catch (e) {
+    // ignore: avoid_print
+    print("generateFCMAccessToken -> $e");
+  }
+  return "";
+}
+
+Future<void> pushHealthConsultFcmNotification(String fcmToken) async {
+  try {
+    await dotenv.load(fileName: "env");
+    String? accessToken = await generateFCMAccessToken();
+
+    if (accessToken != "") {
+      await http.post(
+        Uri.parse(
+            'https://fcm.googleapis.com/v1/projects/chungchunon-android-dd695/messages:send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken'
+        },
+        body: jsonEncode({
+          'message': {
+            'token': fcmToken,
+            'notification': {
+              'title': "인지케어 전문의가 건강상담실에 답변을 달았습니다",
+            },
+            'webpush': {
+              'headers': {'Urgency': 'high'},
+              'notification': {
+                'title': "인지케어 전문의가 건강상담실에 답변을 달았습니다",
+                'icon': '/icons/icon-192x192.png', // 웹용 아이콘 URL
+                'click_action': 'https://your-web-url.com', // 웹 클릭 시 이동 URL
+              },
+            },
+          }
+        }),
+      );
+    }
+  } catch (e) {
+    // ignore: avoid_print
+    print("[pushHealthConsultFcmNotification] error -> $e");
+  }
 }

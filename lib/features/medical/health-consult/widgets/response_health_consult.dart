@@ -93,6 +93,10 @@ class _ResponseHealthConsultState extends ConsumerState<ResponseHealthConsult> {
         .insertHealthConsultResponse(model);
     widget.updateHealthConsults();
 
+    if (widget.model.userFcmToken != null) {
+      await pushHealthConsultFcmNotification(widget.model.userFcmToken!);
+    }
+
     if (!mounted) return;
     final snackBarText =
         widget.response == null ? "답변이 성공적으로 등록되었어요" : "답변이 성공적으로 수정되었어요";

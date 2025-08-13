@@ -502,7 +502,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           borderRadius: BorderRadius.circular(3)),
                       child: Padding(
                         padding: EdgeInsetsGeometry.symmetric(horizontal: 5),
-                        child: Text(
+                        child: SelectableText(
                           "${numberFormat(_visitList.length)} 회",
                           style: InjicareFont()
                               .headline02

@@ -52,11 +52,12 @@ class EventRepository {
       'maxStepCount': maxStepCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
+    final tokenHeaders = await firebaseTokenHeaders();
 
     final response = await http.post(
       eventUserTargetScoreFunctions,
       body: requestBodyJson,
-      headers: headers,
+      headers: tokenHeaders,
     );
 
     if (response.statusCode == 200) {
@@ -100,11 +101,12 @@ class EventRepository {
       'maxInvitationCount': maxInvitationCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
+    final tokenHeaders = await firebaseTokenHeaders();
 
     final response = await http.post(
       eventUserMultipleScoresFunctions,
       body: requestBodyJson,
-      headers: headers,
+      headers: tokenHeaders,
     );
 
     if (response.statusCode == 200) {
@@ -136,11 +138,12 @@ class EventRepository {
       'quizCount': quizCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
+    final tokenHeaders = await firebaseTokenHeaders();
 
     final response = await http.post(
       eventUserCountFunctions,
       body: requestBodyJson,
-      headers: headers,
+      headers: tokenHeaders,
     );
 
     if (response.statusCode == 200) {

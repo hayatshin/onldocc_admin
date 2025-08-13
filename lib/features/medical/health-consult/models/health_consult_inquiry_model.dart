@@ -9,6 +9,7 @@ class HealthConsultInquiryModel {
   final String? userAge;
   final String? userGender;
   final String? userPhone;
+  final String? userFcmToken;
   final String title;
   final String inquiry;
   final int createdAt;
@@ -24,6 +25,7 @@ class HealthConsultInquiryModel {
     this.userAge,
     this.userGender,
     this.userPhone,
+    this.userFcmToken,
     required this.title,
     required this.inquiry,
     required this.createdAt,
@@ -52,6 +54,7 @@ class HealthConsultInquiryModel {
             json["users"]["birthYear"], json["users"]["birthDay"]),
         userGender = json["users"]["gender"],
         userPhone = json["users"]["phone"],
+        userFcmToken = json["users"]["fcmToken"],
         title = json["title"],
         inquiry = json["inquiry"],
         createdAt = json["createdAt"],

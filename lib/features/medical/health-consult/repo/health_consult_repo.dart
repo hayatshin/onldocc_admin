@@ -10,7 +10,7 @@ class HealthConsultRepo {
     final docs = await _supabase
         .from("health_consult_inquiries")
         .select(
-            '*, users(avatar, name, birthYear, birthDay, gender, phone), health_consult_inquiry_images(*), health_consult_responses(*)')
+            '*, users(avatar, name, birthYear, birthDay, gender, phone, fcmToken), health_consult_inquiry_images(*), health_consult_responses(*)')
         .order('createdAt', ascending: false);
     return docs;
   }

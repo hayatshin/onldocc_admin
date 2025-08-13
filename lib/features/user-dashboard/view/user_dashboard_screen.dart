@@ -14,7 +14,6 @@ import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/common/widgets/period_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
-import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/view/self_test_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
@@ -207,7 +206,9 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
         Uri.parse(
             "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/chatgpt-user-dashboard"),
         body: requestBodyJson,
-        headers: headers,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
       );
 
       if (response.statusCode == 200) {
