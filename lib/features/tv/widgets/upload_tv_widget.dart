@@ -205,7 +205,8 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
           await ref.read(tvProvider.notifier).addTv(tvModel, _tvVideoBytes);
           if (!mounted) return;
-          resultBottomModal(context, "성공적으로 영상이 올라갔습니다.", widget.refreshScreen);
+          showTopCompletingSnackBar(context, "성공적으로 영상이 올라갔습니다.",
+              refreshScreen: widget.refreshScreen);
         }
       }
     }
@@ -216,10 +217,10 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   void _editTv() async {
     await ref.read(tvRepo).editTv(widget.tvModel!.videoId, _title);
     if (!mounted) return;
-    resultBottomModal(
+    showTopCompletingSnackBar(
       context,
       "성공적으로 영상이 수정되었습니다.",
-      widget.refreshScreen,
+      refreshScreen: widget.refreshScreen,
     );
   }
 

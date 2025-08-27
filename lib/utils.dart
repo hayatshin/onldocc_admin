@@ -535,7 +535,8 @@ void showTopWarningSnackBar(BuildContext context, String message) {
   });
 }
 
-void showTopCompletingSnackBar(BuildContext context, String message) {
+void showTopCompletingSnackBar(BuildContext context, String message,
+    {Function()? refreshScreen}) {
   final overlay = Overlay.of(context);
   final overlayEntry = OverlayEntry(
     builder: (context) => Positioned.fill(
@@ -578,6 +579,14 @@ void showTopCompletingSnackBar(BuildContext context, String message) {
   Future.delayed(const Duration(seconds: 2), () {
     overlayEntry.remove();
   });
+
+  if (refreshScreen != null) {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      refreshScreen();
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+    });
+  }
 }
 
 bool isDatePassed(String certainBirthday) {
@@ -903,6 +912,7 @@ void resultBottomModal(
   showCompletingSnackBar(context, text);
   Future.delayed(const Duration(milliseconds: 500), () {
     refreshScreen();
+    if (!context.mounted) return;
     Navigator.of(context).pop();
   });
 }

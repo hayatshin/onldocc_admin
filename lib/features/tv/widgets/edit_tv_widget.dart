@@ -104,8 +104,8 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
                   onPressed: () async {
                     await ref.read(tvRepo).deleteTv(videoId);
                     if (!context.mounted) return;
-                    resultBottomModal(
-                        context, "성공적으로 영상을 삭제하였습니다.", widget.refreshScreen);
+                    showTopCompletingSnackBar(context, "성공적으로 영상을 삭제하였습니다.",
+                        refreshScreen: widget.refreshScreen);
                   },
                   style: ButtonStyle(
                     backgroundColor:
@@ -134,10 +134,10 @@ class _EditTvWidgetState extends ConsumerState<EditTvWidget> {
     });
     await ref.read(tvRepo).editTv(widget.tvModel.videoId, _title);
     if (!mounted) return;
-    resultBottomModal(
+    showTopCompletingSnackBar(
       context,
       "성공적으로 영상이 수정되었습니다.",
-      widget.refreshScreen,
+      refreshScreen: widget.refreshScreen,
     );
   }
 

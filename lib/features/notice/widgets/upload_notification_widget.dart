@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/view_a/modal_screen.dart';
@@ -41,12 +42,11 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _feedDescription = "";
-  bool _noticeTopFixed = false;
   DateTime _noticeFixedAt = DateTime.now();
-  bool _noticePopup = false;
-  DateTime _noticePopupFixedAt = DateTime.now();
 
-  bool _noticeTopFixedInfo = false;
+  bool _useNoticePopup = false;
+  PopupModel? _noticePopup;
+  DateTime _noticePopupFixedAt = DateTime.now();
   bool _noticePopupInfo = false;
 
   List<PlatformFile> _feedImageFile = [];
@@ -78,7 +78,6 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
     if (widget.edit && widget.notificationModel != null) {
       // 수정할 경우
       _descriptionControllder.text = widget.notificationModel!.todayDiary;
-      _noticeTopFixed = widget.notificationModel!.noticeTopFixed ?? false;
       _noticeFixedAt = widget.notificationModel!.noticeFixedAt != null
           ? secondsToDatetime(widget.notificationModel!.noticeFixedAt!)
           : DateTime.now();
@@ -109,10 +108,16 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
 
   void _checkPopup(DiaryModel diaryModel) async {
     final popup = await ref.read(noticeRepo).checkPopup(diaryModel.diaryId);
+    print("[popup] popupId: ${popup?.popupId}");
+
+    setState(() {
+      _useNoticePopup = popup != null;
+      _noticePopup = popup;
+    });
+
     if (popup != null) {
       setState(() {
-        _noticePopup = true;
-        _noticeFixedAt = secondsToDatetime(popup.noticeFixedAt);
+        _noticePopupFixedAt = secondsToDatetime(popup.noticeFixedAt);
       });
     }
   }
@@ -155,38 +160,25 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                   adminProfileModel,
                   _feedDescription,
                   _feedImageArray,
-                  _noticeTopFixed,
+                  true,
                   convertEndDateTimeToSeconds(_noticeFixedAt),
                 );
 
         // 팝업 공지
-        if (_noticePopup) {
+        if (_useNoticePopup) {
           String popupId = "";
-          if (adminProfileModel.master) {
-            final popupModel = PopupModel(
-              subdistrictId: null,
-              noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
-              description: _feedDescription,
-              createdAt: getCurrentSeconds(),
-              diaryId: diaryId,
-              adminSecret: true,
-              master: true,
-            );
-            popupId =
-                await ref.read(noticeRepo).addPopupNotification(popupModel);
-          } else {
-            final popupModel = PopupModel(
-              subdistrictId: adminProfileModel.subdistrictId,
-              noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
-              description: _feedDescription,
-              createdAt: getCurrentSeconds(),
-              diaryId: diaryId,
-              adminSecret: true,
-              master: false,
-            );
-            popupId =
-                await ref.read(noticeRepo).addPopupNotification(popupModel);
-          }
+          final popupModel = PopupModel(
+            subdistrictId: adminProfileModel.master
+                ? null
+                : adminProfileModel.subdistrictId,
+            noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
+            description: _feedDescription,
+            createdAt: getCurrentSeconds(),
+            diaryId: diaryId,
+            adminSecret: true,
+            master: adminProfileModel.master ? true : false,
+          );
+          popupId = await ref.read(noticeRepo).addPopupNotification(popupModel);
 
           // 팝업 이미지
           if (_feedImageArray.isNotEmpty) {
@@ -197,7 +189,8 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
         }
 
         if (!mounted) return;
-        resultBottomModal(context, "성공적으로 공지가 올라갔습니다.", widget.refreshScreen);
+        showTopCompletingSnackBar(context, "성공적으로 공지가 올라갔습니다.",
+            refreshScreen: widget.refreshScreen);
       }
     }
   }
@@ -240,7 +233,14 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
           .read(noticeRepo)
           .deleteFeedNotification(widget.notificationModel!.diaryId);
       if (!mounted) return;
-      resultBottomModal(context, "성공적으로 공지가 삭제되었습니다", widget.refreshScreen);
+      showTopCompletingSnackBar(context, "성공적으로 공지가 삭제되었습니다",
+          refreshScreen: widget.refreshScreen);
+
+      if (_useNoticePopup) {
+        await ref
+            .read(noticeRepo)
+            .deletePopupNotification(widget.notificationModel!.diaryId);
+      }
     } catch (e) {
       // ignore: avoid_print
       print("_deleteFeedNotification -> $e");
@@ -249,15 +249,64 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
 
   Future<void> _editFeedNotification() async {
     try {
+      AdminProfileModel? adminProfileModel =
+          ref.read(adminProfileProvider).value;
+
       await ref.read(noticeProvider.notifier).editFeedNotification(
             widget.notificationModel!.diaryId,
             _feedDescription,
             _feedImageArray,
-            _noticeTopFixed,
+            true,
             convertEndDateTimeToSeconds(_noticeFixedAt),
           );
+
+      // 팝업 공지
+
+      if (_useNoticePopup) {
+        if (_noticePopup == null) {
+          String popupId = "";
+          final popupModel = PopupModel(
+            subdistrictId: adminProfileModel!.master
+                ? null
+                : adminProfileModel.subdistrictId,
+            noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
+            description: _feedDescription,
+            createdAt: getCurrentSeconds(),
+            diaryId: widget.notificationModel!.diaryId,
+            adminSecret: true,
+            master: adminProfileModel.master ? true : false,
+          );
+          popupId = await ref.read(noticeRepo).addPopupNotification(popupModel);
+
+          // 팝업 이미지
+          if (_feedImageArray.isNotEmpty) {
+            await ref
+                .read(noticeRepo)
+                .uploadPopupImagesToStorage(popupId, _feedImageArray);
+          }
+        } else {
+          final popup = _noticePopup!.copyWith(
+            description: _feedDescription,
+            noticeFixedAt: convertEndDateTimeToSeconds(_noticePopupFixedAt),
+          );
+
+          await ref.read(noticeRepo).updatePopupNotification(popup);
+
+          // 팝업 이미지
+          if (_feedImageArray.isNotEmpty) {
+            await ref.read(noticeRepo).uploadPopupImagesToStorage(
+                _noticePopup!.popupId!, _feedImageArray);
+          }
+        }
+      } else {
+        await ref
+            .read(noticeRepo)
+            .deletePopupNotification(widget.notificationModel!.diaryId);
+      }
+
       if (!mounted) return;
-      resultBottomModal(context, "성공적으로 공지가 수정되었습니다", widget.refreshScreen);
+      showTopCompletingSnackBar(context, "성공적으로 공지가 수정되었습니다",
+          refreshScreen: widget.refreshScreen);
     } catch (e) {
       // ignore: avoid_print
       print("_editFeedNotification -> $e");
@@ -288,12 +337,9 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
         return ModalScreen(
           widthPercentage: 0.5,
           modalTitle: !widget.edit ? "공지 올리기" : "공지 수정하기",
-          modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
-          modalButtonOneFunction: !widget.edit
-              ? _submitFeedNotification
-              : () => showDeleteOverlay(
-                    widget.notificationModel!.todayDiary,
-                  ),
+          modalButtonOneText: "확인",
+          modalButtonOneFunction:
+              !widget.edit ? _submitFeedNotification : _editFeedNotification,
           // modalButtonTwoText: !widget.edit ? null : "수정하기",
           // modalButtonTwoFunction: _editFeedNotification,
           child: SingleChildScrollView(
@@ -301,137 +347,46 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    SizedBox(
+                      width: size.width * 0.12,
+                      height: 50,
+                      child: SelectableText(
+                        "지역 보기\n상단 고정하기",
+                        style: _headerTextStyle,
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    Gaps.h32,
                     Row(
                       children: [
-                        SizedBox(
-                          width: size.width * 0.12,
-                          height: 50,
-                          child: SelectableText(
-                            "지역 보기\n상단 고정하기",
-                            style: _headerTextStyle,
-                            textAlign: TextAlign.start,
-                          ),
-                        ),
-                        Gaps.h32,
-                        Transform.scale(
-                          scale: 1.3,
-                          child: Checkbox(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                              side: BorderSide(
-                                width: 0.5,
-                                color: Palette().darkGray,
-                              ),
-                            ),
-                            value: _noticeTopFixed,
-                            activeColor: Palette().darkBlue,
-                            overlayColor: WidgetStateProperty.all(
-                                Palette().darkBlue.withOpacity(0.1)),
-                            onChanged: (value) {
-                              setState(
-                                () {
-                                  _noticeTopFixed = !_noticeTopFixed;
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        Gaps.h52,
-                        if (_noticeTopFixed)
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              ModalButton(
-                                modalText: "고정 기한 선택하기",
-                                modalAction: selectNoticeFixedAt,
-                              ),
-                              Gaps.h20,
-                              Column(
-                                children: [
-                                  SelectableText(
-                                    "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
-                                    style: _contentTextStyle,
-                                  ),
-                                  Gaps.v2,
-                                ],
-                              ),
-                            ],
-                          )
-                      ],
-                    ),
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(
-                            () {
-                              _noticeTopFixedInfo = !_noticeTopFixedInfo;
-                            },
-                          );
-                        },
-                        child: Row(
+                        Column(
                           children: [
-                            ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                InjicareColor().gray50,
-                                BlendMode.srcIn,
-                              ),
-                              child: SvgPicture.asset(
-                                "assets/svg/info.svg",
-                                width: 15,
-                              ),
-                            ),
-                            Gaps.h5,
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    width: 0.5,
-                                    color: Palette().normalGray,
-                                  ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                ModalButton(
+                                  modalText: "고정 기한 선택하기",
+                                  modalAction: selectNoticeFixedAt,
                                 ),
-                              ),
-                              child: Text(
-                                "지역보기 상단 고정하기가 무엇인가요?",
-                                style: headerInfoTextStyle,
-                              ),
+                                Gaps.h20,
+                                Column(
+                                  children: [
+                                    SelectableText(
+                                      "${_noticeFixedAt.year}.${_noticeFixedAt.month.toString().padLeft(2, '0')}.${_noticeFixedAt.day.toString().padLeft(2, '0')}",
+                                      style: _contentTextStyle,
+                                    ),
+                                    Gaps.v2,
+                                  ],
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-                if (_noticeTopFixedInfo)
-                  Column(
-                    children: [
-                      Gaps.v20,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: size.width * 0.12,
-                          ),
-                          Gaps.h32,
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Image.asset(
-                              "assets/notice/notice.png",
-                              width: 100,
-                            ),
-                          ),
-                          Gaps.h16,
-                          Text(
-                            "지역 내 사용자의 [보기] 메뉴에서 [지역 보기] 탭을 누르면 공지글이 고정 기한동안 최상단에 고정됩니다",
-                            style: headerInfoTextStyle,
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
                 Gaps.v20,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -458,21 +413,21 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                                 color: Palette().darkGray,
                               ),
                             ),
-                            value: _noticePopup,
+                            value: _useNoticePopup,
                             activeColor: Palette().darkBlue,
                             overlayColor: WidgetStateProperty.all(
-                                Palette().darkBlue.withOpacity(0.1)),
+                                Palette().darkBlue.withValues(alpha: 0.1)),
                             onChanged: (value) {
-                              setState(
-                                () {
-                                  _noticePopup = !_noticePopup;
-                                },
-                              );
+                              if (value != null) {
+                                setState(() {
+                                  _useNoticePopup = value;
+                                });
+                              }
                             },
                           ),
                         ),
                         Gaps.h52,
-                        if (_noticePopup)
+                        if (_useNoticePopup)
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -494,6 +449,11 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                           )
                       ],
                     ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
                     MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: GestureDetector(
@@ -538,7 +498,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                 if (_noticePopupInfo)
                   Column(
                     children: [
-                      Gaps.v20,
+                      Gaps.v32,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -563,14 +523,23 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                             ),
                           ),
                           Gaps.h16,
-                          SelectableText(
-                            "지역 내 사용자가 앱의 처음 진입할 때 팝업 기한동안 공지글을 팝업창으로 볼 수 있습니다",
-                            style: headerInfoTextStyle,
+                          Flexible(
+                            child: Text(
+                              "지역 내 사용자가 앱의 처음 진입할 때 팝업 기한동안 공지글을 팝업창으로 볼 수 있습니다",
+                              style: headerInfoTextStyle,
+                            ),
                           )
                         ],
                       ),
                     ],
-                  ),
+                  )
+                      .animate()
+                      .slideY(
+                        begin: -0.1,
+                        end: 0,
+                        duration: Duration(milliseconds: 200),
+                      )
+                      .fadeIn(duration: Duration(milliseconds: 200)),
                 Gaps.v52,
                 Form(
                   key: _formKey,
@@ -693,6 +662,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
                     ],
                   ),
                 ),
+                Gaps.v32,
               ],
             ),
           ),

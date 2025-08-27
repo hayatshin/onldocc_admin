@@ -11,7 +11,8 @@ Future<Map<String, String>> firebaseTokenHeaders() async {
   }
 
   final Map<String, String> headers = {
-    'Content-Type': 'text/plain',
+    'Content-Type': 'application/json; charset=utf-8',
+    'Accept': 'application/json',
     'Authorization': 'Bearer $token'
   };
   return headers;

@@ -14,31 +14,37 @@ class RankingRepository {
       "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-p-functions-6");
 
   // supabase
+
   Future<List<dynamic>> getUserPoints(
       List<UserModel> userList, DateRange range) async {
-    final startSeconds = convertStartDateTimeToSeconds(range.start);
-    final endSeconds = convertEndDateTimeToSeconds(range.end);
-    final userIds = userList.map((user) => user.userId).toList();
-    Map<String, dynamic> requestBody = {
-      'userIds': userIds,
-      'userlist': userList,
-      'startSeconds': startSeconds,
-      'endSeconds': endSeconds,
-    };
+    try {
+      final startSeconds = convertStartDateTimeToSeconds(range.start);
+      final endSeconds = convertEndDateTimeToSeconds(range.end);
 
-    String requestBodyJson = jsonEncode(requestBody);
-    final tokenHeaders = await firebaseTokenHeaders();
+      Map<String, dynamic> requestBody = {
+        'userList': userList,
+        'startSeconds': startSeconds,
+        'endSeconds': endSeconds,
+      };
 
-    final response = await http.post(
-      pointPFunctions,
-      body: requestBodyJson,
-      headers: tokenHeaders,
-    );
+      String requestBodyJson = jsonEncode(requestBody);
+      final tokenHeaders = await firebaseTokenHeaders();
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(utf8.decode(response.bodyBytes));
-      return data["data"];
+      final response = await http.post(
+        pointPFunctions,
+        body: requestBodyJson,
+        headers: tokenHeaders,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        return data["data"];
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('getUserPoints: $e');
     }
+
     return [];
   }
 

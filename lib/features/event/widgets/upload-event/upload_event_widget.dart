@@ -389,10 +389,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     }
 
     if (!mounted) return;
-    resultBottomModal(
-        context,
-        !widget.edit ? "성공적으로 행사가 올라갔습니다" : "성공적으로 행사가 수정되었습니다",
-        widget.refreshScreen);
+    showTopCompletingSnackBar(
+        context, !widget.edit ? "성공적으로 행사가 올라갔습니다" : "성공적으로 행사가 수정되었습니다",
+        refreshScreen: widget.refreshScreen);
   }
 
   void updateGoalScore(int goalScore) {
@@ -546,7 +545,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     await ref.read(eventRepo).deleteEventImageStorage(eventId);
 
     if (!mounted) return;
-    resultBottomModal(context, "성공적으로 행사가 삭제되었습니다.", widget.refreshScreen);
+    showTopCompletingSnackBar(context, "성공적으로 행사가 삭제되었습니다.",
+        refreshScreen: widget.refreshScreen);
   }
 
   void showDeleteOverlay(String eventId, String eventName) async {
@@ -696,7 +696,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                         ),
                                         Gaps.v5,
                                         SelectableText(
-                                          "가로:세로 = 5:4 비율\n(ex. 1000px:800px)",
+                                          "가로:세로 = 10:7 비율\n(ex. 1000px:700px)",
                                           style: headerInfoTextStyle,
                                           textAlign: TextAlign.start,
                                         ),

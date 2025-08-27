@@ -88,7 +88,8 @@ class _EditNotificationWidgetState
           .read(noticeRepo)
           .deleteFeedNotification(widget.diaryModel.diaryId);
       if (!mounted) return;
-      resultBottomModal(context, "성공적으로 공지가 삭제되었습니다.", widget.refreshScreen);
+      showTopCompletingSnackBar(context, "성공적으로 공지가 삭제되었습니다.",
+          refreshScreen: widget.refreshScreen);
     } catch (e) {
       // ignore: avoid_print
       print("_deleteFeedNotification -> $e");
@@ -108,7 +109,8 @@ class _EditNotificationWidgetState
             convertEndDateTimeToSeconds(_noticeFixedAt),
           );
       if (!mounted) return;
-      resultBottomModal(context, "성공적으로 공지가 수정되었습니다.", widget.refreshScreen);
+      showTopCompletingSnackBar(context, "성공적으로 공지가 수정되었습니다.",
+          refreshScreen: widget.refreshScreen);
     } catch (e) {
       // ignore: avoid_print
       print("_editFeedNotification -> $e");

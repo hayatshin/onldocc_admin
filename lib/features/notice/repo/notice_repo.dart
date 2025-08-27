@@ -116,13 +116,43 @@ class NoticeRepository {
       final data = await _supabase
           .from("subdistricts_popup")
           .upsert(popupModel.toJson())
-          .select('popupId');
+          .select('popupId, noticeFixedAt');
       return data[0]["popupId"];
     } catch (e) {
       // ignore: avoid_print
       print("[notice] addPopupNotification -> $e");
     }
     return "";
+  }
+
+  Future<String> updatePopupNotification(PopupModel popupModel) async {
+    try {
+      await _supabase
+          .from("subdistricts_popup")
+          .update(popupModel.toJson())
+          .eq('popupId', popupModel.popupId!);
+    } catch (e) {
+      // ignore: avoid_print
+      print("[notice] updatePopupNotification -> $e");
+    }
+    return "";
+  }
+
+  Future<void> deletePopupNotification(String diaryId) async {
+    try {
+      await _supabase
+          .from("subdistricts_popup")
+          .delete()
+          .eq("diaryId", diaryId);
+      await _supabase
+          .from("subdistricts_popup_images")
+          .delete()
+          .eq("diaryId", diaryId);
+      await deletePopupImageStorage(diaryId);
+    } catch (e) {
+      // ignore: avoid_print
+      print("deletePopupNotification: $e");
+    }
   }
 
   Future<String> uploadSinglePopupImageToStorage(

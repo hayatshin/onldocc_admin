@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,6 @@ import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/firebase_options.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
-import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/router.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -28,9 +28,12 @@ void main() async {
     final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
 
     await Supabase.initialize(
-      url: supabaseUrlDebug!,
-      anonKey: supabaseAnonKeyDebug!,
-    );
+        url: supabaseUrlDebug!,
+        anonKey: supabaseAnonKeyDebug!,
+        accessToken: () async {
+          final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+          return token;
+        });
 
     GoRouter.optionURLReflectsImperativeAPIs = true;
     await SystemChrome.setPreferredOrientations(
@@ -84,10 +87,14 @@ class OnldoccAdmin extends ConsumerWidget {
           cursorColor: InjicareColor().gray100,
         ),
         datePickerTheme: DatePickerThemeData(
-          headerBackgroundColor: Palette().darkPurple,
+          headerBackgroundColor: InjicareColor().secondary20,
           cancelButtonStyle: ButtonStyle(
             elevation: const WidgetStatePropertyAll(0),
-            textStyle: WidgetStatePropertyAll(InjicareFont().body01),
+            textStyle: WidgetStatePropertyAll(InjicareFont().body03),
+          ),
+          confirmButtonStyle: ButtonStyle(
+            elevation: const WidgetStatePropertyAll(0),
+            textStyle: WidgetStatePropertyAll(InjicareFont().body03),
           ),
         ),
         primaryColor: InjicareColor().primary50,
