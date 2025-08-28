@@ -60,103 +60,97 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Positioned(
-          //   left: 120,
-          //   bottom: 80,
-          //   child: Image.asset(
-          //     "assets/images/appcomputer.png",
-          //     width: size.width * 0.4,
-          //   ),
-          // ),
+          Positioned(
+            left: 120,
+            bottom: 80,
+            child: Image.asset(
+              "assets/images/appcomputer.png",
+              width: size.width * 0.4,
+            ),
+          ),
           Center(
             child: SizedBox(
               width: size.width * 0.7,
               height: 500,
-              child: Stack(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: SizedBox(
-                      width: size.width * 0.4,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Gaps.v20,
-                                      SelectableText(
-                                        "시니어들의 빅데이터",
-                                        style: InjicareFont()
-                                            .headline01
-                                            .copyWith(
-                                                color: InjicareColor().gray100),
+                  SizedBox(
+                    width: size.width * 0.4,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Gaps.v20,
+                                    SelectableText(
+                                      "시니어들의 빅데이터",
+                                      style: InjicareFont().headline01.copyWith(
+                                          color: InjicareColor().gray100),
+                                    ),
+                                    Gaps.v10,
+                                    SelectableText(
+                                      "인지케어 관리자페이지",
+                                      style: InjicareFont().headline01.copyWith(
+                                          color: InjicareColor().gray100),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Gaps.v40,
+                            RichText(
+                              text: TextSpan(
+                                  text: "인지 검사, AI 대화, 일기, 걸음수 등 시니어들의 활동 ",
+                                  style: InjicareFont().body03.copyWith(
+                                        color: InjicareColor().gray90,
+                                        fontWeight: FontWeight.w400,
                                       ),
-                                      Gaps.v10,
-                                      SelectableText(
-                                        "인지케어 관리자페이지",
-                                        style: InjicareFont()
-                                            .headline01
-                                            .copyWith(
-                                                color: InjicareColor().gray100),
+                                  children: const [
+                                    TextSpan(
+                                      text: "빅데이터 ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Gaps.v40,
-                              RichText(
-                                text: TextSpan(
-                                    text: "인지 검사, AI 대화, 일기, 걸음수 등 시니어들의 활동 ",
-                                    style: InjicareFont().body03.copyWith(
-                                          color: InjicareColor().gray90,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                    children: const [
-                                      TextSpan(
-                                        text: "빅데이터 ",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                    ),
+                                    TextSpan(
+                                      text: "제공부터\n지자체의 ",
+                                    ),
+                                    TextSpan(
+                                      text: "월별 리포트 발행",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
                                       ),
-                                      TextSpan(
-                                        text: "제공부터\n지자체의 ",
+                                    ),
+                                    TextSpan(
+                                      text: "과 다양한 ",
+                                    ),
+                                    TextSpan(
+                                      text: "행사 주관",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
                                       ),
-                                      TextSpan(
-                                        text: "월별 리포트 발행",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: "과 다양한 ",
-                                      ),
-                                      TextSpan(
-                                        text: "행사 주관",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: "까지!\n인지케어에서 한번에 관리하세요",
-                                      ),
-                                    ]),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                                    ),
+                                    TextSpan(
+                                      text: "까지!\n인지케어에서 한번에 관리하세요",
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
+                  Gaps.v60,
                   Form(
                     key: _formKey,
                     child: Positioned(
