@@ -58,18 +58,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned(
             left: 120,
             bottom: 80,
-            child: Opacity(
-              opacity: 1,
-              child: Image.asset(
-                "assets/images/appcomputer.png",
-                width: size.width * 0.4,
-              ),
+            child: Image.asset(
+              "assets/images/appcomputer.png",
+              width: size.width * 0.4,
             ),
           ),
           Center(
@@ -172,7 +168,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           children: [
                             Row(
                               children: [
-                                SelectableText(
+                                Text(
                                   "이메일",
                                   style: InjicareFont().body03.copyWith(
                                         color: InjicareColor().gray90,
@@ -256,7 +252,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             Gaps.v20,
                             Row(
                               children: [
-                                SelectableText(
+                                Text(
                                   "비밀번호",
                                   style: InjicareFont().body03.copyWith(
                                         color: InjicareColor().gray90,
