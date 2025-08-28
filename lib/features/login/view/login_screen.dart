@@ -153,229 +153,223 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   Gaps.v60,
                   Form(
                     key: _formKey,
-                    child: Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: SizedBox(
-                        width: 400,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  "이메일",
-                                  style: InjicareFont().body03.copyWith(
+                    child: SizedBox(
+                      width: 400,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "이메일",
+                                style: InjicareFont().body03.copyWith(
+                                      color: InjicareColor().gray90,
+                                    ),
+                              ),
+                              const Spacer(),
+                              SizedBox(
+                                width: formWidth,
+                                height: 50,
+                                child: TextFormField(
+                                  cursorColor: InjicareColor().gray90,
+                                  onFieldSubmitted: (value) => _onSubmitTap(),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  style: InjicareFont().body06.copyWith(
                                         color: InjicareColor().gray90,
                                       ),
-                                ),
-                                const Spacer(),
-                                SizedBox(
-                                  width: formWidth,
-                                  height: 50,
-                                  child: TextFormField(
-                                    cursorColor: InjicareColor().gray90,
-                                    onFieldSubmitted: (value) => _onSubmitTap(),
-                                    textAlignVertical: TextAlignVertical.center,
-                                    style: InjicareFont().body06.copyWith(
-                                          color: InjicareColor().gray90,
-                                        ),
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      errorStyle: const TextStyle(
-                                        color: Colors.red,
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: Sizes.size15,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
                                       ),
                                     ),
-                                    validator: (value) {
-                                      if (value != null && value.isEmpty) {
-                                        return "이메일을 입력해주세요.";
-                                      }
-                                      return null;
-                                    },
-                                    onSaved: (newValue) {
-                                      if (newValue != null) {
-                                        formData['email'] = newValue;
-                                      }
-                                    },
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    errorStyle: const TextStyle(
+                                      color: Colors.red,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.size15,
+                                    ),
                                   ),
+                                  validator: (value) {
+                                    if (value != null && value.isEmpty) {
+                                      return "이메일을 입력해주세요.";
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (newValue) {
+                                    if (newValue != null) {
+                                      formData['email'] = newValue;
+                                    }
+                                  },
                                 ),
-                              ],
-                            ),
-                            Gaps.v20,
-                            Row(
-                              children: [
-                                Text(
-                                  "비밀번호",
-                                  style: InjicareFont().body03.copyWith(
+                              ),
+                            ],
+                          ),
+                          Gaps.v20,
+                          Row(
+                            children: [
+                              Text(
+                                "비밀번호",
+                                style: InjicareFont().body03.copyWith(
+                                      color: InjicareColor().gray90,
+                                    ),
+                              ),
+                              const Spacer(),
+                              SizedBox(
+                                width: formWidth,
+                                height: 50,
+                                child: TextFormField(
+                                  cursorColor: InjicareColor().gray90,
+                                  onFieldSubmitted: (value) => _onSubmitTap(),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  style: InjicareFont().body06.copyWith(
                                         color: InjicareColor().gray90,
                                       ),
-                                ),
-                                const Spacer(),
-                                SizedBox(
-                                  width: formWidth,
-                                  height: 50,
-                                  child: TextFormField(
-                                    cursorColor: InjicareColor().gray90,
-                                    onFieldSubmitted: (value) => _onSubmitTap(),
-                                    textAlignVertical: TextAlignVertical.center,
-                                    style: InjicareFont().body06.copyWith(
-                                          color: InjicareColor().gray90,
-                                        ),
-                                    obscureText: _isPasswordInvisible,
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(borderRadius),
-                                        borderSide: BorderSide(
-                                          color: InjicareColor().gray90,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      errorStyle: const TextStyle(
-                                        color: Colors.red,
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: Sizes.size15,
-                                      ),
-                                      suffixIcon: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              right: Sizes.size24,
-                                            ),
-                                            child: GestureDetector(
-                                              onTap: _onPasswordVisibleTap,
-                                              child: FaIcon(
-                                                _isPasswordInvisible
-                                                    ? FontAwesomeIcons.eye
-                                                    : FontAwesomeIcons.eyeSlash,
-                                                size: Sizes.size16,
-                                                color: InjicareColor().gray90,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                  obscureText: _isPasswordInvisible,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
                                       ),
                                     ),
-                                    validator: (value) {
-                                      if (value != null && value.isEmpty) {
-                                        return "비밀번호를 입력해주세요.";
-                                      }
-                                      return null;
-                                    },
-                                    onSaved: (newValue) {
-                                      if (newValue != null) {
-                                        formData['password'] = newValue;
-                                      }
-                                    },
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(borderRadius),
+                                      borderSide: BorderSide(
+                                        color: InjicareColor().gray90,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    errorStyle: const TextStyle(
+                                      color: Colors.red,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.size15,
+                                    ),
+                                    suffixIcon: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: Sizes.size24,
+                                          ),
+                                          child: GestureDetector(
+                                            onTap: _onPasswordVisibleTap,
+                                            child: FaIcon(
+                                              _isPasswordInvisible
+                                                  ? FontAwesomeIcons.eye
+                                                  : FontAwesomeIcons.eyeSlash,
+                                              size: Sizes.size16,
+                                              color: InjicareColor().gray90,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
+                                  validator: (value) {
+                                    if (value != null && value.isEmpty) {
+                                      return "비밀번호를 입력해주세요.";
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (newValue) {
+                                    if (newValue != null) {
+                                      formData['password'] = newValue;
+                                    }
+                                  },
                                 ),
-                              ],
-                            ),
-                            Gaps.v36,
-                            MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: GestureDetector(
-                                onTap: _onSubmitTap,
-                                child: SizedBox(
-                                  height: 50,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 500),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: InjicareColor().gray100,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      "로그인",
-                                      style: InjicareFont().body03.copyWith(
-                                            color: Colors.white,
-                                          ),
-                                    ),
+                              ),
+                            ],
+                          ),
+                          Gaps.v36,
+                          MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: _onSubmitTap,
+                              child: SizedBox(
+                                height: 50,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 500),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: InjicareColor().gray100,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    "로그인",
+                                    style: InjicareFont().body03.copyWith(
+                                          color: Colors.white,
+                                        ),
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   )
