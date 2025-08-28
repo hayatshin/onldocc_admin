@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,9 +28,12 @@ void main() async {
     final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
 
     await Supabase.initialize(
-      url: supabaseUrlDebug!,
-      anonKey: supabaseAnonKeyDebug!,
-    );
+        url: supabaseUrlDebug!,
+        anonKey: supabaseAnonKeyDebug!,
+        accessToken: () async {
+          final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+          return token;
+        });
 
     GoRouter.optionURLReflectsImperativeAPIs = true;
     await SystemChrome.setPreferredOrientations(

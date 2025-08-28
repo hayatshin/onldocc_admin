@@ -60,14 +60,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     return Scaffold(
       body: Stack(
         children: [
-          Positioned(
-            left: 120,
-            bottom: 80,
-            child: Image.asset(
-              "assets/images/appcomputer.png",
-              width: size.width * 0.4,
-            ),
-          ),
+          // Positioned(
+          //   left: 120,
+          //   bottom: 80,
+          //   child: Image.asset(
+          //     "assets/images/appcomputer.png",
+          //     width: size.width * 0.4,
+          //   ),
+          // ),
           Center(
             child: SizedBox(
               width: size.width * 0.7,
