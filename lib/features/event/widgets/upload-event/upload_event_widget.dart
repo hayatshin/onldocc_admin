@@ -769,7 +769,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             ),
                             Gaps.v52,
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
                                   width: widget.size.width * 0.12,
