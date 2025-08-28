@@ -361,37 +361,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               ],
                             ),
                             Gaps.v36,
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: MouseRegion(
-                                    cursor: SystemMouseCursors.click,
-                                    child: GestureDetector(
-                                      onTap: _onSubmitTap,
-                                      child: SizedBox(
-                                        height: 50,
-                                        child: AnimatedContainer(
-                                          duration:
-                                              const Duration(milliseconds: 500),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: InjicareColor().gray100,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: _onSubmitTap,
+                                child: SizedBox(
+                                  height: 50,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 500),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: InjicareColor().gray100,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      "로그인",
+                                      style: InjicareFont().body03.copyWith(
+                                            color: Colors.white,
                                           ),
-                                          child: Text(
-                                            "로그인",
-                                            style:
-                                                InjicareFont().body03.copyWith(
-                                                      color: Colors.white,
-                                                    ),
-                                          ),
-                                        ),
-                                      ),
                                     ),
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
