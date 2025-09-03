@@ -305,6 +305,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         .read(dashboardProvider.notifier)
         .quizMultipleChoices(_selectedStartSeconds, _selectedEndSeconds);
 
+    if (!mounted) return;
     setState(() {
       _visitList = visitList;
       _diaryList = diaryList;
@@ -321,6 +322,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         .read(dashboardProvider.notifier)
         .cognitionTest(_selectedStartSeconds, _selectedEndSeconds);
 
+    if (!mounted) return;
     setState(() {
       _cognitionTestList = cognitionTesetList;
     });
@@ -365,6 +367,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
     chatAvgTime = aiChatList.isNotEmpty ? chatSumTime / aiChatList.length : 0;
 
+    if (!mounted) return;
     setState(() {
       _aiChatList = aiChatList;
       _chatSumTime = formatDuration(chatSumTime);
@@ -388,6 +391,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final stepDataList =
         await ref.read(dashboardProvider.notifier).steps(dateStrings);
 
+    if (!mounted) return;
     setState(() {
       _stepDataList = stepDataList;
     });

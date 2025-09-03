@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/path_extra.dart';
 import 'package:onldocc_admin/common/view/sidebar_template.dart';
+import 'package:onldocc_admin/common/view_models/auth_notifier.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/features/ca/models/cognition_test_model.dart';
 import 'package:onldocc_admin/features/ca/view/cognition_test_detail_screen.dart';
@@ -21,7 +22,6 @@ import 'package:onldocc_admin/features/event/view/event_detail_target_score_scre
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_detail_screen.dart';
 import 'package:onldocc_admin/features/invitation/%08view/invitation_screen.dart';
-import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/login/view/login_screen.dart';
 import 'package:onldocc_admin/features/medical/health-consult/view/health-consult-screen.dart';
 import 'package:onldocc_admin/features/medical/health-story/view/health_story_screen.dart';
@@ -37,19 +37,30 @@ import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/utils.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+final authNotifier = AuthNotifier();
 
 final routerProvider = Provider(
   (ref) {
     return GoRouter(
       initialLocation: "/",
+      refreshListenable: authNotifier,
       navigatorKey: rootNavigatorKey,
       redirect: (context, state) {
-        final isLoggedIn = ref.watch(authRepo).isLoggedIn;
-        if (!isLoggedIn) {
-          if (state.matchedLocation != LoginScreen.routeURL) {
-            return LoginScreen.routeURL;
-          }
-        }
+        final isReady = authNotifier.isReady; // 복원 완료 여부
+        final loggedIn = authNotifier.user != null;
+        final loc = state.matchedLocation;
+
+        if (!isReady) return "/";
+        if (!loggedIn) return "/";
+
+        if (loggedIn) return loc == "/" ? DashboardScreen.routeURL : loc;
+
+        // final isLoggedIn = ref.watch(authRepo).isLoggedIn;
+        // if (!isLoggedIn) {
+        //   if (state.matchedLocation != LoginScreen.routeURL) {
+        //     return LoginScreen.routeURL;
+        //   }
+        // }
 
         return null;
       },
