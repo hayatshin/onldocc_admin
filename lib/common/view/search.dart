@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/widgets/searchby_dropdown_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 
 class Search extends ConsumerStatefulWidget {
   final void Function(String?, String) filterUserList;
   final void Function() resetInitialList;
+  final bool bottomGap;
   const Search({
     super.key,
     required this.filterUserList,
     required this.resetInitialList,
+    this.bottomGap = true,
   });
 
   @override
@@ -45,20 +49,18 @@ class _SearchState extends ConsumerState<Search> {
               visible: size.width > 1000,
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SelectableText(
-                          "검색 기준:",
-                          style: TextStyle(
-                            color: Palette().darkBlue,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          "검색 기준",
+                          style: InjicareFont()
+                              .body07
+                              .copyWith(color: InjicareColor().gray80),
                         ),
-                        Gaps.h20,
+                        Gaps.h16,
                         SearchByDropdownButton(
                           items: const ["이름", "핸드폰 번호"],
                           value: _setSearchBy,
@@ -72,76 +74,54 @@ class _SearchState extends ConsumerState<Search> {
                         ),
                       ],
                     ),
-                    Gaps.v16,
+                    Gaps.h16,
                     Row(
                       children: [
                         Container(
                           width: 300,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Palette().lightGray.withOpacity(0.8),
-                                spreadRadius: 2,
-                                blurRadius: 2,
-                                offset: const Offset(1, 1),
-                              )
-                            ],
                           ),
                           height: searchHeight,
                           child: TextFormField(
                             onFieldSubmitted: (value) => submitSearch(),
                             controller: _searchUserController,
                             textAlignVertical: TextAlignVertical.center,
-                            style: TextStyle(
-                              fontSize: Sizes.size14,
-                              color: Palette().darkGray,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: InjicareFont().body07.copyWith(
+                                  color: InjicareColor().gray80,
+                                ),
                             decoration: InputDecoration(
-                              prefixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.search_outlined,
-                                    size: 20,
-                                    color: Palette().darkBlue,
-                                  )
-                                ],
-                              ),
                               hintText: _setSearchBy == "이름"
                                   ? "회원 이름을 검색해주세요."
                                   : "핸드폰 번호를 검색해주세요.",
-                              hintStyle: TextStyle(
-                                fontSize: Sizes.size13,
-                                color: Palette().darkBlue.withOpacity(0.4),
-                                fontWeight: FontWeight.w300,
-                              ),
+                              hintStyle: InjicareFont().body07.copyWith(
+                                    color: InjicareColor().gray40,
+                                  ),
                               filled: true,
                               fillColor: Colors.white,
                               focusColor: Colors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: InjicareColor().gray20,
+                                ),
                               ),
                               errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size3,
-                                ),
+                                borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
+                                  color: InjicareColor().gray20,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: Palette().darkBlue,
+                                  color: InjicareColor().gray20,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: Palette().darkBlue,
+                                  color: InjicareColor().gray20,
                                 ),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -156,22 +136,16 @@ class _SearchState extends ConsumerState<Search> {
                           child: GestureDetector(
                             onTap: submitSearch,
                             child: Container(
-                              width: 70,
+                              width: searchHeight,
                               height: searchHeight,
                               decoration: BoxDecoration(
-                                color: Palette().darkBlue,
-                                borderRadius: BorderRadius.circular(
-                                  Sizes.size10,
-                                ),
+                                color: InjicareColor().gray70,
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Center(
-                                child: Text(
-                                  "검색",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: Sizes.size14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  "assets/svg/search-1.svg",
+                                  width: 16,
                                 ),
                               ),
                             ),
@@ -185,7 +159,7 @@ class _SearchState extends ConsumerState<Search> {
             ),
           ],
         ),
-        Gaps.v40,
+        if (widget.bottomGap) Gaps.v40,
       ],
     );
   }

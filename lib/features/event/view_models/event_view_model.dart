@@ -12,9 +12,9 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
   late EventRepository _eventRepository;
 
   static final pointUpFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-up-functions");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-up-functions-1");
   static final pointEventFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-event-functions");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/point-event-functions-1");
 
   @override
   FutureOr<List<EventModel>> build() async {

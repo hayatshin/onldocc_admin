@@ -1,15 +1,21 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:excel/excel.dart' hide Border;
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_thumbnail_video/index.dart';
 import 'package:get_thumbnail_video/video_thumbnail.dart';
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
@@ -60,79 +66,203 @@ void exportExcel(
   excel.save(fileName: fileName);
 }
 
-Widget deleteOverlay(
+Widget deleteUserOverlay(
+    String title, Function() removeOverlay, Function() delete) {
+  return Material(
+    color: Colors.black38,
+    child: Center(
+      child: AlertDialog(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 30,
+          vertical: 35,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20), // 원하는 borderRadius
+        ),
+        // title: Text(
+        //   title,
+        //   style: InjicareFont().headline02.copyWith(
+        //         color: InjicareColor().secondary50,
+        //       ),
+        // ),
+        backgroundColor: Colors.white,
+        content: SizedBox(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "$title을 정말로 삭제하시겠습니까?",
+                style: InjicareFont()
+                    .body01
+                    .copyWith(color: const Color(0xFF202020)),
+              ),
+              Gaps.v5,
+              Text(
+                "삭제하면 다시 되돌릴 수 없습니다",
+                style: InjicareFont().label01.copyWith(
+                      color: InjicareColor().gray80,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: removeOverlay,
+                    child: Container(
+                      height: 46,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: InjicareColor().gray20,
+                      ),
+                      child: Center(
+                        child: Text(
+                          "취소",
+                          style: InjicareFont()
+                              .body06
+                              .copyWith(color: InjicareColor().gray80),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Gaps.h10,
+              Expanded(
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: delete,
+                    child: Container(
+                      height: 46,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: InjicareColor().secondary50,
+                      ),
+                      child: Center(
+                        child: Text(
+                          "삭제",
+                          style: InjicareFont().body06.copyWith(
+                                color: Colors.white,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    ),
+  );
+}
+
+Widget deleteTitleOverlay(
     String title, Function() removeOverlay, Function() delete) {
   return Positioned.fill(
     child: Material(
       color: Colors.black38,
       child: Center(
         child: AlertDialog(
-          title: Text(
-            title,
-            style: InjicareFont().headline03.copyWith(
-                  color: Palette().darkPurple,
-                ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 30,
+            vertical: 35,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // 원하는 borderRadius
           ),
           backgroundColor: Colors.white,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "정말로 삭제하시겠습니까?",
-                style: InjicareFont().label03,
-              ),
-              Text(
-                "삭제하면 다시 되돌릴 수 없습니다.",
-                style: InjicareFont().label03,
-              ),
-            ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 400,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title.trim().replaceAll('\n', ' '),
+                  style: InjicareFont().label01.copyWith(
+                        color: InjicareColor().secondary50,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                Gaps.v3,
+                Text(
+                  "정말로 삭제하시겠습니까?",
+                  style: InjicareFont()
+                      .body01
+                      .copyWith(color: const Color(0xFF202020)),
+                ),
+                Gaps.v5,
+                Text(
+                  "삭제하면 다시 되돌릴 수 없습니다",
+                  style: InjicareFont().label01.copyWith(
+                        color: InjicareColor().gray80,
+                      ),
+                ),
+              ],
+            ),
           ),
           actions: [
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: removeOverlay,
-                child: Container(
-                  width: 60,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      width: 1.5,
-                      color: Palette().darkPurple,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "취소",
-                      style: InjicareFont().body07,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: delete,
-                child: Container(
-                  width: 60,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Palette().darkPurple,
-                  ),
-                  child: Center(
-                    child: Text(
-                      "삭제",
-                      style: InjicareFont().body07.copyWith(
-                            color: Colors.white,
+            Row(
+              children: [
+                Expanded(
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: removeOverlay,
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: InjicareColor().gray20,
+                        ),
+                        child: Center(
+                          child: Text(
+                            "취소",
+                            style: InjicareFont()
+                                .body06
+                                .copyWith(color: InjicareColor().gray80),
                           ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+                Gaps.h10,
+                Expanded(
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: delete,
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: InjicareColor().secondary50,
+                        ),
+                        child: Center(
+                          child: Text(
+                            "삭제",
+                            style: InjicareFont().body06.copyWith(
+                                  color: Colors.white,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -236,7 +366,7 @@ InputDecoration inputDecorationStyle() {
       ),
       borderSide: BorderSide(
         width: 1.5,
-        color: Palette().darkGray.withOpacity(0.5),
+        color: Palette().darkGray.withValues(alpha: 0.5),
       ),
     ),
     focusedBorder: OutlineInputBorder(
@@ -245,7 +375,7 @@ InputDecoration inputDecorationStyle() {
       ),
       borderSide: BorderSide(
         width: 1.5,
-        color: Palette().darkGray.withOpacity(0.5),
+        color: Palette().darkGray.withValues(alpha: 0.5),
       ),
     ),
     contentPadding: const EdgeInsets.symmetric(
@@ -259,6 +389,8 @@ void showCompletingSnackBar(BuildContext context, String error) {
   if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.fromLTRB(16, kToolbarHeight + 16, 16, 0),
       backgroundColor: Colors.transparent,
       elevation: 0,
       padding: const EdgeInsets.symmetric(
@@ -270,7 +402,7 @@ void showCompletingSnackBar(BuildContext context, String error) {
       ),
       content: Container(
         decoration: BoxDecoration(
-          color: InjicareColor().gray100.withOpacity(0.8),
+          color: InjicareColor().gray100.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -282,7 +414,7 @@ void showCompletingSnackBar(BuildContext context, String error) {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset(
-                "assets/svg/circle-check.svg",
+                "assets/svg/circle-check1.svg",
                 width: 20,
               ),
               Gaps.h10,
@@ -309,6 +441,8 @@ void showWarningSnackBar(BuildContext context, String error) {
   if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.fromLTRB(16, kToolbarHeight + 16, 16, 0),
       backgroundColor: Colors.transparent,
       elevation: 0,
       padding: const EdgeInsets.symmetric(
@@ -320,7 +454,7 @@ void showWarningSnackBar(BuildContext context, String error) {
       ),
       content: Container(
         decoration: BoxDecoration(
-          color: InjicareColor().gray100.withOpacity(0.8),
+          color: InjicareColor().gray100.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -353,6 +487,106 @@ void showWarningSnackBar(BuildContext context, String error) {
       ),
     ),
   );
+}
+
+void showTopWarningSnackBar(BuildContext context, String message) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) => Positioned.fill(
+      top: MediaQuery.of(context).padding.top + 16,
+      child: Material(
+        color: Colors.transparent,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: IntrinsicWidth(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: InjicareColor().gray100.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    "assets/svg/warning.svg",
+                    width: 20,
+                  ),
+                  Gaps.h10,
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
+
+  Future.delayed(const Duration(seconds: 2), () {
+    overlayEntry.remove();
+  });
+}
+
+void showTopCompletingSnackBar(BuildContext context, String message,
+    {Function()? refreshScreen}) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) => Positioned.fill(
+      top: MediaQuery.of(context).padding.top + 16,
+      child: Material(
+        color: Colors.transparent,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: IntrinsicWidth(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: InjicareColor().gray100.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    "assets/svg/circle-check1.svg",
+                    width: 20,
+                  ),
+                  Gaps.h10,
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
+
+  Future.delayed(const Duration(seconds: 2), () {
+    overlayEntry.remove();
+  });
+
+  if (refreshScreen != null) {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      refreshScreen();
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+    });
+  }
 }
 
 bool isDatePassed(String certainBirthday) {
@@ -678,6 +912,7 @@ void resultBottomModal(
   showCompletingSnackBar(context, text);
   Future.delayed(const Duration(milliseconds: 500), () {
     refreshScreen();
+    if (!context.mounted) return;
     Navigator.of(context).pop();
   });
 }
@@ -753,4 +988,185 @@ String secondsToYearMonthDayHourMinute(int seconds) {
   String formattedDate =
       '${dateTime.year.toString().substring(2)}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')} $diaryHour ${dateTime.minute}분';
   return formattedDate;
+}
+
+String numberFormat(int length) {
+  return NumberFormat("#,###").format(length);
+}
+
+Widget gestureDetectorWithMouseClick(
+    {required Function() function, required Widget child}) {
+  return MouseRegion(
+    cursor: SystemMouseCursors.click,
+    child: GestureDetector(
+      onTap: function,
+      child: child,
+    ),
+  );
+}
+
+void showRightModal(BuildContext context, Widget child) {
+  showGeneralDialog(
+    context: context,
+    barrierColor: Colors.black38,
+    barrierDismissible: true,
+    barrierLabel: "닫기",
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return child;
+    },
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      final slideAnimation = Tween<Offset>(
+        begin: const Offset(1.0, 0.0),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(
+        parent: animation,
+        curve: Curves.linear,
+      ));
+
+      return Align(
+        alignment: Alignment.centerRight,
+        child: SlideTransition(
+          position: slideAnimation,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(40),
+              bottomLeft: Radius.circular(40),
+            ),
+            child: Material(
+              elevation: 0,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Future<Uint8List?> getVideoFileThumbnail(String filePath) async {
+  try {
+    final thumbnailPath = await VideoThumbnail.thumbnailData(
+      video: filePath,
+      imageFormat: ImageFormat.JPEG,
+      quality: 100,
+    );
+    return thumbnailPath;
+  } catch (e) {
+    // ignore: avoid_print
+    print(e);
+  }
+  return null;
+}
+
+Future<String> generateFCMAccessToken() async {
+  try {
+    await dotenv.load(fileName: "env");
+    final credentials = ServiceAccountCredentials.fromJson({
+      "type": '${dotenv.env["GOOGLE_API_SERVICE_TYPE"]}',
+      "project_id": '${dotenv.env["GOOGLE_API_SERVICE_PROJECT_ID"]}',
+      "private_key_id": '${dotenv.env["GOOGLE_API_SERVICE_PRIVATE_KEY_ID"]}',
+      "private_key": '${dotenv.env["GOOGLE_API_SERVICE_PRIVATE_KEY"]}',
+      "client_email": '${dotenv.env["GOOGLE_API_SERVICE_CLIENT_EMAIL"]}',
+      "client_id": '${dotenv.env["GOOGLE_API_SERVICE_CLIENT_ID"]}',
+      "auth_uri": '${dotenv.env["GOOGLE_API_SERVICE_AUTH_URI"]}',
+      "token_uri": '${dotenv.env["GOOGLE_API_SERVICE_TOKEN_URI"]}',
+      "auth_provider_x509_cert_url":
+          '${dotenv.env["GOOGLE_API_SERVICE_AUTH_PROVIDER_X509_CERT_URL"]}',
+      "client_x509_cert_url":
+          '${dotenv.env["GOOGLE_API_SERVICE_CLIENT_X509_CERT_URL"]}',
+      "universe_domain": '${dotenv.env["GOOGLE_API_SERVICE_UNIVERSE_DOMAIN"]}',
+    });
+    List<String> scopes = [
+      "https://www.googleapis.com/auth/firebase.messaging"
+    ];
+    final client = await obtainAccessCredentialsViaServiceAccount(
+        credentials, scopes, http.Client());
+    final accessToken = client;
+
+    Timer.periodic(const Duration(minutes: 59), (timer) {
+      accessToken.refreshToken;
+    });
+    return accessToken.accessToken.data;
+  } catch (e) {
+    // ignore: avoid_print
+    print("generateFCMAccessToken -> $e");
+  }
+  return "";
+}
+
+Future<void> pushTopicFcmNotification(
+    String topic, String title, String description) async {
+  try {
+    await dotenv.load(fileName: "env");
+    String? accessToken = await generateFCMAccessToken();
+
+    if (accessToken != "") {
+      await http.post(
+        Uri.parse(
+            'https://fcm.googleapis.com/v1/projects/chungchunon-android-dd695/messages:send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken'
+        },
+        body: jsonEncode({
+          'message': {
+            'topic': topic,
+            'notification': {
+              'title': title,
+            },
+            'webpush': {
+              'headers': {'Urgency': 'high'},
+              'notification': {
+                'title': title,
+                'body': description,
+                'icon': '/icons/icon-192x192.png', // 웹용 아이콘 URL
+                'click_action': 'https://your-web-url.com', // 웹 클릭 시 이동 URL
+              },
+            },
+          }
+        }),
+      );
+    }
+  } catch (e) {
+    // ignore: avoid_print
+    print("[pushHealthConsultFcmNotification] error -> $e");
+  }
+}
+
+Future<void> pushHealthConsultFcmNotification(String fcmToken) async {
+  try {
+    await dotenv.load(fileName: "env");
+    String? accessToken = await generateFCMAccessToken();
+
+    if (accessToken != "") {
+      await http.post(
+        Uri.parse(
+            'https://fcm.googleapis.com/v1/projects/chungchunon-android-dd695/messages:send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken'
+        },
+        body: jsonEncode({
+          'message': {
+            'token': fcmToken,
+            'notification': {
+              'title': "인지케어 전문의가 건강상담실에 답변을 달았습니다",
+            },
+            'webpush': {
+              'headers': {'Urgency': 'high'},
+              'notification': {
+                'title': "인지케어 전문의가 건강상담실에 답변을 달았습니다",
+                'icon': '/icons/icon-192x192.png', // 웹용 아이콘 URL
+                'click_action': 'https://your-web-url.com', // 웹 클릭 시 이동 URL
+              },
+            },
+          }
+        }),
+      );
+    }
+  } catch (e) {
+    // ignore: avoid_print
+    print("[pushHealthConsultFcmNotification] error -> $e");
+  }
 }

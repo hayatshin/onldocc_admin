@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -11,8 +12,8 @@ import 'package:intl/intl.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
 import 'package:onldocc_admin/common/view_a/default_screen.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
+import 'package:onldocc_admin/common/widgets/period_button.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
-import 'package:onldocc_admin/constants/http.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/ca/view/self_test_screen.dart';
 import 'package:onldocc_admin/features/dashboard/view/dashboard_screen.dart';
@@ -30,6 +31,7 @@ import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class UserDashboardScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -47,10 +49,18 @@ class UserDashboardScreen extends ConsumerStatefulWidget {
 
 class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
   UserModel? _userModel;
-  final _periodList = ["이번달", "지난달", "이번주", "지난주"];
-  String _selectedPeriod = "이번달";
-  DateTime _startDatetime = DateTime.now();
-  DateTime _endDatetime = DateTime.now();
+  // final _periodList = ["이번달", "지난달", "이번주", "지난주"];
+  // String _selectedPeriod = "이번달";
+
+  final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
+  OverlayEntry? overlayEntry;
+
+  DateRange _selectedDateRange = DateRange(
+    getThisWeekMonday(),
+    DateTime.now(),
+  );
+  // DateTime _startDatetime = DateTime.now();
+  // DateTime _endDatetime = DateTime.now();
   GlobalKey diaryColumnKey = GlobalKey();
   double? diaryWidgetHeight = 300;
   GlobalKey aiColumnKey = GlobalKey();
@@ -59,7 +69,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
   bool _loadingAiDiagnosis = true;
   final _aiStreamControllder = StreamController<String>.broadcast();
 
-  get data => null;
+  // get data => null;
 
   // data
   List<UserDashboardDiaryModel> _diaryList = [];
@@ -83,6 +93,12 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
     _initializeUserDashboard();
   }
 
+  @override
+  void dispose() {
+    _removePeriodCalender();
+    super.dispose();
+  }
+
   void _initializeUserDashboard() async {
     if (!mounted) return;
     setState(() {
@@ -90,7 +106,7 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
     });
     await Future.wait([
       _initializeUser(),
-      _updatePeriod(),
+      // _updatePeriod(),
     ]);
     await _initializeDashboardData();
     await _getAIDiagnosisResult();
@@ -105,39 +121,40 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
     });
   }
 
-  Future<void> _updatePeriod() async {
-    switch (_selectedPeriod) {
-      case "이번달":
-        _startDatetime = getThisMonth1stdayStartDatetime();
-        _endDatetime = getThisMonthLastdayEndDatetime();
+  // Future<void> _updatePeriod() async {
+  //   switch (_selectedPeriod) {
+  //     case "이번달":
+  //       _startDatetime = getThisMonth1stdayStartDatetime();
+  //       _endDatetime = getThisMonthLastdayEndDatetime();
 
-        break;
-      case "지난달":
-        _startDatetime = getLastMonth1stdayStartDatetime();
-        _endDatetime = getLastMonthLastdayEndDatetime();
+  //       break;
+  //     case "지난달":
+  //       _startDatetime = getLastMonth1stdayStartDatetime();
+  //       _endDatetime = getLastMonthLastdayEndDatetime();
 
-        break;
-      case "이번주":
-        _startDatetime = getThisWeekMondayStartDatetime();
-        _endDatetime = getThisWeekSundayEndtDatetime();
+  //       break;
+  //     case "이번주":
+  //       _startDatetime = getThisWeekMondayStartDatetime();
+  //       _endDatetime = getThisWeekSundayEndtDatetime();
 
-        break;
-      case "지난주":
-        _startDatetime = getLastWeekMondayStartDateTime();
-        _endDatetime = getLastWeekSundayEndDateTime();
+  //       break;
+  //     case "지난주":
+  //       _startDatetime = getLastWeekMondayStartDateTime();
+  //       _endDatetime = getLastWeekSundayEndDateTime();
 
-        break;
-      default:
-        _startDatetime = getThisMonth1stdayStartDatetime();
-        _endDatetime = getThisMonthLastdayEndDatetime();
+  //       break;
+  //     default:
+  //       _startDatetime = getThisMonth1stdayStartDatetime();
+  //       _endDatetime = getThisMonthLastdayEndDatetime();
 
-        break;
-    }
-  }
+  //       break;
+  //   }
+  // }
 
   Future<void> _initializeDashboardData() async {
-    final selectedStartSeconds = convertDateTimeToSeconds(_startDatetime);
-    final selectedEndSeconds = convertDateTimeToSeconds(_endDatetime);
+    final selectedStartSeconds =
+        convertDateTimeToSeconds(_selectedDateRange.start);
+    final selectedEndSeconds = convertDateTimeToSeconds(_selectedDateRange.end);
     await Future.wait([
       _initializeDiaryDashboard(selectedStartSeconds, selectedEndSeconds),
       _initializeCognitionTestType(selectedStartSeconds, selectedEndSeconds),
@@ -189,7 +206,9 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
         Uri.parse(
             "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/chatgpt-user-dashboard"),
         body: requestBodyJson,
-        headers: headers,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -322,8 +341,8 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
 
   List<String> _generateDateStrings() {
     List<String> dateStrings = [];
-    for (DateTime current = _startDatetime;
-        current.isBefore(_endDatetime);
+    for (DateTime current = _selectedDateRange.start;
+        current.isBefore(_selectedDateRange.end);
         current = current.add(const Duration(days: 1))) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(current);
       dateStrings.add(formattedDate);
@@ -336,12 +355,13 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
     required String userName,
     required String quizType,
   }) {
-    Map<String, String> extraJson = {
+    Map<String, dynamic> extraJson = {
       "userId": userId,
       "userName": userName,
       "quizType": quizType,
-      "periodType": _selectedPeriod,
+      "periodType": _selectedDateRange,
     };
+
     context.push(
       "/users/$userId/diary-quiz",
       extra: DahsboardDetailPathModel.fromJson(extraJson),
@@ -353,16 +373,97 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
     required String userName,
     required String quizType,
   }) {
-    Map<String, String> extraJson = {
+    Map<String, dynamic> extraJson = {
       "userId": userId,
       "userName": userName,
       "quizType": quizType,
-      "periodType": _selectedPeriod,
+      "periodType": _selectedDateRange,
     };
     context.push(
       "/users/$userId/self-test",
       extra: DahsboardDetailPathModel.fromJson(extraJson),
     );
+  }
+
+  void _showPeriodCalender() {
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Theme(
+          data: ThemeData(
+            colorScheme: ColorScheme.light(
+              primary: Palette().darkBlue,
+            ),
+          ),
+          child: Positioned.fill(
+            child: Material(
+              color: Colors.black38,
+              child: Center(
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: SfDateRangePicker(
+                    backgroundColor: Colors.white,
+                    headerHeight: 50,
+                    confirmText: "확인",
+                    cancelText: "취소",
+                    onCancel: () {
+                      _removePeriodCalender();
+                    },
+                    onSubmit: (dateRange) async {
+                      if (dateRange is PickerDateRange) {
+                        setState(() {
+                          _selectedDateRange = DateRange(dateRange.startDate!,
+                              dateRange.endDate ?? dateRange.startDate!);
+                        });
+                        _removePeriodCalender();
+                        await _initializeDashboardData();
+                      }
+                    },
+                    showActionButtons: true,
+                    viewSpacing: 10,
+                    selectionColor: Palette().darkBlue,
+                    selectionTextStyle: InjicareFont().body07,
+                    rangeTextStyle: InjicareFont().body07,
+                    rangeSelectionColor: Palette().lightBlue,
+                    startRangeSelectionColor: Palette().darkBlue,
+                    endRangeSelectionColor: Palette().darkBlue,
+                    headerStyle: DateRangePickerHeaderStyle(
+                      backgroundColor: Palette().darkBlue,
+                      textStyle: InjicareFont().body01.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
+                    monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: InjicareFont().body07,
+                      leadingDatesTextStyle: InjicareFont().body07,
+                      trailingDatesTextStyle: InjicareFont().body07,
+                    ),
+                    monthViewSettings: const DateRangePickerMonthViewSettings(),
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    initialSelectedRange: PickerDateRange(
+                      _selectedDateRange.start,
+                      _selectedDateRange.end,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    Overlay.of(context, debugRequiredFor: widget, rootOverlay: true)
+        .insert(overlayEntry!);
+  }
+
+  void _removePeriodCalender() {
+    overlayEntry?.remove();
+    overlayEntry = null;
   }
 
   @override
@@ -384,74 +485,82 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "기간 선택:",
-                        style: TextStyle(
-                          fontSize: Sizes.size14,
-                          color: Palette().darkPurple,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Gaps.h10,
-                      PeriodDropdownMenu(
-                        items: _periodList.map((String item) {
-                          return DropdownMenuItem<String>(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Palette().normalGray,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }).toList(),
-                        value: _selectedPeriod,
-                        onChangedFunction: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedPeriod = value;
-                            });
-                            _initializeUserDashboard();
-                          }
-                        },
-                      ),
-                      // PeriodDropdownMenu(
-                      //   items: _periodList.map((String item) {
-                      //     return DropdownMenuItem<String>(
-                      //       value: item,
-                      //       child: Text(
-                      //         item,
-                      //         style: TextStyle(
-                      //           fontSize: 12,
-                      //           color: Palette().normalGray,
-                      //         ),
-                      //         overflow: TextOverflow.ellipsis,
-                      //       ),
-                      //     );
-                      //   }).toList(),
-                      //   value: _selectedPeriod,
-                      // ),
-                    ],
+                  gestureDetectorWithMouseClick(
+                    function: _showPeriodCalender,
+                    child: PeriodButton(
+                      startDate: _selectedDateRange.start,
+                      endDate: _selectedDateRange.end,
+                    ),
                   ),
-                  Gaps.h12,
-                  Column(
-                    children: [
-                      SelectableText(
-                        "${datetimeToSlashString(_startDatetime)} ~ ${datetimeToSlashString(_endDatetime)}",
-                        style: TextStyle(
-                          color: Palette().darkBlue,
-                          fontWeight: FontWeight.w300,
-                          fontSize: Sizes.size12,
-                        ),
-                      ),
-                      Gaps.v2,
-                    ],
-                  ),
+
+                  // Row(
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       "기간 선택:",
+                  //       style: TextStyle(
+                  //         fontSize: Sizes.size14,
+                  //         color: Palette().darkPurple,
+                  //         fontWeight: FontWeight.w600,
+                  //       ),
+                  //     ),
+                  //     Gaps.h10,
+                  //     PeriodDropdownMenu(
+                  //       items: _periodList.map((String item) {
+                  //         return DropdownMenuItem<String>(
+                  //           value: item,
+                  //           child: Text(
+                  //             item,
+                  //             style: TextStyle(
+                  //               fontSize: 12,
+                  //               color: Palette().normalGray,
+                  //             ),
+                  //             overflow: TextOverflow.ellipsis,
+                  //           ),
+                  //         );
+                  //       }).toList(),
+                  //       value: _selectedPeriod,
+                  //       onChangedFunction: (value) {
+                  //         if (value != null) {
+                  //           setState(() {
+                  //             _selectedPeriod = value;
+                  //           });
+                  //           _initializeUserDashboard();
+                  //         }
+                  //       },
+                  //     ),
+                  //     // PeriodDropdownMenu(
+                  //     //   items: _periodList.map((String item) {
+                  //     //     return DropdownMenuItem<String>(
+                  //     //       value: item,
+                  //     //       child: Text(
+                  //     //         item,
+                  //     //         style: TextStyle(
+                  //     //           fontSize: 12,
+                  //     //           color: Palette().normalGray,
+                  //     //         ),
+                  //     //         overflow: TextOverflow.ellipsis,
+                  //     //       ),
+                  //     //     );
+                  //     //   }).toList(),
+                  //     //   value: _selectedPeriod,
+                  //     // ),
+                  //   ],
+                  // ),
+                  // Gaps.h12,
+                  // Column(
+                  //   children: [
+                  //     SelectableText(
+                  //       "${datetimeToSlashString(_startDatetime)} ~ ${datetimeToSlashString(_endDatetime)}",
+                  //       style: TextStyle(
+                  //         color: Palette().darkBlue,
+                  //         fontWeight: FontWeight.w300,
+                  //         fontSize: Sizes.size12,
+                  //       ),
+                  //     ),
+                  //     Gaps.v2,
+                  //   ],
+                  // ),
                 ],
               ),
             ],

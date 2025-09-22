@@ -14,6 +14,29 @@ class DashboardViewModel extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
+  Future<List<DashboardCountModel>> visitCount(
+      int selectedStartSeconds, int selectedEndSeconds) async {
+    final data = await _dashboardRepo.visitCount(
+        selectedStartSeconds, selectedEndSeconds);
+
+    final modelList =
+        data.map((element) => DashboardCountModel.from(element)).toList();
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
+      // 전체보기
+      return modelList;
+    } else {
+      // 기관 선택
+      final filterList = modelList
+          .where((e) =>
+              e.userContractCommunityId ==
+              selectContractRegion.value!.contractCommunityId)
+          .toList();
+
+      return filterList;
+    }
+  }
+
   Future<List<UserModel>> userCount(
       int selectedStartSeconds, int selectedEndSeconds) async {
     final data = await _dashboardRepo.userCount(
@@ -44,7 +67,8 @@ class DashboardViewModel extends AsyncNotifier<void> {
     final modelList =
         data.map((element) => DashboardCountModel.from(element)).toList();
 
-    if (selectContractRegion.value!.contractCommunityId == null) {
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
       // 전체보기
       return modelList;
     } else {

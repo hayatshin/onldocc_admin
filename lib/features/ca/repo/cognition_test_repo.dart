@@ -7,7 +7,7 @@ class CognitionTestRepository {
   final int offset = 20;
 
   Future<List<Map<String, dynamic>>> getTestData(
-      String testType, AdminProfileModel adminProfileModel, int page) async {
+      String testType, AdminProfileModel adminProfileModel) async {
     if (adminProfileModel.master) {
       final query = await _supabase
           .from("cognition_test")
@@ -16,8 +16,7 @@ class CognitionTestRepository {
           .order(
             'createdAt',
             ascending: false,
-          )
-          .range((page - 1) * offset, (page * offset) - 1);
+          );
 
       return query;
     } else {
@@ -29,8 +28,7 @@ class CognitionTestRepository {
           .order(
             'createdAt',
             ascending: false,
-          )
-          .range((page - 1) * offset, (page * offset) - 1);
+          );
 
       return query;
     }

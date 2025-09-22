@@ -16,24 +16,32 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
   }
 
   Future<List<UserModel>> getUserPoints(DateRange range) async {
-    List<UserModel?> userDataList = ref.read(userProvider).value ??
-        await ref
-            .read(userProvider.notifier)
-            .initializeUserList(selectContractRegion.value!.subdistrictId);
+    try {
+      List<UserModel?> userDataList = ref.read(userProvider).value ??
+          await ref
+              .read(userProvider.notifier)
+              .initializeUserList(selectContractRegion.value!.subdistrictId);
 
-    List<UserModel> nonNullUserList =
-        userDataList.where((e) => e != null).cast<UserModel>().toList();
+      List<UserModel> nonNullUserList =
+          userDataList.where((e) => e != null).cast<UserModel>().toList();
 
-    final points = await _rankingRepo.getUserPoints(nonNullUserList, range);
-    final userpoints = points.map((e) => UserModel.fromJson(e)).toList();
+      final points = await _rankingRepo.getUserPoints(nonNullUserList, range);
 
-    userpoints.sort((a, b) => b.totalPoint!.compareTo(a.totalPoint!));
+      final userpoints = points.map((e) => UserModel.fromJson(e)).toList();
 
-    return indexRankingModel(userpoints);
+      userpoints.sort((a, b) => b.totalPoint!.compareTo(a.totalPoint!));
+
+      return indexRankingModel(userpoints);
+    } catch (e) {
+      // ignore: avoid_print
+      print("getUserPoints: $e");
+      return [];
+    }
   }
 
   List<UserModel> indexRankingModel(List<UserModel> userList) {
     int count = 1;
+    int samePoint = 0;
     List<UserModel> list = [];
 
     for (int i = 0; i < userList.length - 1; i++) {
@@ -43,7 +51,9 @@ class RankingViewModel extends AsyncNotifier<List<UserModel>> {
       list.add(indexUpdateUser);
       if (userList.length > i + 1) {
         if (userList[i].totalPoint != userList[i + 1].totalPoint) {
-          count++;
+          count = count + 1 + samePoint;
+        } else {
+          samePoint++;
         }
       }
     }

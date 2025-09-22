@@ -13,10 +13,11 @@ import 'package:onldocc_admin/features/dashboard/model/cognition_data_test_model
 import 'package:onldocc_admin/features/dashboard/model/dashboard_count_model.dart';
 import 'package:onldocc_admin/features/dashboard/model/step_data_model.dart';
 import 'package:onldocc_admin/features/dashboard/view_models/dashboard_view_model.dart';
-import 'package:onldocc_admin/features/event/view/event_screen.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
 import 'package:onldocc_admin/features/users/models/user_model.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
@@ -76,9 +77,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ChartData("2014", 40)
   ];
 
-  get data => null;
+  Null get data => null;
 
   // data
+  List<DashboardCountModel> _visitList = [];
   List<DashboardCountModel> _diaryList = [];
   List<DashboardCountModel> _commentList = [];
   List<DashboardCountModel> _likeList = [];
@@ -239,14 +241,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
 // 회원 가입자 수 데이터
   Future<void> _initializeUserDashboard() async {
-    List<UserModel?> userDataList = ref.read(userProvider).value ??
+    List<UserModel?> userDataListFromDB = ref.read(userProvider).value ??
         await ref
             .read(userProvider.notifier)
             .initializeUserList(selectContractRegion.value!.subdistrictId);
+    List<UserModel> userDataListWithoutNull =
+        userDataListFromDB.whereType<UserModel>().toList();
 
-    final periodUserDataList = userDataList
+    final periodUserDataList = userDataListWithoutNull
         .where((element) =>
-            _selectedStartSeconds <= element!.createdAt &&
+            _selectedStartSeconds <= element.createdAt &&
             element.createdAt <= _selectedEndSeconds)
         .toList();
 
@@ -255,20 +259,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       // 전체보기
       if (mounted) {
         setState(() {
-          _totalUserDataList = userDataList;
+          _totalUserDataList = userDataListWithoutNull;
           _periodUserDataList = periodUserDataList;
         });
       }
     } else {
       // 기관 선택
-      final filterList = userDataList
+      final filterList = userDataListWithoutNull
           .where((e) =>
-              e!.contractCommunityId ==
+              e.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
       final filterPeriodList = periodUserDataList
           .where((e) =>
-              e!.contractCommunityId ==
+              e.contractCommunityId ==
               selectContractRegion.value!.contractCommunityId)
           .toList();
       if (mounted) {
@@ -282,6 +286,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   // 일기 데이터
   Future<void> _initializeDiaryDashboard() async {
+    final visitList = await ref
+        .read(dashboardProvider.notifier)
+        .visitCount(_selectedStartSeconds, _selectedEndSeconds);
     final diaryList = await ref
         .read(dashboardProvider.notifier)
         .diaryCount(_selectedStartSeconds, _selectedEndSeconds);
@@ -298,7 +305,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         .read(dashboardProvider.notifier)
         .quizMultipleChoices(_selectedStartSeconds, _selectedEndSeconds);
 
+    if (!mounted) return;
     setState(() {
+      _visitList = visitList;
       _diaryList = diaryList;
       _commentList = commentList;
       _likeList = likeList;
@@ -313,6 +322,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         .read(dashboardProvider.notifier)
         .cognitionTest(_selectedStartSeconds, _selectedEndSeconds);
 
+    if (!mounted) return;
     setState(() {
       _cognitionTestList = cognitionTesetList;
     });
@@ -357,6 +367,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
     chatAvgTime = aiChatList.isNotEmpty ? chatSumTime / aiChatList.length : 0;
 
+    if (!mounted) return;
     setState(() {
       _aiChatList = aiChatList;
       _chatSumTime = formatDuration(chatSumTime);
@@ -380,6 +391,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final stepDataList =
         await ref.read(dashboardProvider.notifier).steps(dateStrings);
 
+    if (!mounted) return;
     setState(() {
       _stepDataList = stepDataList;
     });
@@ -459,6 +471,51 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     // )
                   ],
                 ),
+                Gaps.v52,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(2.5),
+                            color: InjicareColor().primary50,
+                          ),
+                        ),
+                        Gaps.h10,
+                        Text(
+                          "기간 내 방문 횟수 데이터",
+                          style: TextStyle(
+                            fontSize: Sizes.size14,
+                            fontWeight: FontWeight.w700,
+                            color: Palette().darkGray,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Gaps.h36,
+                    Container(
+                      decoration: BoxDecoration(
+                          color:
+                              InjicareColor().primary20.withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(3)),
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.symmetric(horizontal: 5),
+                        child: SelectableText(
+                          "${numberFormat(_visitList.length)} 회",
+                          style: InjicareFont()
+                              .headline02
+                              .copyWith(color: InjicareColor().gray100),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 // 가입자 수 헤더
                 const DashType(type: "회원 가입자 수 데이터"),
                 IntrinsicHeight(
@@ -480,7 +537,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 Gaps.h40,
                                 HeaderBox(
                                   headerText: "누적 회원가입 수",
-                                  headerColor: Palette().dashPink,
+                                  headerColor: Palette().dashGreen,
                                   contentData: "${_totalUserDataList.length} 명",
                                 ),
                               ],
@@ -571,15 +628,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   const GrayDivider(
                                     height: 60,
                                   ),
-                                  SubHeaderBox(
-                                    subHeader: "일기 작성자 수",
-                                    subHeaderColor: Palette().dashPink,
-                                    contentData:
-                                        "${removeDuplicateUserId(_diaryList).length} 명",
-                                  ),
-                                  const GrayDivider(
-                                    height: 60,
-                                  ),
+                                  // SubHeaderBox(
+                                  //   subHeader: "일기 작성자 수",
+                                  //   subHeaderColor: Palette().dashPink,
+                                  //   contentData:
+                                  //       "${removeDuplicateUserId(_diaryList).length} 명",
+                                  // ),
+                                  // const GrayDivider(
+                                  //   height: 60,
+                                  // ),
                                   SubHeaderBox(
                                     subHeader: "댓글 횟수",
                                     subHeaderColor: Palette().dashBlue,
@@ -847,7 +904,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               children: [
                                 DashboardTable(
                                   tableTitle: "성별 일기 작성 횟수",
-                                  titleColor: Palette().dashPink,
+                                  titleColor: Palette().dashBlue,
                                   list: [
                                     TableModel(
                                         tableHeader: "남성",
@@ -862,7 +919,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 Gaps.v10,
                                 DashboardTable(
                                   tableTitle: "연령별 일기 작성 횟수",
-                                  titleColor: Palette().dashPink,
+                                  titleColor: Palette().dashBlue,
                                   list: [
                                     TableModel(
                                         tableHeader: "40대 미만",
@@ -2012,7 +2069,7 @@ class DashType extends StatelessWidget {
         Gaps.v52,
         Row(
           children: [
-            SelectableText(
+            Text(
               type,
               style: TextStyle(
                 fontSize: Sizes.size14,
@@ -2940,7 +2997,8 @@ class UserGenderAgeTable extends StatelessWidget {
       children: [
         DashboardTable(
           tableTitle: "성별 $title",
-          titleColor: Palette().dashPink,
+          titleColor:
+              title.contains("기간") ? Palette().dashYellow : Palette().dashGreen,
           list: [
             TableModel(
                 tableHeader: "남성",
@@ -2955,7 +3013,8 @@ class UserGenderAgeTable extends StatelessWidget {
         Gaps.v10,
         DashboardTable(
           tableTitle: "연령별 $title",
-          titleColor: Palette().dashPink,
+          titleColor:
+              title.contains("기간") ? Palette().dashYellow : Palette().dashGreen,
           list: [
             TableModel(
                 tableHeader: "40대 미만",

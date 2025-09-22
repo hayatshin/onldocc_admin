@@ -41,23 +41,24 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
     return userModel;
   }
 
-  Future<List<UserModel?>> initializeUserList(String subdistrictId) async {
+  Future<List<UserModel>> initializeUserList(String subdistrictId) async {
     final userlist = await _userRepo.initializeUserList(subdistrictId);
 
     final modelList = userlist.map((json) {
       try {
-        return UserModel.fromJson(json);
+        final model = UserModel.fromJson(json);
+
+        return model;
       } catch (e, stack) {
-        // ignore: avoid_print
-        print("에러 발생한 JSON: $json");
-        // ignore: avoid_print
-        print("에러 메시지: $e");
-        // ignore: avoid_print
-        print("스택: $stack");
+        // // ignore: avoid_print
+        // print("에러 발생한 JSON: $json");
+        // // ignore: avoid_print
+        // print("에러 메시지: $e");
+        // // ignore: avoid_print
+        // print("스택: $stack");
       }
     }).toList();
-    final nonNullModelList = modelList.where((e) => e != null).toList();
-
+    final nonNullModelList = modelList.whereType<UserModel>().toList();
     state = AsyncData(nonNullModelList);
     return nonNullModelList;
   }

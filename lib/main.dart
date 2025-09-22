@@ -1,13 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/firebase_options.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
-import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/router.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,13 +25,20 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
+    if (kIsWeb) {
+      await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+    }
+
     final supabaseUrlDebug = dotenv.env["SUPABASE_URL"];
     final supabaseAnonKeyDebug = dotenv.env["SUPABASE_ANONKEY"];
 
     await Supabase.initialize(
-      url: supabaseUrlDebug!,
-      anonKey: supabaseAnonKeyDebug!,
-    );
+        url: supabaseUrlDebug!,
+        anonKey: supabaseAnonKeyDebug!,
+        accessToken: () async {
+          final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+          return token;
+        });
 
     GoRouter.optionURLReflectsImperativeAPIs = true;
     await SystemChrome.setPreferredOrientations(
@@ -62,6 +72,8 @@ class OnldoccAdmin extends ConsumerWidget {
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
       ],
       supportedLocales: const [
         Locale('ko', 'KR'),
@@ -73,19 +85,25 @@ class OnldoccAdmin extends ConsumerWidget {
           ScrollConfiguration.of(context).copyWith(scrollbars: false),
       theme: ThemeData(
         fontFamily: "Pretendard",
+        colorScheme: ColorScheme.light(
+          primary: InjicareColor().secondary50,
+        ),
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Palette().darkBlue,
-          selectionColor: Palette().darkBlue.withOpacity(0.3),
+          cursorColor: InjicareColor().gray100,
         ),
         datePickerTheme: DatePickerThemeData(
-          headerBackgroundColor: Palette().darkPurple,
+          headerBackgroundColor: InjicareColor().secondary20,
           cancelButtonStyle: ButtonStyle(
             elevation: const WidgetStatePropertyAll(0),
-            textStyle: WidgetStatePropertyAll(InjicareFont().body01),
+            textStyle: WidgetStatePropertyAll(InjicareFont().body03),
+          ),
+          confirmButtonStyle: ButtonStyle(
+            elevation: const WidgetStatePropertyAll(0),
+            textStyle: WidgetStatePropertyAll(InjicareFont().body03),
           ),
         ),
-        primaryColor: const Color(0xFFFF2D78),
-        canvasColor: Colors.blueGrey.shade500,
+        primaryColor: InjicareColor().primary50,
+        // canvasColor: Colors.blueGrey.shade500,
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
@@ -97,8 +115,8 @@ class OnldoccAdmin extends ConsumerWidget {
         focusColor: Colors.transparent,
         hoverColor: Colors.transparent,
         scrollbarTheme: ScrollbarThemeData(
-          thumbColor: WidgetStateProperty.all<Color>(
-              Palette().darkPurple.withOpacity(0.2)),
+          thumbColor:
+              WidgetStateProperty.all<Color>(InjicareColor().secondary20),
           thickness: WidgetStateProperty.all<double>(8.0),
           radius: const Radius.circular(10),
         ),

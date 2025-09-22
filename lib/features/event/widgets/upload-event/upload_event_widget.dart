@@ -17,6 +17,7 @@ import 'package:onldocc_admin/features/event/widgets/upload-event/upload_quiz_ev
 import 'package:onldocc_admin/features/event/widgets/upload-event/upload_target_score_widget.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 import 'package:uuid/uuid.dart';
@@ -257,7 +258,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -276,7 +277,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       checkEnabledEventButton();
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -388,10 +389,9 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     }
 
     if (!mounted) return;
-    resultBottomModal(
-        context,
-        !widget.edit ? "성공적으로 행사가 올라갔습니다" : "성공적으로 행사가 수정되었습니다",
-        widget.refreshScreen);
+    showTopCompletingSnackBar(
+        context, !widget.edit ? "성공적으로 행사가 올라갔습니다" : "성공적으로 행사가 수정되었습니다",
+        refreshScreen: widget.refreshScreen);
   }
 
   void updateGoalScore(int goalScore) {
@@ -545,13 +545,14 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
     await ref.read(eventRepo).deleteEventImageStorage(eventId);
 
     if (!mounted) return;
-    resultBottomModal(context, "성공적으로 행사가 삭제되었습니다.", widget.refreshScreen);
+    showTopCompletingSnackBar(context, "성공적으로 행사가 삭제되었습니다.",
+        refreshScreen: widget.refreshScreen);
   }
 
   void showDeleteOverlay(String eventId, String eventName) async {
     removeDeleteOverlay();
     overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(
+      return deleteUserOverlay(
           eventName.length > 10 ? "${eventName.substring(0, 11)}.." : eventName,
           removeDeleteOverlay,
           () => deleteEvent(eventId));
@@ -562,19 +563,17 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return StatefulBuilder(builder: (context, setState) {
       return ModalScreen(
-        size: size,
+        widthPercentage: 0.7,
         modalTitle: !widget.edit ? "행사 올리기" : "행사 수정하기",
         modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
         modalButtonOneFunction: !widget.edit
             ? _submitEvent
             : () => showDeleteOverlay(
                 widget.eventModel!.eventId, widget.eventModel!.title),
-        modalButtonTwoText: !widget.edit ? null : "수정하기",
-        modalButtonTwoFunction: _submitEvent,
+        // modalButtonTwoText: !widget.edit ? null : "수정하기",
+        // modalButtonTwoFunction: _submitEvent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -697,7 +696,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                                         ),
                                         Gaps.v5,
                                         SelectableText(
-                                          "가로:세로 = 5:4 비율\n(ex. 1000px:800px)",
+                                          "가로:세로 = 10:7 비율\n(ex. 1000px:700px)",
                                           style: headerInfoTextStyle,
                                           textAlign: TextAlign.start,
                                         ),
@@ -770,7 +769,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
                             ),
                             Gaps.v52,
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
                                   width: widget.size.width * 0.12,

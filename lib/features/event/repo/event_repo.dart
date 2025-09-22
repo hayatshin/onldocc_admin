@@ -19,11 +19,11 @@ class EventRepository {
   //     "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-point-functions-2");
 
   static final eventUserTargetScoreFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-targetscore-functions-4");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-targetscore-functions-5");
   static final eventUserMultipleScoresFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-multiplescores-functions-4");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-multiplescores-functions-5");
   static final eventUserCountFunctions = Uri.parse(
-      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions-4");
+      "https://diejlcrtffmlsdyvcagq.supabase.co/functions/v1/event-user-count-functions-5");
 
   Future<Map<String, dynamic>> getEventUserTargetScore(
     String userId,
@@ -52,11 +52,12 @@ class EventRepository {
       'maxStepCount': maxStepCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
+    final tokenHeaders = await firebaseTokenHeaders();
 
     final response = await http.post(
       eventUserTargetScoreFunctions,
       body: requestBodyJson,
-      headers: headers,
+      headers: tokenHeaders,
     );
 
     if (response.statusCode == 200) {
@@ -100,11 +101,12 @@ class EventRepository {
       'maxInvitationCount': maxInvitationCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
+    final tokenHeaders = await firebaseTokenHeaders();
 
     final response = await http.post(
       eventUserMultipleScoresFunctions,
       body: requestBodyJson,
-      headers: headers,
+      headers: tokenHeaders,
     );
 
     if (response.statusCode == 200) {
@@ -136,11 +138,12 @@ class EventRepository {
       'quizCount': quizCount,
     };
     String requestBodyJson = jsonEncode(requestBody);
+    final tokenHeaders = await firebaseTokenHeaders();
 
     final response = await http.post(
       eventUserCountFunctions,
       body: requestBodyJson,
-      headers: headers,
+      headers: tokenHeaders,
     );
 
     if (response.statusCode == 200) {
@@ -214,24 +217,21 @@ class EventRepository {
 
   Future<String> uploadSingleImageToStorage(
       String eventId, dynamic image) async {
-    if (!image.toString().startsWith("https://")) {
-      // await deleteEventImageStorage(eventId);
-      final uuid = const Uuid().v4();
-      final fileStoragePath = "$eventId/$uuid";
+    // await deleteEventImageStorage(eventId);
+    final uuid = const Uuid().v4();
+    final fileStoragePath = "$eventId/$uuid";
 
-      XFile xFile = XFile.fromData(image);
-      final imageBytes = await xFile.readAsBytes();
+    XFile xFile = XFile.fromData(image);
+    final imageBytes = await xFile.readAsBytes();
 
-      await _supabase.storage.from("events").uploadBinary(
-          fileStoragePath, imageBytes,
-          fileOptions: const FileOptions(upsert: true));
+    await _supabase.storage.from("events").uploadBinary(
+        fileStoragePath, imageBytes,
+        fileOptions: const FileOptions(upsert: true));
 
-      final fileUrl =
-          _supabase.storage.from("events").getPublicUrl(fileStoragePath);
+    final fileUrl =
+        _supabase.storage.from("events").getPublicUrl(fileStoragePath);
 
-      return fileUrl;
-    }
-    return image;
+    return fileUrl;
   }
 
   Future<void> addEvent(EventModel eventModel) async {

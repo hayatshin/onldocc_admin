@@ -17,12 +17,15 @@ class EditNotificationWidget extends ConsumerStatefulWidget {
   final Size size;
   final DiaryModel diaryModel;
   final Function() refreshScreen;
+  final Function() removeOverlay;
+
   const EditNotificationWidget({
     super.key,
     required this.context,
     required this.size,
     required this.diaryModel,
     required this.refreshScreen,
+    required this.removeOverlay,
   });
 
   @override
@@ -85,7 +88,8 @@ class _EditNotificationWidgetState
           .read(noticeRepo)
           .deleteFeedNotification(widget.diaryModel.diaryId);
       if (!mounted) return;
-      resultBottomModal(context, "성공적으로 공지가 삭제되었습니다.", widget.refreshScreen);
+      showTopCompletingSnackBar(context, "성공적으로 공지가 삭제되었습니다.",
+          refreshScreen: widget.refreshScreen);
     } catch (e) {
       // ignore: avoid_print
       print("_deleteFeedNotification -> $e");
@@ -105,90 +109,12 @@ class _EditNotificationWidgetState
             convertEndDateTimeToSeconds(_noticeFixedAt),
           );
       if (!mounted) return;
-      resultBottomModal(context, "성공적으로 공지가 수정되었습니다.", widget.refreshScreen);
+      showTopCompletingSnackBar(context, "성공적으로 공지가 수정되었습니다.",
+          refreshScreen: widget.refreshScreen);
     } catch (e) {
       // ignore: avoid_print
       print("_editFeedNotification -> $e");
     }
-  }
-
-  void showDeleteOverlay(BuildContext context, String notiDesc) async {
-    removeDeleteOverlay();
-
-    overlayEntry = OverlayEntry(
-      builder: (context) => Positioned.fill(
-        child: Material(
-          color: Colors.black54,
-          child: Center(
-            child: AlertDialog(
-              title: SelectableText(
-                notiDesc.length > 10
-                    ? "${notiDesc.substring(0, 11)}.."
-                    : notiDesc,
-                style: const TextStyle(
-                  fontSize: Sizes.size20,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              backgroundColor: Colors.white,
-              content: const Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SelectableText(
-                    "정말로 삭제하시겠습니까?",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                    ),
-                  ),
-                  SelectableText(
-                    "삭제하면 다시 되돌릴 수 없습니다.",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: removeDeleteOverlay,
-                  style: ButtonStyle(
-                    backgroundColor:
-                        WidgetStateProperty.all(Colors.pink.shade100),
-                  ),
-                  child: SelectableText(
-                    "취소",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      color: Colors.grey.shade800,
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () => _deleteFeedNotification(),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        WidgetStateProperty.all(Theme.of(context).primaryColor),
-                  ),
-                  child: const SelectableText(
-                    "삭제",
-                    style: TextStyle(
-                      fontSize: Sizes.size13,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-    Overlay.of(context, debugRequiredFor: widget).insert(overlayEntry!);
-  }
-
-  void removeDeleteOverlay() {
-    overlayEntry?.remove();
-    overlayEntry = null;
   }
 
   @override
@@ -215,7 +141,6 @@ class _EditNotificationWidgetState
   @override
   void dispose() {
     _descriptionControllder.dispose();
-    removeDeleteOverlay();
     super.dispose();
   }
 
@@ -240,12 +165,12 @@ class _EditNotificationWidgetState
     return StatefulBuilder(
       builder: (context, setState) {
         return ModalScreen(
-          size: widget.size,
+          widthPercentage: 0.7,
           modalTitle: "공지 수정하기",
           modalButtonOneText: "삭제하기",
           modalButtonOneFunction: () {},
-          modalButtonTwoText: "수정하기",
-          modalButtonTwoFunction: () {},
+          // modalButtonTwoText: "수정하기",
+          // modalButtonTwoFunction: () {},
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view/skeleton_loading_screen.dart';
-import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/models/participant_model.dart';
 import 'package:onldocc_admin/features/event/template/event_detail_template.dart';
+import 'package:onldocc_admin/features/event/view/event_detail_count_screen.dart';
 import 'package:onldocc_admin/features/event/view_models/event_view_model.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
+import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/palette.dart';
 import 'package:onldocc_admin/utils.dart';
 
@@ -42,7 +45,7 @@ class _EventDetailPointScreenState
   List<ParticipantModel> _participants = [];
   bool _initializeParticipants = false;
   final List<String> _listHeader = [
-    "#",
+    "번호",
     "이름",
     "연령",
     "성별",
@@ -182,289 +185,333 @@ class _EventDetailPointScreenState
             return EventDetailTemplate(
               eventModel: _eventModel ?? EventModel.empty(),
               generateCsv: _generateExcel,
-              child: _initializeParticipants
-                  ? Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          Sizes.size20,
+              child: !_initializeParticipants
+                  ? const SkeletonLoadingScreen()
+                  : Column(
+                      children: [
+                        SizedBox(
+                          height: eventTableTabHeight,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(16),
+                                      ),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "번호",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "이름",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "연령",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "성별",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "핸드폰 번호",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              if (_eventModel != null && _eventModel!.allUsers)
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFE9EDF9),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: const Color(0xFFF3F6FD),
+                                        )),
+                                    child: Center(
+                                      child: Text(
+                                        "지역",
+                                        style: contentTextStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "참여일",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "작품명",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFFE9EDF9),
+                                      borderRadius: const BorderRadius.only(
+                                        topRight: Radius.circular(16),
+                                      ),
+                                      border: Border.all(
+                                        width: 2,
+                                        color: const Color(0xFFF3F6FD),
+                                      )),
+                                  child: Center(
+                                    child: Text(
+                                      "사진",
+                                      style: contentTextStyle,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      child: SizedBox(
-                        width: size.width,
-                        height: size.height,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: Sizes.size20,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
+                        for (int i = 0; i < _participants.length; i++)
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 150,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
                                       child: SelectableText(
-                                        "#",
-                                        style: _headerTextStyle,
+                                        "${i + 1}",
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: SelectableText(
-                                        "이름",
-                                        style: _headerTextStyle,
+                                    Expanded(
+                                      flex: 2,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5),
+                                        child: Text(
+                                          _participants[i].name,
+                                          style: contentTextStyle,
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: SelectableText(
-                                        "연령",
-                                        style: _headerTextStyle,
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        "${_participants[i].userAge}세",
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: SelectableText(
-                                        "성별",
-                                        style: _headerTextStyle,
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        _participants[i].gender,
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: SelectableText(
-                                        "핸드폰 번호",
-                                        style: _headerTextStyle,
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        _participants[i].phone,
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: SelectableText(
-                                        "참여일",
-                                        style: _headerTextStyle,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: SelectableText(
-                                        "작품명",
-                                        style: _headerTextStyle,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: SelectableText(
-                                        "사진",
-                                        style: _headerTextStyle,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Divider(
-                              color: Colors.grey.shade200,
-                            ),
-                            Gaps.v16,
-                            Expanded(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: _participants.length,
-                                itemBuilder: (context, index) {
-                                  return Row(
-                                    children: [
+                                    if (_eventModel != null &&
+                                        _eventModel!.allUsers)
                                       Expanded(
                                         flex: 1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SelectableText(
-                                              (index + 1).toString(),
-                                              // softWrap: true,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: _contentTextStyle,
-                                            ),
-                                          ),
+                                        child: FutureBuilder(
+                                          future: ref
+                                              .read(contractRepo)
+                                              .convertSubdistrictIdToName(
+                                                  _participants[i]
+                                                      .subdistrictId),
+                                          builder: (context, snapshot) {
+                                            final subdistrictName =
+                                                snapshot.data ?? "";
+
+                                            return Text(
+                                              subdistrictName,
+                                              style: contentTextStyle,
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            );
+                                          },
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SelectableText(
-                                              _participants[index].name,
-                                              // softWrap: true,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: _contentTextStyle,
-                                            ),
-                                          ),
-                                        ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        secondsToStringLine(
+                                            _participants[i].createdAt),
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SelectableText(
-                                              _participants[index].userAge,
-                                              // softWrap: true,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: _contentTextStyle,
-                                            ),
-                                          ),
-                                        ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        _participants[i].photoTitle ?? "",
+                                        style: contentTextStyle,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SelectableText(
-                                              _participants[index].gender,
-                                              // softWrap: true,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: _contentTextStyle,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SelectableText(
-                                              _participants[index].phone,
-                                              // softWrap: true,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: _contentTextStyle,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SelectableText(
-                                              secondsToStringDiaryTimeLine(
-                                                  _participants[index]
-                                                      .createdAt),
-                                              // softWrap: true,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: _contentTextStyle,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SelectableText(
-                                              _participants[index].photoTitle ??
-                                                  "",
-                                              // softWrap: true,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: _contentTextStyle,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(
-                                            Sizes.size3,
-                                          ),
-                                          child: MouseRegion(
-                                            cursor: SystemMouseCursors.click,
-                                            child: GestureDetector(
-                                              onTap: () =>
-                                                  _showEnlargePhotoImage(
-                                                      context,
-                                                      _participants[index]
-                                                          .photo),
-                                              child: Align(
-                                                alignment: Alignment.center,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    Sizes.size5,
-                                                  ),
-                                                  child: SizedBox(
-                                                    width: 150,
-                                                    height: 100,
-                                                    child: Image.network(
-                                                      _participants[index]
-                                                              .photo ??
-                                                          "",
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: gestureDetectorWithMouseClick(
+                                          function: () =>
+                                              _showEnlargePhotoImage(context,
+                                                  _participants[i].photo),
+                                          child: Center(
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              child: SizedBox(
+                                                width: 150,
+                                                height: 100,
+                                                child: Image.network(
+                                                    _participants[i].photo ??
+                                                        ""),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
+                                          )),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Gaps.v16,
-                          ],
-                        ),
-                      ),
-                    )
-                  : const SkeletonLoadingScreen(),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 1,
+                                      color: InjicareColor().gray30,
+                                    ),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                      ],
+                    ),
             );
           },
         )

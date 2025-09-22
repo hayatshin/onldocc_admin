@@ -40,4 +40,26 @@ class PopupModel {
         diaryId = json["diaryId"],
         adminSecret = json["adminSecret"],
         master = json["masters"];
+
+  PopupModel copyWith({
+    final String? description,
+    final int? noticeFixedAt,
+    final bool? adminSecret,
+  }) {
+    return PopupModel(
+      popupId: popupId,
+      subdistrictId: subdistrictId,
+      noticeFixedAt: noticeFixedAt ?? this.noticeFixedAt,
+      description: description ?? this.description,
+      createdAt: createdAt,
+      diaryId: diaryId,
+      adminSecret: adminSecret ?? this.adminSecret,
+      master: master,
+    );
+  }
+
+  @override
+  String toString() {
+    return "PopupModel(popupId: $popupId, subdistrictId: $subdistrictId, noticeFixedAt: $noticeFixedAt, description: $description, createdAt: $createdAt, diaryId: $diaryId, adminSecret: $adminSecret, master: $master)";
+  }
 }

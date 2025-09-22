@@ -94,7 +94,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   void dispose() {
     _titleControllder.dispose();
     _linkControllder.dispose();
-    _removeDeleteOverlay();
     super.dispose();
   }
 
@@ -113,7 +112,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       });
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -129,7 +128,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
       });
     } catch (e) {
       if (!mounted) return;
-      showWarningSnackBar(context, "오류가 발생했습니다");
+      showTopWarningSnackBar(context, "오류가 발생했습니다");
     }
   }
 
@@ -161,7 +160,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
   void _submitTv() async {
     if (_tvType == "파일" && _tvVideoBytes == null) {
-      showWarningSnackBar(context, "영상 파일을 선택해주세요");
+      showTopWarningSnackBar(context, "영상 파일을 선택해주세요");
     } else {
       setState(() {
         tapUploadTv = true;
@@ -206,7 +205,8 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
           await ref.read(tvProvider.notifier).addTv(tvModel, _tvVideoBytes);
           if (!mounted) return;
-          resultBottomModal(context, "성공적으로 영상이 올라갔습니다.", widget.refreshScreen);
+          showTopCompletingSnackBar(context, "성공적으로 영상이 올라갔습니다.",
+              refreshScreen: widget.refreshScreen);
         }
       }
     }
@@ -217,37 +217,11 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   void _editTv() async {
     await ref.read(tvRepo).editTv(widget.tvModel!.videoId, _title);
     if (!mounted) return;
-    resultBottomModal(
+    showTopCompletingSnackBar(
       context,
       "성공적으로 영상이 수정되었습니다.",
-      widget.refreshScreen,
+      refreshScreen: widget.refreshScreen,
     );
-  }
-
-  void _deleteTv() async {
-    await ref.read(tvRepo).deleteTv(widget.tvModel!.videoId);
-    if (!mounted) return;
-    resultBottomModal(context, "성공적으로 영상을 삭제하였습니다.", widget.refreshScreen);
-  }
-
-  void _removeDeleteOverlay() {
-    overlayEntry?.remove();
-    overlayEntry = null;
-  }
-
-  void _showDeleteOverlay() async {
-    _removeDeleteOverlay();
-    final description = widget.tvModel!.title;
-    overlayEntry = OverlayEntry(builder: (context) {
-      return deleteOverlay(
-          description.length > 10
-              ? "${description.substring(0, 11)}.."
-              : description,
-          _removeDeleteOverlay,
-          _deleteTv);
-    });
-
-    Overlay.of(widget.pcontext, debugRequiredFor: widget).insert(overlayEntry!);
   }
 
   @override
@@ -257,12 +231,10 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
     return StatefulBuilder(
       builder: (context, setState) {
         return ModalScreen(
-          size: size,
+          widthPercentage: 0.5,
           modalTitle: !widget.edit ? "영상 올리기" : "영상 수정하기",
-          modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
-          modalButtonOneFunction: !widget.edit ? _submitTv : _showDeleteOverlay,
-          modalButtonTwoText: !widget.edit ? null : "수정하기",
-          modalButtonTwoFunction: _editTv,
+          modalButtonOneText: !widget.edit ? "확인" : "수정하기",
+          modalButtonOneFunction: !widget.edit ? _submitTv : _editTv,
           child: Form(
             key: _formKey,
             child: Column(
@@ -335,7 +307,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                           items: ["유투브", "파일"].map((String item) {
                             return DropdownMenuItem<String>(
                               value: item,
-                              child: SelectableText(
+                              child: Text(
                                 item,
                                 style: TextStyle(
                                   fontSize: 12,
@@ -401,14 +373,14 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                     children: [
                       SizedBox(
                         width: size.width * 0.12,
-                        child: SelectableText(
+                        child: Text(
                           "영상 링크",
                           style: _headerTextStyle,
                         ),
                       ),
                       Gaps.h32,
                       SizedBox(
-                        width: size.width * 0.4,
+                        width: 300,
                         child: TextFormField(
                           controller: _linkControllder,
                           validator: (value) {
@@ -445,7 +417,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                     children: [
                       SizedBox(
                         width: size.width * 0.12,
-                        child: SelectableText(
+                        child: Text(
                           "영상 파일",
                           style: _headerTextStyle,
                         ),
@@ -457,7 +429,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                               modalText: '영상 선택하기', modalAction: pickVideoFile),
                           Gaps.h32,
                           if (_tvVideoFile != null)
-                            SelectableText(
+                            Text(
                               _tvTitle!,
                               style: _contentTextStyle.copyWith(
                                 color: Palette().darkBlue,

@@ -10,10 +10,9 @@ import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/repo/authentication_repo.dart';
 import 'package:onldocc_admin/features/users/repo/user_repo.dart';
 import 'package:onldocc_admin/features/users/view_models/user_view_model.dart';
-import 'package:onldocc_admin/retry.dart';
 import 'package:onldocc_admin/utils.dart';
 
-class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
+class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
   final AuthenticationRepository _authRepository = AuthenticationRepository();
   final UserRepository _userRepo = UserRepository();
 
@@ -27,7 +26,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
   @override
   FutureOr<AdminProfileModel> build() async {
     state = const AsyncValue.loading();
-    return await retry(getAdminProfile);
+    return await getAdminProfile();
   }
 
   Future<AdminProfileModel> getAdminProfile() async {
@@ -36,6 +35,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
     Map<String, dynamic>? adminProfile =
         await _authRepository.getAdminProfile(_authRepository.user!.uid);
     adminProfileModel = AdminProfileModel.fromJson(adminProfile!);
+
     selectContractRegion.value = ContractRegionModel(
       name: adminProfileModel.name,
       contractRegionId: adminProfileModel.contractRegionId,
@@ -54,6 +54,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
         await _authRepository.signIn(email, password);
         Map<String, dynamic>? adminProfile =
             await _authRepository.getAdminProfile(_authRepository.user!.uid);
+
         final adminProfileModel = AdminProfileModel.fromJson(adminProfile!);
 
         await ref
@@ -77,31 +78,31 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
       if (state.error.toString().contains(emailFirebaseError)) {
         if (!context.mounted) return null;
 
-        showWarningSnackBar(context, emailErrorMessage);
+        showTopWarningSnackBar(context, emailErrorMessage);
       } else if (state.error.toString().contains(passwordFirebaseError)) {
         if (!context.mounted) return null;
 
-        showWarningSnackBar(context, passwordErrorMessage);
+        showTopWarningSnackBar(context, passwordErrorMessage);
       } else {
         // ignore: avoid_print
         print("로그인 에러 -> ${state.error.toString()}");
         if (!context.mounted) return null;
-        showWarningSnackBar(context, defaultErrorMessage);
+        showTopWarningSnackBar(context, defaultErrorMessage);
       }
     }
     return null;
   }
 
-  Future<AdminProfileModel> logOut(BuildContext context) async {
-    state = AsyncValue.data(AdminProfileModel.empty());
+  Future<AdminProfileModel?> logOut(BuildContext context) async {
+    state = AsyncValue.data(null);
     state = await AsyncValue.guard(
       () async {
         context.go("/");
         await _authRepository.signOut();
-        return AdminProfileModel.empty();
+        return null;
       },
     );
-    return AdminProfileModel.empty();
+    return null;
   }
 
   Future<void> saveAdminUser(
@@ -137,7 +138,7 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel> {
 }
 
 final adminProfileProvider =
-    AsyncNotifierProvider<AdminProfileViewModel, AdminProfileModel>(
+    AsyncNotifierProvider<AdminProfileViewModel, AdminProfileModel?>(
   () => AdminProfileViewModel(),
 );
 

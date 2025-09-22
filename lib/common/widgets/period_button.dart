@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onldocc_admin/constants/gaps.dart';
-import 'package:onldocc_admin/constants/sizes.dart';
-import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class PeriodButton extends StatefulWidget {
@@ -29,23 +29,17 @@ class _PeriodButtonState extends State<PeriodButton> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "기간 선택:",
-          style: TextStyle(
-            fontSize: Sizes.size14,
-            color: Palette().darkPurple,
-            fontWeight: FontWeight.w600,
-          ),
+          "기간 선택",
+          style: InjicareFont().body07.copyWith(color: InjicareColor().gray80),
         ),
         Gaps.h10,
         Column(
           children: [
             Text(
               "${periodDateFormat(widget.startDate)} ~ ${periodDateFormat(widget.endDate)}",
-              style: TextStyle(
-                fontSize: Sizes.size14,
-                color: Palette().darkBlue,
-                fontWeight: FontWeight.w600,
-              ),
+              style: InjicareFont().body06.copyWith(
+                    color: InjicareColor().secondary50,
+                  ),
             ),
             Gaps.v2,
           ],

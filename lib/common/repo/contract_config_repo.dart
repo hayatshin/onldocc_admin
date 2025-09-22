@@ -17,7 +17,7 @@ class ContractConfigRepository {
             .from("subdistricts")
             .select('subdistrict')
             .eq('subdistrictId', subdistrictId);
-        return data[0]["subdistrict"];
+        return data.isEmpty ? "인지케어" : data[0]["subdistrict"];
       } else {
         return "";
       }
@@ -49,6 +49,29 @@ class ContractConfigRepository {
         .select('*')
         .eq('subdistrictId', subdistrictId);
 
+    return contractCommunities;
+  }
+
+  Future<void> updateContractRegionSetting(
+      String contractRegionId, String column, bool value) async {
+    await _supabase
+        .from("contract_regions")
+        .update({column: value}).eq('contractRegionId', contractRegionId);
+  }
+
+  Future<void> updateContractCommunitySetting(
+      String contractCommunityId, String column, bool value) async {
+    await _supabase
+        .from("contract_communities")
+        .update({column: value}).eq('contractCommunityId', contractCommunityId);
+  }
+
+  Future<List<Map<String, dynamic>>> getcontractCommunity(
+      String contractCommunityId) async {
+    final contractCommunities = await _supabase
+        .from("contract_communities")
+        .select('*')
+        .eq('contractCommunityId', contractCommunityId);
     return contractCommunities;
   }
 }

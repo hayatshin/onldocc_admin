@@ -1,9 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
+import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/common/view_models/contract_config_view_model.dart';
 import 'package:onldocc_admin/common/view_models/menu_notifier.dart';
 import 'package:onldocc_admin/constants/const.dart';
@@ -11,9 +13,13 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
 import 'package:onldocc_admin/features/login/view_models/admin_profile_view_model.dart';
+import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/utils.dart';
 
-final unselectedColor = Palette().darkGray;
+const double menuHeight = 50;
+const double borderRadius = 13;
 
 class SidebarTemplate extends ConsumerStatefulWidget {
   final int selectedMenuURL;
@@ -35,7 +41,9 @@ GlobalKey<_SidebarTemplateState> _sidebarKey =
 class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   final contractRegionController = TextEditingController();
   final contractCommunityController = TextEditingController();
-  AdminProfileModel _adminProfileModel = AdminProfileModel.empty();
+  AdminProfileModel? _adminProfileModel;
+
+  bool _initialized = false;
 
   List<ContractRegionModel> _contractRegionItems = [
     ContractRegionModel.empty()
@@ -45,6 +53,88 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
   ];
   String _selectRegion = "전체";
   String _selectCommunity = "전체";
+
+  bool _enableCognitionQuiz = true;
+  bool _enableMedicalFeature = true;
+
+  bool _openCognitionQuizDescription = false;
+  bool _openMedicalFeatureDescription = false;
+
+  void _initializeAppFeatures() async {
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+
+    if (selectContractRegion.value?.contractCommunityId == null ||
+        selectContractRegion.value?.contractCommunityId == "") {
+      // 전체 보기
+      if (!mounted) return;
+      setState(() {
+        _enableCognitionQuiz = adminProfileModel.hasCognitionQuiz;
+        _enableMedicalFeature = adminProfileModel.hasMedicalFeature;
+      });
+    } else {
+      final contractCommunity = await ref
+          .read(contractConfigProvider.notifier)
+          .getcontractCommunity(
+              selectContractRegion.value!.contractCommunityId!);
+      if (!mounted) return;
+      setState(() {
+        _enableCognitionQuiz = contractCommunity!.hasCognitionQuiz;
+        _enableMedicalFeature = contractCommunity.hasMedicalFeature;
+      });
+    }
+  }
+
+  void _updateCognitionQuiz(bool value) async {
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+
+    setState(() {
+      _enableCognitionQuiz = value;
+    });
+
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
+      // 전체 보기
+      await ref.read(contractRepo).updateContractRegionSetting(
+          adminProfileModel.contractRegionId, "hasCognitionQuiz", value);
+    } else {
+      await ref.read(contractRepo).updateContractCommunitySetting(
+          selectContractRegion.value!.contractCommunityId!,
+          "hasCognitionQuiz",
+          value);
+    }
+
+    if (!mounted) return;
+    showTopCompletingSnackBar(context, "두뇌 문제 풀기 설정이 반영되었습니다");
+  }
+
+  void _updateMedicalFeature(bool value) async {
+    AdminProfileModel? adminProfileModel =
+        ref.read(adminProfileProvider).value ??
+            await ref.read(adminProfileProvider.notifier).getAdminProfile();
+
+    setState(() {
+      _enableMedicalFeature = value;
+    });
+
+    if (selectContractRegion.value!.contractCommunityId == null ||
+        selectContractRegion.value!.contractCommunityId == "") {
+      // 전체 보기
+      await ref.read(contractRepo).updateContractRegionSetting(
+          adminProfileModel.contractRegionId, "hasMedicalFeature", value);
+    } else {
+      await ref.read(contractRepo).updateContractCommunitySetting(
+          selectContractRegion.value!.contractCommunityId!,
+          "hasMedicalFeature",
+          value);
+    }
+
+    if (!mounted) return;
+    showTopCompletingSnackBar(context, "건강 기능 설정이 반영되었습니다");
+  }
 
   Future<void> _initializeAdminMasterSetting() async {
     AdminProfileModel? adminProfileModel =
@@ -88,6 +178,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     }
 
     setState(() {
+      _initialized = true;
       _adminProfileModel = adminProfileModel;
     });
   }
@@ -110,6 +201,7 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
           ...communityItems
         ];
         _selectRegion = value;
+        _selectCommunity = "전체";
       });
     }
   }
@@ -130,6 +222,16 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     super.initState();
 
     _initializeAdminMasterSetting();
+    _initializeAppFeatures();
+
+    selectContractRegion.addListener(() async {
+      if (selectContractRegion.value?.contractCommunityId != null &&
+          selectContractRegion.value?.contractCommunityId != "") {
+        _updateContractCommunityFeature();
+      } else {
+        _initializeAppFeatures();
+      }
+    });
   }
 
   @override
@@ -140,216 +242,517 @@ class _SidebarTemplateState extends ConsumerState<SidebarTemplate> {
     super.dispose();
   }
 
+  Future<void> _updateContractCommunityFeature() async {
+    final contractCommunity = await ref
+        .read(contractConfigProvider.notifier)
+        .getcontractCommunity(selectContractRegion.value!.contractCommunityId!);
+
+    if (!mounted) return;
+    setState(() {
+      _enableCognitionQuiz = contractCommunity!.hasCognitionQuiz;
+      _enableMedicalFeature = contractCommunity.hasMedicalFeature;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Scaffold(
-      key: _sidebarKey,
-      body: Row(
-        children: [
-          Container(
-            width: size.width * 0.16,
-            color: Colors.white,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: Sizes.size14,
-                          horizontal: Sizes.size14,
-                        ),
+    // final size = MediaQuery.of(context).size;
+
+    return _adminProfileModel == null
+        ? SizedBox.shrink()
+        : AnimatedBuilder(
+            animation: menuNotifier,
+            builder: (context, child) {
+              return Scaffold(
+                key: _sidebarKey,
+                body: Row(
+                  children: [
+                    Container(
+                      width: 250,
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
                           children: [
-                            Gaps.v20,
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  "인지케어",
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: Sizes.size16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                Gaps.h5,
-                                Image.asset(
-                                  "assets/images/icon_line.png",
-                                  width: 45,
-                                ),
-                              ],
-                            ),
-                            Gaps.v32,
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Palette().bgLightBlue,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 15,
-                                ),
-                                child: Column(
-                                  children: [
-                                    if (_adminProfileModel.master)
-                                      Column(
+                            Expanded(
+                              child: ListView(
+                                padding: EdgeInsets.zero,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Gaps.v32,
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         children: [
-                                          CustomDropdownMenu(
-                                            type: "지역",
-                                            items: _contractRegionItems,
-                                            value: _selectRegion,
-                                            onChangedFunction: (value) =>
-                                                setContractRegion(value),
+                                          ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                                InjicareColor().primary50,
+                                                BlendMode.srcIn),
+                                            child: SvgPicture.asset(
+                                              "assets/svg/injicare.svg",
+                                              width: 30,
+                                            ),
                                           ),
-                                          Gaps.v10,
+                                          Gaps.h10,
+                                          Text(
+                                            "인지케어",
+                                            style: InjicareFont()
+                                                .body01
+                                                .copyWith(
+                                                  color:
+                                                      InjicareColor().primary50,
+                                                ),
+                                          ),
                                         ],
                                       ),
-                                    CustomDropdownMenu(
-                                      type: "기관",
-                                      items: _contractCommunityItems,
-                                      value: _selectCommunity,
-                                      onChangedFunction: (value) =>
-                                          setContractCommunity(value),
+                                      Gaps.v20,
+                                      if (_initialized)
+                                        ClipRRect(
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: Palette().lightPurple,
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 16,
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      if (_adminProfileModel!
+                                                          .master)
+                                                        Column(
+                                                          children: [
+                                                            CustomDropdownMenu(
+                                                              type: "지역",
+                                                              items:
+                                                                  _contractRegionItems,
+                                                              value:
+                                                                  _selectRegion,
+                                                              onChangedFunction:
+                                                                  (value) =>
+                                                                      setContractRegion(
+                                                                          value),
+                                                            ),
+                                                            Gaps.v10,
+                                                          ],
+                                                        ),
+                                                      CustomDropdownMenu(
+                                                        type: "기관",
+                                                        items:
+                                                            _contractCommunityItems,
+                                                        value: _selectCommunity,
+                                                        onChangedFunction:
+                                                            (value) =>
+                                                                setContractCommunity(
+                                                                    value),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Gaps.v10,
+                                              if (!_adminProfileModel!.master)
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: InjicareColor()
+                                                        .primary20,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            14),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 14,
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "지역/기관 기능 설정",
+                                                          style: InjicareFont()
+                                                              .label02
+                                                              .copyWith(
+                                                                  color: InjicareColor()
+                                                                      .primary50),
+                                                        ),
+                                                        Gaps.v10,
+                                                        Column(
+                                                          children: [
+                                                            RegionFeatureSetting(
+                                                              setting:
+                                                                  "두뇌 문제 풀기",
+                                                              enableSetting:
+                                                                  _enableCognitionQuiz,
+                                                              updateSetting:
+                                                                  _updateCognitionQuiz,
+                                                              openDescription:
+                                                                  _openCognitionQuizDescription,
+                                                              updateDescription:
+                                                                  () {
+                                                                setState(() {
+                                                                  _openCognitionQuizDescription =
+                                                                      !_openCognitionQuizDescription;
+                                                                });
+                                                              },
+                                                            ),
+                                                            AnimatedDescriptionText(
+                                                                visible:
+                                                                    _openCognitionQuizDescription,
+                                                                description:
+                                                                    "두뇌 문제 풀기 기능을 끄면 사용자는 문제를 풀지 않고도 일기를 작성할 수 있습니다"),
+                                                            Gaps.v10,
+                                                            RegionFeatureSetting(
+                                                              setting: "건강 기능",
+                                                              enableSetting:
+                                                                  _enableMedicalFeature,
+                                                              updateSetting:
+                                                                  _updateMedicalFeature,
+                                                              openDescription:
+                                                                  _openMedicalFeatureDescription,
+                                                              updateDescription:
+                                                                  () {
+                                                                setState(() {
+                                                                  _openMedicalFeatureDescription =
+                                                                      !_openMedicalFeatureDescription;
+                                                                });
+                                                              },
+                                                            ),
+                                                            AnimatedDescriptionText(
+                                                                visible:
+                                                                    _openMedicalFeatureDescription,
+                                                                description:
+                                                                    "사용자의 건강 메뉴 사용 여부를 설정합니다"),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          )
+                                              .animate()
+                                              .slideY(
+                                                begin: -0.5,
+                                                end: 0,
+                                                duration:
+                                                    Duration(milliseconds: 200),
+                                              )
+                                              .fadeIn(
+                                                  duration: Duration(
+                                                      milliseconds: 200)),
+                                        ),
+                                    ],
+                                  ),
+                                  Gaps.v20,
+                                  SingleSidebarTile(
+                                    index: 0,
+                                    assetPath: "assets/menu_svg/web-grid.svg",
+                                    title: "대시보드",
+                                    selected: menuNotifier.selectedMenu == 0,
+                                  ),
+                                  Gaps.v5,
+                                  SingleSidebarTile(
+                                    index: 1,
+                                    assetPath:
+                                        "assets/menu_svg/people-fill.svg",
+                                    title: "회원 관리",
+                                    selected: menuNotifier.selectedMenu == 1,
+                                  ),
+                                  Gaps.v5,
+                                  SingleSidebarTile(
+                                    index: 2,
+                                    assetPath: "assets/menu_svg/flag.svg",
+                                    title: "점수 관리",
+                                    selected: menuNotifier.selectedMenu == 2,
+                                  ),
+                                  Gaps.v5,
+                                  SingleSidebarTile(
+                                    index: 3,
+                                    assetPath: "assets/menu_svg/bell-fill.svg",
+                                    title: "공지 관리",
+                                    selected: menuNotifier.selectedMenu == 3,
+                                  ),
+                                  Gaps.v5,
+                                  SingleSidebarTile(
+                                    index: 4,
+                                    assetPath: "assets/menu_svg/box-fill.svg",
+                                    title: "행사 관리",
+                                    selected: menuNotifier.selectedMenu == 4,
+                                  ),
+                                  if (_adminProfileModel!.master)
+                                    Column(
+                                      children: [
+                                        Gaps.v5,
+                                        ParentSidebarTile(
+                                          selected: menuNotifier.selectedMenu ==
+                                                  11 ||
+                                              menuNotifier.selectedMenu == 12,
+                                          assetPath:
+                                              "assets/menu_svg/heart-fill.svg",
+                                          title: "의료 관리",
+                                          children: [
+                                            ChildTileModel(
+                                              index: 11,
+                                              tileText: "건강 상담실",
+                                            ),
+                                            ChildTileModel(
+                                              index: 12,
+                                              tileText: "건강 이야기",
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  Gaps.v5,
+                                  ParentSidebarTile(
+                                    selected: menuNotifier.selectedMenu == 5 ||
+                                        menuNotifier.selectedMenu == 6,
+                                    assetPath: "assets/menu_svg/head-side.svg",
+                                    title: "인지 관리",
+                                    children: [
+                                      ChildTileModel(
+                                        index: 5,
+                                        tileText: "일기 문제 풀기",
+                                      ),
+                                      ChildTileModel(
+                                        index: 6,
+                                        tileText: "자가 검사",
+                                      ),
+                                    ],
+                                  ),
+                                  Gaps.v5,
+                                  ParentSidebarTile(
+                                    selected: menuNotifier.selectedMenu == 7 ||
+                                        menuNotifier.selectedMenu == 8 ||
+                                        menuNotifier.selectedMenu == 9,
+                                    assetPath: "assets/menu_svg/cup2-fill.svg",
+                                    title: "일상 관리",
+                                    children: [
+                                      ChildTileModel(
+                                        index: 7,
+                                        tileText: "영상 관리",
+                                      ),
+                                      ChildTileModel(
+                                        index: 8,
+                                        tileText: "보호자 케어",
+                                      ),
+                                      ChildTileModel(
+                                        index: 9,
+                                        tileText: "화풀기",
+                                      ),
+                                    ],
+                                  ),
+                                  Gaps.v5,
+                                  SingleSidebarTile(
+                                    index: 10,
+                                    assetPath:
+                                        "assets/menu_svg/telegram-fill.svg",
+                                    title: "친구 초대",
+                                    selected: menuNotifier.selectedMenu == 10,
+                                  ),
+                                  Gaps.v40,
+                                ],
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 10,
+                                  bottom: 16,
+                                  left: 16,
+                                ),
+                                child: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      ref
+                                          .read(adminProfileProvider.notifier)
+                                          .logOut(context);
+                                    },
+                                    child: Row(
+                                      children: [
+                                        ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                            InjicareColor().gray80,
+                                            BlendMode.srcIn,
+                                          ),
+                                          child: SvgPicture.asset(
+                                            "assets/svg/sign-out.svg",
+                                            width: 13,
+                                          ),
+                                        ),
+                                        Gaps.h10,
+                                        Text(
+                                          "로그아웃",
+                                          style: InjicareFont()
+                                              .label02
+                                              .copyWith(
+                                                color: InjicareColor().gray80,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            )
                           ],
                         ),
                       ),
-                      Gaps.v10,
-                      const SingleSidebarTile(
-                        index: 0,
-                        assetPath: "assets/svg/pie-chart.svg",
-                        title: "대시보드",
-                      ),
-                      const SingleSidebarTile(
-                        index: 1,
-                        assetPath: "assets/svg/people.svg",
-                        title: "회원 관리",
-                      ),
-                      const SingleSidebarTile(
-                        index: 2,
-                        assetPath: "assets/svg/medal-solid.svg",
-                        title: "점수 관리",
-                      ),
-                      const SingleSidebarTile(
-                        index: 3,
-                        assetPath: "assets/svg/bell.svg",
-                        title: "공지 관리",
-                      ),
-                      const SingleSidebarTile(
-                        index: 4,
-                        assetPath: "assets/svg/gift-box-with-a-bow.svg",
-                        title: "행사 관리",
-                      ),
-                      ParentSidebarTile(
-                        assetPath: "assets/svg/brain.svg",
-                        title: "인지 관리",
-                        children: [
-                          ChildTileModel(
-                            index: 5,
-                            tileText: "일기 문제 풀기",
-                            tileColor: const Color(0xffD5306C),
-                          ),
-                          ChildTileModel(
-                            index: 6,
-                            tileText: "자가 검사",
-                            tileColor: const Color(0xff696EFF),
-                          ),
-                          // ChildTileModel(
-                          //   index: 7,
-                          //   tileText: "노인 우울척도 검사",
-                          //   tileColor: const Color(0xffF8ACFF),
-                          // ),
-                        ],
-                      ),
-                      ParentSidebarTile(
-                        assetPath: "assets/svg/heart.svg",
-                        title: "일상 관리",
-                        children: [
-                          ChildTileModel(
-                            index: 7,
-                            tileText: "영상 관리",
-                            tileColor: const Color(0xffFFBA49),
-                          ),
-                          ChildTileModel(
-                            index: 8,
-                            tileText: "보호자 케어",
-                            tileColor: const Color(0xff20A39E),
-                          ),
-                          ChildTileModel(
-                            index: 9,
-                            tileText: "화풀기",
-                            tileColor: const Color(0xffEF5B5B),
-                          ),
-                        ],
-                      ),
-                      const SingleSidebarTile(
-                        index: 10,
-                        assetPath: "assets/svg/envelope.svg",
-                        title: "친구 초대",
-                      ),
-                      Gaps.v20,
-                    ],
-                  ),
+                    ),
+                    Expanded(
+                      child: widget.child,
+                    )
+                  ],
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: Sizes.size24,
-                      horizontal: Sizes.size20,
+              );
+            },
+          );
+  }
+}
+
+class AnimatedDescriptionText extends StatefulWidget {
+  final bool visible;
+  final String description;
+
+  const AnimatedDescriptionText({
+    super.key,
+    required this.visible,
+    required this.description,
+  });
+
+  @override
+  State<AnimatedDescriptionText> createState() =>
+      _AnimatedDescriptionTextState();
+}
+
+class _AnimatedDescriptionTextState extends State<AnimatedDescriptionText> {
+  bool _shouldRender = false;
+
+  @override
+  void didUpdateWidget(covariant AnimatedDescriptionText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.visible && !_shouldRender) {
+      setState(() {
+        _shouldRender = true;
+      });
+    } else if (!widget.visible && _shouldRender) {
+      // 300ms 후 제거
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted && !widget.visible) {
+          setState(() {
+            _shouldRender = false;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: _shouldRender
+            ? Text(
+                widget.description,
+                style: InjicareFont().label03.copyWith(
+                      color: InjicareColor().gray70,
                     ),
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
-                          ref
-                              .read(adminProfileProvider.notifier)
-                              .logOut(context);
-                        },
-                        child: Row(
-                          children: [
-                            ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                Palette().darkPurple,
-                                BlendMode.srcIn,
-                              ),
-                              child: SvgPicture.asset(
-                                "assets/svg/sign-out.svg",
-                                width: 15,
-                              ),
-                            ),
-                            Gaps.h10,
-                            Text(
-                              "로그아웃",
-                              style: TextStyle(
-                                fontSize: Sizes.size12,
-                                fontWeight: FontWeight.w800,
-                                color: Palette().darkPurple,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+              )
+                .animate(
+                  target: widget.visible ? 1 : 0,
+                  onComplete: (controller) {
+                    // 애니메이션 끝나고 위에서 제거되므로 여기선 필요 없음
+                  },
                 )
-              ],
-            ),
-          ),
-          Expanded(
-            child: widget.child,
-          )
-        ],
+                .fadeIn(duration: 300.ms)
+                .slideY(begin: -0.15, end: 0, duration: 400.ms)
+            : const SizedBox.shrink(),
       ),
+    );
+  }
+}
+
+class RegionFeatureSetting extends StatelessWidget {
+  final String setting;
+  final bool enableSetting;
+  final Function(bool) updateSetting;
+  final bool openDescription;
+  final Function() updateDescription;
+  const RegionFeatureSetting({
+    super.key,
+    required this.setting,
+    required this.enableSetting,
+    required this.updateSetting,
+    required this.openDescription,
+    required this.updateDescription,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          setting,
+          style: TextStyle(
+            fontSize: Sizes.size13,
+            fontWeight: FontWeight.w700,
+            color: InjicareColor().gray90,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Row(
+          children: [
+            Transform.scale(
+              scale: 0.8,
+              child: Switch(
+                value: enableSetting,
+                onChanged: updateSetting,
+                activeTrackColor: Colors.transparent,
+                inactiveThumbColor: InjicareColor().gray80,
+                activeColor: InjicareColor().primary50,
+                inactiveTrackColor: Colors.transparent,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                trackOutlineColor: WidgetStateProperty.resolveWith(
+                  (states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return InjicareColor().primary50;
+                    }
+                    return InjicareColor().gray80;
+                  },
+                ),
+              ),
+            ),
+            Gaps.h5,
+            gestureDetectorWithMouseClick(
+              function: updateDescription,
+              child: Icon(
+                !openDescription
+                    ? Icons.expand_more_rounded
+                    : Icons.expand_less_rounded,
+                size: 14,
+                color: Palette().normalGray,
+              ),
+            )
+          ],
+        )
+      ],
     );
   }
 }
@@ -358,69 +761,56 @@ class SingleSidebarTile extends StatelessWidget {
   final int index;
   final String assetPath;
   final String title;
+  final bool selected;
   const SingleSidebarTile({
     super.key,
     required this.index,
     required this.assetPath,
     required this.title,
+    required this.selected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: menuNotifier,
-      builder: (context, child) => MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: () {
-            context.goNamed(menuList[index].routeName);
-          },
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          context.goNamed(menuList[index].routeName);
+        },
+        child: Container(
+          height: menuHeight,
+          decoration: BoxDecoration(
+            color: selected
+                ? const Color(0xFFA8C1FF).withOpacity(0.5)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
           child: Padding(
-            padding: const EdgeInsets.only(
-              left: 10,
-              right: 10,
-              bottom: 5,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
             ),
-            child: Container(
-              height: 42,
-              decoration: BoxDecoration(
-                color: menuNotifier.selectedMenu == index
-                    ? Palette().darkPurple
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
+            child: Row(
+              children: [
+                ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    selected ? InjicareColor().gray100 : InjicareColor().gray80,
+                    BlendMode.srcIn,
+                  ),
+                  child: SvgPicture.asset(
+                    assetPath,
+                    width: 18,
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                        menuNotifier.selectedMenu == index
-                            ? Palette().bgLightBlue
-                            : unselectedColor,
-                        BlendMode.srcIn,
-                      ),
-                      child: SvgPicture.asset(
-                        assetPath,
-                        width: 20,
-                      ),
-                    ),
-                    Gaps.h14,
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: Sizes.size14,
-                        fontWeight: FontWeight.w600,
-                        color: menuNotifier.selectedMenu == index
-                            ? Palette().bgLightBlue
-                            : unselectedColor,
-                      ),
-                    ),
-                  ],
+                Gaps.h14,
+                Text(
+                  title,
+                  style: InjicareFont().body06.copyWith(
+                      color: selected
+                          ? InjicareColor().gray100
+                          : InjicareColor().gray80),
                 ),
-              ),
+              ],
             ),
           ),
         ),
@@ -433,65 +823,183 @@ class ParentSidebarTile extends StatefulWidget {
   final String assetPath;
   final String title;
   final List<ChildTileModel> children;
+  final bool selected;
 
   const ParentSidebarTile({
     super.key,
     required this.assetPath,
     required this.title,
     required this.children,
+    required this.selected,
   });
 
   @override
   State<ParentSidebarTile> createState() => _ParentSidebarTileState();
 }
 
-class _ParentSidebarTileState extends State<ParentSidebarTile> {
-  bool expanded = true;
+class _ParentSidebarTileState extends State<ParentSidebarTile>
+    with SingleTickerProviderStateMixin {
+  bool expanded = false;
+  bool shouldShowChildren = false;
+
+  late final AnimationController _controllder;
+  late final Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controllder =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+
+    _slideAnimation = Tween<Offset>(begin: Offset(0, -0.1), end: Offset.zero)
+        .animate(
+            CurvedAnimation(parent: _controllder, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controllder.dispose();
+    super.dispose();
+  }
+
+  void _toggleExpanded() {
+    if (expanded) {
+      _controllder.reverse();
+      setState(() {
+        expanded = false;
+      });
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            shouldShowChildren = false;
+          });
+        }
+      });
+    } else {
+      setState(() {
+        shouldShowChildren = true;
+        expanded = true;
+      });
+      _controllder.forward();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      initiallyExpanded: true,
-      iconColor: unselectedColor,
-      onExpansionChanged: (value) {
-        setState(() {
-          expanded = value;
-        });
-      },
-      tilePadding: const EdgeInsets.symmetric(
-        horizontal: 30,
-      ),
-      childrenPadding: const EdgeInsets.symmetric(
-        horizontal: Sizes.size5,
-        vertical: Sizes.size5,
-      ),
-      leading: ColorFiltered(
-        colorFilter: ColorFilter.mode(
-          unselectedColor,
-          BlendMode.srcIn,
-        ),
-        child: SvgPicture.asset(
-          widget.assetPath,
-          width: 20,
-        ),
-      ),
-      title: Text(
-        widget.title,
-        style: TextStyle(
-          fontSize: Sizes.size14,
-          fontWeight: FontWeight.w600,
-          color: unselectedColor,
-        ),
-      ),
-      trailing: Icon(
-        !expanded ? Icons.expand_more_rounded : Icons.expand_less_rounded,
-        size: 15,
-      ),
+    return Column(
       children: [
-        for (int i = 0; i < widget.children.length; i++)
-          ChildSidebarTile(
-            model: widget.children[i],
+        Container(
+          height: menuHeight,
+          decoration: BoxDecoration(
+            color: widget.selected ? Palette().lightPurple : Colors.transparent,
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        widget.selected
+                            ? InjicareColor().gray100
+                            : InjicareColor().gray80,
+                        BlendMode.srcIn,
+                      ),
+                      child: SvgPicture.asset(
+                        widget.assetPath,
+                        width: 18,
+                      ),
+                    ),
+                    Gaps.h14,
+                    Text(
+                      widget.title,
+                      style: InjicareFont().body06.copyWith(
+                          color: widget.selected
+                              ? InjicareColor().gray100
+                              : InjicareColor().gray80),
+                    ),
+                  ],
+                ),
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: _toggleExpanded,
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        InjicareColor().gray70,
+                        BlendMode.srcIn,
+                      ),
+                      child: expanded
+                          ? SvgPicture.asset(
+                              "assets/svg/arrow-down.svg",
+                              width: 10,
+                            )
+                          : SvgPicture.asset(
+                              "assets/svg/arrow-up.svg",
+                              width: 10,
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          child: ClipRRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: expanded ? 1.0 : 0.0,
+              child: shouldShowChildren
+                  ? SlideTransition(
+                      position: _slideAnimation,
+                      child: Column(
+                        children: [
+                          for (int i = 0; i < widget.children.length; i++)
+                            ChildSidebarTile(
+                              model: widget.children[i],
+                              parentSelected: widget.selected,
+                            )
+                        ],
+                      ),
+                    )
+                  : SizedBox.shrink(),
+            ),
+          ),
+        ),
+        // if (expanded)
+        //   for (int i = 0; i < widget.children.length; i++)
+        //     AnimatedSize(
+        //       duration: Duration(milliseconds: 300),
+        //       curve: Curves.easeInOut,
+        //       alignment: Alignment.topCenter,
+        //       child: ClipRRect(
+        //         child: Align(
+        //           alignment: Alignment.topCenter,
+        //           heightFactor: expanded ? 1.0 : 0.0,
+        //           child: SlideTransition(
+        //             position: _slideAnimation,
+        //             child: Column(
+        //               children: [
+        //                 ChildSidebarTile(
+        //                   model: widget.children[i],
+        //                   parentSelected: widget.selected,
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
       ],
     );
   }
@@ -499,62 +1007,76 @@ class _ParentSidebarTileState extends State<ParentSidebarTile> {
 
 class ChildSidebarTile extends StatelessWidget {
   final ChildTileModel model;
+  final bool parentSelected;
   const ChildSidebarTile({
     super.key,
     required this.model,
+    required this.parentSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: menuNotifier,
-      builder: (context, child) => MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: () => context.goNamed(menuList[model.index].routeName),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: menuNotifier.selectedMenu == model.index
-                        ? Palette().darkPurple
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 60,
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 6,
+      ),
+      child: AnimatedBuilder(
+        animation: menuNotifier,
+        builder: (context, child) => MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () => context.goNamed(menuList[model.index].routeName),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Container(
+                    height: menuHeight,
+                    decoration: BoxDecoration(
+                      color: menuNotifier.selectedMenu == model.index
+                          ? const Color(0xFFA8C1FF).withOpacity(0.5)
+                          : parentSelected
+                              ? Palette().lightPurple
+                              : Colors.transparent,
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: model.tileColor,
-                            borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            model.tileText,
+                            style: TextStyle(
+                              fontSize: Sizes.size13,
+                              fontWeight: FontWeight.w600,
+                              color: menuNotifier.selectedMenu == model.index
+                                  ? InjicareColor().gray100
+                                  : InjicareColor().gray80,
+                            ),
                           ),
-                        ),
-                        Gaps.h14,
-                        Text(
-                          model.tileText,
-                          style: TextStyle(
-                            fontSize: Sizes.size13,
-                            fontWeight: FontWeight.w600,
-                            color: menuNotifier.selectedMenu == model.index
-                                ? Palette().bgLightBlue
-                                : unselectedColor,
-                          ),
-                        ),
-                      ],
+                          if (menuNotifier.selectedMenu == model.index)
+                            Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: InjicareColor().gray100),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -588,67 +1110,69 @@ class CustomDropdownMenu extends StatelessWidget {
           style: TextStyle(
             fontSize: Sizes.size13,
             fontWeight: FontWeight.w700,
-            color: Palette().darkPurple,
+            color: InjicareColor().gray90,
           ),
         ),
-        SizedBox(
-          width: size.width * 0.1,
-          height: buttonHeight,
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton2<String>(
-              isExpanded: true,
-              items: items.map((ContractRegionModel item) {
-                final lastName = item.name.split(' ').last;
-                return DropdownMenuItem<String>(
-                  value: item.name,
-                  child: Text(
-                    lastName,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Palette().normalGray,
+        Gaps.h10,
+        Expanded(
+          child: SizedBox(
+            height: buttonHeight,
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton2<String>(
+                isExpanded: true,
+                items: items.map((ContractRegionModel item) {
+                  final lastName = item.name.split(' ').last;
+                  return DropdownMenuItem<String>(
+                    value: item.name,
+                    child: Text(
+                      lastName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Palette().normalGray,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
+                  );
+                }).toList(),
+                value: value,
+                onChanged: (value) => onChangedFunction(value),
+                buttonStyleData: ButtonStyleData(
+                  padding: const EdgeInsets.only(left: 14, right: 14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    border: Border.all(
+                      color: InjicareColor().gray20,
+                      width: 1,
+                    ),
                   ),
-                );
-              }).toList(),
-              value: value,
-              onChanged: (value) => onChangedFunction(value),
-              buttonStyleData: ButtonStyleData(
-                padding: const EdgeInsets.only(left: 14, right: 14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Palette().lightGray,
-                    width: 0.5,
+                ),
+                iconStyleData: IconStyleData(
+                  icon: const Icon(
+                    Icons.expand_more_rounded,
+                  ),
+                  iconSize: 14,
+                  iconEnabledColor: Palette().normalGray,
+                  iconDisabledColor: Palette().normalGray,
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  elevation: 2,
+                  width: size.width * 0.1,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  scrollbarTheme: ScrollbarThemeData(
+                    radius: const Radius.circular(10),
+                    thumbVisibility: WidgetStateProperty.all(true),
                   ),
                 ),
-              ),
-              iconStyleData: IconStyleData(
-                icon: const Icon(
-                  Icons.expand_more_rounded,
-                ),
-                iconSize: 14,
-                iconEnabledColor: Palette().normalGray,
-                iconDisabledColor: Palette().normalGray,
-              ),
-              dropdownStyleData: DropdownStyleData(
-                elevation: 2,
-                width: size.width * 0.1,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                scrollbarTheme: ScrollbarThemeData(
-                  radius: const Radius.circular(10),
-                  thumbVisibility: WidgetStateProperty.all(true),
-                ),
-              ),
-              menuItemStyleData: const MenuItemStyleData(
-                height: 25,
-                padding: EdgeInsets.only(
-                  left: 15,
-                  right: 15,
+                menuItemStyleData: const MenuItemStyleData(
+                  height: 25,
+                  padding: EdgeInsets.only(
+                    left: 15,
+                    right: 15,
+                  ),
                 ),
               ),
             ),
@@ -662,11 +1186,9 @@ class CustomDropdownMenu extends StatelessWidget {
 class ChildTileModel {
   final int index;
   final String tileText;
-  final Color tileColor;
 
   ChildTileModel({
     required this.index,
     required this.tileText,
-    required this.tileColor,
   });
 }

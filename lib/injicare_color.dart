@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class InjicareColor {
-  final primary50 = const Color(0xffFF2D78);
-  final primary40 = const Color(0xffFF7AA9);
-  final primary30 = const Color(0xffFFB4CE);
+  final primary50 = const Color(0xffF62459);
+  final primary40 = const Color(0xffFF638A);
+  final primary30 = const Color(0xffFFA3C2);
   final primary20 = const Color(0xffFFE2EC);
-  final secondary50 = const Color(0xff1B3883);
-  final secondary40 = const Color(0xff4063BC);
-  final secondary30 = const Color(0xff819DE4);
-  final secondary20 = const Color(0xffC6D4F8);
+  final secondary50 = const Color(0xff277EFF);
+  final secondary40 = const Color(0xff6790FA);
+  final secondary30 = const Color(0xffA8C1FF);
+  final secondary20 = const Color(0xffD8E3FF);
   final gray100 = const Color(0xff151515);
   final gray90 = const Color(0xff303030);
   final gray80 = const Color(0xff4D4D4D);

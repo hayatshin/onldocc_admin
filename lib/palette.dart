@@ -17,10 +17,10 @@ import 'package:flutter/material.dart';
 
 class Palette {
   final darkPurple = const Color(0xff1F0059);
-  final lightPurple = const Color(0xffF2F6FE);
+  final lightPurple = const Color(0xFFF3F6FD);
   final darkBlue = const Color(0xff1975F0);
   final lightBlue = const Color(0xffACD9FF);
-  final bgLightBlue = const Color(0xffF2F6FE);
+  final bgLightBlue = const Color(0xffF3F6FD);
   final darkGray = const Color(0xff333333);
   final normalGray = const Color(0xff666666);
   final mLightGray = const Color(0xff999999);

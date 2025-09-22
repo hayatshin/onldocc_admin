@@ -5,6 +5,7 @@ import 'package:onldocc_admin/constants/gaps.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/event/template/event_detail_template.dart';
 import 'package:onldocc_admin/features/event/view/event_screen.dart';
+import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/utils.dart';
 
 class UploadQuizEventWidget extends StatefulWidget {
@@ -217,7 +218,7 @@ class _UploadQuizEventWidgetStateState extends State<UploadQuizEventWidget> {
                         textAlignVertical: TextAlignVertical.top,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
-                          MaskedInputFormatter("#"),
+                          MaskedInputFormatter("번호"),
                         ],
                         style: contentTextStyle,
                         decoration: eventSettingInputDecorationStyle(),

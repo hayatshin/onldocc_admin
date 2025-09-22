@@ -17,14 +17,13 @@ class CognitionViewModel extends AsyncNotifier<List<CognitionTestModel>> {
     return [];
   }
 
-  Future<List<CognitionTestModel>> getCognitionTestData(
-      String testType, int page) async {
+  Future<List<CognitionTestModel>> getCognitionTestData(String testType) async {
     AdminProfileModel? adminProfileModel =
         ref.read(adminProfileProvider).value ??
             await ref.read(adminProfileProvider.notifier).getAdminProfile();
 
     final list =
-        await _cognitionTestRepo.getTestData(testType, adminProfileModel, page);
+        await _cognitionTestRepo.getTestData(testType, adminProfileModel);
     final modelList = list.map((e) => CognitionTestModel.fromJson(e)).toList();
 
     state = AsyncData(modelList);

@@ -178,7 +178,8 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
 
     await ref.read(eventRepo).editEvent(eventModel);
     if (!mounted) return;
-    resultBottomModal(context, "성공적으로 행사가 수정되었습니다.", widget.refreshScreen);
+    showTopCompletingSnackBar(context, "성공적으로 행사가 수정되었습니다.",
+        refreshScreen: widget.refreshScreen);
   }
 
   Future<void> deleteEvent(String eventId) async {
@@ -186,7 +187,8 @@ class _EditCountEventWidgetState extends ConsumerState<EditCountEventWidget> {
     await ref.read(eventRepo).deleteEventImageStorage(eventId);
 
     if (!mounted) return;
-    resultBottomModal(context, "성공적으로 행사가 삭제되었습니다.", widget.refreshScreen);
+    showTopCompletingSnackBar(context, "성공적으로 행사가 삭제되었습니다.",
+        refreshScreen: widget.refreshScreen);
   }
 
   @override

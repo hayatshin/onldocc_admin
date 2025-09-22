@@ -22,7 +22,7 @@ class DashboardCognitionQuizUserScreen extends ConsumerStatefulWidget {
   final String? userId;
   final String? userName;
   final String? quizType;
-  final String? periodType;
+  final DateRange? periodType;
 
   const DashboardCognitionQuizUserScreen({
     super.key,
@@ -101,42 +101,11 @@ class _DashboardCognitionQuizUserScreenState
   }
 
   void _initializePeriod() {
-    switch (widget.periodType) {
-      case "이번달":
-        _selectedDateRange = DateRange(
+    _selectedDateRange = widget.periodType ??
+        DateRange(
           getThisMonth1stdayStartDatetime(),
           getThisMonthLastdayEndDatetime(),
         );
-
-        break;
-      case "지난달":
-        _selectedDateRange = DateRange(
-          getLastMonth1stdayStartDatetime(),
-          getLastMonthLastdayEndDatetime(),
-        );
-
-        break;
-      case "이번주":
-        _selectedDateRange = DateRange(
-          getThisWeekMondayStartDatetime(),
-          getThisWeekSundayEndtDatetime(),
-        );
-
-        break;
-      case "지난주":
-        _selectedDateRange = DateRange(
-          getLastWeekMondayStartDateTime(),
-          getLastWeekSundayEndDateTime(),
-        );
-
-        break;
-      default:
-        _selectedDateRange = DateRange(
-          getThisMonth1stdayStartDatetime(),
-          getThisMonthLastdayEndDatetime(),
-        );
-        break;
-    }
   }
 
   // 데이터 목록
@@ -185,6 +154,8 @@ class _DashboardCognitionQuizUserScreenState
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    print('selected: $_selectedQuizType');
+    print('items: $_quizTypes');
     return !_loadingFinished
         ? loadingWidget(context)
         : Overlay(

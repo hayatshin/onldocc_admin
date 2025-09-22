@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onldocc_admin/common/models/contract_community_model.dart';
 import 'package:onldocc_admin/common/models/contract_region_model.dart';
 import 'package:onldocc_admin/common/repo/contract_config_repo.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
@@ -19,6 +20,7 @@ class ContractConfigViewModel extends AsyncNotifier<void> {
     final userId = _authRepository.user!.uid;
     final adminData = await _authRepository.getAdminProfile(userId);
     final adminProfile = AdminProfileModel.fromJson(adminData!);
+
     return adminProfile;
   }
 
@@ -37,6 +39,16 @@ class ContractConfigViewModel extends AsyncNotifier<void> {
     return communityList!
         .map((e) => ContractRegionModel.fromJsonCommunity(e))
         .toList();
+  }
+
+  Future<ContractCommunityModel?> getcontractCommunity(
+      String contractCommunityId) async {
+    final contractCommunities =
+        await _contractConfigRepo.getcontractCommunity(contractCommunityId);
+
+    return contractCommunities.isEmpty
+        ? null
+        : ContractCommunityModel.fromJson(contractCommunities[0]);
   }
 }
 
