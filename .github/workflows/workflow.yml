@@ -40,6 +40,6 @@ jobs:
           echo "GOOGLE_API_SERVICE_CLIENT_X509_CERT_URL=${{ secrets.GOOGLE_API_SERVICE_CLIENT_X509_CERT_URL }}" >> env
           echo "GOOGLE_API_SERVICE_UNIVERSE_DOMAIN=${{ secrets.GOOGLE_API_SERVICE_UNIVERSE_DOMAIN }}" >> env
 
-      - uses: bluefireteam/flutter-gh-pages@v7
+      - uses: bluefireteam/flutter-gh-pages@v9
         with:
           baseHref: /onldocc_admin/
