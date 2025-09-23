@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,9 +33,14 @@ class AdminProfileViewModel extends AsyncNotifier<AdminProfileModel?> {
   Future<AdminProfileModel> getAdminProfile() async {
     late AdminProfileModel adminProfileModel;
 
-    Map<String, dynamic>? adminProfile =
-        await _authRepository.getAdminProfile(_authRepository.user!.uid);
-    adminProfileModel = AdminProfileModel.fromJson(adminProfile!);
+    final user = _authRepository.user ??
+        await FirebaseAuth.instance
+            .authStateChanges()
+            .firstWhere((u) => u != null);
+
+    final data = await _authRepository.getAdminProfile(user!.uid);
+    if (data == null) throw StateError("Admin profile not found");
+    adminProfileModel = AdminProfileModel.fromJson(data);
 
     selectContractRegion.value = ContractRegionModel(
       name: adminProfileModel.name,

@@ -7,7 +7,7 @@ class AuthNotifier extends ChangeNotifier {
   AuthNotifier() {
     _sub = FirebaseAuth.instance.authStateChanges().listen((u) {
       user = u;
-      isReady = true;
+      if (!isReady) isReady = true; // 첫 이벤트 수신 시 복원 완료로 간주
       notifyListeners();
     });
   }

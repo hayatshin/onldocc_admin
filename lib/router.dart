@@ -48,25 +48,37 @@ final routerProvider = Provider(
       redirect: (context, state) {
         final isReady = authNotifier.isReady; // 복원 완료 여부
 
+        // 현재 로그인 되어 있나?
         final loggedIn = authNotifier.user != null;
 
-        final loc = state.matchedLocation;
+        // 현재 라우트가 로그인 화면이냐?
+        final loggingIn = state.matchedLocation == LoginScreen.routeURL;
 
-        if (!isReady) return "/";
-        if (!loggedIn) return "/";
+        // final loc = state.matchedLocation;
+
+        // 1) 복원 완료 전
+        if (!isReady) return null;
+
+        // 2) 미로그인: 로그인 페이지가 아니면 로그인으로
+        if (!loggedIn) return loggingIn ? null : LoginScreen.routeURL;
+
+        // 3) 로그인 상태에서 로그인 페이지로 가려 하면 대시보드로
+        if (loggingIn) return DashboardScreen.routeURL;
+
+        return null;
 
         // if (loggedIn) return loc == "/" ? DashboardScreen.routeURL : loc;
 
         // final isLoggedIn = ref.watch(authRepo).isLoggedIn;
-        if (authNotifier.user == null) {
-          if (state.matchedLocation != LoginScreen.routeURL) {
-            return LoginScreen.routeURL;
-          } else {
-            return loc == "/" ? DashboardScreen.routeURL : loc;
-          }
-        }
+        // if (authNotifier.user == null) {
+        //   if (state.matchedLocation != LoginScreen.routeURL) {
+        //     return LoginScreen.routeURL;
+        //   } else {
+        //     return loc == "/" ? DashboardScreen.routeURL : loc;
+        //   }
+        // }
 
-        return null;
+        // return null;
       },
       routes: [
         ShellRoute(
