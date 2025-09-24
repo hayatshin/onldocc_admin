@@ -466,6 +466,26 @@ class _HealthConsultScreenState extends ConsumerState<HealthConsultScreen> {
                         ),
                       ),
                       Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE9EDF9),
+                              border: Border.all(
+                                width: 2,
+                                color: const Color(0xFFF3F6FD),
+                              )),
+                          child: Center(
+                            child: Text(
+                              "조회수",
+                              style: contentTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
                         flex: 2,
                         child: Container(
                           height: 50,
@@ -573,6 +593,14 @@ class _HealthConsultScreenState extends ConsumerState<HealthConsultScreen> {
                                           style: contentTextStyle,
                                           textAlign: TextAlign.center,
                                         ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: SelectableText(
+                                    "${_list[i].views}",
+                                    style: contentTextStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                                 Expanded(
                                   flex: 2,

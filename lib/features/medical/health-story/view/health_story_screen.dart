@@ -233,6 +233,24 @@ class _HealthStoryScreenState extends ConsumerState<HealthStoryScreen> {
                       ),
                     ),
                     Expanded(
+                      flex: 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFE9EDF9),
+                            border: Border.all(
+                              width: 1,
+                              color: const Color(0xFFF3F6FD),
+                            )),
+                        child: Center(
+                          child: Text(
+                            "조회수",
+                            style: contentTextStyle,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
                       flex: 2,
                       child: Container(
                         decoration: BoxDecoration(
@@ -290,10 +308,18 @@ class _HealthStoryScreenState extends ConsumerState<HealthStoryScreen> {
                                   child: SizedBox(
                                     width: 140,
                                     height: 90,
-                                    child: Image.network(
-                                      _stories[i].thumbnail,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: _stories[i].thumbnail != null
+                                        ? Image.network(
+                                            _stories[i].thumbnail,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              "-",
+                                              style: contentTextStyle,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ),
@@ -302,6 +328,14 @@ class _HealthStoryScreenState extends ConsumerState<HealthStoryScreen> {
                               flex: 2,
                               child: SelectableText(
                                 createdAtToDateDot(_stories[i].createdAt),
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: SelectableText(
+                                "${_stories[i].views}",
                                 style: contentTextStyle,
                                 textAlign: TextAlign.center,
                               ),

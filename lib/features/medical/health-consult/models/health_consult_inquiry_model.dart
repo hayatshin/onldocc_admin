@@ -16,6 +16,7 @@ class HealthConsultInquiryModel {
   final bool public;
   final List<String> images;
   final HealthConsultResponseModel? response;
+  final int? views;
 
   HealthConsultInquiryModel({
     required this.healthConsultInquiryId,
@@ -32,6 +33,7 @@ class HealthConsultInquiryModel {
     required this.public,
     required this.images,
     this.response,
+    this.views,
   });
 
   Map<String, dynamic> toJson() {
@@ -61,7 +63,8 @@ class HealthConsultInquiryModel {
         public = json["public"],
         images = spreadDiaryImages(json["health_consult_inquiry_images"]),
         response =
-            spreadHealthConsultResponses(json["health_consult_responses"]);
+            spreadHealthConsultResponses(json["health_consult_responses"]),
+        views = (json["health_consult_views"]).length;
 }
 
 HealthConsultResponseModel? spreadHealthConsultResponses(List data) {

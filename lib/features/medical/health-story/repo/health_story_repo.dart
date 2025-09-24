@@ -14,7 +14,7 @@ class HealthStoryRepo {
   Future<List<Map<String, dynamic>>> fetchAllHealthStories() async {
     final docs = await _supabase
         .from("health_stories")
-        .select('*, doctors(*)')
+        .select('*, doctors(*), health_story_views(healthStoryViewId)')
         .order('createdAt', ascending: false);
     return docs;
   }
