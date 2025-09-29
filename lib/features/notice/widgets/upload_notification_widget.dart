@@ -260,7 +260,6 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
           );
 
       // 팝업 공지
-
       if (_useNoticePopup) {
         if (_noticePopup == null) {
           String popupId = "";

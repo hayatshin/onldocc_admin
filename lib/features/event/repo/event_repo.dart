@@ -166,7 +166,7 @@ class EventRepository {
           .eq('allUsers', true)
           .order(
             'createdAt',
-            ascending: true,
+            ascending: false,
           );
       return allUsers;
     } else {
@@ -178,7 +178,7 @@ class EventRepository {
           .eq('contractRegionId', contractRegionId)
           .order(
             'createdAt',
-            ascending: true,
+            ascending: false,
           );
       return contractRegions;
     }

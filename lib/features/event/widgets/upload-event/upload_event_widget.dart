@@ -337,7 +337,8 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       achieversNumber: _eventPrizeWinners,
       startDate: convertTimettampToStringDot(_eventStartDate!),
       endDate: convertTimettampToStringDot(_eventEndDate!),
-      createdAt: getCurrentSeconds(),
+      createdAt:
+          !widget.edit ? getCurrentSeconds() : widget.eventModel!.createdAt,
       contractRegionId: adminProfileModel.contractRegionId != ""
           ? adminProfileModel.contractRegionId
           : null,

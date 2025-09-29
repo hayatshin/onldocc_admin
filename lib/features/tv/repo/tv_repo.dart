@@ -20,7 +20,7 @@ class TvRepository {
           .eq('allUsers', true)
           .order(
             'createdAt',
-            ascending: true,
+            ascending: false,
           );
       return allUsers;
     } else {
@@ -31,7 +31,7 @@ class TvRepository {
           .eq('contractRegionId', contractRegionId)
           .order(
             'createdAt',
-            ascending: true,
+            ascending: false,
           );
       return contractRegions;
     }

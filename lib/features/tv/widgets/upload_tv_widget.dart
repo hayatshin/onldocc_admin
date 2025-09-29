@@ -192,7 +192,8 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
             allUsers:
                 selectContractRegion.value!.subdistrictId != "" ? false : true,
             videoId: videoId,
-            createdAt: getCurrentSeconds(),
+            createdAt:
+                !widget.edit ? getCurrentSeconds() : widget.tvModel!.createdAt,
             videoType: _tvType == "유투브" ? "youtube" : "file",
             contractRegionId: adminProfileModel!.contractRegionId != ""
                 ? adminProfileModel.contractRegionId
@@ -423,19 +424,24 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                         ),
                       ),
                       Gaps.h32,
-                      Row(
-                        children: [
-                          ModalButton(
-                              modalText: '영상 선택하기', modalAction: pickVideoFile),
-                          Gaps.h32,
-                          if (_tvVideoFile != null)
-                            Text(
-                              _tvTitle!,
-                              style: _contentTextStyle.copyWith(
-                                color: Palette().darkBlue,
-                              ),
-                            )
-                        ],
+                      Expanded(
+                        child: Row(
+                          children: [
+                            ModalButton(
+                                modalText: '영상 선택하기',
+                                modalAction: pickVideoFile),
+                            Gaps.h32,
+                            if (_tvVideoFile != null)
+                              Flexible(
+                                  child: Text(
+                                _tvTitle!,
+                                style: _contentTextStyle.copyWith(
+                                  color: Palette().darkBlue,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )),
+                          ],
+                        ),
                       ),
                     ],
                   ),
