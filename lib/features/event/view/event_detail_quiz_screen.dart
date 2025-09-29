@@ -361,23 +361,23 @@ class _EventDetailPointScreenState
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 5),
-                                child: Text(
+                                child: SelectableText(
                                   _participants[i].name,
                                   style: contentTextStyle,
                                   textAlign: TextAlign.center,
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  // overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(
+                              child: SelectableText(
                                 "${_participants[i].userAge}세",
                                 style: contentTextStyle,
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Expanded(
@@ -392,12 +392,12 @@ class _EventDetailPointScreenState
                             ),
                             Expanded(
                               flex: 2,
-                              child: Text(
+                              child: SelectableText(
                                 _participants[i].phone,
                                 style: contentTextStyle,
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             if (_eventModel != null && _eventModel!.allUsers)
@@ -411,46 +411,46 @@ class _EventDetailPointScreenState
                                   builder: (context, snapshot) {
                                     final subdistrictName = snapshot.data ?? "";
 
-                                    return Text(
+                                    return SelectableText(
                                       subdistrictName,
                                       style: contentTextStyle,
                                       textAlign: TextAlign.center,
                                       maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      // overflow: TextOverflow.ellipsis,
                                     );
                                   },
                                 ),
                               ),
                             Expanded(
                               flex: 1,
-                              child: Text(
+                              child: SelectableText(
                                 secondsToStringLine(_participants[i].createdAt),
                                 style: contentTextStyle,
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(
+                              child: SelectableText(
                                 "${_participants[i].quizAnswer}",
                                 style: contentTextStyle,
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(
+                              child: SelectableText(
                                 _participants[i].userAchieveOrNot ?? false
                                     ? "정답"
                                     : "",
                                 style: contentTextStyle,
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],

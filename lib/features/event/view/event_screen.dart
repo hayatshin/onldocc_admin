@@ -447,18 +447,18 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 5),
-                                    child: Text(
+                                    child: SelectableText(
                                       _eventList[i].title,
                                       style: contentTextStyle,
                                       textAlign: TextAlign.center,
                                       maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      // overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
-                                  child: Text(
+                                  child: SelectableText(
                                     _eventList[i]
                                         .orgName
                                         .toString()
@@ -467,37 +467,37 @@ class _EventScreenState extends ConsumerState<EventScreen> {
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    // overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 1,
-                                  child: Text(
+                                  child: SelectableText(
                                     _eventList[i].startDate,
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    // overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 1,
-                                  child: Text(
+                                  child: SelectableText(
                                     _eventList[i].endDate,
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    // overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 1,
-                                  child: Text(
+                                  child: SelectableText(
                                     _eventList[i].state ?? "",
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    // overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 Expanded(

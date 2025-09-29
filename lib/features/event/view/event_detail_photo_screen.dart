@@ -391,43 +391,43 @@ class _EventDetailPointScreenState
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
-                                        child: Text(
+                                        child: SelectableText(
                                           _participants[i].name,
                                           style: contentTextStyle,
                                           textAlign: TextAlign.center,
                                           maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                          // overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: Text(
+                                      child: SelectableText(
                                         "${_participants[i].userAge}세",
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: Text(
+                                      child: SelectableText(
                                         _participants[i].gender,
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     Expanded(
                                       flex: 2,
-                                      child: Text(
+                                      child: SelectableText(
                                         _participants[i].phone,
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     if (_eventModel != null &&
@@ -444,35 +444,35 @@ class _EventDetailPointScreenState
                                             final subdistrictName =
                                                 snapshot.data ?? "";
 
-                                            return Text(
+                                            return SelectableText(
                                               subdistrictName,
                                               style: contentTextStyle,
                                               textAlign: TextAlign.center,
                                               maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
+                                              // overflow: TextOverflow.ellipsis,
                                             );
                                           },
                                         ),
                                       ),
                                     Expanded(
                                       flex: 1,
-                                      child: Text(
+                                      child: SelectableText(
                                         secondsToStringLine(
                                             _participants[i].createdAt),
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: Text(
+                                      child: SelectableText(
                                         _participants[i].photoTitle ?? "",
                                         style: contentTextStyle,
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        // overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     Expanded(
