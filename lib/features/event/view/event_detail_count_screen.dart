@@ -124,12 +124,29 @@ class _EventDetailCountScreenState
   Future<void> _initializePariticants() async {
     final eventModel = widget.eventModel ??
         await ref.read(eventProvider.notifier).getCertainEvent(widget.eventId!);
+
     setState(() {
       _eventModel = eventModel;
     });
     final participants =
         await ref.read(eventProvider.notifier).getEventParticipants(eventModel);
+
     participants.sort((a, b) => b.userTotalPoint!.compareTo(a.userTotalPoint!));
+
+    participants.sort((a, b) {
+      // 1차: userAchieveOrNot (true -> false)
+      final p = ((b.userAchieveOrNot ?? false) ? 1 : 0)
+          .compareTo((a.userAchieveOrNot ?? false) ? 1 : 0);
+      if (p != 0) return p;
+
+      // 2차: gift (true -> false)
+      return ((b.gift) ? 1 : 0).compareTo((a.gift) ? 1 : 0);
+    });
+
+    // print(
+    //     "participants sort: ${participants.map((p) => "${p.name} / 점수: ${p.userTotalPoint} / 달성: ${[
+    //           p.userAchieveOrNot
+    //         ]} / gift: ${p.gift}")}");
 
     setState(() {
       _participants = participants;

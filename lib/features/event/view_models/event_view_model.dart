@@ -57,6 +57,7 @@ class EventViewModel extends AsyncNotifier<List<EventModel>> {
 
       int startSeconds = convertStartDateStringToSeconds(eventModel.startDate);
       int endSeconds = convertEndDateStringToSeconds(eventModel.endDate);
+
       int userStartSeconds =
           model.createdAt > startSeconds ? model.createdAt : startSeconds;
 

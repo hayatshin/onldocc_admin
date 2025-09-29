@@ -111,6 +111,7 @@ class EventRepository {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
+
       return data["data"];
     }
 
@@ -148,6 +149,7 @@ class EventRepository {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
+
       return data["data"];
     }
 
