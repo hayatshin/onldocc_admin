@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:onldocc_admin/features/login/models/admin_profile_model.dart';
@@ -42,13 +43,13 @@ class TvRepository {
   }
 
   Future<void> deleteTv(String videoId) async {
+    await deleteTvThumbnailStorage(videoId);
     await _supabase.from("videos").delete().match({"videoId": videoId});
   }
 
-  Future<void> editTv(String videoId, String tvTitle) async {
-    await _supabase
-        .from("videos")
-        .update({"title": tvTitle}).match({"videoId": videoId});
+  Future<void> editTv(String videoId, String tvTitle, String thumbnail) async {
+    await _supabase.from("videos").update(
+        {"title": tvTitle, "thumbnail": thumbnail}).match({"videoId": videoId});
   }
 
   Future<String> uplaodTvToSupabase(Uint8List videoFile) async {
@@ -73,7 +74,7 @@ class TvRepository {
   Future<String> uploadSingleImageToStorage(
       String videoId, dynamic image) async {
     if (!image.toString().startsWith("https://")) {
-      // await deleteEventImageStorage(eventId);
+      await deleteTvThumbnailStorage(videoId);
       final uuid = const Uuid().v4();
       final fileStoragePath = "$videoId/$uuid";
 
@@ -90,6 +91,16 @@ class TvRepository {
       return fileUrl;
     }
     return image;
+  }
+
+  Future<void> deleteTvThumbnailStorage(String videoId) async {
+    final objects = await _supabase.storage.from("tv").list(path: videoId);
+
+    if (objects.isNotEmpty) {
+      final fileList =
+          objects.mapIndexed((index, e) => "$videoId/${e.name}").toList();
+      await _supabase.storage.from("tv").remove(fileList);
+    }
   }
 }
 

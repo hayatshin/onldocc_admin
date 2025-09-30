@@ -51,7 +51,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   );
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _enabledUploadVideoButton = false;
 
   final TextEditingController _titleControllder = TextEditingController();
   final TextEditingController _linkControllder = TextEditingController();
@@ -59,8 +58,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
 
-  String _title = "";
-  String _link = "";
   String _tvType = "유투브";
   PlatformFile? _tvVideoFile;
   Uint8List? _tvVideoBytes;
@@ -107,8 +104,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
         _tvVideoFile = result.files.first;
         _tvVideoBytes = _tvVideoFile!.bytes!;
         _tvTitle = _tvVideoFile!.name;
-
-        _enabledUploadVideoButton = _title.isNotEmpty && _tvVideoFile != null;
       });
     } catch (e) {
       if (!mounted) return;
@@ -161,6 +156,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   void _submitTv() async {
     if (_tvType == "파일" && _tvVideoBytes == null) {
       showTopWarningSnackBar(context, "영상 파일을 선택해주세요");
+      return;
     } else {
       setState(() {
         tapUploadTv = true;
@@ -176,7 +172,7 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
               ref.read(adminProfileProvider).value;
           final videoId = !widget.edit
               ? _tvType == "유투브"
-                  ? getYoutubeId(_link)
+                  ? getYoutubeId(_linkControllder.text)
                   : const Uuid().v4()
               : widget.tvModel!.videoId;
           final thumbnailUrl = _thumbnailBytes != null
@@ -187,8 +183,8 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
 
           final tvModel = TvModel(
             thumbnail: thumbnailUrl,
-            title: _title,
-            link: _link,
+            title: _titleControllder.text,
+            link: _linkControllder.text,
             allUsers:
                 selectContractRegion.value!.subdistrictId != "" ? false : true,
             videoId: videoId,
@@ -216,7 +212,14 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
   // 행사 삭제
 
   void _editTv() async {
-    await ref.read(tvRepo).editTv(widget.tvModel!.videoId, _title);
+    final thumbnailUrl = _thumbnailBytes != null
+        ? await ref.read(tvRepo).uploadSingleImageToStorage(
+            widget.tvModel!.videoId, _thumbnailBytes)
+        : _thumbnailUrl!;
+
+    await ref
+        .read(tvRepo)
+        .editTv(widget.tvModel!.videoId, _titleControllder.text, thumbnailUrl);
     if (!mounted) return;
     showTopCompletingSnackBar(
       context,
@@ -262,17 +265,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                           return null;
                         },
                         controller: _titleControllder,
-                        onChanged: (value) {
-                          setState(
-                            () {
-                              _title = value;
-
-                              _enabledUploadVideoButton = (_title.isNotEmpty &&
-                                      _link.isNotEmpty) ||
-                                  (_title.isNotEmpty && _tvVideoFile != null);
-                            },
-                          );
-                        },
                         textAlignVertical: TextAlignVertical.center,
                         style: _contentTextStyle,
                         decoration: inputDecorationStyle(),
@@ -394,16 +386,6 @@ class _UploadTvWidgetState extends ConsumerState<UploadTvWidget> {
                               return "유투브 영상을 올려주세요.";
                             }
                             return null;
-                          },
-                          onChanged: (value) {
-                            setState(
-                              () {
-                                _link = value;
-
-                                _enabledUploadVideoButton =
-                                    _title.isNotEmpty && _link.isNotEmpty;
-                              },
-                            );
                           },
                           textAlignVertical: TextAlignVertical.center,
                           style: _contentTextStyle,
