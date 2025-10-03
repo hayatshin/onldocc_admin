@@ -39,7 +39,7 @@ class PopupModel {
         createdAt = json["createdAt"],
         diaryId = json["diaryId"],
         adminSecret = json["adminSecret"],
-        master = json["masters"];
+        master = json["master"];
 
   PopupModel copyWith({
     final String? description,

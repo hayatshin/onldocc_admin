@@ -274,6 +274,7 @@ class _UploadFeedWidgetState extends ConsumerState<UploadNotificationWidget> {
             adminSecret: true,
             master: adminProfileModel.master ? true : false,
           );
+
           popupId = await ref.read(noticeRepo).addPopupNotification(popupModel);
 
           // 팝업 이미지
