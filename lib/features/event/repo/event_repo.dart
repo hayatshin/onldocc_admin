@@ -220,6 +220,10 @@ class EventRepository {
   Future<String> uploadSingleImageToStorage(
       String eventId, dynamic image) async {
     // await deleteEventImageStorage(eventId);
+    if (image.toString().startsWith("https://")) {
+      return image;
+    }
+
     final uuid = const Uuid().v4();
     final fileStoragePath = "$eventId/$uuid";
 
