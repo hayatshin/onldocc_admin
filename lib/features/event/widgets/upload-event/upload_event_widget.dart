@@ -568,7 +568,7 @@ class _UploadEventWidgetState extends ConsumerState<UploadEventWidget> {
       return ModalScreen(
         widthPercentage: 0.7,
         modalTitle: !widget.edit ? "행사 올리기" : "행사 수정하기",
-        modalButtonOneText: !widget.edit ? "확인" : "삭제하기",
+        modalButtonOneText: !widget.edit ? "확인" : "수정하기",
         modalButtonOneFunction: !widget.edit
             ? _submitEvent
             : () => showDeleteOverlay(
