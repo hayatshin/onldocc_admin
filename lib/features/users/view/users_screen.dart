@@ -147,40 +147,51 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   Future<void> _filterUserDataList(
       String? searchBy, String searchKeyword) async {
-    // 1) 원본 리스트 안전하게 꺼내기
-    final rawList = ref.read(userProvider).value ?? <UserModel?>[];
-    final userDataList = rawList.whereType<UserModel>().toList();
+    // 0) 유틸: 어떤 값이 와도 문자열로 안전 변환
+    String asString(Object? v) =>
+        v == null ? '' : (v is String ? v : v.toString());
+    String onlyDigits(Object? v) => asString(v).replaceAll(RegExp(r'\D'), '');
 
-    // 2) 검색 키워드 정리
+    // 1) 리스트 안전 취득
+    final raw = ref.read(userProvider).value ?? <UserModel?>[];
+    final list = raw.whereType<UserModel>().toList();
+
+    // 2) 키워드 정리
     final kw = searchKeyword.trim();
-    // 숫자만 남기기 (전화번호 비교용)
-    String onlyDigits(String? s) => (s ?? '').replaceAll(RegExp(r'\D'), '');
+    final kwDigits = onlyDigits(kw);
 
-    // 3) 필터
-    late final List<UserModel> filterList;
+    // 3) 필터 (이름 / 핸드폰)
+    List<UserModel> filtered;
     if (searchBy == '이름') {
-      filterList = userDataList.where((e) {
-        final name = e.name;
+      filtered = list.where((e) {
+        final name = asString(e.name);
         return name.contains(kw);
       }).toList();
     } else {
-      // '핸드폰' 등 전화 검색은 전부 이 분기로 처리
-      final kwDigits = onlyDigits(kw);
-      filterList = userDataList.where((e) {
-        final phoneDigits = onlyDigits(e.phone);
-        return kwDigits.isEmpty ? false : phoneDigits.contains(kwDigits);
+      // '핸드폰' 등 전화검색 전용
+      filtered = list.where((e) {
+        try {
+          final phoneDigits = onlyDigits(e.phone); // e.phone이 int/Map이어도 안전
+          return kwDigits.isEmpty ? false : phoneDigits.contains(kwDigits);
+        } catch (err, st) {
+          // 문제 레코드 진단 로그 (웹 콘솔/디바이스 로그에서 확인)
+          debugPrint('Phone filter error for userId=${e.userId} '
+              'phone=${e.phone} (type=${e.phone.runtimeType}): $err');
+          debugPrintStack(stackTrace: st);
+          showTopWarningSnackBar(context, err.toString());
+          return false;
+        }
       }).toList();
     }
 
-    // 4) 페이지 수 안전 계산 (0개/정확히 배수 처리)
-    final total = filterList.length;
+    // 4) 페이지 계산 (0개/정확히 배수 안전)
+    final total = filtered.length;
     final endPage =
         total == 0 ? 0 : ((total - 1) ~/ _itemsPerPage); // 0-based 마지막 페이지 인덱스
-    // 만약 _endPage를 1-based로 쓰시면: final endPage = (total + _itemsPerPage - 1) ~/ _itemsPerPage;
 
     if (!mounted) return;
     setState(() {
-      _userDataList20 = filterList;
+      _userDataList20 = filtered;
       _currentPage = 0;
       _pageIndication = 0;
       _endPage = endPage;
