@@ -55,48 +55,53 @@ class _CsvState extends ConsumerState<Csv> {
           vertical: Sizes.size10,
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                          InjicareColor().gray80, BlendMode.srcIn),
-                      child: SvgPicture.asset(
-                        "assets/svg/arrow-left.svg",
-                        width: 30,
+            Expanded(
+              child: Row(
+                children: [
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                            InjicareColor().gray80, BlendMode.srcIn),
+                        child: SvgPicture.asset(
+                          "assets/svg/arrow-left.svg",
+                          width: 30,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Gaps.h20,
-                if (widget.rankingType != "event")
-                  SelectableText(
-                    "${widget.userName} 님의 ${widget.rankingType} 데이터",
-                    style: TextStyle(
-                      color: Palette().darkGray,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ),
-                if (widget.rankingType == "event")
-                  SelectableText(
-                    widget.userName,
-                    style: TextStyle(
-                      color: Palette().darkGray,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ),
-              ],
+                  Gaps.h20,
+                  Expanded(
+                    child: widget.rankingType != "event"
+                        ? Text(
+                            "${widget.userName} 님의 ${widget.rankingType} 데이터",
+                            style: TextStyle(
+                              color: Palette().darkGray,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : Text(
+                            widget.userName,
+                            style: TextStyle(
+                              color: Palette().darkGray,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                  )
+                ],
+              ),
             ),
+            Gaps.h20,
             Row(
               children: [
                 Align(

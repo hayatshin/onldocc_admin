@@ -32,7 +32,8 @@ class UsersScreen extends ConsumerStatefulWidget {
 }
 
 class _UsersScreenState extends ConsumerState<UsersScreen> {
-  List<UserModel?> _userDataList = [];
+  List<UserModel?> _initialTotalUserDataList = [];
+  List<UserModel?> _userDataList20 = [];
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
   OverlayEntry? overlayEntry;
@@ -50,8 +51,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   final tableFontSize = 11.5;
 
-  bool createdAtSort = false;
-  bool lastVisitSort = false;
+  String _sortOrder = "createdAt";
   AdminProfileModel _adminProfile = AdminProfileModel.empty();
 
   static const int _itemsPerPage = 20;
@@ -107,6 +107,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       // 전체보기
       if (mounted) {
         setState(() {
+          _initialTotalUserDataList = userDataList;
           _totalListLength = userDataList.length;
           _endPage = endPage;
         });
@@ -123,6 +124,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
       if (mounted) {
         setState(() {
+          _initialTotalUserDataList = filterList;
           _totalListLength = filterList.length;
           _endPage = endPage;
         });
@@ -174,7 +176,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     int endPage = filterList.length ~/ _itemsPerPage + 1;
 
     setState(() {
-      _userDataList = filterList;
+      _userDataList20 = filterList;
       _currentPage = 0;
       _pageIndication = 0;
       _endPage = endPage;
@@ -237,7 +239,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   // }
 
   void generateExcel() {
-    final csvData = exportToFullList(_userDataList);
+    final csvData = exportToFullList(_userDataList20);
     final String fileName = "인지케어 회원관리 ${todayToStringDot()}.xlsx";
     exportExcel(csvData, fileName);
   }
@@ -261,7 +263,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         showTopCompletingSnackBar(context, "성공적으로 $userName님이 삭제되었습니다.");
 
         setState(() {
-          _userDataList.removeWhere((user) => user?.userId == userId);
+          _userDataList20.removeWhere((user) => user?.userId == userId);
         });
       });
     });
@@ -278,16 +280,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   }
 
   void _updateUserlistPerPage() {
-    List<UserModel?>? userDataList = ref.read(userProvider).value;
-    if (userDataList == null) return;
-
     int startPage = _currentPage * _itemsPerPage;
-    int endPage = startPage + _itemsPerPage > userDataList.length
-        ? userDataList.length
+    int endPage = startPage + _itemsPerPage > _initialTotalUserDataList.length
+        ? _initialTotalUserDataList.length
         : startPage + _itemsPerPage;
 
     setState(() {
-      _userDataList = userDataList.sublist(startPage, endPage);
+      _userDataList20 = _initialTotalUserDataList.sublist(startPage, endPage);
     });
   }
 
@@ -315,6 +314,33 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     setState(() {
       _currentPage = s - 1;
     });
+    _updateUserlistPerPage();
+  }
+
+  void _updateSortOrder(String sortOrder) {
+    List<UserModel?> copiedUserDataList = [..._initialTotalUserDataList];
+
+    switch (sortOrder) {
+      case "createdAt":
+        copiedUserDataList.sort((a, b) => b!.createdAt.compareTo(a!.createdAt));
+        break;
+      case "lastVisit":
+        copiedUserDataList
+            .sort((a, b) => b!.lastVisit!.compareTo(a!.lastVisit!));
+        break;
+      default:
+        copiedUserDataList.sort((a, b) => b!.createdAt.compareTo(a!.createdAt));
+        break;
+    }
+
+    setState(
+      () {
+        _initialTotalUserDataList = copiedUserDataList;
+        _sortOrder = sortOrder;
+        _currentPage = 0;
+        _pageIndication = 0;
+      },
+    );
     _updateUserlistPerPage();
   }
 
@@ -474,12 +500,33 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 width: 1,
                                 color: const Color(0xFFF3F6FD),
                               )),
-                          child: Center(
-                            child: Text(
-                              "가입일",
-                              style: contentTextStyle,
-                              textAlign: TextAlign.center,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "가입일",
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                              Gaps.h5,
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () => _updateSortOrder("createdAt"),
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.mode(
+                                        InjicareColor().gray70,
+                                        BlendMode.srcIn),
+                                    child: SvgPicture.asset(
+                                      _sortOrder == "createdAt"
+                                          ? "assets/svg/arrow-up.svg"
+                                          : "assets/svg/arrow-down.svg",
+                                      width: 8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -493,12 +540,33 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 width: 1,
                                 color: const Color(0xFFF3F6FD),
                               )),
-                          child: Center(
-                            child: Text(
-                              "방문일",
-                              style: contentTextStyle,
-                              textAlign: TextAlign.center,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "방문일",
+                                style: contentTextStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                              Gaps.h5,
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () => _updateSortOrder("lastVisit"),
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.mode(
+                                        InjicareColor().gray70,
+                                        BlendMode.srcIn),
+                                    child: SvgPicture.asset(
+                                      _sortOrder == "lastVisit"
+                                          ? "assets/svg/arrow-up.svg"
+                                          : "assets/svg/arrow-down.svg",
+                                      width: 8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -545,8 +613,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                       ),
                     ],
                   ),
-                  if (_userDataList.isNotEmpty)
-                    for (int i = 0; i < _userDataList.length; i++)
+                  if (_userDataList20.isNotEmpty)
+                    for (int i = 0; i < _userDataList20.length; i++)
                       Column(
                         children: [
                           SizedBox(
@@ -564,7 +632,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 Expanded(
                                   flex: 3,
                                   child: SelectableText(
-                                    _userDataList[i]!.name,
+                                    _userDataList20[i]!.name,
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -572,7 +640,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 Expanded(
                                   flex: 1,
                                   child: SelectableText(
-                                    "${_userDataList[i]!.userAge!}세",
+                                    "${_userDataList20[i]!.userAge!}세",
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -580,7 +648,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 Expanded(
                                   flex: 1,
                                   child: SelectableText(
-                                    _userDataList[i]!.gender.substring(0, 1),
+                                    _userDataList20[i]!.gender.substring(0, 1),
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -588,7 +656,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 Expanded(
                                   flex: 3,
                                   child: SelectableText(
-                                    _userDataList[i]!.phone,
+                                    _userDataList20[i]!.phone,
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -597,7 +665,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   Expanded(
                                     flex: 3,
                                     child: SelectableText(
-                                      _userDataList[i]!.fullRegion,
+                                      _userDataList20[i]!.fullRegion,
                                       style: contentTextStyle,
                                       textAlign: TextAlign.center,
                                     ),
@@ -606,7 +674,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   flex: 2,
                                   child: SelectableText(
                                     secondsToStringLine(
-                                        _userDataList[i]!.createdAt),
+                                        _userDataList20[i]!.createdAt),
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -615,7 +683,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                   flex: 2,
                                   child: SelectableText(
                                     secondsToStringLine(
-                                        _userDataList[i]!.lastVisit!),
+                                        _userDataList20[i]!.lastVisit!),
                                     style: contentTextStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -627,8 +695,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     child: GestureDetector(
                                       onTap: () => showDeleteOverlay(
                                         context,
-                                        _userDataList[i]!.userId,
-                                        _userDataList[i]!.name,
+                                        _userDataList20[i]!.userId,
+                                        _userDataList20[i]!.name,
                                       ),
                                       child: Icon(
                                         Icons.delete,
@@ -644,8 +712,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                     cursor: SystemMouseCursors.click,
                                     child: GestureDetector(
                                       onTap: () => goUserDashBoard(
-                                        userId: _userDataList[i]!.userId,
-                                        userName: _userDataList[i]!.name,
+                                        userId: _userDataList20[i]!.userId,
+                                        userName: _userDataList20[i]!.name,
                                       ),
                                       child: ColorFiltered(
                                         colorFilter: ColorFilter.mode(

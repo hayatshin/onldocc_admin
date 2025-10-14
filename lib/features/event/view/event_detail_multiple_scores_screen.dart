@@ -153,6 +153,7 @@ class _EventDetailMultipleScoresScreenState
     return EventDetailTemplate(
       eventModel: _eventModel ?? EventModel.empty(),
       generateCsv: _generateExcel,
+      participantsLength: _participants.length,
       child: !_initializeParticipants
           ? const SkeletonLoadingScreen()
           : Column(

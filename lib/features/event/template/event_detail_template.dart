@@ -7,17 +7,21 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/features/event/models/event_model.dart';
 import 'package:onldocc_admin/features/users/view/users_screen.dart';
 import 'package:onldocc_admin/injicare_color.dart';
+import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/utils.dart';
 
 class EventDetailTemplate extends ConsumerWidget {
   final EventModel eventModel;
   final Function() generateCsv;
   final Widget child;
+  final int participantsLength;
   const EventDetailTemplate({
     super.key,
     required this.eventModel,
     required this.generateCsv,
     required this.child,
+    required this.participantsLength,
   });
 
   @override
@@ -28,11 +32,6 @@ class EventDetailTemplate extends ConsumerWidget {
       color: Palette().darkGray,
     );
 
-    final TextStyle contentTextStyle = TextStyle(
-      fontSize: Sizes.size12,
-      fontWeight: FontWeight.w500,
-      color: Palette().darkGray,
-    );
     final size = MediaQuery.of(context).size;
 
     return Container(
@@ -235,6 +234,13 @@ class EventDetailTemplate extends ConsumerWidget {
                 ),
               ),
               Gaps.v40,
+              Text(
+                "총 ${numberFormat(participantsLength)}명",
+                style: InjicareFont().label03.copyWith(
+                      color: InjicareColor().gray70,
+                    ),
+              ),
+              Gaps.v14,
               child,
               Gaps.v40,
             ],
