@@ -148,6 +148,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   Future<void> _filterUserDataList(
       String? searchBy, String searchKeyword) async {
     // 0) 유틸: 어떤 값이 와도 문자열로 안전 변환
+
     String asString(Object? v) =>
         v == null ? '' : (v is String ? v : v.toString());
     String onlyDigits(Object? v) => asString(v).replaceAll(RegExp(r'\D'), '');
@@ -168,6 +169,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         return name.contains(kw);
       }).toList();
     } else {
+      if (searchKeyword == "010") {
+        return;
+      }
       // '핸드폰' 등 전화검색 전용
       filtered = list.where((e) {
         try {

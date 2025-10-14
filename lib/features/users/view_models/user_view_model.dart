@@ -42,25 +42,49 @@ class UserViewModel extends AsyncNotifier<List<UserModel?>> {
   }
 
   Future<List<UserModel>> initializeUserList(String subdistrictId) async {
-    final userlist = await _userRepo.initializeUserList(subdistrictId);
+    final raw = await _userRepo.initializeUserList(subdistrictId);
 
-    final modelList = userlist.map((json) {
+    bool isBlank(String? s) {
+      final v = s?.trim();
+      if (v == null || v.isEmpty) return true;
+      // 서버에서 "null" 문자열이 들어오는 경우도 배제
+      return v.toLowerCase() == '-';
+    }
+
+    bool hasAllRequired(UserModel m) {
+      return !isBlank(m.gender) &&
+          !isBlank(m.phone) &&
+          !isBlank(m.birthYear) &&
+          !isBlank(m.birthDay);
+    }
+
+    final models = <UserModel>[];
+    int dropped = 0;
+
+    for (final json in raw) {
       try {
-        final model = UserModel.fromJson(json);
+        // 2) 파싱
+        final m = UserModel.fromJson(json);
 
-        return model;
-      } catch (e, stack) {
-        // // ignore: avoid_print
-        // print("에러 발생한 JSON: $json");
-        // // ignore: avoid_print
-        // print("에러 메시지: $e");
-        // // ignore: avoid_print
-        // print("스택: $stack");
+        // 3) 필수값 검증 — 하나라도 비었으면 제외
+        if (hasAllRequired(m)) {
+          models.add(m);
+        } else {
+          dropped++;
+        }
+      } catch (_) {
+        dropped++;
+        // 필요하면 콘솔로 어떤 레코드가 떨어졌는지 찍어보세요:
+        // print('initializeUserList: drop due to parse error -> $json');
       }
-    }).toList();
-    final nonNullModelList = modelList.whereType<UserModel>().toList();
-    state = AsyncData(nonNullModelList);
-    return nonNullModelList;
+    }
+
+    // 필요시 통계 로그
+    // ignore: avoid_print
+    print('initializeUserList: kept=${models.length}, dropped=$dropped');
+
+    state = AsyncData(models);
+    return models;
   }
 }
 

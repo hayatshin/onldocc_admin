@@ -8,6 +8,7 @@ import 'package:onldocc_admin/constants/sizes.dart';
 import 'package:onldocc_admin/injicare_color.dart';
 import 'package:onldocc_admin/injicare_font.dart';
 import 'package:onldocc_admin/palette.dart';
+import 'package:onldocc_admin/utils.dart';
 
 const double searchHeight = 40;
 
@@ -31,6 +32,11 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
   String _setSearchBy = "이름";
 
   void submitSearch() {
+    if (_setSearchBy == "핸드폰 번호" && _searchUserController.text == "010") {
+      showTopWarningSnackBar(context, "더 자세한 핸드폰 번호를 검색해주세요");
+      return;
+    }
+
     if (_searchUserController.text.isEmpty) {
       widget.resetInitialList();
     } else {
