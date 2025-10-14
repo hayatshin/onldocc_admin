@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:onldocc_admin/common/widgets/report_button.dart';
@@ -91,9 +90,9 @@ class _SearchCsvState extends ConsumerState<SearchCsv> {
                           ),
                           height: searchHeight,
                           child: TextFormField(
-                            inputFormatters: _setSearchBy == "핸드폰 번호"
-                                ? [MaskedInputFormatter("###-####-####")]
-                                : null,
+                            // inputFormatters: _setSearchBy == "핸드폰 번호"
+                            //     ? [MaskedInputFormatter("###-####-####")]
+                            //     : null,
                             onFieldSubmitted: (value) => submitSearch(),
                             controller: _searchUserController,
                             textAlignVertical: TextAlignVertical.center,

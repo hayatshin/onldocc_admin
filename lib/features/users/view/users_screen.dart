@@ -147,34 +147,38 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   Future<void> _filterUserDataList(
       String? searchBy, String searchKeyword) async {
-    List<UserModel?> userDataList = ref.read(userProvider).value!;
+    // 1) 원본 리스트 안전하게 꺼내기
+    final rawList = ref.read(userProvider).value ?? <UserModel?>[];
+    final userDataList = rawList.whereType<UserModel>().toList();
 
-    List<UserModel> filterList = [];
-    if (searchBy == "이름") {
-      filterList = userDataList
-          .where((element) {
-            if (element != null) {
-              return element.name.contains(searchKeyword);
-            } else {
-              return false;
-            }
-          })
-          .cast<UserModel>()
-          .toList();
+    // 2) 검색 키워드 정리
+    final kw = searchKeyword.trim();
+    // 숫자만 남기기 (전화번호 비교용)
+    String onlyDigits(String? s) => (s ?? '').replaceAll(RegExp(r'\D'), '');
+
+    // 3) 필터
+    late final List<UserModel> filterList;
+    if (searchBy == '이름') {
+      filterList = userDataList.where((e) {
+        final name = e.name;
+        return name.contains(kw);
+      }).toList();
     } else {
-      filterList = userDataList
-          .where((element) {
-            if (element != null) {
-              return element.phone.contains(searchKeyword);
-            } else {
-              return false;
-            }
-          })
-          .cast<UserModel>()
-          .toList();
+      // '핸드폰' 등 전화 검색은 전부 이 분기로 처리
+      final kwDigits = onlyDigits(kw);
+      filterList = userDataList.where((e) {
+        final phoneDigits = onlyDigits(e.phone);
+        return kwDigits.isEmpty ? false : phoneDigits.contains(kwDigits);
+      }).toList();
     }
-    int endPage = filterList.length ~/ _itemsPerPage + 1;
 
+    // 4) 페이지 수 안전 계산 (0개/정확히 배수 처리)
+    final total = filterList.length;
+    final endPage =
+        total == 0 ? 0 : ((total - 1) ~/ _itemsPerPage); // 0-based 마지막 페이지 인덱스
+    // 만약 _endPage를 1-based로 쓰시면: final endPage = (total + _itemsPerPage - 1) ~/ _itemsPerPage;
+
+    if (!mounted) return;
     setState(() {
       _userDataList20 = filterList;
       _currentPage = 0;
